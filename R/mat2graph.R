@@ -93,7 +93,7 @@ setAs("graphNEL","matrix",function(from) {
     y <- rep(0,nc)
     y[x$edges] = if(is.null(x$weights)) rep(1,length(x$edges)) else x$weights
     y
-  })),nr=nr,nc=nc,byrow=T,dimnames=list(from@nodes,from@nodes))
+  })),nr=nr,nc=nc,byrow=TRUE,dimnames=list(from@nodes,from@nodes))
   #Update missing reflexive edges when the graph is undirected
   if(edgemode(from) == "undirected")
     m + (m == 0)*t(m)
