@@ -90,6 +90,9 @@ validGraph<-function(object, quietly=FALSE)
        if( !missing(edgeL) && length(edgeL) > 1 )
          if( is.character(edgeL[[1]]) )
              edgeL <- lapply(edgeL, function(x) match(x, nodes))
+
+
+
        .Object@nodes <- nodes
        .Object@edgeL <- edgeL
        .Object@edgemode <- edgemode
@@ -171,8 +174,10 @@ validGraph<-function(object, quietly=FALSE)
                 tlist <- object@edgeL[index]
            wts <- lapply(tlist, function(x) {
                wts <- x$weights
-               if(is.null(wts))
-                 wts <- rep(1, length(x$edges))
+               if(is.null(wts)) {
+                   wts <- rep(1, length(x$edges))
+                   names(wts) <- x$edges
+               }
                wts})
             wts}, where=where)
 
