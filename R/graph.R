@@ -65,25 +65,21 @@ validGraph<-function(object, quietly=FALSE)
 #         edgeL=as(newedges,"list"))
 #}
 
-.initGraph <- function(where)
-{
   ## we define a virtual graph class -- to hold generic functions
   setClass("graph", representation(edgemode="character",
-                                   "VIRTUAL"), where=where)
+                                   "VIRTUAL"))
 
   if( !exists("edgemode", mode="function") )
       setGeneric("edgemode", function(object)
-                 standardGeneric("edgemode"), where=where)
-  setMethod("edgemode", "graph", function(object) object@edgemode,
-            where=where)
+                 standardGeneric("edgemode"))
+  setMethod("edgemode", "graph", function(object) object@edgemode)
 
 
   ## a node-edge-list graph
   ##the edgeL is a list, with edges, weights etc
 
   setClass("graphNEL",representation(nodes="vector",edgeL="list"),
-            contains="graph",
-           where=where)
+            contains="graph")
 
   setMethod("initialize", "graphNEL", function(.Object, nodes=character(0),
        edgeL = vector("list",length=0), edgemode="undirected") {
@@ -96,8 +92,7 @@ validGraph<-function(object, quietly=FALSE)
        .Object@nodes <- nodes
        .Object@edgeL <- edgeL
        .Object@edgemode <- edgemode
-       .Object},
-       where=where)
+       .Object})
 
   if (!isGeneric("nodes"))
   {
@@ -105,14 +100,13 @@ validGraph<-function(object, quietly=FALSE)
       fun <- nodes
     else
       fun <- function(object) standardGeneric("nodes")
-    setGeneric("nodes", fun, where=where)
+    setGeneric("nodes", fun)
   }
 
-  setMethod("nodes", "graphNEL", function(object) object@nodes,
-            where=where)
+  setMethod("nodes", "graphNEL", function(object) object@nodes)
 
   setGeneric("nodes<-", function(object, value)
-             standardGeneric("nodes<-"), where=where)
+             standardGeneric("nodes<-"))
   setReplaceMethod("nodes", c("graphNEL", "character"),
              function(object, value) {
                  if(length(value) != length(object@nodes))
@@ -121,30 +115,27 @@ validGraph<-function(object, quietly=FALSE)
                      stop("node names must be unique")
                  object@nodes <- value
                  names(object@edgeL) <- value
-                 object}, where=where)
+                 object})
 
   if (!exists("edges", mode="function"))
       setGeneric("edges", function(object, which)
-                 standardGeneric("edges"), where=where)
+                 standardGeneric("edges"))
 
   ##the graphNEL representation stores edges as indexes into the
   ##node label vector
   setMethod("edges", c("graphNEL", "missing"), function(object, which) {
       gNodes <- object@nodes
-      lapply(object@edgeL, function(x) gNodes[x$edges])},
-            where=where)
+      lapply(object@edgeL, function(x) gNodes[x$edges])})
 
   setMethod("edges", c("graphNEL", "character"),
             function(object, which) {
                 gNodes <- nodes(object)
-                lapply(object@edgeL[which], function(x) gNodes[x$edges])},
-            where=where)
+                lapply(object@edgeL[which], function(x) gNodes[x$edges])})
 
 
   ##we are going to need some notion of degree
   if( !isGeneric("degree") )
-    setGeneric("degree", function(object, Nodes) standardGeneric("degree"),
-        where=where)
+    setGeneric("degree", function(object, Nodes) standardGeneric("degree"))
 
   setMethod("degree", signature(object="graph", Nodes="missing"),
       function(object)  {
@@ -153,7 +144,7 @@ validGraph<-function(object, quietly=FALSE)
           deg <- sapply(nl, length)
           names(deg) <- ns
           deg
-     }, where=where)
+     })
 
   setMethod("degree", "graph",  function(object, Nodes) {
        nl <- edges(object)
@@ -162,10 +153,10 @@ validGraph<-function(object, quietly=FALSE)
        deg <- sapply(nl, length)
        names(deg) <- Nodes
        deg
-   }, where=where )
+   })
 
   setGeneric("edgeWeights", function(object, index)
-      standardGeneric("edgeWeights"), where=where)
+      standardGeneric("edgeWeights"))
 
   setMethod("edgeWeights", "graphNEL", function(object, index) {
            if( missing(index) )
@@ -184,12 +175,12 @@ validGraph<-function(object, quietly=FALSE)
                    names(wts) <- x$edges
 
                wts})
-            wts}, where=where)
+            wts})
 
 
 ##RG: some methods for adjcency and accessibility
   setGeneric("adj", function(object, index)
-	standardGeneric("adj"), where = where)
+	standardGeneric("adj"))
 
   ## do we want the indices or the nodes?
   setMethod("adj", "graphNEL", function(object, index) {
@@ -199,10 +190,10 @@ validGraph<-function(object, quietly=FALSE)
           index <- match(index, nd)
         if( is.na(index) || index < 0 || index > length(nd) )
           stop(paste("selected vertex", initI, "is not in the graph"))
-	edges(object)[index]}, where = where )
+	edges(object)[index]})
 
   setGeneric("acc", function(object, index)
-	standardGeneric("acc"), where=where)
+	standardGeneric("acc"))
 
 
 ##  setMethod("acc", "graph", function(object, index) {
@@ -252,10 +243,9 @@ validGraph<-function(object, quietly=FALSE)
        }
        marked[index] <- 0 ##not the node itself
        return(distv[marked==2])
-    }, where=where)
+    })
 
-  setGeneric("dfs", function(object) standardGeneric("dfs"),
-     where=where)
+  setGeneric("dfs", function(object) standardGeneric("dfs"))
 
   setMethod("dfs", "graph", function(object) {
         visit <- function(ind) {
@@ -275,19 +265,17 @@ validGraph<-function(object, quietly=FALSE)
                 visit(i)
            }
          return(marked)
-    }, where=where)
+    })
 
-  setGeneric("edgeL", function(graph, index) standardGeneric("edgeL"),
-     where=where)
+  setGeneric("edgeL", function(graph, index) standardGeneric("edgeL"))
 
   setMethod("edgeL", "graphNEL", function(graph, index) {
         if( missing(index) )
             graph@edgeL
         else
-           graph@edgeL[index]}, where=where)
+           graph@edgeL[index]})
 
-  setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"),
-    where=where)
+  setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 
   ##the map from the labels to the integers, 1:n must be used
   ## you must renumber the edges of the subGraph
@@ -319,13 +307,11 @@ validGraph<-function(object, quietly=FALSE)
                                x$edges <- ed
                                lapply(x, function(y) {names(y) <- ed; y})})
       ##finally return
-      new("graphNEL", nodes=nn[ma], edgeL=newed) },
-            where=where)
+      new("graphNEL", nodes=nn[ma], edgeL=newed) })
 
 
   ###some other tools
-   setGeneric("intersection", function(x, y) standardGeneric("intersection"),
-     where=where)
+   setGeneric("intersection", function(x, y) standardGeneric("intersection"))
 
    setMethod("intersection", c("graph", "graph"), function(x,y) {
        if( edgemode(x) != edgemode(y) )
@@ -350,10 +336,9 @@ validGraph<-function(object, quietly=FALSE)
        }
        names(rval) <- xN
        new("graphNEL", nodes=bN, edgeL=rval, edgemode=edgemode(x))
-   }, where=where)
+   })
 
-  setGeneric("union", function(x, y) standardGeneric("union"),
-             where=where)
+  setGeneric("union", function(x, y) standardGeneric("union"))
 
   setMethod("union", c("graph", "graph"), function(x, y) {
       ex <- edgemode(x); ey <- edgemode(y);
@@ -380,10 +365,9 @@ validGraph<-function(object, quietly=FALSE)
       }
       names(rval) <- xN
       new("graphNEL", nodes=xN, edgeL=rval, edgemode=outmode)
-  }, where=where)
+  })
 
-   setGeneric("complement", function(x) standardGeneric("complement"),
-              where=where)
+   setGeneric("complement", function(x) standardGeneric("complement"))
 
    setMethod("complement", c("graph"), function(x) {
        xN <- nodes(x)
@@ -400,11 +384,10 @@ validGraph<-function(object, quietly=FALSE)
                rval[[i]] <- list(edges=numeric(0), weights=numeric(0))
        }
        new("graphNEL", nodes=xN, edgeL=rval, edgemode=edgemode(x))
-   }, where=where)
+   })
 
   ##connected components
-  setGeneric("connComp", function(object) standardGeneric("connComp"),
-             where=where)
+  setGeneric("connComp", function(object) standardGeneric("connComp"))
 
   setMethod("connComp", "graph", function(object) {
     NL <- nodes(object)
@@ -432,28 +415,25 @@ validGraph<-function(object, quietly=FALSE)
     rL <- vector("list", length=nc)
     for(i in 1:nc) rL[[i]]<-c(nmR[[i]], names(rval[[i]]))
     return(rL)
- }, where=where)
+ })
 
   setGeneric("isConnected", function(object, ...)
-             standardGeneric("isConnected"), where=where)
+             standardGeneric("isConnected"))
   setMethod("isConnected", "graph", function(object, ...) {
       if (length(connComp(object)) == 1)
           TRUE
       else
           FALSE
-  }, where=where)
+  })
 
-  setGeneric("numNodes", function(object) standardGeneric("numNodes"),
-     where=where)
+  setGeneric("numNodes", function(object) standardGeneric("numNodes"))
 
-  setMethod("numNodes", "graph", function(object) length(nodes(object)),
-    where=where)
+  setMethod("numNodes", "graph", function(object) length(nodes(object)))
 
-  setMethod("numNodes", "graphNEL", function(object) length(object@nodes),
-     where=where)
+  setMethod("numNodes", "graphNEL", function(object) length(object@nodes))
 
   setGeneric("addNode", function(node, object)
-    standardGeneric("addNode"), where=where)
+    standardGeneric("addNode"))
 
   setMethod("addNode", c("character", "graphNEL"),
         function(node, object) {
@@ -471,10 +451,10 @@ validGraph<-function(object, quietly=FALSE)
                 nEd[[i]] <- list(edges=numeric(0), weights=numeric(0))
             edgeL <- c(edgeL, nEd)
             new("graphNEL", gN, edgeL, edgemode(object))
-        }, where=where)
+        })
 
   setGeneric("removeNode", function(node, object)
-      standardGeneric("removeNode"), where=where)
+      standardGeneric("removeNode"))
 
   setMethod("removeNode", c("character", "graphNEL"),
        function(node, object) {
@@ -491,10 +471,10 @@ validGraph<-function(object, quietly=FALSE)
                el
            })
            new("graphNEL", gN, nE2, edgemode(object))
-       }, where=where)
+       })
 
   setGeneric("clearNode", function(node, object)
-  standardGeneric("clearNode"), where=where)
+  standardGeneric("clearNode"))
 
   setMethod("clearNode", c("character", "graphNEL"),
        function(node, object) {
@@ -505,13 +485,13 @@ validGraph<-function(object, quietly=FALSE)
             gE <- .dropEdges(whN, object@edgeL)
            gE[[whN]] = list(edges=numeric(0), weights=numeric(0))
            new("graphNEL", gN, gE, edgemode(object))
-       }, where=where)
+       })
 
 
 
   ##FIXME: vectorize
   setGeneric("removeEdge", function(from, to, graph)
-  standardGeneric("removeEdge"), where=where)
+  standardGeneric("removeEdge"))
 
   setMethod("removeEdge", c("character", "character", "graphNEL"),
             function(from, to, graph) {
@@ -536,11 +516,11 @@ validGraph<-function(object, quietly=FALSE)
                     nEd[[to]]$weights <- nEd[[to]]$weights[-whD]
                 }
                 new("graphNEL", gN, nEd, edgemode(graph))
-            }, where=where)
+            })
 
 
     setGeneric("addEdge", function(from, to, graph, weights)
-        standardGeneric("addEdge"), where=where)
+        standardGeneric("addEdge"))
 
 
      ##FIXME: do  we care if the edge already exists?
@@ -584,10 +564,10 @@ validGraph<-function(object, quietly=FALSE)
                  }
 
              new("graphNEL", gN, eL, edgemode(graph))
-         }, where=where)
+         })
 
    setGeneric("combineNodes", function(nodes, graph, newName)
-         standardGeneric("combineNodes"), where=where)
+         standardGeneric("combineNodes"))
 
   setMethod("combineNodes", c("character", "graphNEL", "character"),
         function(nodes, graph, newName) {
@@ -637,18 +617,17 @@ validGraph<-function(object, quietly=FALSE)
                 }
                 g2 <- addEdge(oE, newName, g2, oW)
             }
-            g2}, where=where)
+            g2})
 
 
     ##inEdges returns a list of all nodes with edges
     ##to the nodes in "node"
     setGeneric("inEdges", function(node, object)
-       standardGeneric("inEdges"), where=where)
+       standardGeneric("inEdges"),)
 
     setMethod("inEdges", c("missing", "graphNEL"),
               function(node, object)
-                  inEdges(nodes(object), object),
-              where=where)
+                  inEdges(nodes(object), object))
 
     setMethod("inEdges", c("character", "graphNEL"),
          function(node, object) {
@@ -669,7 +648,7 @@ validGraph<-function(object, quietly=FALSE)
 
                  rval[[i]] <- gN[whOnes]
              }
-             rval}, where=where)
+             rval})
 
 
 ##print methods
@@ -689,11 +668,7 @@ validGraph<-function(object, quietly=FALSE)
 ##     cat("If the graph was completely linked, the number of edges would be ",format(totalEdgesPossible,big.mark=","),".\n",sep="")
 ##     cat("The node with the most edges is ",nodeMostEdges$id," with ", nodeMostEdges$maxLen, " edges.","\n",sep="")
 ##     cat("The average number of edges is ",format(aveEdge,digits=3),".\n",sep="")
-   },
-  where=where
-  )
-}
-
+   })
 
    .dropEdges <- function(x,z) {
        ans =  lapply(z,function(ww) {

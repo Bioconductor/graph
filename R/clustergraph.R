@@ -69,38 +69,35 @@
 ##rely on .initGraph having been called first to set up the
 ##classes and generics
 
-.initDistGraph <- function(where)
-{
-
  setClass("distGraph",
      representation( Dist = "dist"),
           prototype=list(edgemode="undirected"),
-          contains="graph", where=where)
+          contains="graph")
 
  setMethod("nodes", "distGraph", function(object)
-      attr(object@Dist, "Labels" ), where=where)
+      attr(object@Dist, "Labels" ))
 
- setGeneric("Dist", function(object) standardGeneric("Dist"), where=where)
+ setGeneric("Dist", function(object) standardGeneric("Dist"))
 
  setMethod("Dist", "distGraph", function(object)
-    object@Dist, where=where)
+    object@Dist)
 
   setMethod("show", "distGraph", function(object) {
     cat("distGraph with ", attr(object@Dist, "Size"),
-   " nodes \n", sep="")}, where=where)
+   " nodes \n", sep="")})
 
   setGeneric("threshold", function(object, k)
-  standardGeneric("threshold"), where=where)
+  standardGeneric("threshold"))
 
   setMethod("threshold", "distGraph", function(object, k) {
         nd <- object@Dist
         nd[nd > k ] <- 0
         new("distGraph", Dist=nd)
-     }, where=where)
+     })
 
 
   setMethod("numNodes", "distGraph", function(object)
-     attr(Dist(object), "Size"), where=where)
+     attr(Dist(object), "Size"))
 
   setMethod("adj", "distGraph", function(object, index) {
         nodenames<- nodes(object)
@@ -117,13 +114,13 @@
 
         for(i in 1:length(adjL) )
           adjL[[i]] <- names(adjL[[i]])[adjL[[i]] > 0 ]
-        return(adjL) }, where=where)
+        return(adjL) })
 
    setMethod("edges", c("distGraph", "missing"), function(object, which) {
        nN <- nodes(object)
        eL <- lapply(nN, function(x) adj(object, x)[[1]])
        names(eL) <- nN
-       return(eL) }, where=where)
+       return(eL) })
 
    setMethod("edges", c("distGraph", "character"), function(object, which) {
        nN <- nodes(object)
@@ -132,22 +129,17 @@
            stop("not all nodes are in the supplied graph")
        eL <- lapply(which, function(x) adj(object, x)[[1]])
        names(eL) <- which
-       eL}, where=where)
-
-}
-
-
-.initClustGraph <- function(where=where) {
+       eL})
 
  if( !isClass("graph") )
    stop("cannot initialize clusterGraph without graph")
 
  setClass("clusterGraph",
      representation( clusters = "list"), contains="graph",
-          prototype=list(edgemode="undirected"), where=where)
+          prototype=list(edgemode="undirected"))
 
  setMethod("nodes", "clusterGraph", function(object)
-    as.character(unlist(object@clusters)), where=where)
+    as.character(unlist(object@clusters)))
 
  setMethod("edges", c("clusterGraph", "missing"), function(object, which) {
      edges<-list()
@@ -156,7 +148,7 @@
          for(i in seq(along=cc) )
              edges[[cc[i]]] <- cc[-i]
      }
-     edges}, where=where)
+     edges})
 
  setMethod("edges", c("clusterGraph", "character"), function(object, which) {
      nN <- nodes(object)
@@ -169,7 +161,7 @@
          for(i in seq(along=cc) )
              edges[[cc[i]]] <- cc[-i]
      }
-     edges}, where=where)
+     edges})
 
 
 ##FIXME: this should be done from distances, but for now...)
@@ -183,29 +175,27 @@
 
      ans <- lapply(edg, function(x) { ans <- rep(1, length(x));
                                       names(ans) <- x; ans})
-     ans}, where =where)
+     ans})
 
  setMethod("subGraph", c("character", "clusterGraph"),
            function(snodes, graph) {
                cList <- graph@clusters
                cL <- lapply(cList, function(x) intersect(x, snodes))
                graph@clusters <- cL
-               graph}, where=where)
- 
+               graph})
+
  setMethod("numNodes", "clusterGraph", function(object)
-    sum(sapply(object@clusters, length)), where=where)
+    sum(sapply(object@clusters, length)))
 
  setMethod("adj", "clusterGraph", function(object, index)
-    for(cl in object@clusters) if( index %in% cl ) cl,
-    where=where)
+    for(cl in object@clusters) if( index %in% cl ) cl)
 
  ##for cluster graphs, acc and adj are the same
  setMethod("acc", "clusterGraph", function(object, index)
-      for(cl in object@clusters) if( index %in% cl ) cl,
-      where=where)
+      for(cl in object@clusters) if( index %in% cl ) cl)
 
  setMethod("connComp", "clusterGraph", function(object)
-      object@clusters, where=where)
+      object@clusters)
 
   setMethod("show", "clusterGraph",
   function(object)
@@ -216,7 +206,4 @@
      cat("A graph with ", object@edgemode, " edges\n")
      cat("Number of Nodes = ",numNodes,"\n",sep="")
      cat("Number of Edges = ",numEdge,"\n",sep="")
-   },
-  where=where
-  )
-}
+   })

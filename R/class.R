@@ -3,8 +3,7 @@
 ##a class structure for graphs
 ##the class structure is based on GXL
 
-.initGclass <- function(where) {
-    setClass("graphID", where=where)
+    setClass("graphID")
     ##some functions to allow nodes and edges to have identifiers
     ##there are lots of problems with the integer version --
 ##    if( require(Ruuid, quietly=TRUE) ) {
@@ -18,22 +17,21 @@
 
     ##here we set up some global variables (that should be internal to
     ##and will be once we have namespaces
-    assign("idenv", new.env(hash=TRUE), pos="package:graph")
+    assign("idenv", new.env(hash=TRUE))
     assign("idval", 1, env=idenv)
 
     if( haveUUID ) {
-        assign("startids", function(x) NULL, pos="package:graph")
-        assign("newID", getuuid, pos="package:graph")
+        assign("startids", function(x) NULL)
+        assign("newID", getuuid)
 ##        assign("nullgraphID", new("Ruuid"), pos="package:graph")
     } else {
-        assign("startids", function(x) assign("idval", x, env=idenv),
-               pos="package:graph")
+        assign("startids", function(x) assign("idval", x, env=idenv))
         assign("newID", function() {
             val <- get("idval", env=idenv)
             assign("idval", val+1, env=idenv)
             return(val)
-        }, pos="package:graph")
-        assign("nullgraphID", as.integer(-1), pos="package:graph")
+        })
+        assign("nullgraphID", as.integer(-1))
         }
 
     ##for undirected graphs the toEdges and fromEdges lists are the same
@@ -45,8 +43,7 @@
                           edgeOrder="numeric",
                           label="character" ),
            prototype = list(nodeID=as.integer(1), nodetype="unknown",
-             edgeOrder=0, label=""),
-           where=where)
+             edgeOrder=0, label=""))
     ##I think we need to separate directed from the type of the edge
     ##if directed=FALSE then the bNode and eNode are just ends, not
     ##beginning and ending nodes
@@ -58,110 +55,92 @@
                          bNode="graphID",    ##begin - if directed
                          eNode="graphID"),   ##end   - if directed
           prototype = list(edgeID=nullgraphID, edgeType="unknown",
-          directed=FALSE, bNode=nullgraphID, eNode=nullgraphID, weight=1),
-          where = where)
+          directed=FALSE, bNode=nullgraphID, eNode=nullgraphID, weight=1))
 
     ##setup the accessor functions
 
     if (is.null(getGeneric("edgeID")) && !exists("edgeID",
                                                  mode="function") )
         setGeneric("edgeID", function(object)
-                   standardGeneric("edgeID"), where=where)
+                   standardGeneric("edgeID"))
     setMethod("edgeID", "gEdge", function(object)
-              object@edgeID, where=where)
+              object@edgeID)
 
     if (is.null(getGeneric("eNode")))
         setGeneric("eNode", function(object)
-                   standardGeneric("eNode"), where=where)
+                   standardGeneric("eNode"))
     setMethod("eNode", "gEdge", function(object)
-              object@eNode, where=where)
+              object@eNode)
     if (is.null(getGeneric("bNode")))
         setGeneric("bNode", function(object)
-                   standardGeneric("bNode"), where=where)
+                   standardGeneric("bNode"))
     setMethod("bNode", "gEdge", function(object)
-              object@bNode, where=where)
+              object@bNode)
 
-   setGeneric("toEdges", function(object) standardGeneric("toEdges"),
-   where=where)
+   setGeneric("toEdges", function(object) standardGeneric("toEdges"))
 
-   setMethod("toEdges", "gNode", function(object) object@toEdges, where=where)
+   setMethod("toEdges", "gNode", function(object) object@toEdges)
 
    setGeneric("toEdges<-",
-               function(object, value) standardGeneric("toEdges<-"),
-               where = where)
+               function(object, value) standardGeneric("toEdges<-"))
    setReplaceMethod("toEdges", "gNode", function(object, value) {
       object@toEdges <- value
-      object}, where=where)
+      object})
 
     setGeneric("fromEdges",
-               function(object) standardGeneric("fromEdges"),
-               where=where)
-   setMethod("fromEdges", "gNode", function(object) object@fromEdges,
-             where=where)
+               function(object) standardGeneric("fromEdges"))
+   setMethod("fromEdges", "gNode", function(object) object@fromEdges)
 
     setGeneric("fromEdges<-",
-               function(object, value) standardGeneric("fromEdges<-"),
-               where = where)
+               function(object, value) standardGeneric("fromEdges<-"))
      setReplaceMethod("fromEdges", "gNode", function(object, value) {
       object@fromEdges <- value
-      object}, where = where)
+      object})
 
-      setGeneric("label", function(object) standardGeneric("label"),
-           where=where)
-   setMethod("label", "gNode", function(object) object@label,
-     where = where)
+      setGeneric("label", function(object) standardGeneric("label"))
+   setMethod("label", "gNode", function(object) object@label)
 
-     setGeneric("edgeOrder", function(object) standardGeneric("edgeOrder"),
-   where=where)
-   setMethod("edgeOrder", "gNode", function(object) object@edgeOrder,
-     where = where)
+     setGeneric("edgeOrder", function(object) standardGeneric("edgeOrder"))
+   setMethod("edgeOrder", "gNode", function(object) object@edgeOrder)
 
-    setGeneric("nodeID", function(object) standardGeneric("nodeID"),
-               where=where)
+    setGeneric("nodeID", function(object) standardGeneric("nodeID"))
 
-   setMethod("nodeID", "gNode", function(object) object@nodeID,
-     where = where)
+   setMethod("nodeID", "gNode", function(object) object@nodeID)
 
-    setGeneric("nodeType", function(object) standardGeneric("nodeType"),
-               where=where)
+    setGeneric("nodeType", function(object) standardGeneric("nodeType"))
 
-   setMethod("nodeType", "gNode", function(object) object@nodeType,
-     where = where)
+   setMethod("nodeType", "gNode", function(object) object@nodeType)
 
 
 #### hashtables -- very primitive start
 
-    setClass("hashtable", representation(hashtable="environment"),
-             where=where)
+    setClass("hashtable", representation(hashtable="environment"))
     setMethod("initialize", "hashtable", function(.Object) {
         .Object@hashtable=new.env(hash=TRUE)
-        .Object}, where=where)
+        .Object})
 
    if( !exists("hash", mode="function") )
-       setGeneric("hash", function(key, value, htable) standardGeneric("hash"),
-               where=where)
+       setGeneric("hash", function(key, value, htable) standardGeneric("hash"))
 
     setMethod("hash", signature("ANY", "ANY", "hashtable"),
               function(key, value, htable) {
                   if(!is.character(key) )
                       key <- as.character(key)
                   assign(key, value, env= htable@hashtable)
-              }, where=where)
+              })
 
       if( !isGeneric("contents") && !exists("contents", mode="function") )
        setGeneric("contents", function(object)
-                  standardGeneric("contents"),
-               where=where)
+                  standardGeneric("contents"))
 
     setMethod("contents", "hashtable",
-              function(object) ls(env=object@hashtable), where=where)
+              function(object) ls(env=object@hashtable))
 
 
 #### define a general graph structure here
     setClass("generalGraph", representation(nodes="hashtable",
                                             edges="hashtable"),
-                                            contains="graph",
-                                            where=where)
+                                            contains="graph")
 
     setMethod("initialize", "generalGraph", function(.Object,
              nodes=NULL, edges=NULL) {
@@ -172,7 +151,7 @@
             hash(nodeID(node), node,.Object@nodes )
         for(edge in edges )
             hash(edgeID(edge), edge,.Object@edges)
-        .Object}, where=where)
+        .Object})
 
     ##coercion to generalGraph -- this will not be efficient
       setAs("graphNEL", "generalGraph", def=function(from) {
@@ -225,8 +204,7 @@
                      toEdges=tlist[[i]], nodeID=nodeIDS[[i]])
 
       new("generalGraph", nodes=nodeObj, edges=edgeObj)
-  }, where=where)
-}
+  })
 
 # as(gR, "generalGraph")
 

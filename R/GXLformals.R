@@ -1,43 +1,42 @@
-.GXLformals <- function(where) {
 #
 # GXL support
 #
 ## need methods on connections
-     setClass("file", where=where)
-     setClass("connection", where=where)
-     setIs("file","connection", where=where)
+     setClass("file")
+     setClass("connection")
+     setIs("file","connection")
 ## fromGXL returns the graphNEL object only, and it may
 ##  need to return more properties (7 mar 03)
-     setGeneric("fromGXL",function(con)standardGeneric("fromGXL"),where=where)
+     setGeneric("fromGXL",function(con)standardGeneric("fromGXL"))
      setMethod("fromGXL", "connection", function(con)
        {
        require(XML)
        xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$asGraphNEL()
-       }, where=where)
+       })
 ## dumpGXL returns an R list with all? properties
-     setGeneric("dumpGXL",function(con)standardGeneric("dumpGXL"),where=where)
+     setGeneric("dumpGXL",function(con)standardGeneric("dumpGXL"))
      setMethod("dumpGXL", "connection", function(con)
        {
        require(XML)
        xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$dump()
-       }, where=where)
+       })
 ## validate against the dtd
-     setGeneric("validateGXL",function(con)standardGeneric("validateGXL"),where=where)
+     setGeneric("validateGXL",function(con)standardGeneric("validateGXL"))
      setMethod("validateGXL", "connection", function(con)
        {
        require(XML)
 # maybe need a try here, xmlTreeParse dumps the whole stream when it hits an error
        tmp <- xmlTreeParse(paste(readLines(con),collapse=""),asText=TRUE,
               validate=TRUE)
-       }, where=where)
+       })
 #
 #  exporting
 #
-    setGeneric("toGXL", function(object)standardGeneric("toGXL"),where=where)
-    setMethod("toGXL", "graphNEL", function(object) 
-       gxlTreeNEL(object), where=where)
-}
-  
+    setGeneric("toGXL", function(object)standardGeneric("toGXL"))
+    setMethod("toGXL", "graphNEL", function(object)
+       gxlTreeNEL(object))
+
+
 gxlTreeNEL <- function(gnel) {
  require(XML)
  nds <- nodes(gnel)
@@ -49,7 +48,7 @@ gxlTreeNEL <- function(gnel) {
 #<gxl xmlns:xlink="http://www.w3.org/1999/xlink">
  out$addTag("gxl",close=FALSE)
  out$addTag("graph", attrs=c(id="graphNEL"), close=FALSE)
- for (i in 1:length(nds)) 
+ for (i in 1:length(nds))
    {
    out$addTag("node", attrs=c(id=nds[i]), close=FALSE)
    out$closeTag()
