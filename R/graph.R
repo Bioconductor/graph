@@ -414,13 +414,16 @@ validGraph<-function(object)
 
                     ## Set up the plot region, plot the edges, then the nodes,
                     ## and finally the node labels
-                    plot(NA,NA,xlim=c(0,getX(ur)), ylim=c(0,getY(ur)),
-                         type="n",main=NULL,xlab="",ylab="",xaxt="n",yaxt="n")
+                    par(pty="s")
+                    outLim <- max(getY(ur), getX(ur))
+                    plot(NA,NA,xlim=c(0,outLim), ylim=c(0,outLim),
+                         type="n",main=NULL,xlab="",ylab="",xaxt="n",
+                         yaxt="n")
                     q <- lapply(edgePoints(g), plot)
                     symbols(nodeX, nodeY, circles=rad, inches=FALSE,
                             bg="white",add=TRUE)
 
-                    points(nodeX,nodeY, pch=names, cex=2)
+                    text(nodeX,nodeY, names, cex=2)
                 }
                 else {
                     stop("No nodes in graph")
@@ -435,6 +438,14 @@ validGraph<-function(object)
 #    .initGraph(where)
 #    cacheMetaData(as.environment(where))
 #}
+
+
+
+
+
+
+
+
 
 
 
