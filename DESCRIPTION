@@ -6,4 +6,4 @@ Description: A package that implements some simple graph handling capabilities.
 Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
 License: LGPL
 Depends: R (>= 1.7), cluster, XML
-Collate: graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R zzz.R
+Collate: graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R 
