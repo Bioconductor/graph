@@ -595,6 +595,11 @@ validGraph<-function(object)
     setGeneric("inEdges", function(node, object)
        standardGeneric("inEdges"), where=where)
 
+    setMethod("inEdges", c("missing", "graphNEL"),
+              function(node, object) 
+                  inEdges(nodes(object), object),
+              where=where)
+  
     setMethod("inEdges", c("character", "graphNEL"),
          function(node, object) {
              gN <- nodes(object)
