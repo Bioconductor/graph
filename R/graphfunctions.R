@@ -92,7 +92,7 @@ ugraph <- function(graph)
                nN <- length(ed)
                elem <- sapply(ed, function(x) length(x$edges))
                from <- rep(1:nN, elem)
-               to <- unlist(sapply(ed, function(x) x$edges))
+               to <- unlist(lapply(ed, function(x) x$edges))
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
                ##so here we remove them
@@ -129,14 +129,14 @@ ugraph <- function(graph)
             })
 
 
-edgeWeightVector <- function (g,...) 
+edgeWeightVector <- function (g,...)
 {
     m <- edgeMatrix(g,...)
     w <- edgeWeights(g)
     n <- apply(m,2,function(x)paste(x,collapse=
        ifelse(edgemode(g)=="directed","->","--"),sep=""))
     o <- rep(NA, ncol(m))
-    for (i in 1:ncol(m)) o[i] <- edgeWeights(g, m[1, i])[[1]][as.character(m[2, 
+    for (i in 1:ncol(m)) o[i] <- edgeWeights(g, m[1, i])[[1]][as.character(m[2,
         i])]
     names(o) <- n
     o
