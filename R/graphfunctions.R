@@ -104,6 +104,7 @@ ugraph <- function(graph)
                ans
            })
 
+
   setMethod("edgeMatrix", c("clusterGraph", "ANY"),
             function(object, duplicates) {
                 cls<-object@clusters
@@ -127,3 +128,16 @@ ugraph <- function(graph)
                 ans
             })
 
+
+edgeWeightVector <- function (g,...) 
+{
+    m <- edgeMatrix(g,...)
+    w <- edgeWeights(g)
+    n <- apply(m,2,function(x)paste(x,collapse=
+       ifelse(edgemode(g)=="directed","->","--"),sep=""))
+    o <- rep(NA, ncol(m))
+    for (i in 1:ncol(m)) o[i] <- edgeWeights(g, m[1, i])[[1]][as.character(m[2, 
+        i])]
+    names(o) <- n
+    o
+}
