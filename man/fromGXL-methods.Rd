@@ -59,26 +59,15 @@ as second record in the output.
 
 Some structures in a graphNEL and some tags in GXL may not be handled
 at this time.
-
-Note added 18 Jul 2003: It has been observed that graphviz dot2gxl generates
-GXL with graph attribute edgeids=FALSE.  fromGXL will fail to process
-the edges correctly.  You can manually add arbitrary edgeids to the dot2gxl
-output edges and fromGXL will succeed.  Perhaps fromGXL can be made less
-dependent on edge id attributes.
-
-Note added 15 August 2003: dot2gxl is supposed to introduce
-edgeids now.  
-
-Note added 15 August 2003: all GXL to be handled should possess
-an edgemode attribute.
 }
 \examples{
 sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
 show(fromGXL(sf))
 print(dumpGXL(sf))
 #validateGXL(sf)
-#bad <- file(system.file("GXL/c2.gxl", package="graph"))
-# here's how you can check if the GXL is well-formed
+# bad <- file(system.file("GXL/c2.gxl", package="graph"))
+# here's how you can check if the GXL is well-formed, if
+# you have a libxml2-based version of R XML package
 #
 # try( validateGXL(bad) )
 #
@@ -88,8 +77,8 @@ gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
 #
 # following requires that you are using XML bound with recent libxml2
 #
-an <- as.numeric
-if (an(libxmlVersion()$major)>=2 && an(libxmlVersion()$minor)>=4)
+#an <- as.numeric
+#if (an(libxmlVersion()$major)>=2 && an(libxmlVersion()$minor)>=4)
   cat(saveXML(toGXL(gR)$value()))
 wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
 wtdg <- fromGXL(wtd)
