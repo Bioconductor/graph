@@ -86,7 +86,7 @@ validGraph<-function(object)
   setMethod("uniqueEdges", "graphNEL", function(object) {
       edges <- edges(object)
       weights <- edgeWeights(object)
-      names <- nodes(object)
+      nodes <- nodes(object)
       done <- character()
       outEdges <- list()
       curID <- 1
@@ -95,18 +95,21 @@ validGraph<-function(object)
           ## Helper function for the lapply below
           ## Creates a new gEdge object given specified
           ## information.
+          eNodeVal <- as.integer(match(x,nodes))
           out <- new("gEdge", edgeID=as.integer(curID),
-              bNode=as.integer(i),
-              eNode=as.integer(match(x,names)))
+                     bNode=as.integer(i),
+                     eNode=eNodeVal,
+                     weight=as.numeric(curWeights[as.character(eNodeVal)])
+                     )
           curID <<- curID + 1
           out
       }
 
-      for (i in seq(along=names)) {
+      for (i in seq(along=nodes)) {
           curEdges <- edges[[i]]
           curWeights <- weights[[i]]
           newEdges <- curEdges[which(!(curEdges %in% done))]
-          done <- c(done,names[i])
+          done <- c(done,nodes[i])
           outEdges <- c(outEdges,lapply(newEdges, newEdgeObj, i))
       }
       outEdges
