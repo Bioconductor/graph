@@ -19,13 +19,17 @@ setClass("gNode",
 
 setMethod("initialize",
           signature(.Object = "gNode"),
-          function (.Object, label, fromEdges, toEdges, edgeOrder,
-                    nodeType, property=list(), nodeID=getuuid(), ...)
+          function (.Object, label="", fromEdges=list(),
+                    toEdges=list(), edgeOrder=list(),
+                    nodeType="", property=list(), nodeID=getuuid(), ...)
       {
-          property <- asGraphProperty(property)
-          .Object <- callNextMethod()
+          .Object@label <- label
+          .Object@fromEdges <- fromEdges
+          .Object@toEdges <- toEdges
+          .Object@edgeOrder <- edgeOrder
+          .Object@nodeType <- nodeType
           .Object@nodeID <- nodeID
-          .Object@property <- property
+          .Object@property <- asGraphProperty(property)
           .Object
       })
 
@@ -46,19 +50,20 @@ setClass("gEdge",
 
 setMethod("initialize",
           signature(.Object = "gEdge"),
-          function (.Object, edgeType, directed, bNode,
-                    eNode, property=1.0, edgeID=getuuid(), ...)
+          function (.Object, edgeType="", directed=FALSE,
+                    bNode, eNode, property=1.0, edgeID=getuuid(), ...)
       {
           property <- asGraphProperty(property, hasWeight=TRUE)
           if (is(bNode, "gNode"))
               bNode <- nodeID(bNode)
           if (is(eNode, "gNode"))
               eNode <- nodeID(eNode)
-          .Object <- callNextMethod()
-          .Object@property <- property
-          .Object@edgeID <- edgeID
+          .Object@edgeType <- edgeType
+          .Object@directed <- directed
           .Object@bNode <- bNode
           .Object@eNode <- eNode
+          .Object@property <- property
+          .Object@edgeID <- edgeID
           .Object
       })
 

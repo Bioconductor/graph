@@ -77,12 +77,10 @@ setMethod("initialize",
                   }
               }
           }
-          .Object <- callNextMethod()
           .Object@graphID <- getuuid()
           .Object@nodes <- nodes
           .Object@edges <- edges
-          if (missing(edgemode))
-              .Object@edgemode <- edgemode
+          .Object@edgemode <- edgemode
           .Object@label2nodeID <- label2nodeID
           .Object
       })
@@ -163,7 +161,13 @@ setMethod("edges",
                     {
                         tmp <- nm[unlist(lapply(fromEdges(node),
                                                 function(eid)
-                                                as.character(edgeEnv[[as.character(eid)]]@eNode)))]
+                                            {
+                                                edge <- edgeEnv[[as.character(eid)]]
+                                                if (edge@directed ||
+                                                    edge@eNode != nodeID(node))
+                                                    as.character(edge@eNode)
+                                                else as.character(edge@bNode)
+                                            }))]
                         names(tmp) <- NULL
                         tmp
                     })
