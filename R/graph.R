@@ -404,7 +404,24 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 
 
   ###some other tools
-   setGeneric("intersection", function(x, y) standardGeneric("intersection"))
+setGeneric("intersection2", function(x, y)
+           standardGeneric("intersection2"))
+
+setMethod("intersection2", function(x,y) {
+        if (edgemode(x) != edgemode(y) )
+           stop("both graphs must have the same edgemode")
+
+        if (edgemode(x) == "undirected")
+           edgeM <- 0
+        else
+           edgeM <- 1
+
+        .Call("graphIntersection", nodes(x), nodes(y),
+              edges(x), edges(y), edgeM)
+
+})
+
+setGeneric("intersection", function(x, y) standardGeneric("intersection"))
 
    setMethod("intersection", c("graph", "graph"), function(x,y) {
        if( edgemode(x) != edgemode(y) )
@@ -1060,10 +1077,10 @@ setMethod("edgeNames",
     ## convert names to integers ("standard node labeling")
     to   <- lapply(edges(object), match, nodes(object))
     from <- match(names(to), nodes(object))
-    
+
     if(any(is.na(unlist(to)))||any(is.na(from)))
       stop("Edge names do not match node names.")
-    
+
     ## from-to matrix
     ft <- matrix(c(rep(from, listLen(to)), to=unlist(to)), ncol=2)
 
@@ -1074,7 +1091,7 @@ setMethod("edgeNames",
       ft2[revert,] <- ft2[revert, c(2, 1)]
       ft <- ft[!duplicated.array(ft2, MARGIN=1),, drop=FALSE]
     }
-    
+
     return(paste(nodes(object)[ft[, 1]], nodes(object)[ft[, 2]], sep="~"))
   },
   valueClass="character")
@@ -1097,11 +1114,11 @@ setMethod("clusteringCoefficient",
   ## below would also work for the characters (names).
   to   <- lapply(edges(object), match, nodes(object))
   from <- match(names(to), nodes(object))
-  
+
   if(any(is.na(unlist(to)))||any(is.na(from)))
     stop("Edge names do not match node names.")
 
-  if(!selfLoops) {  
+  if(!selfLoops) {
     ufrom <- rep(from, listLen(to))
     uto   <- unlist(to)
     if(any(ufrom==uto))

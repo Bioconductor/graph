@@ -1,6 +1,6 @@
 
 .First.lib <- function(libname, pkgname, where) {
-
+    library.dynam("graph", pkgname, libname)
     ##load time code
     where = match(paste("package:", pkgname, sep=""), search())
     .initGContents(where)
