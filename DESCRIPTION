@@ -8,3 +8,5 @@ License: LGPL
 Depends: R (>= 1.8.0), cluster
 Suggests: SparseM, Biobase (>= 1.4.2), XML
 Collate: contents.R buildDepGraph.R graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R write.tlp.R mat2graph.R zzz.R
+ReleaseLevel: devel
+
