@@ -45,6 +45,7 @@ data(integrinMediatedCellAdhesion)
 data(integrinMediatedCellAdhesion)
 if (require("Rgraphviz") & interactive())
   plot(IMCAGraph, attrs=IMCAAttrs$defAttrs,
-       nodeAttrs=IMCAAttrs$nodeAttrs, subGList=IMCAAttrs$subGList)
+       nodeAttrs=IMCAAttrs$nodeAttrs, subGList=IMCAAttrs$subGList,
+       subGAttrs=IMCAAttrs$subGAttrs)
 }
 \keyword{datasets}
