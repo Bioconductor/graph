@@ -6,6 +6,7 @@
 \alias{nodes}
 \alias{edges}
 \alias{connComp}
+\alias{isConnected}
 \alias{degree}
 \alias{intersection}
 \alias{union}
@@ -27,6 +28,8 @@
   \describe{
     \item{connComp}{\code{signature(object = "graph")}: find the
       connected components of a graph.}
+    \item{isConnected}{\code{signature(object = "graph")}: A boolean
+      that details if a graph is fully connected or not.}
     \item{acc}{\code{signature(object = "graph")}: find all nodes
       accessible from the specified node. }
     \item{degree}{\code{signature(object = "graph", Nodes = "missing")}:

@@ -397,6 +397,15 @@ validGraph<-function(object)
     return(rL)
  }, where=where)
 
+  setGeneric("isConnected", function(object, ...)
+             standardGeneric("isConnected"), where=where)
+  setMethod("isConnected", "graph", function(object, ...) {
+      if (length(connComp(object)) == 1)
+          TRUE
+      else
+          FALSE
+  }, where=where)
+
   setGeneric("numNodes", function(object) standardGeneric("numNodes"),
      where=where)
 
