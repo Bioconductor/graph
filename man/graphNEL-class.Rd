@@ -55,14 +55,20 @@ Class \code{"graph"}, directly.
       that returns a list of \code{gEdge} objects, representing the set
       of unique edges in the graph (ie in an undirected graph A<->B is
       only represented once.)}
-    \item{plot}{\code{signature(x="graphNEL",y,...,nodeLabels)}:A method
-      for plotting a \code{graphNEL} object.  Requires the package
+    \item{plot}{\code{signature(x="graphNEL",y,...,nodeLabels,
+	centerNode, nodeCols="white", textCols="black")}:A method for
+      plotting a \code{graphNEL} object.  Requires the package
       \code{Rgraphviz} to be loaded.  Users can specify a layout engine with
       the \code{y} parameter, being "dot", "neato" or "twopi", with
       "dot" being the default.  Standard plotting parameters can be
       passed in via the \code{...} argument.  Labels for the nodes
       default to the names of the nodes, but can be customized using the
-      \code{nodeLabels} parameter.}
+      \code{nodeLabels} parameter.  The \code{nodeCols} and
+      \code{textCols} will specify colors to be used for the nodes and
+      label text respectively - values can either be a single color or a
+      vector of colors (which will be cycled).  A \code{centerNode} can
+      be specified (primarily for the "twopi" layout method) using this
+      argument.}
     \item{graph2graphviz}{\code{signature(object = "graphNEL")}: A method
       that will convert a \code{graphNEL} object into a matrix suitable
       for interaction with \code{Rgraphviz}.  Not intended to be called
