@@ -26,6 +26,7 @@ the GXL stream on the connection }
 \item{dumpGXL}{ con = connection: returns an R list based on a parsing of
 the GXL stream on the connection }
 \item{validateGXL}{ con = connection: checks the GXL stream against its DTD}
+\item{toGXL}{ object = graphNEL: creates an XMLInternalDOM representing the graph in GXL}
 }
 }
 \author{Vince Carey <stvjc@channing.harvard.edu>}
@@ -37,6 +38,9 @@ the stream, add
 <!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.1.dtd">
 }
 as second record in the output.
+
+Some structures in a graphNEL and some tags in GXL may not be handled
+at this time.
 }
 \examples{
 sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
