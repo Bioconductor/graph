@@ -22,19 +22,10 @@ boundary<-function(subgraph, graph)
 
   if( any( !(snodes %in% nodes(graph)) ) )
       stop("the supplied subgraph is not a subgraph of the supplied graph")
-  
-  subE <- edges(graph)[
 
-  #only use nodes that are in the original graph
-  good <- snodes %in% orignodes
-  if( any(!good) )
-  
-  outnodes <- orignodes %in% snodes
-  splE <- split(origedges, outnodes)
-  
-  ## apply down the subgraph, finding the nodes that are in the graph, but
-  ## not the subgraph 
-  lapply(splE[["TRUE"]], function(x) x[!(x %in% snodes)] )
+  subE <- edges(graph)[snodes]
+
+  lapply(subE, function(x) x[!(x %in% snodes)] )
 }
 
 ################################################################
