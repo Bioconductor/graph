@@ -73,7 +73,9 @@
 {
 
  setClass("distGraph",
-     representation( Dist = "dist"), contains="graph", where=where)
+     representation( Dist = "dist"),
+          prototype=list(edgemode="undirected"),
+          contains="graph", where=where)
 
  setMethod("nodes", "distGraph", function(object)
       attr(object@Dist, "Labels" ), where=where)
@@ -117,11 +119,20 @@
           adjL[[i]] <- names(adjL[[i]])[adjL[[i]] > 0 ]
         return(adjL) }, where=where)
 
+   setMethod("edges", c("distGraph", "missing"), function(object, which) {
+       nN <- nodes(object)
+       eL <- lapply(nN, function(x) adj(object, x)[[1]])
+       names(eL) <- nN
+       return(eL) }, where=where)
 
-  ##acc is graph generic --
-  ##setGeneric("acc", function(object, index)
-  ##	standardGeneric("acc"))
-
+   setMethod("edges", c("distGraph", "character"), function(object, which) {
+       nN <- nodes(object)
+       wh<-match(which, nN)
+       if( any(is.na(wh)) )
+           stop("not all nodes are in the supplied graph")
+       eL <- lapply(which, function(x) adj(object, x)[[1]])
+       names(eL) <- which
+       eL}, where=where)
 
 }
 
@@ -139,6 +150,10 @@
     as.character(unlist(object@clusters)), where=where)
 
  setMethod("edges", c("clusterGraph", "missing"), function(object, which) {
+     nN <- nodes(object)
+     wh <- match(which, nN)
+     if( any(is.na(wh)) )
+         stop("not all nodes in the supplied graph")
      edges<-list()
      for(clust in object@clusters) {
          cc <- as.character(clust)
@@ -148,6 +163,10 @@
      edges}, where=where)
 
  setMethod("edges", c("clusterGraph", "character"), function(object, which) {
+     nN <- nodes(object)
+     wh <- match(which, nN)
+     if( any(is.na(wh)) )
+         stop("not all nodes are in the supplied graph")
      edges<-list()
      for(clust in object@clusters) {
          cc <- as.character(clust)[which]
