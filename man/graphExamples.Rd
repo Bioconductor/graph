@@ -8,7 +8,8 @@ be used for plotting.
 }
 \usage{data(graphExamples)}
 \source{
-  Various sources, primarily from \code{\link{randomGraph}} and \code{link{randomEGraph}}
+  Various sources, primarily from \code{\link{randomGraph}} and
+  \code{\link{randomEGraph}} 
 }
 \examples{
 data(graphExamples)
