@@ -1,6 +1,7 @@
 \name{graph-class}
 \docType{class}
 \alias{edgemode}
+\alias{connComp}
 \alias{graph-class}
 \alias{graph}
 \alias{nodes}
