@@ -70,6 +70,8 @@ NELhandler <- function ()
 #
         require(graph)
         ns <- names(nodeL)
+        if (length(edgeL) == 0)
+        return(new("graphNEL", nodes = ns, edgemode = "directed"))
         src <- sapply(edgeL, function(x) x$span["from"])
         dest <- sapply(edgeL, function(x) x$span["to"])
         wts <- sapply(edgeL, function(x) x[["weights"]])
