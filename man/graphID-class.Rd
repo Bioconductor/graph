@@ -5,9 +5,9 @@
 \description{This class allows nodes and edges to have unique
   identifiers}
 \author{Robert Gentleman}
-\seealso{\code{\link{Ruuid-class}}}
+\seealso{\code{\link[Ruuid]{Ruuid-class}} in package \code{Ruuid}.}
 
-\examples{
-##---- Should be DIRECTLY executable !! ----
-}
+%\examples{
+%##---- Should be DIRECTLY executable !! ----
+%}
 \keyword{classes}
