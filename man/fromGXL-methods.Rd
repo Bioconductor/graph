@@ -2,24 +2,53 @@
 \docType{methods}
 \title{  Methods for GXL manipulations in package graph }
 \alias{fromGXL-methods}
+\alias{toGXL-methods}
+\alias{GXL}
 \alias{dumpGXL-methods}
+\description{GXL \url{www.gupro.de/GXL} is "an XML sublanguage designed
+to be a standard exchange format for graphs".  This document describes
+tools in the graph package for importing GXL data to R and for
+writing graph data out as GXL.}
+\value{
+\item{fromGXL}{currently returns a graphNEL when possible}
+\item{toGXL}{for an
+input of class "graphNEL", returns an object of class c("XMLInternalDOM", "XMLOutputStream");
+see the example for how to convert this to a text stream encoding XML}
+\item{dumpGXL}{returns an R list with all the node, edge, and named attribute
+information specified in the GXL stream}  
+\item{validateGXL}{returns
+silently (invisibly returns the parsed tree) for a DTD-compliant stream, or is otherwise very noisy}
+}
 \section{Methods}{
-fromGXL,connection-method
 \describe{
-%\alias{fromGXL,connection-method}
-\item{con = connection}{ returns a graphNEL based on a parsing of
+\item{fromGXL}{ con = connection: returns a graphNEL based on a parsing of
 the GXL stream on the connection }
-}
-dumpGXL,connection-method
-\describe{
-%\alias{dumpGXL,connection-method}
-\item{con = connection}{ returns an R list based on a parsing of
+\item{dumpGXL}{ con = connection: returns an R list based on a parsing of
 the GXL stream on the connection }
+\item{validateGXL}{ con = connection: checks the GXL stream against its DTD}
 }
+}
+\author{Vince Carey <stvjc@channing.harvard.edu>}
+\note{At present, toGXL does not return a validating GXL stream
+because XML package does not properly handle the dtd and namespaces
+arguments to xmlTree.  This is being repaired.  To fix
+the stream, add
+\code{
+<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.1.dtd">
+}
+as second record in the output.
 }
 \examples{
 sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
 show(fromGXL(sf))
+print(dumpGXL(sf))
+validateGXL(sf)
+bad <- file(system.file("GXL/c2.gxl", package="graph"))
+try( validateGXL(bad) )
+gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
+ a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1), 
+ edgemode="directed"))
+cat(saveXML(toGXL(gR)$value()))
 }
 \keyword{methods}
 \keyword{ models }

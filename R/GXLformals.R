@@ -47,20 +47,27 @@ gxlTreeNEL <- function(gnel) {
    namespaces=c(gxl="http://www.w3.org/1999/xlink"))
 #<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.1.dtd">
 #<gxl xmlns:xlink="http://www.w3.org/1999/xlink">
+ out$addTag("gxl",close=FALSE)
  out$addTag("graph", attrs=c(id="graphNEL"), close=FALSE)
  for (i in 1:length(nds)) 
    {
    out$addTag("node", attrs=c(id=nds[i]), close=FALSE)
    out$closeTag()
    }
+ ued <- 0
  for (i in 1:length(eds))
    {
    if (length(eds[[i]])>0) for (j in 1:length(eds[[i]]))
-     out$addTag("edge", attrs=c(id=as.character(i),from=enms[i],
+     {
+     ued <- ued + 1
+     etag <- paste("e",ued,sep="")
+     out$addTag("edge", attrs=c(id=etag,from=enms[i],
         to=eds[[i]][j]), close=FALSE)
      out$closeTag()
+     }
    }
- out$closeTag()
+ out$closeTag() # graph
+ out$closeTag() # gxl
  out
 }
 
