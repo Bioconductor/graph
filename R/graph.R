@@ -31,6 +31,9 @@ validGraph<-function(object, quietly=FALSE)
           bad <- TRUE
       }
       ##check for reciprocity in undirected graphs
+      ##paste to->from and from->to if any are not duplicated then
+      ##the edge is not reciprocal. Note we are not going to handle
+      ##multiedges well.
       if( object@edgemode == "undirected") {
           eds <- lapply(object@edgeL, function(x) x$edges)
           v1 <- sapply(eds, length)
@@ -53,11 +56,8 @@ validGraph<-function(object, quietly=FALSE)
           }
       }
   }
-
   return(!bad)
 }
-
-
 
 #graph<-function(newnodes,newedges)
 #{

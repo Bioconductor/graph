@@ -28,5 +28,48 @@ boundary<-function(subgraph, graph)
   lapply(subE, function(x) x[!(x %in% snodes)] )
 }
 
+##check to see if any edges are duplicated, as we often don't have
+##good ways to deal with that
+duplicatedEdges <- function(graph) {
+    if( !is(graph, "graphNEL") )
+        stop("only graphNEL supported for now")
 
+    for(e in graph@edgeL)
+        if( any(duplicated(e$edges)) )
+            return(TRUE)
+    return(FALSE)
+}
 
+##ugraph: take a directed graph and return the underlying undirected graph
+ugraph <- function(graph)
+{
+    if( edgemode(graph) == "undirected")
+        return(graph)
+    if( !is(graph, "graphNEL") )
+        stop("only graphNEL supported for now")
+
+    if( duplicatedEdges(graph) )
+        stop("there are duplicated edges, cannot handle multigraphs")
+
+    eL <- graph@edgeL
+    nN <- names(eL)
+    for( i in 1:length(eL) ) {
+        cNode <- nN[i]
+        e <- eL[[i]]
+        if( length(e$edges) > 0 ) {
+            wh <- nN[e$edges]
+            for(j in 1:length(wh) ) {
+                eX <- eL[[wh[j]]]$edges
+                ##the current node is i so check for it
+                if( i %in% eX)
+                    next
+                eL[[wh[j]]]$edges <- c(i, eX)
+                eL[[wh[j]]]$weights <- c(e$weights[j],
+                                         eL[[wh[j]]]$weights)
+            }
+        }
+    }
+    edgemode(graph) <- "undirected"
+    graph@edgeL <- eL
+    return(graph)
+}
