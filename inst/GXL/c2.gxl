@@ -3,7 +3,7 @@
 <?xml-stylesheet type="text/xsl" href="../../highlightme.xsl"?>
 <!--complex example 05.02.2002  -->
 <gxl>
-	<graph id="complexExample" edgeids="true">
+	<graph id="complexExample" edgeids="true" edgemode="directed">
 		<type xlink:href="../../../schema/gxl/complexExample/complexExampleSchema.gxl#complexExampleSchema"/>
 		<node id="v1">
 			<type xlink:href="../../../schema/complexExample/complexExampleSchema.gxl#Function"/>
