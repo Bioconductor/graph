@@ -2,7 +2,7 @@
 validGraph<-function(object, quietly=FALSE)
 {
   bad = FALSE
-  if (class(object) == "graphNEL") {
+  if (is(object, "graphNEL")) {
       objEdges<-edges(object)
       objNodes<-nodes(object)
       if (any(is.na(objNodes))) {
@@ -987,7 +987,7 @@ sparseM2Graph <- function(sM, nodeNames) {
 ##ia the row offsets (
 graph2SparseM <- function(g, useweights=FALSE) {
     require("SparseM") || stop("need SparseM for this operation")
-    if( class(g) != "graphNEL" )
+    if (! is(g, "graphNEL"))
        stop("coercion only works for graphNEL class")
     nr = nc = numNodes(g)
     e1 = g@edgeL
