@@ -3,7 +3,7 @@
 % Biobase.tex file will get overwritten.
 %
 %\VignetteIndexEntry{clusterGraph}
-%\VignetteDepends{graph, cluster, methods}
+%\VignetteDepends{graph, cluster}
 %\VignetteKeywords{Graph}
 %\VignettePackage{graph}
 \documentclass{article}
@@ -38,9 +38,8 @@ Thus, each cluster is a complete graph but there are no between
 cluster edges.
 
 <<clustering>>=
-library(methods)
-library(graph)
-library(cluster)
+library("graph")
+library("cluster")
 data(ruspini)
 
 pm <- pam(ruspini, 4)

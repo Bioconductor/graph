@@ -3,7 +3,7 @@
 % Biobase.tex file will get overwritten.
 %
 %\VignetteIndexEntry{Graph}
-%\VignetteDepends{graph, cluster, methods}
+%\VignetteDepends{graph, cluster}
 %\VignetteKeywords{Graph}
 %\VignettePackage{graph}
 \documentclass{article}
