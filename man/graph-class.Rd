@@ -13,6 +13,8 @@
 \alias{numNodes}
 \alias{show}
 \alias{union}
+\alias{edgeNames}
+\alias{edgeNames,graph-method}
 \alias{complement,graph-method}
 \alias{connComp,graph-method}
 \alias{degree,graph,missing-method}
@@ -101,7 +103,10 @@
       union of the two supplied graphs. They must have identical
       nodes. Currently this returns an object of class \code{graphNEL}.}
 
-    
+    \item{edgeNames}{\code{signature(object = "graph")}: Returns a
+      vector of the edge names for this graph, using the format
+      \code{tail~head}, where \code{head} is the name of the tail node
+      and \code{head} is the name of the head node.}
   }
 }
 

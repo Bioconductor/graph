@@ -996,3 +996,17 @@ graph2SparseM <- function(g, useweights=FALSE) {
     ia = as.integer(cumsum(c(1, eL)))
     new("matrix.csr", ra=ra, ja=ja, ia=ia, dimension=c(nr, nc))
 }
+
+if (is.null(getGeneric("edgeNames")))
+    setGeneric("edgeNames", function(object)
+               standardGeneric("edgeNames"))
+
+setMethod("edgeNames", "graph", function(object) {
+    to <- edges(object)
+
+    unlist(mapply(function(x,y) {
+        if (length(x) > 0)
+            paste(y,x,sep="~")
+        else
+            NULL}, to, names(to)))
+})
