@@ -39,6 +39,10 @@ NELhandler <- function ()
         else if (x == "edge") {
             inNode <<- FALSE
             inEdge <<- TRUE
+#
+# you should get rid of the dependence on atts["id"] to allow edgeids=FALSE GXL to succeed
+# consider an automatic edge labeler
+#
             edgeL[[atts["id"]]] <<- list()
             edgeL[[atts["id"]]][["span"]] <<- c(atts["from"], 
                 atts["to"])
