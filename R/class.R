@@ -24,6 +24,17 @@
           prototype = list(edgeID=-1, edgeType="undirected", bNode=-1, eNode=-1),
           where = where)
 
+    if (is.null(getGeneric("eNode")))
+        setGeneric("eNode", function(object)
+                   standardGeneric("eNode"), where=where)
+    setMethod("eNode", "gEdge", function(object)
+              object@eNode, where=where)
+    if (is.null(getGeneric("bNode")))
+        setGeneric("bNode", function(object)
+                   standardGeneric("bNode"), where=where)
+    setMethod("bNode", "gEdge", function(object)
+              object@bNode, where=where)
+
    setGeneric("toEdges", function(object) standardGeneric("toEdges"),
    where=where)
 
