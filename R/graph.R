@@ -1,22 +1,22 @@
 
 validGraph<-function(object)
 {
-  if (class(object) == "graphNEL")
-  {
-    objEdges<-edges(object)
-    objNodes<-nodes(object)
+  if (class(object) == "graphNEL") {
+      objEdges<-edges(object)
+      objNodes<-nodes(object)
 
-    if (any(is.na(objNodes)))
-      stop("NA element in nodes.")
-    if (any(is.na(unlist(objEdges,use.names=FALSE))))
-      stop("NA element in edges.")
-    if (length(objNodes)!=length(objEdges))
-      stop("Nodes and edges must have the same length.")
-    if (!all(objNodes==names(objEdges)))
-      stop("Edges don't have the same names as the nodes.")
-    if (length(unlist(objEdges,use.names=FALSE))%%2 != 0)
-      stop("Each edge must be duplicated.")
+      if (any(is.na(objNodes)))
+          stop("NA element in nodes.")
+      if (any(is.na(unlist(objEdges,use.names=FALSE))))
+          stop("NA element in edges.")
+      if (length(objNodes)!=length(objEdges))
+          stop("Nodes and edges must have the same length.")
+      if (!all(objNodes %in% names(objEdges)))
+          stop("Edges don't have the same names as the nodes.")
+      if (any(duplicated(objNodes)))
+          stop("Node names may not be duplicated")
   }
+
   return(TRUE)
 }
 
