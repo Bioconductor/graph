@@ -1,6 +1,8 @@
 \name{hashtable-class}
 \docType{class}
 \alias{hashtable-class}
+\alias{hash}
+\alias{contents}
 \title{Class "hashtable" ~~~ }
 \description{  ~~ A concise (1-5 lines) description of what the class is.  ~~}
 \section{Objects from the Class}{
