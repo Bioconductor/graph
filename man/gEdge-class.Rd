@@ -1,6 +1,9 @@
 \name{gEdge-class}
 \docType{class}
 \alias{gEdge-class}
+\alias{edgeID}
+\alias{bNode}
+\alias{eNode}
 \title{Class "gEdge" }
 \description{A very generic class for describing the edges of a graph.}
 \section{Objects from the Class}{
