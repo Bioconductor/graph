@@ -7,4 +7,4 @@ Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
 License: LGPL
 Depends: R (>= 1.8.0), cluster
 Suggests: SparseM, Biobase (>= 1.4.2), XML
-Collate: graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R write.tlp.R zzz.R
+Collate: graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R write.tlp.R buildDepGraph.R zzz.R
