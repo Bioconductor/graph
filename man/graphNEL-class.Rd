@@ -56,8 +56,8 @@ Class \code{"graph"}, directly.
       of unique edges in the graph (ie in an undirected graph A<->B is
       only represented once.)}
     \item{plot}{\code{signature(x="graphNEL",y,...,nodeLabels)}:A method
-      for plotting a \code{graphNEL} object.  Requires the package \code
-      {Rgraphviz} to be loaded.  Users can specify a layout engine with
+      for plotting a \code{graphNEL} object.  Requires the package
+      \code{Rgraphviz} to be loaded.  Users can specify a layout engine with
       the \code{y} parameter, being "dot", "neato" or "twopi", with
       "dot" being the default.  Standard plotting parameters can be
       passed in via the \code{...} argument.  Labels for the nodes
