@@ -1004,7 +1004,9 @@ sparseM2Graph <- function(sM, nodeNames) {
     edL <- vector("list", length=nN)
     names(edL) <- 1:nN
     for(i in as.character(1:nN) ){
-        edL[[i]] <- list(edges=eL[[i]], weights=eW[[i]])
+        ##need this because otherwise partial matching is done
+        if( i %in% names(eL) )
+            edL[[i]] <- list(edges=eL[[i]], weights=eW[[i]])
     }
     names(edL) <- nodeNames
     new("graphNEL", nodes=nodeNames, edgeL=edL)
