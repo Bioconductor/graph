@@ -37,7 +37,8 @@
     search on a graph starting with the specified node.}
     \item{intersection}{\code{signature(x = "graph", y = "graph")}: compute the
       intersection of the two supplied graphs. They must have identical
-      nodes. Currently this returns an object of class \code{graphNEL}.}
+      nodes. Currently this returns an object of class
+      \code{graphNEL}. With edge weights of 1 for any matching edge.}
      \item{union}{\code{signature(x = "graph", y = "graph")}: compute the
       union of the two supplied graphs. They must have identical
       nodes. Currently this returns an object of class \code{graphNEL}.}

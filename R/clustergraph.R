@@ -132,7 +132,8 @@
    stop("cannot initialize clusterGraph without graph")
 
  setClass("clusterGraph",
-     representation( clusters = "list"), contains="graph", where=where)
+     representation( clusters = "list"), contains="graph",
+          prototype=list(edgemode="undirected"), where=where)
 
  setMethod("nodes", "clusterGraph", function(object)
     as.character(unlist(object@clusters)), where=where)
@@ -169,6 +170,13 @@
                                       names(ans) <- x; ans})
      ans}, where =where)
 
+ setMethod("subGraph", c("character", "clusterGraph"),
+           function(snodes, graph) {
+               cList <- graph@clusters
+               cL <- lapply(cList, function(x) intersect(x, snodes))
+               graph@clusters <- cL
+               graph}, where=where)
+ 
  setMethod("numNodes", "clusterGraph", function(object)
     sum(sapply(object@clusters, length)), where=where)
 
@@ -183,4 +191,17 @@
 
  setMethod("connComp", "clusterGraph", function(object)
       object@clusters, where=where)
+
+  setMethod("show", "clusterGraph",
+  function(object)
+   {
+     numNull<-numNoEdges(object)
+     numNodes<- numNodes(object)
+     numEdge<-numEdges(object)
+     cat("A graph with ", object@edgemode, " edges\n")
+     cat("Number of Nodes = ",numNodes,"\n",sep="")
+     cat("Number of Edges = ",numEdge,"\n",sep="")
+   },
+  where=where
+  )
 }

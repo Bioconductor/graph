@@ -317,19 +317,28 @@ validGraph<-function(object)
      where=where)
 
    setMethod("intersection", c("graph", "graph"), function(x,y) {
+       if( edgemode(x) != edgemode(y) )
+           stop("both graphs must have the same edgemode")
        xN <- nodes(x)
        yN <- nodes(y)
        bN <- intersect(xN,yN)
-       xSub <- subGraph(bN, x)
-       xE <- edges(xSub)
-       yE <- edges(y)[bN]
+       lb <- length(bN)
+       if(lb != length(xN) || lb != length(yN))
+           stop("graphs must have the same node set")
+       yOrd <- match(xN, yN)
+       xE <- edges(x)
+       yE <- edges(y)[yOrd]
        rval <- vector("list", length=length(xE))
        for(i in 1:length(xE) ) {
            ans <- intersect(xE[[i]], yE[[i]])
-           if( !is.null(ans) )
-               rval[[i]] <- ans
+           if( length(ans) > 0 )
+               rval[[i]] <- list(edges=match(ans, xN),
+                                 weights=rep(1, length(ans)))
+           else
+               rval[[i]] <- list(edges=numeric(0), weights=numeric(0))
        }
-       new("graphNEL", nodes=bN, edgeL=rval)
+       names(rval) <- xN
+       new("graphNEL", nodes=bN, edgeL=rval, edgemode=edgemode(x))
    }, where=where)
 
   setGeneric("union", function(x, y) standardGeneric("union"),
