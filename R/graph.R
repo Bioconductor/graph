@@ -354,7 +354,8 @@ validGraph<-function(object)
    }, where=where)
 
   ##connected components
-  setGeneric("connComp", function(object) standardGeneric("connComp"))
+  setGeneric("connComp", function(object) standardGeneric("connComp"),
+             where=where)
 
   setMethod("connComp", "graph", function(object) {
     NL <- nodes(object)
@@ -596,10 +597,10 @@ validGraph<-function(object)
        standardGeneric("inEdges"), where=where)
 
     setMethod("inEdges", c("missing", "graphNEL"),
-              function(node, object) 
+              function(node, object)
                   inEdges(nodes(object), object),
               where=where)
-  
+
     setMethod("inEdges", c("character", "graphNEL"),
          function(node, object) {
              gN <- nodes(object)
