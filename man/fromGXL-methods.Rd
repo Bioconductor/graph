@@ -5,12 +5,28 @@
 \alias{toGXL-methods}
 \alias{GXL}
 \alias{dumpGXL-methods}
+\alias{dumpGXL}
+\alias{fromGXL}     
+\alias{gxlTreeNEL}
+\alias{NELhandler}  
+\alias{toGXL}      
+\alias{validateGXL}
+\alias{connection-class}
+\alias{file-class}
+
 \description{GXL \url{www.gupro.de/GXL} is "an XML sublanguage designed
 to be a standard exchange format for graphs".  This document describes
 tools in the graph package for importing GXL data to R and for
 writing graph data out as GXL.}
 \value{
-\item{fromGXL}{currently returns a graphNEL when possible}
+\item{fromGXL}{currently returns a graphNEL when possible.  This
+function is based on xmlEventParse with handlers defined
+in the function NELhandler.  The dump()
+element of this handler should emit information on
+all children of nodes and edges; the asGraphNEL()
+element will return a graphNEL object with weights
+if child <attr> with name attribute "weights" is
+present for each edge element.}
 \item{toGXL}{for an
 input of class "graphNEL", returns an object of class c("XMLInternalDOM", "XMLOutputStream");
 see the example for how to convert this to a text stream encoding XML}
@@ -50,9 +66,12 @@ validateGXL(sf)
 bad <- file(system.file("GXL/c2.gxl", package="graph"))
 try( validateGXL(bad) )
 gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
- a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1), 
- edgemode="directed"))
+ a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
+ edgemode="directed")
 cat(saveXML(toGXL(gR)$value()))
+wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
+wtdg <- fromGXL(wtd)
+print(edgeWeights(wtdg))
 }
 \keyword{methods}
 \keyword{ models }
