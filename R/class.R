@@ -5,7 +5,7 @@
 
 .initGclass <- function(where) {
 
-    setClass("graphID")
+    setClass("graphID", where=where)
     ##some functions to allow nodes and edges to have identifiers
     ##there are lots of problems with the integer version --
     if( require(Ruuid, quietly=TRUE) ) {
