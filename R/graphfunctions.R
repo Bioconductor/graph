@@ -28,32 +28,5 @@ boundary<-function(subgraph, graph)
   lapply(subE, function(x) x[!(x %in% snodes)] )
 }
 
-################################################################
-# function:
-# makeGraph takes four parameters:
-#   object is the graph object that will be created
-#   linkBasis is a character string that tells how the nodes will be linked
-#   nodeType is a character string that tells what the node types are
-#    (ex. affy ids)
-#   lib is the library that contains the environments that will be used
-#    to create the graph object
-#
-# makeGraph calls another function based on the link type
-# and this second function will create a new graph object based
-# on the node type.
-#
-# notes:
-# Currently, the only linkBasis available is pmid.
-#
-# created by: Elizabeth Whalen
-# last updated: July 12, 2002
-################################################################
-
-makeGraph<-function(object,linkBasis,nodeType,lib)
- {
-   linkBasis<-match.arg(linkBasis,c("pmid"))
-   switch(linkBasis,
-          pmid=makePubmedGraph(object,nodeType,lib))
- }
 
 
