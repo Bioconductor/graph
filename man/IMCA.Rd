@@ -1,4 +1,4 @@
-\name{IntegrinMediatedCellAdhesion}
+\name{integrinMediatedCellAdhesion}
 \alias{IMCA}
 \alias{IMCAAttrs}
 \alias{IMCAGraph}
