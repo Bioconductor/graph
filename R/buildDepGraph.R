@@ -75,23 +75,32 @@ pkgInstOrder <- function(pkg, repGraph) {
     if (length(pkg) != 1)
         stop("package parameter must be of length 1")
 
-    ## dijkstra.sp requires type graphNEL
+
     if (! inherits(repGraph, "graphNEL"))
         stop("repGraph must be of type graph")
 
-    if (! pkg %in% nodes(repGraph))
+    nodes <- nodes(repGraph)
+
+    if (! pkg %in% nodes)
         stop("pkg parameter not a node in provided repGraph")
 
-    dists <- dijkstra.sp(repGraph, pkg)$distances
-    instDists <- dists[dists != Inf]
+    finishTime <- dfs(repGraph)$finish
+    nodes <- nodes[finishTime]
 
-    if (length(instDists) > 0)
-        instOrder <- names(rev(sort(instDists)))
+    ## Now need to get only the nodes that are downstream from the pkg
+    downstream <- names(acc(repGraph, pkg))
+
+    if (length(downstream) > 0) {
+        order <- match(nodes, downstream)
+        order <- order[!is.na(order)]
+        downstream[order]
+    }
     else
         character()
 }
 
-buildRepDepGraph <- function(repository, depLevel=c("Depends", "Suggests")) {
+buildRepDepGraph <- function(repository, depLevel=c("Depends",
+                                         "Suggests")) {
     require("graph") || stop("buildRepDepGraph needs package 'graph'")
 
     depLevel <- match.arg(depLevel)
@@ -104,6 +113,7 @@ buildRepDepGraph <- function(repository, depLevel=c("Depends", "Suggests")) {
     dGraph <- new("graphNEL", edgemode="directed")
 
     cran <- CRAN.packages(contriburl=repository)
+
     pkgDeps <- package.dependencies(cran, check=FALSE, depLevel=depLevel)
     pkgs <- names(pkgDeps)
     for (i in seq(along=pkgDeps)) {
