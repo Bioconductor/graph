@@ -24,10 +24,8 @@ setMethod("initialize",
       {
           property <- asGraphProperty(property)
           .Object <- callNextMethod()
-          if (missing(nodeID))
-              .Object@nodeID <- nodeID
-          if (missing(property))
-              .Object@property <- property
+          .Object@nodeID <- nodeID
+          .Object@property <- property
           .Object
       })
 
@@ -51,16 +49,16 @@ setMethod("initialize",
           function (.Object, edgeType, directed, bNode,
                     eNode, property=1.0, edgeID=getuuid(), ...)
       {
+          property <- asGraphProperty(property, hasWeight=TRUE)
           if (is(bNode, "gNode"))
               bNode <- nodeID(bNode)
           if (is(eNode, "gNode"))
               eNode <- nodeID(eNode)
-          property <- asGraphProperty(property, hasWeight=TRUE)
           .Object <- callNextMethod()
-          if (missing(property))
-              .Object@property <- property
-          if (missing(edgeID))
-              .Object@edgeID <- edgeID
+          .Object@property <- property
+          .Object@edgeID <- edgeID
+          .Object@bNode <- bNode
+          .Object@eNode <- eNode
           .Object
       })
 
