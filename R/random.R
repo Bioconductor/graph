@@ -10,7 +10,7 @@
 ##    nodes share common elements of M
 
 
-## sample nodes from M with prob p
+##M2: sample "properties" from M with prob p
 
 randomGraph <- function(V, M, p, weights = TRUE)
 {
@@ -31,39 +31,61 @@ randomGraph <- function(V, M, p, weights = TRUE)
       for(i in vec)
        for(j in vec)
           if( i != j ) {
-           rval[[i]] <- c(rval[[i]], j)
-        }
-    rval <- lapply(rval, function(x) {if(is.null(x) ) return(NULL)
-                                      cts <- tabulate(x, nbins=lenV)
-                                      names(cts) <- 1:lenV
-                                      cts <- cts[cts>0]
-                         return(list(edges=as.numeric(names(cts)),
-                                                  weights=cts))})
-    if( !weights )
-      rval <- lapply(rval, function(x) {x$weights <- NULL; x})
-    new("graphNEL", nodes = V, edgeL=rval)
+              pos <- match(j, rval[[i]]$edges)
+              if(is.na(pos) ) {
+                  rval[[i]]$edges <- c(rval[[i]]$edges, j)
+                  ln <-length(rval[[i]]$edges)
+                  rval[[i]]$weights <- c(rval[[i]]$weights, 1)
+                  names(rval[[i]]$weights)[ln] <- j
+              }
+              else
+                  rval[[i]]$weights[[pos]] <- rval[[i]]$weights[[pos]]+1
+          }
+      new("graphNEL", nodes = V, edgeL=rval)
 }
+
+##  gg<-randomGraph(letters[1:10], 1:4, .3)
 
 
 
 
 ##generate edges at random according to some probability
+##there are choose(numN, 2) possible edges; to make life simple,
+##(but less efficient), we first make up a matrix of all possible node edge
+##combinations, then select entries and finally make the graph
 
 randomEGraph <- function(V, p)
 {
   numN <- length(V)
   numE <- choose(numN, 2)
+  inds <- 1:numN
+  fromN <- rep(inds[-numN], (numN-1):1)
+  s<- numeric(0)
+  for(i in 2:numN) s<-c(s, i:numN)
+  ## tmat is a 2 column matrix, the first column is the from node, the second
+  ## the to node
+  tmat <- cbind(fromN, s)
+  wh<- sample(c(TRUE, FALSE), numE, TRUE, p=c(p,1-p))
+  tmat <- tmat[wh,]
+  numE <- sum(wh)
   rval <- vector("list", length=numN)
-  names(rval) <- V
-  for( i in 1:(numN-1) ) {
-    wh <- sample(c(TRUE, FALSE), numN-i, TRUE, p=c(p, 1-p))
-    rval[[i]] <- list(edges = ((i+1):numN)[wh])
+  for( i in 1:numE ) {
+      ##first put in from -> to
+      rval[[tmat[i,1]]]$edges <- c(rval[[tmat[i,1]]]$edges, tmat[i,2])
+      ln <- length(rval[[tmat[i,1]]]$edges)
+      rval[[tmat[i,1]]]$weights <- c(rval[[tmat[i,1]]]$weights, 1)
+      names(rval[[tmat[i,1]]]$weights)[ln] <- tmat[i,2]
+      ##since undirected, put in to -> from
+      rval[[tmat[i,2]]]$edges <- c(rval[[tmat[i,2]]]$edges, tmat[i,1])
+      ln <- length(rval[[tmat[i,2]]]$edges)
+      rval[[tmat[i,2]]]$weights <- c(rval[[tmat[i,2]]]$weights, 1)
+      names(rval[[tmat[i,2]]]$weights)[ln] <- tmat[i,1]
   }
-  for( i in 1:(numN-1) )
-    for( k in rval[[i]]$edges )
-      if( k > i ) rval[[k]]$edges <- c(rval[[k]]$edges, i)
+  names(rval) <- V
   new("graphNEL", nodes = V, edgeL = rval)
 }
+
+## g2 <- randomEGraph(letters[1:10], .2)
 
 
 

@@ -12,13 +12,7 @@
 ################################################################
 
 aveNumEdges<-function(objgraph)
-{
-  numbNodes<-length(nodes(objgraph))
-  numbEdges<-numEdges(objgraph)
-
-  aveNumEdges<-numbEdges/numbNodes
-  aveNumEdges
-}
+  numEdges(objgraph)/length(nodes(objgraph))
 
 ################################################################
 # function:
@@ -41,9 +35,6 @@ aveNumEdges<-function(objgraph)
 numEdges <- function(graph)
 {
   numbEdges <- length(unlist(edges(graph),use.names=FALSE))
-
-##  if (numbEdges %% 2 != 0)
-##    stop("The graph is not valid because of the number of edges.")
   if( graph@edgemode == "undirected" )
       numbEdges<-numbEdges/2
   numbEdges

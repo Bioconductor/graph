@@ -265,8 +265,10 @@ validGraph<-function(object)
   setGeneric("subGraph", function(graph, snodes) standardGeneric("subGraph"),
     where=where)
 
-  ##the only trick is to renumber the edges of the subGraph
+  ##the map from the labels to the integers, 1:n must be used
+  ## you must renumber the edges of the subGraph
   ##from 1 to length(snodes)
+  ## it is important to get the subsets of the edgeList items right
   setMethod("subGraph", "graphNEL", function(graph, snodes) {
       nn<-nodes(graph)
       numN <- length(nn)
@@ -280,19 +282,21 @@ validGraph<-function(object)
          if( any( snodes < 0 ) || any( snodes > numN ) )
             stop("subnodes must be between 1 and the number of nodes in G")
       }
+      ##subset the edgeList elements here
       ed <- edgeL(graph)[ma]
-      newed <- lapply(ed, function(x) { good <- nn[x$edges] %in% ma
+      newed <- lapply(ed, function(x) { good <- x$edges %in% ma
                  lapply(x, function(y) y[good]) })
 
-      ##now we map from the old indices - 1:nn to the new 1:length(snodes)
-      t1 <- 1:numN
-      t2 <- t1 %in% ma
-      t1[!t2] <- NA
-      t1[t2] <- 1:length(snodes)
-      newed <- lapply( newed, function(x) {ed <- t1[x$edges]
-               list(edges=ed)})
-        new("graphNEL", nodes=nn[ma], edgeL=newed) },
-        where=where)
+      ##map from the old indices - 1:nn to the new 1:length(snodes)
+      t1 <- rep(NA, numN)
+      t1[ma] <- 1:length(snodes)
+      newed <- lapply(newed,
+                  function(x) {ed <- t1[x$edges] ##new names
+                               x$edges <- ed
+                               lapply(x, function(y) {names(y) <- ed; y})})
+      ##finally return
+      new("graphNEL", nodes=nn[ma], edgeL=newed) },
+            where=where)
 
 
   ###some other tools
