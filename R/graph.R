@@ -487,6 +487,10 @@ validGraph<-function(object, quietly=FALSE)
   setGeneric("connComp", function(object) standardGeneric("connComp"))
 
   setMethod("connComp", "graph", function(object) {
+    ##if directed we do weak connectivity
+    ##by transforming to the underlying undirected graph
+    if( edgemode(object) == "directed")
+        object = ugraph(object)
     NL <- nodes(object)
     marked <- rep(0, length(NL))
     names(marked) <- NL
