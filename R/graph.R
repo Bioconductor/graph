@@ -39,11 +39,11 @@ validGraph<-function(object, quietly=FALSE)
           tM2 <- paste(unlist(eds), rep(1:length(v1), v1), sep=" -> " )
           tM3 <- c(tM, tM2)
           vv <- duplicated(tM3)
-          bad <- which(vv == FALSE)
-          bad <- bad[bad>v2]
-          if( length(bad)>0 ) {
+          badn <- which(vv == FALSE)
+          badn <- badn[badn>v2]
+          if( length(badn)>0 ) {
               if( !quietly ) {
-                  from <- bad-v2
+                  from <- badn-v2
                   cat("The graph is undirected and\n")
                   cat("the following edges are not reciprocated\n")
                   cat(tM3[from], sep="\n")
