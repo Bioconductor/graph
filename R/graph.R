@@ -343,16 +343,32 @@ validGraph<-function(object)
 
   setGeneric("union", function(x, y) standardGeneric("union"),
              where=where)
+
   setMethod("union", c("graph", "graph"), function(x, y) {
+      ex <- edgemode(x); ey <- edgemode(y);
+      if( ex == ey )
+          outmode <- ex
+      else
+          stop("cannot handle different edgemodes, yet")
+
       xN <- sort(nodes(x))
       yN <- sort(nodes(y))
       if( any(xN != yN) )
           stop("graphs must have the same nodes")
       xE <- edges(x)
       yE <- edges(y)
-      for(i in names(xE) )
-          xE[[i]] <- unique(c(xE[[i]], yE[[i]]))
-      new("graphNEL", nodes=xN, edgeL=xE)
+      rval <- vector("list", length=length(xE))
+      names(rval) <- names(xE)
+      for(i in names(xE) ) {
+          ans <- unique(c(xE[[i]], yE[[i]]))
+          if( length(ans) > 0 )
+              rval[[i]] <- list(edges = match(ans, xN), weights=rep(1,
+                                                        length(ans) ))
+          else
+              rval[[i]] <- list(edges=numeric(0), weights=numeric(0))
+      }
+      names(rval) <- xN
+      new("graphNEL", nodes=xN, edgeL=rval, edgemode=outmode)
   }, where=where)
 
    setGeneric("complement", function(x) standardGeneric("complement"),
@@ -361,9 +377,18 @@ validGraph<-function(object)
    setMethod("complement", c("graph"), function(x) {
        xN <- nodes(x)
        xE <- edges(x)
-       for( i in names(xE) )
-           xE[[i]] <- xN[ !(xN %in% xE[[i]]) ]
-       new("graphNEL", nodes=xN, edgeL=xE)
+       rval <- vector("list", length=length(xE))
+       names(rval) <- names(xE)
+       for( i in names(xE) ) {
+           ans <-xN[ !(xN %in% c(i, xE[[i]])) ]
+           lena <- length(ans)
+           if( lena > 0 )
+               rval[[i]] <- list(edges=match(ans, xN),
+                                 weights=rep(1, lena))
+           else
+               rval[[i]] <- list(edges=numeric(0), weights=numeric(0))
+       }
+       new("graphNEL", nodes=xN, edgeL=rval, edgemode=edgemode(x))
    }, where=where)
 
   ##connected components
