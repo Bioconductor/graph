@@ -6,5 +6,4 @@
     .initGclass(where)
     .initDistGraph(where)
     .initClustGraph(where)
-    .initGraphPlotClasses(where)
 }
