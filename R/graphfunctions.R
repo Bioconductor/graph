@@ -251,9 +251,9 @@ pathWeights <- function (g, p, eM = NULL)
 #
     if (length(p) < 2) 
         stop("a path must have length > 1")
-    if (is.null(em)) 
-        em <- edgeMatrix(g)
-    wv <- eWV(g, em, useNNames = TRUE)
+    if (is.null(eM)) 
+        eM <- edgeMatrix(g)
+    wv <- eWV(g, eM, useNNames = TRUE)
     sep <- ifelse(edgemode(g) == "undirected", "--", "->")
     pcomps <- cbind(p[-length(p)], p[-1])
     if (edgemode(g) == "undirected") pcomps <- rbind(pcomps, pcomps[,c(2,1)]) # don't know node order in wv labels
