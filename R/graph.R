@@ -178,6 +178,11 @@ validGraph<-function(object, quietly=FALSE)
                    wts <- rep(1, length(x$edges))
                    names(wts) <- x$edges
                }
+               ## Always make sure that the weight vector
+               ## has names attached
+               if (is.null(names(wts)))
+                   names(wts) <- x$edges
+
                wts})
             wts}, where=where)
 
