@@ -75,3 +75,50 @@ ugraph <- function(graph)
     graph@edgeL <- eL
     return(graph)
 }
+
+
+ setGeneric("edgeMatrix",
+            function(object, duplicates=FALSE) standardGeneric("edgeMatrix"))
+
+ setMethod("edgeMatrix", c("graphNEL", "ANY"),
+           function(object, duplicates) {
+                   ## Return a 2 row numeric matrix (from, to, weight)
+               ed <- object@edgeL
+               nN <- length(ed)
+               elem <- sapply(ed, function(x) length(x$edges))
+               from <- rep(1:nN, elem)
+               to <- unlist(sapply(ed, function(x) x$edges))
+               ans <- rbind(from, to)
+               ##we duplicate edges in undirected graphNEL
+               ##so here we remove them
+               if( edgemode(object) == "undirected"  && !duplicates) {
+                   t1 <- apply(ans, 2, function(x) {paste(sort(x),
+                                                           collapse="+")})
+                   ans <- ans[ ,!duplicated(t1)]
+               }
+               ans
+           })
+
+  setMethod("edgeMatrix", c("clusterGraph", "ANY"),
+            function(object, duplicates) {
+                cls<-object@clusters
+                nd <- nodes(object)
+                ans <- numeric(0)
+                for(cl in cls) {
+                    idx <- match(cl, nd)
+                    nn <- length(idx)
+                    v1 <- rep(idx[-nn], (nn-1):1)
+                    v2 <- numeric(0)
+                    for( i in 2:nn)
+                        v2 <- c(v2, i:nn)
+                    v2 <- idx[v2]
+                    ta <- rbind(v1, v2)
+                    if( is.matrix(ans) )
+                        ans <- cbind(ans, rbind(v1, v2))
+                    else
+                        ans <- rbind(v1, v2)
+                }
+                dimnames(ans) <- list(c("from", "to"), NULL)
+                ans
+            })
+
