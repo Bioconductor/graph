@@ -105,7 +105,7 @@
 
     \item{edgeNames}{\code{signature(object = "graph")}: Returns a
       vector of the edge names for this graph, using the format
-      \code{tail~head}, where \code{head} is the name of the tail node
+      \code{tail\~head}, where \code{head} is the name of the tail node
       and \code{head} is the name of the head node.}
   }
 }
