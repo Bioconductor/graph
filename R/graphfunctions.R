@@ -52,7 +52,9 @@ ugraph <- function(graph)
         stop("there are duplicated edges, cannot handle multigraphs")
 
     eL <- graph@edgeL
-    nN <- names(eL)
+    nN <- nodes(graph)
+    ##just in case they are not in the same order!
+    eL <- eL[nN]
     for( i in 1:length(eL) ) {
         cNode <- nN[i]
         e <- eL[[i]]
