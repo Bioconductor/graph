@@ -1,5 +1,6 @@
 \name{edgeMatrix}
 \alias{edgeMatrix}
+\alias{edgeWeightVector}
 \alias{edgeMatrix,graphNEL-method}
 \alias{edgeMatrix,clusterGraph-method}
 \title{Compute an Edge Matrix for a Graph  }
@@ -16,11 +17,14 @@
 }
 \usage{
 edgeMatrix(object, duplicates=FALSE)
+edgeWeightVector(g, ...)
 }
 \arguments{
   \item{object}{An object that inherits from \code{graph}. }
+  \item{g}{An object that inherits from \code{graph}. }
   \item{duplicates}{Whether or not duplicate edges should be produced
     for \dQuote{undirected} graphs. }
+  \item{\dots}{arguments passed to \code{edgeMatrix}.}
 }
 \details{
   Implementations for both \code{graphNEL} and \code{clusterGraph} are
@@ -42,5 +46,6 @@ edgeMatrix(object, duplicates=FALSE)
   edgeMatrix(g1)
   g2 <- new("clusterGraph", clusters=list(a=c(1,2,3), b=c(4,5,6)))
   edgeMatrix(g2)
+  edgeWeightVector(g2)
 }
 \keyword{manip }
