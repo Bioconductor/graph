@@ -10,7 +10,7 @@
      setGeneric("fromGXL",function(con)standardGeneric("fromGXL"))
      setMethod("fromGXL", "connection", function(con)
        {
-       require(XML)
+       require("XML") || stop("XML package needed")
        xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$asGraphNEL()
        })
 ## dumpGXL returns an R list with all? properties
