@@ -53,7 +53,9 @@ randomEGraph <- function(V, p, edges)
 {
   nNodes <- length(V)
   nEdges <- nNodes*(nNodes-1)/2
-  
+
+  if( any(duplicated(V)) )
+     stop("Elements of 'V' must be unique")
   if( !xor(missing(p), missing(edges)) )
     stop("Please specify either 'V' or 'p'")
   if( !missing(p) && (!is.numeric(p) || length(p)!=1 || 0>p || p>1 ))
@@ -61,21 +63,22 @@ randomEGraph <- function(V, p, edges)
   if( !missing(edges) && (length(edges) != 1 || edges < 0 || edges > nEdges))
     stop(paste("For 'edges', please specify a number between 0 and", nEdges))
 
-  ## construct a from-to-matrix with all possible edges
-  ft <- sapply(2:nNodes, function(i) sapply(1:(i-1), function(j) V[c(i,j)]))
-  ft <- do.call("cbind", args=ft)
-
   ## sample the edges
   if(!missing(p)) {
-    ft <- ft[, runif(nEdges)<=p, drop=FALSE]
+    i <- which(runif(nEdges) <= p)
   } else {
-    ft <- ft[, sample(nEdges, edges), drop=FALSE]
+    i <- sample(nEdges, replace=FALSE, size=edges)
   }
+  ## convert to from-to matrix
+  ft <- int2ftM(i)
+  
+  ## replace integers by node names
+  ft <- cbind(V[ft[,1]], V[ft[,2]])
   return(ftM2graphNEL(ft, V=V, edgemode="undirected"))
 }
 
 
-## Here's an older implementation that is somewhat more inefficient
+## Here's an older implementation that was somewhat slower and more verbose
 ## randomEGraph <- function(V, p, edges)
 # {
 #   numN <- length(V)
