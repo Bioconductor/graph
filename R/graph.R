@@ -112,13 +112,13 @@ validGraph<-function(object)
       done <- character()
       outEdges <- list()
 
-      newEdgeObj <- function(x, ID) {
+      newEdgeObj <- function(x, i) {
           ## Helper function for the lapply below
           ## Creates a new gEdge object given specified
           ## information.
           eNodeVal <- as.integer(match(x,nodes))
           out <- new("gEdge", edgeID=newID(),
-                     bNode=ID,
+                     bNode=as.integer(i),
                      eNode=eNodeVal,
                      weight=as.numeric(curWeights[as.character(eNodeVal)])
                      )
@@ -130,7 +130,7 @@ validGraph<-function(object)
           curWeights <- weights[[i]]
           newEdges <- curEdges[which(!(curEdges %in% done))]
           done <- c(done,nodes[i])
-          outEdges <- c(outEdges,lapply(newEdges, newEdgeObj, ))
+          outEdges <- c(outEdges,lapply(newEdges, newEdgeObj, i))
       }
       outEdges
   }, where=where)
