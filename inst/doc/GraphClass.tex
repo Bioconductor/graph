@@ -1,0 +1,116 @@
+\section{Discussion}
+
+The purpose of this document is to describe an implementation of a
+class structure for graphs (we define classes for both nodes and
+edges) and consider some different problems that can arise.
+This structure is based on GXL (reference: Holt and Winter).
+
+There are many different ways to represent a graph and to deal with
+the edges and nodes within that graph.
+We would like to determine the operations that need to be performed on
+a graph. These would essentially define the interface -- those
+components that any one would need to implement to have access to
+certain algorithms.
+
+At the same time, we would like to define and implement a particular
+class structure for graphs. This is somewhat orthogonal to the desire
+to determine what the interface might be.
+
+The class structure for nodes is:
+\begin{description}
+\item[id] An identifier (these must be unique), positive integers may
+  be appropriate.
+\item[type] A character vector describing the type of node.
+\item[edgeOrder] The order that nodes should be drawn? Not sure about
+  this particular one. It will be a vector of edge {\em id}'s.
+\item[label] A label for the node. This is a character string.
+\end{description}
+
+The class structure for edges is:
+\begin{description}
+\item[id] An identifier (these must be unique); positive integers may
+  be appropriate.
+\item[type] A character vector describing the type of the edge.
+\item[begin] The node {\em id} where the edge begins.
+\item[end] The node {\em id} where the edge ends.
+\end{description}
+
+Both nodes and edges need to support attributes. These may be simply
+name value pairs (this is the mechanism used by GXL).
+
+It seems that relying on integers to index both nodes and edges
+(separately) seems likely to help save on space and 
+
+\section{Some Details}
+
+Once both nodes and edges are instances of classes they will be quite
+large. In order to reduce the storage requirements (especially for
+large graphs) using integer indices may be beneficial.
+
+The minimum amount of storage required is $|V|+|E|$. If we use an 
+incidence matrix representation then the storage is $|V|^2$.
+If we use a node and edge list representation then the storage
+requirements are $|V|+2|E|$. When either $|V|$ or $|E|$ are large
+these mechanisms will not be especially efficient.
+In some cases it may be better to keep the actual node and edge data
+stored in hash tables and keep other integer vectors available for
+accessing the necessary components.
+
+\section{Some Types of Graphs}
+
+A brief digression on types of graphs:
+\begin{description}
+\item[digraph] A directed graph. All edges have direction (they go
+  from one node to another but do not connect the nodes in the
+  opposite direction).
+\item[tree] A tree is an undirected acyclic graph (there are many
+  other characterizations).
+\end{description}
+
+Some special data derived graph types:
+\begin{description}
+\item[cluster graph] A cluster graph is constructed when the nodes of
+  the graph are clustered (partitioned). All nodes within a component
+  of the partition are completely connected. There are no edges
+  between components.
+\end{description}
+
+
+\section{Some operations on graphs}
+
+Given two graphs $G_1$ and $G_2$ defined on the same set of nodes
+we can ask about the intersection of these two graphs. This would be a
+graph $G_3 = \{V, E^* \}$, where an edge is in $E^*$ if and only if it
+is in both $E_1$ and $E_2$.
+
+It will also be interesting to find the edges that are in $G_1$ say
+that are not in $G_2$.
+
+For a variety of the inferential problems it will be important to be
+able to apply permutations to the graphs. It seems that often these
+will require the graph structure itself to remain fixed and nodes
+are simply relabled.
+
+Other random constructs involve selecting edges between nodes in some
+random fashion.
+
+For trees (and especially for dendrograms) we might like to generate 
+orders of the leaves that are consistent with the tree structure.
+Possibly we could try to 
+
+\subsection{Operations on Nodes}
+
+We will want to find the inNodes and the outNodes. These provide us
+with the in degree and out degree of the node.
+
+For dendrograms (and a variety of other trees) we will want to be able
+to find the edgeOrder and to change it.
+
+The GXL description has edgeOrder. This seems like it could be useful
+for drawing trees (and dendrograms) but it is only the outNodes that
+need to be ordered.
+
+
+
+
+

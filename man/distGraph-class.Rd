@@ -1,0 +1,49 @@
+\name{distGraph-class}
+\docType{class}
+\alias{distGraph-class}
+\alias{threshold}
+\alias{Dist}
+\alias{[.dist}
+\title{Class "distGraph"}
+\description{ A class definition for graphs that are based on
+distances.}
+\section{Objects from the Class}{
+Objects can be created by calls of the form \code{new("distGraph", ...)}.
+}
+\section{Slots}{
+  \describe{
+    \item{\code{Dist}:}{Object of class \code{"dist"} that forms the
+    basis for the edge weights used in the \code{distGraph}.}
+  }
+}
+\section{Extends}{
+Class \code{"graph"}, directly.
+}
+\section{Methods}{
+  \describe{
+    \item{show}{\code{signature(object = "distGraph")}: a print method}
+    \item{Dist}{\code{signature(object = "distGraph")}: return the dist
+      object. }
+    \item{adj}{\code{signature(object = "distGraph")}: find the nodes
+      adjacent to the supplied node. }
+    \item{nodes}{\code{signature(object = "distGraph")}: return the
+      nodes in the graph. }
+    \item{numNodes}{\code{signature(object = "distGraph")}: return the
+      number of nodes. }
+    \item{threshold}{\code{signature(object = "distGraph")}: remove all
+      distances below the supplied threshold. }
+  }
+}
+\references{Shamir's paper and Butte et al}
+\author{R. Gentleman }
+
+\seealso{\code{\link{graph-class}}, \code{\link{clusterGraph-class}}}
+
+\examples{
+   set.seed(123)
+   x <- rnorm(26)
+   library(mva)
+   d1 <- dist(x)
+   g1 <- new("distGraph", Dist=d1)
+}
+\keyword{classes}

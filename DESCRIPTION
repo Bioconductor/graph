@@ -1,0 +1,8 @@
+Package: graph
+Title: graph
+Version: 0.5
+Author: Elizabeth Whalen
+Description: A package that implements some simple graph handling capabilities. 
+Maintainer: E. Whalen <ewhalen@hsph.harvard.edu>
+License: LGPL
+Depends: R (>= 1.5), Biobase

@@ -1,0 +1,313 @@
+\documentclass{article}[12pt]
+\setlength{\topmargin}{-2cm}
+\setlength{\textheight}{24cm}
+\setlength{\oddsidemargin}{10mm}
+\setlength{\evensidemargin}{10mm}
+\setlength{\textwidth}{15cm}
+\setlength{\parskip}{3mm}
+\setlength{\parindent}{0mm}
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+\Large
+\vspace*{1in}
+\textbf{Analysis of Gene Linkage Using Graphs} \\
+\vspace{1in}
+\textbf{Dana-Farber Cancer Institute}\\ 
+\textbf{Summer 2002} \\
+\vspace{1in} 
+\textbf{Advisor:  Robert Gentleman} \\
+\textbf{Student:  Elizabeth Whalen} \\
+\end{center}
+\end{titlepage}
+\normalsize
+\newpage
+
+
+\renewcommand{\baselinestretch}{1.5}
+\section*{Introduction}
+\small  
+Graphs contain information on objects and the connections between them.  
+This representation naturally fits the problem of looking at how genes
+are connected.  In this analysis, the connection between genes is based on 
+pubmed citations.  If two genes have the same pubmed citation, then
+they are considered to be connected.  The theory is that genes with the same
+citations are likely to also be biologically related.
+
+
+To conduct the analysis, a graph package was created using the R language.
+With this package, an initial graph was created using the library hgu95a 
+from the Bioconductor website, which contained the pubmed citation 
+information.  Then, the links of a subgraph of 299 genes from ALL1BCR 
+were analyzed in comparison to the hgu95a original graph.
+
+\noindent
+\normalsize
+
+\section*{Graph Package}
+
+\noindent
+{\bf Requirements}
+\noindent
+The graph package requires both the methods and the Biobase packages.
+
+
+\noindent
+{\bf Data Elements}
+\noindent
+The graph package contains three graph objects: pmedu95aAffy, 
+pmedu95aGname, and pmedu95aLocus.  The links in each of these graphs 
+are based on the hgu95a library.  pmedu95aAffy has affy id nodes, 
+pmedu95aGname has genename nodes, and pmedu95aLocus has locus link id nodes.
+
+
+\noindent
+{\bf Graph Object}
+\noindent
+The graph object contains two slots, nodes and edges.  Nodes is a 
+vector that contains all of the nodes in the graph.  Edges is a list, 
+where the names of the list correspond to the nodes and each element 
+in the list is a vector that contains all of the edges for that node.
+Currently, only undirected graphs are permitted.  Also,
+only three node types are possible: genenames, locus link ids, and 
+affy ids, and only one link type is possible: pubmed ids.  Thus,
+genes can only be linked by pubmed citations in the current
+representation.
+
+
+\noindent
+{\bf Reverse Environment Function}
+\noindent
+The function reverseEnv is used to reverse an environment when making a 
+graph (i.e. when key and value pairs need to be switched).
+reverseEnv takes two parameters: lib, which is the library where the
+environment is stored, and envir, which is the environment to be reversed.
+Both parameters are character strings.  Mainly, this function works behind
+the scenes and is not needed directly by the user.
+
+
+\noindent
+{\bf Graph Generating Function}
+\noindent
+The function graph is a generating function that will create a graph
+object if given a vector of nodes and a list of edges.  Thus, the two
+parameters for the function are newnodes, a vector of nodes, and newedges,
+a list of the edges.  To ensure that the new graph object is valid, this 
+function will call the graph validating function.  Since the user may not 
+know the new graph's nodes and edges, this function may be used much.  
+Instead, the makeGraph function may be more useful.
+
+
+\noindent
+{\bf Graph Validating Function}
+\noindent
+The function validGraph is a validating function that checks whether
+a graph object is valid.  To be valid, the graph object must have no
+missing (NA) node values, no missing edge values, nodes and edges must 
+be the same length, the names of the edge list must match the nodes, 
+and each edge must be repeated twice because the graph is undirected.  
+If any of these errors occur, then a warning will be returned to the user.
+
+
+\noindent
+{\bf Test Graph Class Function}
+\noindent
+The function is.graph checks whether the parameter object is of type
+graph.  If the object is a graph, then true is returned; else, false is
+returned.
+
+
+\noindent
+{\bf Graph Accessor Methods}
+\noindent
+Currently, there are two graph accessor methods for the two slots.
+The nodes method returns the nodes of a graph and the edges method
+returns the edges of a graph.
+
+
+\noindent
+{\bf Print Method}
+\noindent
+The method print takes a graph object as a parameter and prints some 
+important statistics of that object such as the number of nodes, the 
+number of edges, the number of nodes with no edges, the maximum possible
+number of edges if the graph was completely connected, the node with the
+most edges, and the average number of edges.
+
+
+\noindent
+{\bf Make Graph Function}
+\noindent
+The function makeGraph creates a graph object based on the link type and 
+the node type.  makeGraph takes four parameters: graph, an empty graph
+object; linkBasis, a character string that tells how the nodes will be
+linked; nodeType, a character string that tells what the node types are;
+and lib, a character string that tells what library will be used.  
+Currently, the only linkBasis available is ``pmid'' (links based on 
+pubmed citations) and the only nodeTypes available are ``genename'',
+``locusid'', and ``affyid''.  The library contains the environments
+that will be used to create the graph object (ex. hgu95a, hgu133a).
+
+
+\noindent
+{\bf Make Subgraph Function}
+\noindent
+The function makeSubGraph creates a graph object that is a subset of 
+an original graph (i.e. it creates a subgraph).  makeSubGraph takes two
+parameters: origgraph, the original graph object; and subnodes, 
+a vector of the nodes in the subgraph.  The return object will be a graph.
+
+
+\noindent
+{\bf Make Boundary Function}
+\noindent
+The function makeBoundary creates a list that is a boundary to a subgraph.  
+makeBoundary takes two parameters: origgraph, the original graph object; 
+and subnodegraph, which can be either a vector of the nodes in the subgraph
+or the actual subgraph object.  In the returned list, the names will be 
+the nodes in the original graph that are connected to the subgraph, but 
+are not actually part of the subgraph, and the elements of the list will 
+be the nodes in the subgraph that they are connected to.  This reversing 
+of the edge list will allow a user to tell if a node is connected to more 
+than one element in the subgraph.
+
+
+\noindent
+{\bf Edge Information Functions }
+\noindent
+The function numEdges takes a graph object and returns the total
+number of edges in the graph.
+
+
+The function aveNumEdges takes a graph object and returns the average
+number of edges in the graph.  The average number of edges is defined
+as the number of edges divided by the number of nodes.
+
+
+The function mostEdges takes a graph object and returns a list that 
+contains the index of the node with the most edges, the node id of that
+node, and the number of edges for that node. 
+
+
+The function numNoEdges takes a graph object and returns the number of 
+nodes that have an edge list of NULL (i.e. no edges for that node).
+
+
+\noindent
+{\bf Probability Functions}
+\noindent
+The function calcProb takes an original graph object and a subgraph and
+calculates the probability of having the number of edges found in the 
+subgraph given that it was made from the original graph.  To find the
+probability, the hypergeometric distribution is used.
+
+
+The function calcSumProb takes an original graph object and a subgraph
+and calculates the probability of having greater than or equal to
+the number of edges found in the subgraph given that it was made from
+the original graph.  To calculate the summed probability, the 
+hypergeometric cumulative distribution function is used.
+
+
+\section*{Data Analysis}
+
+In the data analysis, 299 nodes based on the ALL1BCR data were used to 
+create a subgraph from the pmedu95aAffy graph.  The table below shows
+some of the statistics comparing pmedu95aAffy to the subgraph.
+
+\begin{center}
+\begin{tabular}{|l|l|l|} \hline
+& pmedu95aAffy & ALL1BCR Subgraph \\ \hline
+Number of Nodes & 12,625 & 299 \\ \hline
+Number of Edges & 130,191 & 91 \\ \hline
+Average Number of Edges & 10.3 & 0.3 \\ \hline
+Maximum Number of Edges Possible & 79,689,000 & 44,551 \\ \hline
+Number of Nodes with No Edges & 3,580 & 204 \\ \hline 
+\end{tabular}
+   \end{center}
+
+In the original graph, pmedu95aAffy, the affy id with the most edges was
+``39348$\_$at'' with 311 edges and 1,316 nodes had more than 100 edges.  
+It appears that pmedu95aAffy has several nodes that are highly 
+interconnected.  For example, if you made a subgraph with the 221 nodes 
+connected to node ``35951$\_$at'', then the subgraph would have an average
+number of edges of 54.3, which shows that these nodes are highly 
+interconnected.
+
+
+In the subgraph, based on the 299 affy ids from ALL1BCR, the affy
+id with the most edges was ``35951$\_$at'' with 7 edges.  In comparison, 
+the node ``35951$\_$at'' had 221 edges in pmedu95aAffy.  Of the 299 nodes 
+in the subgraph, 29 of them have an edge list of greater than 100 in 
+pmedu95aAffy and 73 of them had no edges in pmedu95aAffy.
+
+
+Despite the subgraph having an average number of edges of 0.3 compared
+to 10.3 in pmedu95aAffy, the expected number of edges in the subgraph
+based on the hypergeometric distribution is 72.  Thus, 91 edges is 
+greater than expected and the upper tail of the hypergeometric
+cdf gives a probability of 0.017.  Thus, the subgraph is more closely
+related than pmedu95aAffy and it is likely that there is biological
+relationship between the genes in the subgraph.
+
+
+\section*{Conclusions}
+Comparing the average number of edges between pmedu95aAffy, the original 
+graph, and the subgraph made with ALL1BCR data, pmedu95aAffy has a much 
+higher average (10.3 to 0.3).  Thus, it may seem surprising that the
+expected number of edges in the subgraph is 72, which is less than the
+actual number of edges observed, 91.  The reason the subgraph has a lower
+expected value is that pmedu95aAffy could have as many as 12,625 choose
+2 edges (79,689,000 edges) while the subgraph only has a possible 299
+choose 2 edges (44,551 edges).  Therefore, instead of comparing average
+number of edges, it may be more useful to compare the number of edges 
+observed out of the total possible.  For pmedu95aAffy, the number of 
+edges observed out of the total possible is 0.0016 and for the subgraph, 
+the number of edges observed out of the total possible is 0.0020.
+
+
+Because the subgraph has a higher number of edges observed out of the 
+total possible, the probability of seeing greater than or equal to 91 
+edges in the subgraph is 0.017, leading to the conclusion that the 
+subgraph is more highly connected than the original graph, pmedu95aAffy.  
+Thus, the links based on ALL1BCR data are more likely to be biologically 
+connected than the random links found in pmedu95aAffy.
+
+
+\section*{Future Work}
+
+Currently, the graph package does not give a well-defined overview of the 
+entire graph structure.  Functionality that determines connected
+components needs to be added so that clusters of linked genes can be found.
+This is particularly important because some genes in pmedu95aAffy seem to 
+be highly interconnected, as shown in the data analysis section.  Connected
+component functionality would also help determine if nodes in a subgraph
+that are not connected in the subgraph are actually connected in the original 
+graph.  Thus, it would be possible to determine if nodes currently not
+in the subgraph should be included because of their connections in the 
+original graph.
+
+
+Another limitation of the current graph package is that the graph object
+has undirected edges.  In the future, the graph package could be expanded 
+to include information on the direction of the links between genes.  To 
+do this, a slot named isdirected could be added to the graph object and 
+the edge list would need to include edge objects that contain to/from 
+information so the direction of the gene link would be known.  
+
+
+Although the graph package is currently rather limited in the graph 
+representation, useful information about the number of links in a graph 
+can be obtained.  Knowing the number of links in a subgraph compared to 
+the original graph, the hypergeometric distribution can be used to 
+determine the probability of the number of links found in the subgraph, 
+which may give an initial insight into how closely related the genes in the 
+subgraph are.  However, because all analyses rely on pubmed citations from 
+abstracts, caution should be exerted when drawing conclusions.
+
+
+\end{document}
+
+
+
