@@ -15,8 +15,7 @@
 \alias{threshold,distGraph-method}
 \alias{edgeWeights,distGraph-method}
 \title{Class "distGraph"}
-\description{ A class definition for graphs that are based on
-distances.}
+\description{ A class definition for graphs that are based on distances.}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("distGraph", ...)}.
 }
@@ -53,7 +52,7 @@ Class \code{"graph"}, directly.
    set.seed(123)
    x <- rnorm(26)
    names(x) <- letters
-   library(mva)
+   library(stats)
    d1 <- dist(x)
    g1 <- new("distGraph", Dist=d1)
 }

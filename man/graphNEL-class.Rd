@@ -10,7 +10,6 @@
 \alias{nodes<-}
 \alias{nodes}
 \alias{show}
-\alias{subGraph}
 \alias{addEdge,character,character,graphNEL,numeric-method}
 \alias{addNode,character,graphNEL-method}
 \alias{adj,graphNEL-method}
@@ -30,7 +29,6 @@
 \alias{removeEdge,character,character,graphNEL-method}
 \alias{removeNode,character,graphNEL-method}
 \alias{show,graphNEL-method}
-\alias{subGraph,character,graphNEL-method}
 \alias{toGXL,graphNEL-method}
 \title{Class "graphNEL"}
 \description{

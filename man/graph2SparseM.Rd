@@ -35,7 +35,8 @@ sparseM2Graph(sM, nodeNames)
 
 \author{R. Gentleman }
 
-\seealso{\code{\link{graph}}}
+\seealso{\code{\link{graph-class}} And for other conversions,
+\code{\link{aM2bpG}} and \code{\link{ftM2adjM}} }
 
 \examples{
   set.seed(123)

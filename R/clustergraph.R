@@ -167,6 +167,16 @@
                edE
            })
 
+  setMethod("subGraph", c("character", "distGraph"),
+            function(snodes, graph) {
+                gN <- nodes(graph)
+                whN <- match(snodes, gN)
+                if( any(is.na(whN) ) )
+                    stop("supplied nodes not all in graph")
+                nD <- as.matrix(Dist(graph))[whN, whN]
+                new("distGraph", Dist=as.dist(nD))
+            })
+
 ####################################
 ##clusterGraph code here
 ####################################
