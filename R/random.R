@@ -54,10 +54,14 @@ randomGraph <- function(V, M, p, weights = TRUE)
 ##(but less efficient), we first make up a matrix of all possible node edge
 ##combinations, then select entries and finally make the graph
 
-randomEGraph <- function(V, p)
+randomEGraph <- function(V, p, edges)
 {
   numN <- length(V)
   numE <- choose(numN, 2)
+  if( !missing(p) && (length(p) !=1 || 0 > p || p > 1 ))
+      stop("bad value for p")
+  if( !missing(edges) && (length(edges) != 1 || edges < 0 || edges > numE))
+      stop("bad value for edges")
   inds <- 1:numN
   fromN <- rep(inds[-numN], (numN-1):1)
   s<- numeric(0)
@@ -65,9 +69,12 @@ randomEGraph <- function(V, p)
   ## tmat is a 2 column matrix, the first column is the from node, the second
   ## the to node
   tmat <- cbind(fromN, s)
-  wh<- sample(c(TRUE, FALSE), numE, TRUE, p=c(p,1-p))
+  if( !missing(p) )
+      wh <- sample(c(TRUE, FALSE), numE, TRUE, p=c(p,1-p))
+  else if( !missing(edges) )
+      wh <- sample(1:numE, edges, FALSE) 
   tmat <- tmat[wh,]
-  numE <- sum(wh)
+  numE <- ifelse( is.logical(wh), sum(wh), length(wh))
   rval <- vector("list", length=numN)
   for( i in 1:numE ) {
       ##first put in from -> to

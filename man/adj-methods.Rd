@@ -18,7 +18,16 @@ be reached from a specified node.
 
 \section{Methods}{\describe{
 \item{object = graph}{An object that inherits from glass \code{graph}}
-\item{index}{An index (could be multiple) }
+\item{index}{An index (could be multiple) which can be either the
+  integer offset for the node(s) or their labels.}
 }}
 \seealso{\code{\link{acc-methods}}}
+\examples{
+ set.seed(123)
+ gR3 <- randomGraph(LETTERS[1:4], M<-1:2, p=.5)
+ adj(gR3, "A")
+ adj(gR3, c(2,3))
+}
+
+
 \keyword{methods}

@@ -6,7 +6,8 @@
 \description{
  This generic function takes an object that inherits from the \code{graph} 
 class and a node in that graph and returns a vector containing information
-about all other nodes that are accessible from the given node.
+about all other nodes that are accessible from the given node. The
+methods are vectorized so that \code{index} can be a vector.
 }
 \value{
   The methods should return an integer vector. The \code{names} of this
@@ -16,6 +17,14 @@ and the node in the return vector.
 }
 \section{Methods}{\describe{
 \item{object = graph}{An object of class graph. }
-\item{index}{An index corresponding to a node in the graph. }
+\item{index}{An index corresponding to a node in the graph. This can
+be either an integer or the node label.}
 }}
+\examples{
+ set.seed(123)
+ gR3 <- randomGraph(LETTERS[1:4], M<-1:2, p=.5)
+ acc(gR3, "A")
+ acc(gR3, 2)
+}
+
 \keyword{methods}

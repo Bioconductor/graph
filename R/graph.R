@@ -361,6 +361,7 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
       newed <- lapply(newed,
                   function(x) {ed <- t1[x$edges] ##new names
                                x$edges <- ed
+                               if( length(ed) > 0 )
                                lapply(x, function(y) {names(y) <- ed; y})})
       ##finally return
       new("graphNEL", nodes=nn[ma], edgeL=newed) })
@@ -730,7 +731,9 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
                 oE <- oE[-oEd]
                 oW <- oW[-oEd]
             }
-            g2 <- addEdge(newName, oE, g2, oW)
+            ##there might be no edges to add
+            if( length(oE) > 0 )
+                g2 <- addEdge(newName, oE, g2, oW)
             ##if directed we need to fix up the in edges
             if( !is.null(inE) ) {
                 nC <- length(inE)
@@ -754,6 +757,11 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
     setMethod("inEdges", c("missing", "graphNEL"),
               function(node, object)
                   inEdges(nodes(object), object))
+
+    ##seems more sensible - if there is only one arg
+    setMethod("inEdges", c("graphNEL", "missing"),
+               function(node, object)
+                  inEdges(nodes(node), node))
 
     setMethod("inEdges", c("character", "graphNEL"),
          function(node, object) {

@@ -17,7 +17,7 @@ ugraph(graph)
    If \code{graph} is already \emph{undirected} then it is simply
    returned.
 
-   If \code{graph} is a multi-graph (has multiple edges) and error is
+   If \code{graph} is a multi-graph (has multiple edges) an error is
    thrown as it is unclear how to compute the underlying graph in that
    context.
  }
@@ -33,7 +33,14 @@ ugraph(graph)
 \seealso{\code{\link{connComp}}}
 
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
+V <- letters[1:4]
+edL2 <- vector("list", length=4)
+names(edL2) <- V
+for(i in 1:4)
+  edL2[[i]] <- list(edges=c(2,1,2,1)[i], weights=sqrt(i))
+gR2 <- new("graphNEL", nodes=V, edgeL=edL2, edgemode="directed")
+
+ugraph(gR2)
+
 }
 \keyword{manip}

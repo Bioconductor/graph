@@ -90,15 +90,21 @@ ugraph <- function(graph)
                ##reorder to the same order as nodes
                ed <- ed[nodes(object)]
                nN <- length(ed)
-               elem <- sapply(ed, function(x) length(x$edges))
+               eds<-lapply(ed, function(x) x$edges)
+               if( require("Biobase") )
+                   elem <- listLen(eds)
+               else
+                   elem <- sapply(ed, length)
                from <- rep(1:nN, elem)
-               to <- unlist(lapply(ed, function(x) x$edges))
+               to <- unlist(eds)
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
                ##so here we remove them
                if( edgemode(object) == "undirected"  && !duplicates) {
-                   t1 <- apply(ans, 2, function(x) {paste(sort(x),
-                                                           collapse="+")})
+                   swap <- from>to
+                   ans[1,swap]<-to[swap]
+                   ans[2,swap]<-from[swap]
+                   t1 <- paste(ans[1,], ans[2,], sep="+")
                    ans <- ans[ ,!duplicated(t1), drop=FALSE]
                }
                ans
@@ -136,12 +142,16 @@ ugraph <- function(graph)
                NODES <- nodes(object)
                ed <- ed[NODES]
                nN <- length(ed)
-               elem <- sapply(ed, length)
+               if( require(Biobase) )
+                   elem <- listLen(ed)
+               else
+                   elem <- sapply(ed, length)
                from <- rep(1:nN, elem)
                to <- match(unlist(ed), NODES)
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
                ##so here we remove them
+               ##FIXME: see graphNEL for a speedup of this part
                if( edgemode(object) == "undirected"  && !duplicates) {
                    t1 <- apply(ans, 2, function(x) {paste(sort(x),
                                                            collapse="+")})
@@ -152,7 +162,9 @@ ugraph <- function(graph)
 
 
 
-
+##FIXME: why not do this with the edgeMatrix that you already have
+##why calculate the edgeMatrix twice?
+##This seems very broken - eWV below is much better
 edgeWeightVector <- function (g,...)
 {
     m <- edgeMatrix(g,...)
@@ -160,8 +172,32 @@ edgeWeightVector <- function (g,...)
     n <- apply(m,2,function(x)paste(x,collapse=
        ifelse(edgemode(g)=="directed","->","--"),sep=""))
     o <- rep(NA, ncol(m))
-    for (i in 1:ncol(m)) o[i] <- edgeWeights(g, m[1, i])[[1]][as.character(m[2,
+    for (i in 1:ncol(m))
+        o[i] <- edgeWeights(g, m[1, i])[[1]][as.character(m[2,
         i])]
     names(o) <- n
     o
+}
+##it seems to me that we might want the edge weights for
+##a given edgeMatrix and that that would be much better done
+##in the edgeMatrix function
+##we are presuming that eM has integer offsets in it
+eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
+                       "--"))
+{
+    unE <- unique(eM[1,])
+    edL <- g@edgeL
+    eE <- lapply(edL, function(x) x$edges)
+    eW <- lapply(edL, function(x) x$weights)
+    nr <- listLen(eE)
+    ##now we can subset - 
+    eMn <- paste(rep((1:length(nr))[unE],nr[unE]), unlist(eE[unE]), sep=sep)
+    eWv <- unlist(eW[unE])
+    dE <- paste(eM[1,], eM[2,], sep=sep)
+    wh<-match(dE, eMn)
+    if(any(is.na(wh)) )
+        stop("edges in supplied edgematrix not found")
+    ans <-eWv[wh]
+    names(ans) <- eMn[wh]
+    ans
 }

@@ -31,7 +31,7 @@
 }
 
 \begin{document}
-\title{How To use graph}
+\title{How To use the graph package}
 
 \maketitle
 
@@ -85,6 +85,11 @@ gR2 <- new("graphNEL", nodes=V, edgeL=edL2)
 
 edgemode(gR2) <- "directed"
 
+combineNodes(c("A","B"), gR, "W")
+
+##find the underlying graph
+ugraph(gR2)
+
 set.seed(123)
 gR3 <- randomGraph(LETTERS[1:4], M<-1:2, p=.5)
 
@@ -134,6 +139,7 @@ an edge between them if the underlying latent variables are the same.
   M <- 1:4
   g1 <- randomGraph(V, M, .2)
 @
+
 We can find out about \Robject{g1} by typing its name or by applying
   various functions to it.
 

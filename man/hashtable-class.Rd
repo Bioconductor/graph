@@ -6,14 +6,14 @@
 \alias{hash,ANY,ANY,hashtable-method}
 \alias{contents,hashtable-method}
 \alias{initialize,hashtable-method}
-\title{Class "hashtable" ~~~ }
-\description{  ~~ A concise (1-5 lines) description of what the class is.  ~~}
+\title{Class "hashtable"}
+\description{ A preliminary implementation of a hash table class}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("hashtable", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{hashtable}:}{Object of class \code{"environment"} ~~ }
+    \item{\code{hashtable}:}{Object of class \code{"environment"}. }
   }
 }
 
