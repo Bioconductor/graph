@@ -32,6 +32,13 @@ validGraph<-function(object)
   setClass("graph", representation(edgemode="character",
                                    "VIRTUAL"), where=where)
 
+  if( !exists("edgemode", mode="function") )
+      setGeneric("edgemode", function(object)
+                 standardGeneric("edgemode"), where=where)
+  setMethod("edgemode", "graph", function(object) object@edgemode,
+            where=where)
+
+
   ## a node-edge-list graph
   ##the edgeL is a list, with edges, weights etc
 
@@ -83,25 +90,25 @@ validGraph<-function(object)
   if (is.null(getGeneric("uniqueEdges")))
       setGeneric("uniqueEdges", function(object)
                  standardGeneric("uniqueEdges"), where=where)
+
+  ##FIXME: seem to have broken this
   setMethod("uniqueEdges", "graphNEL", function(object) {
       edges <- edges(object)
       weights <- edgeWeights(object)
       nodes <- nodes(object)
       done <- character()
       outEdges <- list()
-      curID <- 1
 
-      newEdgeObj <- function(x,i) {
+      newEdgeObj <- function(x, ID) {
           ## Helper function for the lapply below
           ## Creates a new gEdge object given specified
           ## information.
           eNodeVal <- as.integer(match(x,nodes))
-          out <- new("gEdge", edgeID=as.integer(curID),
-                     bNode=as.integer(i),
+          out <- new("gEdge", edgeID=newID(),
+                     bNode=ID,
                      eNode=eNodeVal,
                      weight=as.numeric(curWeights[as.character(eNodeVal)])
                      )
-          curID <<- curID + 1
           out
       }
 
@@ -110,10 +117,12 @@ validGraph<-function(object)
           curWeights <- weights[[i]]
           newEdges <- curEdges[which(!(curEdges %in% done))]
           done <- c(done,nodes[i])
-          outEdges <- c(outEdges,lapply(newEdges, newEdgeObj, i))
+          outEdges <- c(outEdges,lapply(newEdges, newEdgeObj, ))
       }
       outEdges
   }, where=where)
+
+
 
   ##we are going to need some notion of degree
   if( !isGeneric("degree") )
