@@ -85,6 +85,13 @@ NELhandler <- function ()
             ns), weights = as.numeric(sw[[i]]))
         else for (i in 1:length(edl)) nl[[nne[i]]] <- list(edges = match(edl[[i]], 
             ns))
+	chkENconsis <- match(ns, names(nl))
+        if (any(inn <- is.na(chkENconsis)))
+		{
+		badinds <- (1:length(chkENconsis))[inn==TRUE]
+		for (i in 1:length(badinds))
+			nl[[ ns[ badinds[i] ] ]] <- character(0)
+		}
         new("graphNEL", nodes = ns, edgeL = nl, edgemode = "directed")
     }
     list(startElement = startElement, endElement = endElement, 
