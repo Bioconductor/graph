@@ -620,7 +620,6 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
             nAdd <- length(node)
             nEd <- vector("list", length=nAdd)
             names(nEd) <- node
-            browser()
             for(i in 1:nAdd) {
                 ed <- edges[[i]]
                 if( is.character(ed) ) {

@@ -154,7 +154,6 @@
              nodes=NULL, edges=NULL) {
         .Object@nodes = new("hashtable")
         .Object@edges = new("hashtable")
-        browser()
          for(node in nodes )
             hash(nodeID(node), node,.Object@nodes )
         for(edge in edges )
