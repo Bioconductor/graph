@@ -1001,15 +1001,41 @@ graph2SparseM <- function(g, useweights=FALSE) {
 }
 
 if (is.null(getGeneric("edgeNames")))
-    setGeneric("edgeNames", function(object)
+    setGeneric("edgeNames", function(object, ...)
                standardGeneric("edgeNames"))
 
-setMethod("edgeNames", "graph", function(object) {
-    to <- edges(object)
 
-    unlist(mapply(function(x,y) {
+setMethod("edgeNames", "graph", function(object,
+                                           recipEdges=c("combined",
+                                           "distinct")) {
+    recipEdges <- match.arg(recipEdges)
+
+    to <- edges(object)
+    from <- names(to)
+    edgeNames <- unlist(mapply(function(x,y) {
         if (length(x) > 0)
             paste(y,x,sep="~")
         else
-            NULL}, to, names(to)))
+            NULL}, to, from))
+
+    if (recipEdges == "combined") {
+        revNames <-  unlist(mapply(function(x,y) {
+            if (length(x) > 0)
+                paste(x,y,sep="~")
+            else
+                NULL}, to, from))
+
+        handled <- character()
+        remove <- numeric()
+        for (i in 1:length(edgeNames)) {
+            if (! revNames[i] %in% handled)
+                handled <- c(handled, edgeNames[i])
+            else
+                remove <- c(remove, i)
+        }
+        if (length(remove) > 0)
+            edgeNames <- edgeNames[-remove]
+    }
+    edgeNames
 })
+
