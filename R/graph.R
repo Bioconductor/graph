@@ -1019,44 +1019,81 @@ graph2SparseM <- function(g, useweights=FALSE) {
     new("matrix.csr", ra=ra, ja=ja, ia=ia, dimension=c(nr, nc))
 }
 
+##--------------------------
+## edge names
+##--------------------------
 if (is.null(getGeneric("edgeNames")))
     setGeneric("edgeNames", function(object, ...)
                standardGeneric("edgeNames"))
 
-## edgeNames
 setMethod("edgeNames", "graph", function(object,
                                            recipEdges=c("combined",
                                            "distinct")) {
-  recipEdges <- match.arg(recipEdges)
+    recipEdges <- match.arg(recipEdges)
 
-  ## convert names to integers ("standard node labeling")
-  to   <- lapply(edges(object), match, nodes(object))
-  from <- match(names(to), nodes(object))
-  
-  if(any(is.na(unlist(to)))||any(is.na(from)))
-    stop("Edge names do not match node names.")
-  
-  ## unlist
-  ufrom <- rep(from, listLen(to))
-  uto   <- unlist(to)
-  
-  ## only keep those where from <= to
-  if (recipEdges == "combined")
-    keep <- (ufrom<=uto)
-  else
-    keep <- rep(TRUE, length(ufrom))
-  
-  paste(nodes(object)[ufrom[keep]],
-        nodes(object)[uto[keep]], sep="~")
+    to <- edges(object)
+    from <- names(to)
+    edgeNames <- as.vector(unlist(mapply(function(x,y) {
+        if (length(x) > 0)
+            paste(y,x,sep="~")
+        else
+            NULL}, to, from)))
+
+    if (recipEdges == "combined") {
+        revNames <-  unlist(mapply(function(x,y) {
+            if (length(x) > 0)
+                paste(x,y,sep="~")
+            else
+                NULL}, to, from))
+
+        handled <- character()
+        remove <- numeric()
+        for (i in 1:length(edgeNames)) {
+            if (! revNames[i] %in% handled)
+                handled <- c(handled, edgeNames[i])
+            else
+                remove <- c(remove, i)
+        }
+        if (length(remove) > 0)
+            edgeNames <- edgeNames[-remove]
+    }
+    edgeNames
 })
 
-if (is.null(getGeneric("clusteringCoefficient")))
-  setGeneric("clusteringCoefficient", function(object, ...)
-             standardGeneric("clusteringCoefficient"))
+## edgeNames
+# setMethod("edgeNames", "graph", function(object,
+#                                            recipEdges=c("combined",
+#                                            "distinct")) {
+#   recipEdges <- match.arg(recipEdges)
+
+#   ## convert names to integers ("standard node labeling")
+#   to   <- lapply(edges(object), match, nodes(object))
+#   from <- match(names(to), nodes(object))
+  
+#   if(any(is.na(unlist(to)))||any(is.na(from)))
+#     stop("Edge names do not match node names.")
+  
+#   ## unlist
+#   ufrom <- rep(from, listLen(to))
+#   uto   <- unlist(to)
+  
+#   ## only keep those where from <= to
+#   if (recipEdges == "combined")
+#     keep <- (ufrom<=uto)
+#   else
+#     keep <- rep(TRUE, length(ufrom))
+  
+#   paste(nodes(object)[ufrom[keep]],
+#         nodes(object)[uto[keep]], sep="~")
+# })
 
 ##--------------------------
 ## clustering coefficient
 ##--------------------------
+if (is.null(getGeneric("clusteringCoefficient")))
+  setGeneric("clusteringCoefficient", function(object, ...)
+             standardGeneric("clusteringCoefficient"))
+
 setMethod("clusteringCoefficient",
   signature=c("graph", "ANY"),
   definition=function(object, selfLoops=FALSE) {
