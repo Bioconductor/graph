@@ -9,7 +9,7 @@ addNode(node, object)
 }
 \arguments{
   \item{node}{a character string, or node object }
-  \item{object}{a \code{object{graph} }
+  \item{object}{a \code{graph} }
 }
 \details{
   The supplied node is added to the set of nodes of the \code{object}.
@@ -20,7 +20,7 @@ addNode(node, object)
 }
 \author{R. Gentleman }
 \seealso{\code{\link{removeNode}}, \code{\link{removeEdge}},
-  \code{\link{addEdge}}
+  \code{\link{addEdge}}}
 
   \examples{
 
