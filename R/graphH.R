@@ -71,6 +71,10 @@ setMethod("initialize",
                   }
                   if (nNodes != length(nodes))
                       stop("invalid edge information")
+                  for (i in seq(along=nodes)) {
+                      names(nodes[[i]]@fromEdges) <- NULL
+                      names(nodes[[i]]@toEdges) <- NULL
+                  }
               }
           }
           .Object <- callNextMethod()
