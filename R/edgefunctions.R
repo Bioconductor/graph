@@ -120,20 +120,9 @@ calcSumProb <- function(origgraph,subgraph)
 mostEdges<-function(objGraph)
 {
   oEdges<-edges(objGraph)
-  oNodes<-nodes(objGraph)
-  maxLen<-0
-  index<-0
-  for (i in 1: length(oEdges))
-  {
-    if (!is.null(oEdges[[i]]) && length(oEdges[[i]]) > maxLen)
-    {
-      maxLen <- length(oEdges[[i]])
-      index <- i
-    }
-  }
-  id<-oNodes[index]
-  indexLen<-list(index=index,id=id,maxLen=maxLen)
-  indexLen
+  lens <- sapply(oEdges, length)
+  mx <- max(lens)
+  return(names(oEdges)[match(mx, lens)])
 }
 
 ################################################################

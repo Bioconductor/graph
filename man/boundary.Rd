@@ -1,39 +1,42 @@
 \name{boundary}
 \alias{boundary}
 
-\title{ Makes a Boundary to a SubGraph }
+\title{ Returns the Boundary between a Graph and a SubGraph }
 \description{
- \code{boundary} creates a new boundary that is of type list.  Only elements 
- that are connected to the subgraph nodes in the original graph, but are 
- not part of the subgraph, will be returned.
+ The boundary of a subgraph is the set of nodes in the original graph
+ that have edges to nodes in the subgraph. The function \code{boundary}
+ computes the boundary and returns it as a list whose length is the same
+ length as the number of nodes in the subgraph.
 }
 \usage{
-boundary(origgraph, subnodegraph)
+boundary(graph, subgraph)
 }
 
 \arguments{
-  \item{origgraph}{ the original graph from which the boundary will 
+  \item{graph}{ the original graph from which the boundary will 
                     be created }
-  \item{subnodegraph}{ can either be the vector of all the nodes in the 
-                    subgraph or the actual subgraph object }
+  \item{subgraph}{ can either be the vector of the node labels or the
+    subgraph itself.}
 }
 \details{
-  Instead of returning a graph object, this function returns
-  a list.  The names of the list will be the nodes in the original graph 
-  that are connected to the subgraph, but are not actually part of the 
-  subgraph, and the elements of the list will be the nodes in the subgraph 
-  that they are connected to.  This reversing of the edge list will allow 
-  a user to tell if a node is connected to more than one element in the 
-  subgraph.
+  This function returns a named list. The elements of the list
+  correspond to the nodes in the subgraph. The elements are lists of the
+  names of the nodes in the graph which share an edge with the
+  respective node in the subgraph.
+
+  Element "a", say of the list corresponds to node "a" and the value in
+  this list is a vector of node labels. Those nodes are in the graph
+  (but not the subgraph) and share an edge with node "a" in the subgraph.
+
 }
 \value{
-  A list that is a boundary to the subgraph will be returned.
+  A list that is a boundary of the subgraph will be returned.
 }
 
-\author{ Elizabeth Whalen }
+\author{ Elizabeth Whalen and R. Gentleman }
 
 \seealso{\code{\link{makeGraph}}},
-         \code{\link{subGraph}}, \code{\link{graphBoundary}}
+         \code{\link{subGraph}}, \code{\link{graph}}
  }
 
 \examples{

@@ -388,15 +388,16 @@ validGraph<-function(object)
      numNull<-numNoEdges(object)
      numNodes<- numNodes(object)
      numEdge<-numEdges(object)
-     totalEdgesPossible<-numNodes*(numNodes-1)/2
-     nodeMostEdges<-mostEdges(object)
-     aveEdge<-aveNumEdges(object)
+##     totalEdgesPossible<-numNodes*(numNodes-1)/2
+##     nodeMostEdges<-mostEdges(object)
+##     aveEdge<-aveNumEdges(object)
+     cat("A graph with ", object@edgemode, " edges\n")
      cat("Number of Nodes = ",numNodes,"\n",sep="")
      cat("Number of Edges = ",numEdge,"\n",sep="")
-     cat("Number of Nodes with no edges = ",numNull,"\n",sep="")
-     cat("If the graph was completely linked, the number of edges would be ",format(totalEdgesPossible,big.mark=","),".\n",sep="")
-     cat("The node with the most edges is ",nodeMostEdges$id," with ", nodeMostEdges$maxLen, " edges.","\n",sep="")
-     cat("The average number of edges is ",format(aveEdge,digits=3),".\n",sep="")
+##     cat("Number of Nodes with no edges = ",numNull,"\n",sep="")
+##     cat("If the graph was completely linked, the number of edges would be ",format(totalEdgesPossible,big.mark=","),".\n",sep="")
+##     cat("The node with the most edges is ",nodeMostEdges$id," with ", nodeMostEdges$maxLen, " edges.","\n",sep="")
+##     cat("The average number of edges is ",format(aveEdge,digits=3),".\n",sep="")
    },
   where=where
   )

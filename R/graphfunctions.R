@@ -1,130 +1,39 @@
 ################################################################
 # function:
 # graphBoundary takes three parameters:
-#   origgraph is the original graph from which the subgraph will be created
-#   subnodes is the vector of all the nodes in the subgraph
-#   boundary is a boolean - if false a subgraph is created, and if true
-#    a boundary to the subgraph is created
-# graphBoundary creates a new subgraph (of type class graph).
-# The subgraph, which is a subset of the original graph,
-# will be created based on the nodes.
-# If boundary is true, then only elements that are connected to
-# the nodes, but are not part of the subgraph will be returned.
-#
-# notes: This function can make a subgraph or a boundary to a
-# subgraph.
+#   graph is the original graph from which the subgraph will be created
+#   subgraph either the subgraph or the nodes of the subgraph
+# boundary returns a list of length equal to the number of nodes in the
+#   subgraph. Each element is a list of the nodes in graph
 #
 # created by: Elizabeth Whalen
-# last updated: August 1, 2002
+# last updated: Feb 15, 2003, RG
 ################################################################
 
-graphBoundary<-function(origgraph, subnodes, boundary)
+boundary<-function(graph, subgraph)
 {
-  if (class(origgraph) != "graph")
+  if ( !is(graph, "graph") )
     stop("The first parameter must be an object of type graph.")
-  if (length(nodes(origgraph))==0)
-    stop("The first parameter must be an initialized graph object.")
-  if (!is.vector(subnodes))
-    stop("The second parameter must be a vector of nodes.")
 
-  orignodes<-nodes(origgraph)
-  origedges<-edges(origgraph)
+  if( is(subgraph, "graph") )
+      snodes <- nodes(subgraph)
+  else
+      snodes <- subgraph
+  orignodes<-nodes(graph)
+  origedges<-edges(graph)
 
   #only use nodes that are in the original graph
-  validnodes <- subnodes[subnodes %in% orignodes]
-
-  #nodes that were not in the original graph
-  invalidnodes <- subnodes[!subnodes %in% orignodes]
-
-  subgraph<-new("graph")
-  subgraph@nodes<-validnodes
-  subedges<-vector(mode="list",length=length(validnodes))
-  names(subedges)<-validnodes
-
-  for (i in 1:length(validnodes))
-  {
-    curorigEdge<-origedges[[validnodes[i]]]
-    if (!is.null(curorigEdge) && length(curorigEdge) > 0 )
-    {
-      curorigEdge<-unlist(curorigEdge,use.names=FALSE)
-      #take only elements that are in the subgraph's node vector
-      if (boundary==FALSE)
-        cursubEdge<- curorigEdge[curorigEdge %in% validnodes]
-      else
-        cursubEdge<- curorigEdge[!curorigEdge %in% validnodes]
-      if (length(cursubEdge) > 0)
-        subedges[[validnodes[i]]]<-c(cursubEdge)
-      #else leave edge list as NULL
-    }
-  }
-  subgraph@edges<-subedges
-  if (!boundary && !validGraph(subgraph))
-    stop("A valid subgraph was not created.")
-  subgraph
+  good <- snodes %in% orignodes
+  if( any(!good) )
+      stop("the supplied subgraph is not a subgraph of the supplied graph")
+  
+  outnodes <- orignodes %in% snodes
+  splE <- split(origedges, outnodes)
+  
+  ## apply down the subgraph, finding the nodes that are in the graph, but
+  ## not the subgraph 
+  lapply(splE[["TRUE"]], function(x) x[!(x %in% snodes)] )
 }
-
-################################################################
-# function:
-# subGraph takes two parameters:
-#   origgraph is the original graph from which the subgraph will be created
-#   subnodes is the vector of all the nodes in the subgraph
-# subGraph creates a new subgraph (of type class graph).
-# The subgraph, which is a subset of the original graph,
-# will be created based on the nodes.
-#
-# created by: Elizabeth Whalen
-# last updated: August 1, 2002
-################################################################
-
-subGraph<-function(origgraph,subnodes)
-  graphBoundary(origgraph,subnodes,FALSE)
-
-
-################################################################
-# function:
-# boundary takes two parameters:
-#   origgraph is the original graph from which the subgraph will be created
-#   subnodegraph can be either the vector of all the nodes in the subgraph
-#     or it can be the subgraph object
-# boundary creates a boundary to the subgraph that would be
-# made with the subnodes from the origgraph.  Only elements that
-# are connected to the nodes in the original graph, but are not
-# part of the subgraph will be returned.
-#
-# notes: Instead of returning a graph object, this function returns
-# a list.  The names of the list will be the nodes connected
-# to the subgraph in the original graph and the elements of the list
-# will be the nodes in the subgraph that they are connected to.
-# This reversing of the edge list will allow a user to tell if a node
-# is connected to more than one element in the subgraph.
-#
-# created by: Elizabeth Whalen
-# last updated: August 2, 2002
-################################################################
-
-boundary<-function(origgraph, subnodegraph)
-{
-  #if had a subgraph parameter then would need to get the nodes of the
-  #subgraph and use those as the subnodes
-
-  if (is(subnodegraph, "graph"))
-    subnodes<-nodes(subnodegraph)
-  else
-    subnodes<-subnodegraph
-
-  boundaryGraph<-graphBoundary(origgraph, subnodes, TRUE)
-
-  #now need to get the edge list and reverse the order of the list
-  boundaryEdge<-edges(boundaryGraph)
-
-  #get the vector of the unique values in the egde list
-  boundaryVec<-uniqueVec(boundaryEdge,TRUE)
-
-  boundaryList<-revList(boundaryVec,boundaryEdge)
-
-  boundaryList
-}
-
 
 ################################################################
 # function:
