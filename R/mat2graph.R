@@ -86,3 +86,13 @@ setAs("matrix", "graphNEL", function(from) {
     g1
 })
 
+setAs("graphNEL","matrix",function(from) {
+  nr = nc = numNodes(from)
+  e1 = from@edgeL
+  matrix(unlist(lapply(e1,function(x) {
+    y <- rep(0,nc)
+    y[x$edges] = if(is.null(x$weights)) rep(1,length(x$edges)) else x$weights
+    y
+  })),nr=nr,nc=nc,byrow=T,dimnames=list(from@nodes,from@nodes))
+})
+
