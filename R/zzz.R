@@ -9,4 +9,6 @@
     .initDistGraph(where)
     where <- match(paste("package:", pkgname, sep=""), search())
     .initClustGraph(where)
+    where <- match(paste("package:", pkgname, sep=""), search())
+    .GXLformals(where)
 }
