@@ -192,23 +192,72 @@ ugraph <- function(graph)
 ##    ans
 ##}
 
-eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
-                       "--"))
+#eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
+#                       "--"))
+#{
+#    edL <- g@edgeL
+#    ##fix up the edgeweights so we really find them
+#    eW <- lapply(edL, function(x) {
+#        ans = x$weights
+#        ed = length(x$edges)
+#        if( is.null(ans) && ed > 0 )
+#            ans = rep(1, ed)
+#        if( length(ans) > 0 )
+#            names(ans) = x$edges
+#        ans})
+#
+#    a1 <- apply(eM, 2,
+#                function(x) eW[[x[1]]][as.character(x[2])])
+#    names(a1) <- paste(eM[1,], eM[2,], sep=sep)
+#    return(a1)
+#}
+
+
+eWV <- function (g, eM, sep = ifelse(edgemode(g) == "directed", "->", 
+    "--"), useNNames = FALSE) 
 {
+#
+# returns vector of weights.  default has names equal to node
+# indices, but useNNames can be set to put node names as names
+# of corresponding weights
+#
     edL <- g@edgeL
-    ##fix up the edgeweights so we really find them
     eW <- lapply(edL, function(x) {
         ans = x$weights
         ed = length(x$edges)
-        if( is.null(ans) && ed > 0 )
+        if (is.null(ans) && ed > 0) 
             ans = rep(1, ed)
-        if( length(ans) > 0 )
+        if (length(ans) > 0) 
             names(ans) = x$edges
-        ans})
-
-    a1 <- apply(eM, 2,
-                function(x) eW[[x[1]]][as.character(x[2])])
-    names(a1) <- paste(eM[1,], eM[2,], sep=sep)
+        ans
+    })
+    a1 <- apply(eM, 2, function(x) eW[[x[1]]][as.character(x[2])])
+    if (useNNames) 
+        names(a1) <- paste(nodes(g)[eM[1, ]], nodes(g)[eM[2, 
+            ]], sep = sep)
+    else names(a1) <- paste(eM[1, ], eM[2, ], sep = sep)
     return(a1)
 }
 
+
+pathWeights <- function (g, p, em = NULL) 
+{
+#
+# a path is a vector of names of adjacent nodes
+# we form the vector of steps through the path
+# (pairs of adjacent nodes) and attach the weights
+# for each step.  no checking is done to verify
+# that the path p exists in g
+#
+    if (length(p) < 2) 
+        stop("a path must have length > 1")
+    if (is.null(em)) 
+        em <- edgeMatrix(g)
+    wv <- eWV(g, em, useNNames = TRUE)
+    sep <- ifelse(edgemode(g) == "undirected", "--", "->")
+    pcomps <- cbind(p[-length(p)], p[-1])
+    if (edgemode(g) == "undirected") pcomps <- rbind(pcomps, pcomps[,c(2,1)]) # don't know node order in wv labels
+    inds <- apply(pcomps, 1, function(x) paste(x[1], x[2], sep = sep))
+    tmp <- wv[inds]
+    tmp[!is.na(tmp)]
+}

@@ -1,10 +1,11 @@
 \name{edgeMatrix}
 \alias{edgeMatrix}
 \alias{eWV}
+\alias{pathWeights}
 \alias{edgeMatrix,graphNEL-method}
 \alias{edgeMatrix,clusterGraph-method}
 \alias{edgeMatrix,distGraph-method}
-\title{Compute an Edge Matrix for a Graph  }
+\title{Compute an Edge Matrix or weight vector for a Graph  }
 \description{
  For our purposes an \emph{edge matrix} is a matrix with two rows and as
  many columns as there are edges. The entries in the first row are the
@@ -19,7 +20,8 @@
 \usage{
 edgeMatrix(object, duplicates=FALSE)
 eWV(g, eM, sep = ifelse(edgemode(g) == "directed", "->",
-                 "--"))
+                 "--"), useNNames=FALSE)
+pathWeights(g, p, eM=NULL)
 }
 \arguments{
   \item{object}{An object that inherits from \code{graph}. }
@@ -29,6 +31,9 @@ eWV(g, eM, sep = ifelse(edgemode(g) == "directed", "->",
   \item{eM}{An edge matrix}
   \item{sep}{a character string to concatenate node labels in
     the edge label}
+  \item{useNNames}{a logical; if TRUE, node names are used in
+    the edge label; if FALSE, node indices are used}
+  \item{p}{a vector of node names constituting a path in graph \code{g}}
   \item{\dots}{arguments passed to \code{edgeMatrix}.}
 }
 \details{
@@ -36,10 +41,22 @@ eWV(g, eM, sep = ifelse(edgemode(g) == "directed", "->",
   \code{distGraph} are available. 
 }
 \value{
-  A matrix with two rows, \emph{from} and \emph{to}, and as many columns
+  \code{edgeMatrix} returns a matrix with two rows, \emph{from} and \emph{to}, and as many columns
   as there are edges. Entries indicate the index in the node vector that
   corresponds to the appropriate end of the edge.
+
+  \code{eWV} uses the edge matrix to create an annotated vector of 
+  edge weights.
+
+  \code{pathWeights} returns an annotated vector of edge weights
+  for a specified path in a graph.
  }
+
+\note{A path through an undirected graph may have several
+representations as a named vector of edges.  Thus in the
+example, when the weights for path b-a-i are requested,
+the result is the pair of weights for edges a--b and a--i,
+as these are the edge labels computed for graph g1.}
 
 \author{R. Gentleman }
 
@@ -52,5 +69,7 @@ eWV(g, eM, sep = ifelse(edgemode(g) == "directed", "->",
   g2 <- new("clusterGraph", clusters=list(a=c(1,2,3), b=c(4,5,6)))
   em2 <- edgeMatrix(g2)
   eWV(g1, edgeMatrix(g1))
+  eWV(g1, edgeMatrix(g1), useNNames=TRUE)
+  pathWeights(g1, c("b", "a", "i"))
 }
 \keyword{manip }
