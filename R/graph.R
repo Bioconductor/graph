@@ -32,7 +32,7 @@ validGraph<-function(object, quietly=FALSE)
       }
       ##check for reciprocity in undirected graphs
       if( object@edgemode == "undirected") {
-          eds <- sapply(object@edgeL, function(x) x$edges)
+          eds <- lapply(object@edgeL, function(x) x$edges)
           v1 <- sapply(eds, length)
           v2 <- sum(v1)
           tM <- paste(rep(1:length(v1), v1), unlist(eds), sep=" -> " )
@@ -448,7 +448,7 @@ validGraph<-function(object, quietly=FALSE)
       xE <- edges(x)
       yE <- edges(y)
       rval <- vector("list", length=length(xE))
-      names(rval) <- names(xE)
+      names(rval) <- xN
       for(i in names(xE) ) {
           ans <- unique(c(xE[[i]], yE[[i]]))
           if( length(ans) > 0 )
@@ -464,11 +464,14 @@ validGraph<-function(object, quietly=FALSE)
    setGeneric("complement", function(x) standardGeneric("complement"))
 
    setMethod("complement", c("graph"), function(x) {
+       if( edgemode(x) != "undirected" )
+           stop(paste("can't handle edgemode:", x@edgemode, "yet"))
+
        xN <- nodes(x)
        xE <- edges(x)
        rval <- vector("list", length=length(xE))
-       names(rval) <- names(xE)
-       for( i in names(xE) ) {
+       names(rval) <- xN
+       for( i in xN ) {
            ans <-xN[ !(xN %in% c(i, xE[[i]])) ]
            lena <- length(ans)
            if( lena > 0 )
