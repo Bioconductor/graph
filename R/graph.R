@@ -29,7 +29,7 @@ validGraph<-function(object)
 .initGraph <- function(where)
 {
   ## we define a virtual graph class -- to hold generic functions
-  setClass("graph", where=where)
+  setClass("graph", representation(edgemode="character"), where=where)
 
   ## a node-edge-list graph
   ##the edgeL is a list, with edges, weights etc
@@ -37,6 +37,19 @@ validGraph<-function(object)
   setClass("graphNEL",representation(nodes="vector",edgeL="list"),
             contains="graph",
            where=where)
+
+  setMethod("initialize", "graphNEL", function(.Object, nodes=character(0),
+       edgeL = vector("list",length=0), edgemode="undirected") {
+       if( !missing(edgeL) && length(edgeL) > 1 )
+         if( is.character(edgeL[[1]]) )
+             edgeL <- lapply(edgeL, function(x) match(x, nodes))
+       .Object@nodes <- nodes
+       .Object@edgeL <- edgeL
+       .Object@edgemode <- edgemode
+       .Object},
+       where=where)
+
+
 
   if (!isGeneric("nodes"))
   {

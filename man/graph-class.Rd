@@ -14,7 +14,12 @@
 \description{A virtual class that all graph classes should extend. }
 \section{Objects from the Class}
 {A virtual Class: No objects may be created from it.}
-
+\section{Slots}{
+  \describe{
+    \item{\code{edgemode}:}{Indicates whether edges are
+      \code{"directed"} or \code{"undirected"}}
+  }
+}
 
 \section{Methods}{
   \describe{

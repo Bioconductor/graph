@@ -5,11 +5,11 @@
   \code{numEdges} counts the number of edges in the graph object.  
 }
 \usage{
-numEdges(objgraph)
+numEdges(graph)
 }
 
 \arguments{
-  \item{objgraph}{ the graph object }
+  \item{graph}{ the graph }
 }
 
 \value{
