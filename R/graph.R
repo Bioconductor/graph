@@ -409,7 +409,7 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 setGeneric("intersection3", function(x, y)
            standardGeneric("intersection3"))
 
-setMethod("intersection2", c("graph", "graph"), function(x,y) {
+setMethod("intersection3", c("graph", "graph"), function(x,y) {
   if( edgemode(x) != edgemode(y) )
     stop("both graphs must have the same edgemode")
   xN <- nodes(x)
@@ -446,7 +446,7 @@ setMethod("intersection2", c("graph", "graph"), function(x,y) {
                bN[bft[2,]])
   
   ftM2graphNEL(bft, V=bN, edgemode=edgemode(x))
-}
+} )
 
 
 ### yet another implementation of "intersection", in C
