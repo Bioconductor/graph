@@ -13,6 +13,7 @@
 \alias{numNodes,distGraph-method}
 \alias{show,distGraph-method}
 \alias{threshold,distGraph-method}
+\alias{edgeWeights,distGraph-method}
 \title{Class "distGraph"}
 \description{ A class definition for graphs that are based on
 distances.}

@@ -4,8 +4,8 @@
 \alias{acc,graph-method}
 \alias{acc,clusterGraph-method}
 \alias{acc}
-\S4method{acc}{graph,character}
-\S4method{acc}{clusterGraph,character}
+\alias{acc,graph,character-method}
+\alias{acc,clusterGraph,character-method}
 \title{Methods for Accessibility Lists}
 
 \description{
@@ -14,6 +14,17 @@ class and a node in that graph and returns a vector containing information
 about all other nodes that are accessible from the given node. The
 methods are vectorized so that \code{index} can be a vector.
 }
+\usage{
+\S4method{acc}{graph,character}(object, index)
+\S4method{acc}{clusterGraph,character}(object, index)
+
+}
+\arguments{
+  \item{object}{An instance of the appropriate graph class.}
+  \item{index}{A character vector specifying the nodes for which
+    accessibilty information is wanted.}
+}
+
 \value{
   The methods should return a named list of integer vectors. The
   \code{names} of the list correspond to the names of the supplied

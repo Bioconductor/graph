@@ -1,5 +1,6 @@
 \name{inEdges}
 \alias{inEdges}
+\alias{inEdges,graphNEL,missing-method}
 \title{ inEdges }
 \description{
   Computes and returns a list of all the edges in to the specified set

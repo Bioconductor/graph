@@ -3,7 +3,7 @@
 \alias{eWV}
 \alias{edgeMatrix,graphNEL-method}
 \alias{edgeMatrix,clusterGraph-method}
-\S4method{edgeMatrix}{distGraph}
+\alias{edgeMatrix,distGraph-method}
 \title{Compute an Edge Matrix for a Graph  }
 \description{
  For our purposes an \emph{edge matrix} is a matrix with two rows and as
@@ -18,7 +18,7 @@
 }
 \usage{
 edgeMatrix(object, duplicates=FALSE)
-eWV(g, em, sep = ifelse(edgemode(g) == "directed", "->",
+eWV(g, eM, sep = ifelse(edgemode(g) == "directed", "->",
                  "--"))
 }
 \arguments{
@@ -26,7 +26,7 @@ eWV(g, em, sep = ifelse(edgemode(g) == "directed", "->",
   \item{g}{An object that inherits from \code{graph}. }
   \item{duplicates}{Whether or not duplicate edges should be produced
     for \dQuote{undirected} graphs. }
-  \item{em}{An edge matrix}
+  \item{eM}{An edge matrix}
   \item{sep}{a character string to concatenate node labels in
     the edge label}
   \item{\dots}{arguments passed to \code{edgeMatrix}.}
