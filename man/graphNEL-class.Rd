@@ -62,7 +62,11 @@ Class \code{"graph"}, directly.
       \code{nodeLabels} parameter.  The \code{nodeCols} and
       \code{textCols} will specify colors to be used for the nodes and
       label text respectively - values can either be a single color or a
-      vector of colors (which will be cycled).  A \code{centerNode} can
+      vector of colors (which will be cycled).  The \code{nodeCols}
+      argument will also accept a named vector of colors, where the
+      names of the vector must match up with the names of the nodes in
+      the graph - in which case the colors will be assigned to the
+      appropriate node.  A \code{centerNode} can
       be specified (primarily for the "twopi" layout method) using this
       argument.}
     \item{graph2graphviz}{\code{signature(object = "graphNEL")}: A method
