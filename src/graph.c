@@ -36,7 +36,7 @@ SEXP intersectStrings(SEXP x, SEXP y) {
     int i, j, k, n, numZero=0, size;
     int curEntry=0;
 
-    matchRes = Rf_match(y, x, 0);
+    PROTECT(matchRes = Rf_match(y, x, 0));
     
     for (i = 0; i < length(matchRes); i++) {
 	if (INTEGER(matchRes)[i] == 0)
@@ -69,7 +69,7 @@ SEXP intersectStrings(SEXP x, SEXP y) {
 	}
     }
 
-    UNPROTECT(3);
+    UNPROTECT(4);
     return(ans);
 }
 
@@ -90,37 +90,32 @@ SEXP graphIntersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE,
     else
 	SET_SLOT(outGraph, Rf_install("edgemode"),
 		 R_scalarString("undirected"));    
-
-    bN = intersectStrings(xN, yN);
-
+    PROTECT(bN = intersectStrings(xN, yN));
     if (length(bN) == 0) {
 	SET_SLOT(outGraph, Rf_install("nodes"), allocVector(STRSXP, 0));
 	SET_SLOT(outGraph, Rf_install("edgeL"), allocVector(VECSXP, 0));
 	UNPROTECT(1);
 	return(outGraph);
     }
-
-    newXE = checkEdgeList(xE, bN);
-    newYE = checkEdgeList(yE, bN);
-
+    PROTECT(newXE = checkEdgeList(xE, bN));
+    PROTECT(newYE = checkEdgeList(yE, bN));
     PROTECT(newNames = allocVector(STRSXP, 2));
     SET_STRING_ELT(newNames, 0, mkChar("edges"));
     SET_STRING_ELT(newNames, 1, mkChar("weights"));
-
     PROTECT(rval = allocVector(VECSXP, length(newXE)));
     for (i = 0; i < length(newXE); i++) {
 	PROTECT(curRval = allocVector(VECSXP, 2));
 	setAttrib(curRval, R_NamesSymbol, newNames);
 
-	ans = intersectStrings(VECTOR_ELT(newXE, i), VECTOR_ELT(newYE,
-								i));
+	PROTECT(ans = intersectStrings(VECTOR_ELT(newXE, i), VECTOR_ELT(newYE,
+									i)));
 	if (length(ans) == 0) {
 	    SET_VECTOR_ELT(curRval, 0, allocVector(INTSXP, 0));
 	    SET_VECTOR_ELT(curRval, 1, allocVector(INTSXP, 0));
 	}
 	else {
 	    PROTECT(curEdges = allocVector(INTSXP, length(ans)));
-	    matches = Rf_match(bN, ans, 0);
+	    PROTECT(matches = Rf_match(bN, ans, 0));
 	    curEle = 0;
 	    for (j = 0; j < length(matches); j++) {
 		if (INTEGER(matches)[j] != 0)
@@ -131,17 +126,16 @@ SEXP graphIntersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE,
 	    for (j = 0; j < length(ans); j++)
 		INTEGER(curWeights)[j] = 1;
 	    SET_VECTOR_ELT(curRval, 1, curWeights);
-	    UNPROTECT(2);
+	    UNPROTECT(3);
 	}
 	SET_VECTOR_ELT(rval, i, curRval);
-	UNPROTECT(1);
+	UNPROTECT(2);
     }
     setAttrib(rval, R_NamesSymbol, bN);
-    
     SET_SLOT(outGraph, Rf_install("nodes"), bN);
     SET_SLOT(outGraph, Rf_install("edgeL"), rval);
 
-    UNPROTECT(3);
+    UNPROTECT(6);
     return(outGraph);
 }
 
@@ -149,6 +143,7 @@ SEXP checkEdgeList(SEXP eL, SEXP bN) {
     SEXP newEL, curVec, curMatches, newVec, eleNames;
     int i, j, k, size, curEle;
 
+    
     PROTECT(newEL = allocVector(VECSXP, length(bN)));
     PROTECT(eleNames = getAttrib(eL, R_NamesSymbol));
     for (i = 0; i < length(bN); i++) {
@@ -159,7 +154,7 @@ SEXP checkEdgeList(SEXP eL, SEXP bN) {
 	}
 	if (k < length(eL)) {
 	    curVec = VECTOR_ELT(eL, k);
-	    curMatches = Rf_match(curVec, bN, 0);
+	    PROTECT(curMatches = Rf_match(curVec, bN, 0));
 	    size = length(curMatches);
 	    for (j = 0; j < length(curMatches); j++) {
 		if (INTEGER(curMatches)[j] == 0)
@@ -175,9 +170,10 @@ SEXP checkEdgeList(SEXP eL, SEXP bN) {
 		}
 	    }
 	    SET_VECTOR_ELT(newEL, i, newVec);
+	    UNPROTECT(2);
 	}
     }
     setAttrib(newEL, R_NamesSymbol, bN);
-    UNPROTECT(length(newEL)+2);
+    UNPROTECT(2);
     return(newEL);
 }
