@@ -3,6 +3,7 @@
 \alias{edgeWeightVector}
 \alias{edgeMatrix,graphNEL-method}
 \alias{edgeMatrix,clusterGraph-method}
+\S4method{edgeMatrix}{distGraph}
 \title{Compute an Edge Matrix for a Graph  }
 \description{
  For our purposes an \emph{edge matrix} is a matrix with two rows and as
@@ -27,8 +28,8 @@ edgeWeightVector(g, ...)
   \item{\dots}{arguments passed to \code{edgeMatrix}.}
 }
 \details{
-  Implementations for both \code{graphNEL} and \code{clusterGraph} are
-  available. 
+  Implementations for \code{graphNEL}, \code{clusterGraph} and
+  \code{distGraph} are available. 
 }
 \value{
   A matrix with two rows, \emph{from} and \emph{to}, and as many columns

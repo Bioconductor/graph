@@ -261,33 +261,43 @@ validGraph<-function(object, quietly=FALSE)
 
 ##an iterative method ! yuck
 
-  setMethod("acc", "graph", function(object, index) {
+  setMethod("acc", c("graph", "character"), function(object, index) {
        nN <- numNodes(object)
        nNames<- nodes(object)
-       marked<-rep(0, nN)
-       distv <- rep(0, nN)
-       names(distv) <- nNames
-       distx <- 1
-       names(marked) <- nNames
-       nmkd <- 0
-       marked[index] <- 1
-       done <- FALSE
-       while( !done ) {
-         minds <- nNames[marked==1]
-         for( node in minds) {
-           avec <- adj(object, node)[[1]]
-           avec <- avec[marked[avec]==0] #don't mark any already marked
-           marked[avec] <- 1
-           distv[avec] <- distx
-         }
-         marked[minds] <- 2
-         distx <- distx+1
-         newmk <- sum(marked==1)
-         if( newmk == 0 )
-           done <- TRUE
+       nIndex <- length(index)
+       whN <- match(index, nNames)
+       if( any(is.na(whN)) )
+           stop("unmatched node provided")
+
+       rval <- vector("list", length=nIndex)
+       names(rval) <- nNames[whN]
+       for( i in 1:nIndex) {
+           marked<-rep(0, nN)
+           distv <- rep(0, nN)
+           names(distv) <- nNames
+           distx <- 1
+           names(marked) <- nNames
+           nmkd <- 0
+           marked[index[i]] <- 1
+           done <- FALSE
+           while( !done ) {
+               minds <- nNames[marked==1]
+               for( node in minds) {
+                   avec <- adj(object, node)[[1]]
+                   avec <- avec[marked[avec]==0] #don't mark any already marked
+                   marked[avec] <- 1
+                   distv[avec] <- distx
+               }
+               marked[minds] <- 2
+               distx <- distx+1
+               newmk <- sum(marked==1)
+               if( newmk == 0 )
+                   done <- TRUE
+           }
+           marked[index[i]] <- 0 ##not the node itself
+           rval[[i]] <- distv[marked==2]
        }
-       marked[index] <- 0 ##not the node itself
-       return(distv[marked==2])
+       return(rval)
     })
 
 setGeneric("DFS", function(object, node, checkConn=FALSE)
@@ -537,7 +547,7 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
     index <- 1
     nused <- numeric(0)
     while( !done ) {
-	curracc <- acc(object, cnode)
+	curracc <- acc(object, NL[cnode])
         rval[[index]] <- curracc
         nused <- c(nused, cnode)
         index <- index + 1
@@ -854,6 +864,12 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 sparseM2Graph <- function(sM, nodeNames) {
     require("SparseM") || stop("need SparseM for this operation")
     nN <- dim(sM)[1]
+    if( nN != dim(sM)[2] )
+        stop("only square matrices can be transformed, now")
+    if( length(nodeNames) != nN )
+        stop("wrong number of node names supplied")
+    if( !is.character(nodeNames) )
+        stop("wrong type of node names supplied")
     dd <- diff(sM@ia)
     e1 <- rep(1:nN, dd)
     eL <- split(sM@ja, e1)
@@ -874,6 +890,8 @@ sparseM2Graph <- function(sM, nodeNames) {
 ##ia the row offsets (
 graph2SparseM <- function(g, useweights=FALSE) {
     require("SparseM") || stop("need SparseM for this operation")
+    if( class(g) != "graphNEL" )
+       stop("coercion only works for graphNEL class")
     nr = nc = numNodes(g)
     e1 = g@edgeL
     e2 = lapply(e1, function(x) x$edges)

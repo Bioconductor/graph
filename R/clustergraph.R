@@ -200,12 +200,34 @@
  setMethod("numNodes", "clusterGraph", function(object)
     sum(sapply(object@clusters, length)))
 
- setMethod("adj", "clusterGraph", function(object, index)
-    for(cl in object@clusters) if( index %in% cl ) cl)
+ setMethod("adj", "clusterGraph", function(object, index) {
+     nIndex <- length(index)
+     if( any(is.na(match(index, nodes(object)))) )
+         stop("invalid node label supplied")
+     rval <- vector("list", length=nIndex)
+     names(rval) <- index
+     for(i in 1:nIndex) {
+         for(cl in object@clusters)
+             if( index[i] %in% cl )
+                 rval[[i]] <- cl
+     }
+     return(rval)})
+
 
  ##for cluster graphs, acc and adj are the same
- setMethod("acc", "clusterGraph", function(object, index)
-      for(cl in object@clusters) if( index %in% cl ) cl)
+ setMethod("acc", c("clusterGraph", "character"),
+           function(object, index) {
+               nIndex <- length(index)
+               if( any(is.na(match(index, nodes(object)))) )
+                   stop("invalid node label supplied")
+               rval <- vector("list", length=nIndex)
+               names(rval) <- index
+               for(i in 1:nIndex) {
+                   for(cl in object@clusters)
+                       if( index[i] %in% cl )
+                           rval[[i]] <- cl
+                   }
+               return(rval)})
 
  setMethod("connComp", "clusterGraph", function(object)
       object@clusters)

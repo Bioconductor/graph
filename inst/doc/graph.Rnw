@@ -47,6 +47,10 @@ The reader is likely to find it very helpful to have the
 be able to visualize some of the many different graphs that can be
 drawn.
 
+<<setup, results=hide, echo=FALSE>>=
+
+ library(graph)
+@
 \section*{Classes}
 
 The basic class, \Rclass{graph}, is a virtual class and all other

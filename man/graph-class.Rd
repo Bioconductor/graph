@@ -12,7 +12,6 @@
 \alias{join}
 \alias{numNodes}
 \alias{union}
-\alias{acc,graph-method}
 \alias{complement,graph-method}
 \alias{connComp,graph-method}
 \alias{degree,graph,missing-method}

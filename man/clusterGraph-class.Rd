@@ -2,7 +2,6 @@
 \docType{class}
 \alias{clusterGraph-class}
 \alias{clusterGraph-class}
-\alias{acc,clusterGraph-method}
 \alias{adj,clusterGraph-method}
 \alias{connComp,clusterGraph-method}
 \alias{edges,clusterGraph,missing-method}
@@ -49,5 +48,6 @@ Class \code{"graph"}, directly.
 \examples{
   cG1 <- new("clusterGraph", clusters=list(a=c(1,2,3), b=c(4,5,6)))
   cG1
+  acc(cG1, c("1", "2"))
 }
 \keyword{classes}
