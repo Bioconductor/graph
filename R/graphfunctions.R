@@ -128,6 +128,30 @@ ugraph <- function(graph)
                 ans
             })
 
+  setMethod("edgeMatrix", c("distGraph", "ANY"),
+            function(object, duplicates) {
+               ## Return a 2 row numeric matrix (from, to, weight)
+               ed <- edges(object)
+               ##reorder to the same order as nodes
+               NODES <- nodes(object)
+               ed <- ed[NODES]
+               nN <- length(ed)
+               elem <- sapply(ed, length)
+               from <- rep(1:nN, elem)
+               to <- match(unlist(ed), NODES)
+               ans <- rbind(from, to)
+               ##we duplicate edges in undirected graphNEL
+               ##so here we remove them
+               if( edgemode(object) == "undirected"  && !duplicates) {
+                   t1 <- apply(ans, 2, function(x) {paste(sort(x),
+                                                           collapse="+")})
+                   ans <- ans[ ,!duplicated(t1)]
+               }
+               ans
+           })
+
+
+
 
 edgeWeightVector <- function (g,...)
 {

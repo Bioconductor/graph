@@ -66,9 +66,6 @@
    out
  }
 
-##rely on .initGraph having been called first to set up the
-##classes and generics
-
  setClass("distGraph",
      representation( Dist = "dist"),
           prototype=list(edgemode="undirected"),
@@ -131,8 +128,23 @@
        names(eL) <- which
        eL})
 
- if( !isClass("graph") )
-   stop("cannot initialize clusterGraph without graph")
+ setMethod("edgeWeights", "distGraph",
+           function(object, index) {
+               edg <- edges(object)
+               if( !missing(index) )
+                   edg <- edg[index]
+               NODES <- nodes(object)
+               edLocs <- match(names(edg), NODES)
+               edE <- lapply(edg, function(x) match(x, NODES))
+               for( i in seq(along=edLocs) )
+                   edE[[i]] <- object@Dist[edLocs[i], edE[[i]]]
+               names(edE) <- names(edg)
+               edE
+           })
+
+####################################
+##clusterGraph code here
+####################################
 
  setClass("clusterGraph",
      representation( clusters = "list"), contains="graph",
@@ -176,6 +188,7 @@
      ans <- lapply(edg, function(x) { ans <- rep(1, length(x));
                                       names(ans) <- x; ans})
      ans})
+
 
  setMethod("subGraph", c("character", "clusterGraph"),
            function(snodes, graph) {

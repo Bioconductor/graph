@@ -56,6 +56,12 @@ validGraph<-function(object, quietly=FALSE)
           }
       }
   }
+  else if( is(object, "distGraph") ) {
+      if( is(object@Dist, "dist") )
+          return(TRUE)
+      else
+          return(FALSE)
+  }
   return(!bad)
 }
 
