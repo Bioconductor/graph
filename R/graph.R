@@ -1070,9 +1070,9 @@ setMethod("clusteringCoefficient", "graph", function(object) {
   if(any(is.na(unlist(to)))||any(is.na(from)))
     stop("Edge names do not match node names.")
 
-  clustCoef <- numeric(numNodes(object))
+  clustCoef <- rep(as.numeric(NA), numNodes(object))
   names(clustCoef) <- nodes(object)
-  for(i in seq(along=clustCoef)) {
+  for (i in which(listLen(to)>0)) {
     ## to[[i]] are all the nodes reached from i.
     ## to[ to[[i]] ] are all second-degree neihbours
     nb <- sapply(to[ to[[i]] ], function(x) sum(!is.na(match(x, to[[i]]))))

@@ -2,9 +2,6 @@
 \docType{class}
 \alias{graph-class}
 
-\alias{clusteringCoefficient}
-\alias{clusteringCoefficient,graph-method}
-
 \alias{complement}
 \alias{complement,graph-method}
 
@@ -124,10 +121,6 @@ A virtual Class: No objects may be created from it.
       \code{tail\~head}, where \code{head} is the name of the tail node
       and \code{head} is the name of the head node.}
 
-    \item{clusteringCoefficient}{\code{signature(object = "graph")}: Returns a
-      vector of the clustering coefficients for each node of a
-      graph with \code{edgemode=="undirected"}. If the graph has
-      \code{edgemode=="directed"}, the function will return NULL.
     }
   }
 }
@@ -174,7 +167,6 @@ A virtual Class: No objects may be created from it.
   edges(g1)
   edges(g1, "a")
 
-  edgeNames(g1)
-  clusteringCoefficient(g1)
+  ## edgeNames(g1)
 }
 \keyword{classes}
