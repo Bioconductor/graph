@@ -1,33 +1,48 @@
 \name{graph-class}
 \docType{class}
 \alias{graph-class}
+
+\alias{clusteringCoefficient}
+\alias{clusteringCoefficient,graph-method}
+
 \alias{complement}
-\alias{connComp}
-\alias{degree}
-\alias{degree}
-\alias{edgemode}
-\alias{edgemode<-}
-\alias{intersection}
-\alias{isConnected}
-\alias{join}
-\alias{numNodes}
-\alias{show}
-\alias{union}
-\alias{edgeNames}
-\alias{edgeNames,graph-method}
 \alias{complement,graph-method}
+
+\alias{connComp}
 \alias{connComp,graph-method}
+
+\alias{degree}
 \alias{degree,graph,missing-method}
 \alias{degree,graph,ANY-method}
+
 \alias{dfs,graph-method}
+
+\alias{edgemode}
+\alias{edgemode<-}
 \alias{edgemode,graph-method}
 \alias{edgemode<-,graph,character-method}
+
+\alias{edgeNames}
+\alias{edgeNames,graph-method}
+
+\alias{intersection}
 \alias{intersection,graph,graph-method}
+
+\alias{isConnected}
 \alias{isConnected,graph-method}
+
+\alias{join}
 \alias{join,graph,graph-method}
+
+\alias{numNodes}
 \alias{numNodes,graph-method}
+
+\alias{show}
 \alias{show,graph-method}
+
+\alias{union}
 \alias{union,graph,graph-method}
+
 \title{Class "graph" }
 \description{A virtual class that all graph classes should extend. }
 \section{Objects from the Class}{
@@ -108,6 +123,12 @@ A virtual Class: No objects may be created from it.
       vector of the edge names for this graph, using the format
       \code{tail\~head}, where \code{head} is the name of the tail node
       and \code{head} is the name of the head node.}
+
+    \item{clusteringCoefficient}{\code{signature(object = "graph")}: Returns a
+      vector of the clustering coefficients for each node of a
+      graph with \code{edgemode=="undirected"}. If the graph has
+      \code{edgemode=="directed"}, the function will return NULL.
+    }
   }
 }
 
@@ -153,5 +174,7 @@ A virtual Class: No objects may be created from it.
   edges(g1)
   edges(g1, "a")
 
+  edgeNames(g1)
+  clusteringCoefficient(g1)
 }
 \keyword{classes}

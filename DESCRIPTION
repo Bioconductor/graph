@@ -1,11 +1,11 @@
 Package: graph
 Title: graph: A package to handle graph data structures 
-Version: 1.4.14
-Date: 03.08.2004
+Version: 1.4.15
+Date: 07.08.2004
 Author: R. Gentleman, Elizabeth Whalen
 Description: A package that implements some simple graph handling capabilities. 
 Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
 License: LGPL
-Depends: R (>= 1.8.0), cluster, Ruuid
-Suggests: SparseM (>= 0.36), Biobase (>= 1.4.2), XML
+Depends: R (>= 1.8.0), cluster, Ruuid, Biobase (>= 1.4.2)
+Suggests: SparseM (>= 0.36), XML
 Collate: contents.R buildDepGraph.R property.R graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R write.tlp.R mat2graph.R zzz.R graphH.R standardLabeling.R

@@ -1023,37 +1023,62 @@ if (is.null(getGeneric("edgeNames")))
     setGeneric("edgeNames", function(object, ...)
                standardGeneric("edgeNames"))
 
+## edgeNames
 setMethod("edgeNames", "graph", function(object,
                                            recipEdges=c("combined",
                                            "distinct")) {
-    recipEdges <- match.arg(recipEdges)
+  recipEdges <- match.arg(recipEdges)
 
-    to <- edges(object)
-    from <- names(to)
-    edgeNames <- as.vector(unlist(mapply(function(x,y) {
-        if (length(x) > 0)
-            paste(y,x,sep="~")
-        else
-            NULL}, to, from)))
-
-    if (recipEdges == "combined") {
-        revNames <-  unlist(mapply(function(x,y) {
-            if (length(x) > 0)
-                paste(x,y,sep="~")
-            else
-                NULL}, to, from))
-
-        handled <- character()
-        remove <- numeric()
-        for (i in 1:length(edgeNames)) {
-            if (! revNames[i] %in% handled)
-                handled <- c(handled, edgeNames[i])
-            else
-                remove <- c(remove, i)
-        }
-        if (length(remove) > 0)
-            edgeNames <- edgeNames[-remove]
-    }
-    edgeNames
+  ## convert names to integers ("standard node labeling")
+  to   <- lapply(edges(object), match, nodes(object))
+  from <- match(names(to), nodes(object))
+  
+  if(any(is.na(unlist(to)))||any(is.na(from)))
+    stop("Edge names do not match node names.")
+  
+  ## unlist
+  from <- rep(from, listLen(to))
+  to   <- unlist(to)
+  
+  ## only keep those where from <= to
+  if (recipEdges == "combined")
+    keep <- (from<=to)
+  else
+    keep <- rep(TRUE, length(from))
+  
+  paste(nodes(object)[from[keep]],
+        nodes(object)[to[keep]], sep="~")
 })
+
+if (is.null(getGeneric("clusteringCoefficient")))
+  setGeneric("clusteringCoefficient", function(object, ...)
+             standardGeneric("clusteringCoefficient"))
+
+##--------------------------
+## clustering coefficient
+##--------------------------
+setMethod("clusteringCoefficient", "graph", function(object) {
+  if(edgemode(object)!="undirected")
+    return(NULL)
+
+  ## Convert names to integers ("standard node labeling")
+  ## This is here for efficiency - the matching code in the for-loop
+  ## below would also work for the characters (names).
+  to   <- lapply(edges(object), match, nodes(object))
+  from <- match(names(to), nodes(object))
+  
+  if(any(is.na(unlist(to)))||any(is.na(from)))
+    stop("Edge names do not match node names.")
+
+  clustCoef <- numeric(numNodes(object))
+  names(clustCoef) <- nodes(object)
+  for(i in seq(along=clustCoef)) {
+    ## to[[i]] are all the nodes reached from i.
+    ## to[ to[[i]] ] are all second-degree neihbours
+    nb <- sapply(to[ to[[i]] ], function(x) sum(!is.na(match(x, to[[i]]))))
+    clustCoef[from[i]] <- sum(nb) / (length(nb)*(length(nb)-1))
+  }
+  return(clustCoef)
+})
+
 
