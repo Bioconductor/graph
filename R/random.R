@@ -16,6 +16,7 @@ randomGraph <- function(V, M, p, weights = TRUE)
 {
     if( any(duplicated(V)) )
        stop("node names must be unique")
+    V = as.character(V)
 
     lenM <- length(M)
     lenV <- length(V)

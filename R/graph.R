@@ -399,23 +399,26 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
            stop("both graphs must have the same edgemode")
        xN <- nodes(x)
        yN <- nodes(y)
-       bN <- intersect(xN,yN)
-       lb <- length(bN)
-       if(lb != length(xN) || lb != length(yN))
-           stop("graphs must have the same node set")
-       yOrd <- match(xN, yN)
-       xE <- edges(x)
-       yE <- edges(y)[yOrd]
+       bN <- intersect(xN, yN)
+       if( length(bN) == 0 )
+           return(new("graphNEL", nodes=character(0),
+                      edgeL=vector("list", 0), edgemode=edgemode(x)))
+       ##lb <- length(bN)
+       ##if(lb != length(xN) || lb != length(yN))
+       ##    stop("graphs must have the same node set")
+       xE <- edges(x, bN)
+       xE = lapply(xE, function(x) {
+           x[x %in% bN]})
+       yE <- edges(y, bN)
+       yE = lapply(yE, function(x) {
+           x[x %in% bN]})
        rval <- vector("list", length=length(xE))
        for(i in 1:length(xE) ) {
            ans <- intersect(xE[[i]], yE[[i]])
-           if( length(ans) > 0 )
-               rval[[i]] <- list(edges=match(ans, xN),
+           rval[[i]] <- list(edges=match(ans, bN),
                                  weights=rep(1, length(ans)))
-           else
-               rval[[i]] <- list(edges=numeric(0), weights=numeric(0))
        }
-       names(rval) <- xN
+       names(rval) <- bN
        new("graphNEL", nodes=bN, edgeL=rval, edgemode=edgemode(x))
    })
 
