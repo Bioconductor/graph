@@ -101,7 +101,9 @@ NELhandler <- function ()
 		for (i in 1:length(badinds))
 			nl[[ ns[ badinds[i] ] ]] <- character(0)
 		}
-        new("graphNEL", nodes = ns, edgeL = nl, edgemode = edgemode)
+        g <- new("graphNEL", nodes = ns, edgeL = nl, edgemode = edgemode)
+        if (!validGraph(g)) stop("GXL did not define a valid graph package graphNEL object.\nMost likely there is a failure of reciprocity for edges in\nan undirected graph.  If there is a node for edge from A to B\nin an undirected graphNEL, there must also be an edge from B to A.")
+	g
     }
     list(startElement = startElement, endElement = endElement, 
         text = text, dump = dump, asGraphNEL = asGraphNEL)
