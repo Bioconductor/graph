@@ -172,7 +172,13 @@ eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
     unE <- unique(eM[1,])
     edL <- g@edgeL
     eE <- lapply(edL, function(x) x$edges)
-    eW <- lapply(edL, function(x) x$weights)
+    eW <- lapply(edL, function(x) {
+        ans = x$weights
+        ed = length(x$edges)
+        if( is.null(ans) && ed > 0 )
+            ans = rep(1, ed)
+        ans})
+
     nr <- listLen(eE)
     ##now we can subset -
     eMn <- paste(rep((1:length(nr))[unE],nr[unE]), unlist(eE[unE]), sep=sep)
