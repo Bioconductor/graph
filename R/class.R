@@ -42,7 +42,7 @@
                           nodeType="character",
                           toEdges="list",
                           fromEdges="list",
-                          edgeOrder="integer",
+                          edgeOrder="numeric",
                           label="character" ),
            prototype = list(nodeID=newID(), nodetype="unknown",
              edgeOrder=0, label=""),
