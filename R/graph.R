@@ -94,15 +94,7 @@ validGraph<-function(object, quietly=FALSE)
        .Object@edgemode <- edgemode
        .Object})
 
-  if (!isGeneric("nodes"))
-  {
-    if (is.function("nodes"))
-      fun <- nodes
-    else
-      fun <- function(object) standardGeneric("nodes")
-    setGeneric("nodes", fun)
-  }
-
+  setGeneric("nodes", function(object) standardGeneric("nodes"))
   setMethod("nodes", "graphNEL", function(object) object@nodes)
 
   setGeneric("nodes<-", function(object, value)

@@ -8,10 +8,10 @@
     ##there are lots of problems with the integer version --
 ##    if( require(Ruuid, quietly=TRUE) ) {
 ##        setIs( "Ruuid", "graphID")
-##        haveUUID <- TRUE
+##        .haveUUID <- TRUE
 ##    }  else{
         setClassUnion("graphID", "integer")
-        haveUUID <- FALSE
+        .haveUUID <- FALSE
 ##        warning("without Ruuid you may have problems with node or edge IDS")
 ##    }
 
@@ -20,7 +20,7 @@
     assign("idenv", new.env(hash=TRUE))
     assign("idval", 1, env=idenv)
 
-    if( haveUUID ) {
+    if( .haveUUID ) {
         assign("startids", function(x) NULL)
         assign("newID", getuuid)
 ##        assign("nullgraphID", new("Ruuid"), pos="package:graph")

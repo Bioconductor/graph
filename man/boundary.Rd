@@ -35,17 +35,11 @@ boundary(subgraph, graph)
 
 \author{ Elizabeth Whalen and R. Gentleman }
 
-\seealso{ \code{\link{subGraph}}, \code{\link{graph}}
+\seealso{ \code{\link{subGraph}}, \code{\link{graph-class}}
  }
 
 \examples{
 
 }
 \keyword{ manip }
-
-
-
-
-
-
 

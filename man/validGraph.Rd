@@ -24,7 +24,7 @@ validGraph(object, quietly=FALSE)
 
 \author{ Elizabeth Whalen }
 
-\seealso{\code{\link{graph}} }
+\seealso{\code{\link{graph-class}} }
 
 \examples{
   
