@@ -73,6 +73,13 @@
           prototype=list(edgemode="undirected"),
           contains="graph")
 
+ setMethod("initialize", "distGraph", function(.Object, Dist) {
+       if( is.null( attr(Dist, "Labels") ) )
+	   attr(Dist, "Labels") = as.character(1:attr(Dist, "Size"))
+       .Object@Dist = Dist
+       .Object
+ })
+
  setMethod("nodes", "distGraph", function(object)
       attr(object@Dist, "Labels" ))
 
