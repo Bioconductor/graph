@@ -99,9 +99,17 @@ validGraph<-function(object, quietly=FALSE)
        edgeL = vector("list",length=0), edgemode) {
        if( missing(edgemode) )
            edgemode <- "undirected"
-       if( !missing(edgeL) && length(edgeL) > 1 )
-         if( is.character(edgeL[[1]]) )
-             edgeL <- lapply(edgeL, function(x) match(x, nodes))
+       if( !missing(edgeL) && length(edgeL) > 1 ) {
+           if(length(nodes) != length(edgeL) )
+               stop("nodes and edges must align")
+           nameE <- names(edgeL)
+           if( !is.null(nameE) && !all( nameE %in% nodes) )
+               stop("names of nodes and edges must agree")
+           if( !is.null(nameE) )
+               edgeL <- edgeL[nodes]
+           if( is.character(edgeL[[1]]) )
+               edgeL <- lapply(edgeL, function(x) match(x, nodes))
+       }
        if( missing(edgeL) )
            edgeL = vector("list",length=0)
        if( missing(nodes) )
@@ -276,37 +284,48 @@ validGraph<-function(object, quietly=FALSE)
        return(distv[marked==2])
     })
 
-  setGeneric("dfs", function(object) standardGeneric("dfs"))
+setGeneric("DFS", function(object, node, checkConn=FALSE)
+           standardGeneric("DFS"))
 
-  setMethod("dfs", "graph", function(object) {
-        visit <- function(ind) {
-          #now <<- now+1
-          marked[ind] <<- now
-          alist <- adj(object, ind)[[1]]
-          for( EDGE in alist)
-            if( marked[EDGE]==0 )
-               visit(EDGE)
-         }
-         now <- 0
-         marked <- rep(0, numNodes(object))
-         names(marked) <- nodes(object)
-         for(i in 1:numNodes(object))
-           if( marked[i]==0 ) {
-                now <- now+1
-                visit(i)
-           }
-         return(marked)
-    })
+setMethod("DFS", c("graph", "character", "ANY"), function(object, node,
+    checkConn) {
+    nNames <- nodes(object)
+    marked <- rep(NA, length(nNames))
+    names(marked) <- nNames
+    m1 <- match(node, nNames)
+    if( is.na(m1) )
+        stop(paste("node:", node, "is not in the graph"))
 
-  setGeneric("edgeL", function(graph, index) standardGeneric("edgeL"))
+    ##this could be expensive
+    if (checkConn) {
+        c1 <- connComp(object)
+        if(length(c1) != 1)
+            stop("graph is not connected")
+    }
+    marked[m1] <- 0
+    ##repeat until all are marked - marked has no NA's
+    counter <- 1
+    while( any(is.na(marked)) ) {
+        fE <- boundary(nNames[!is.na(marked)], object)
+        fE <- fE[sapply(fE, length) > 0]
+        wh <- marked[names(fE)]
+        v1 <- sort(wh)
+        newN <- fE[[names(v1)[v1==max(v1)]]]
+        marked[newN[1]] <- counter
+        counter <- counter+1
+    }
+    return(marked)
+})
 
-  setMethod("edgeL", "graphNEL", function(graph, index) {
-        if( missing(index) )
-            graph@edgeL
-        else
-           graph@edgeL[index]})
+setGeneric("edgeL", function(graph, index) standardGeneric("edgeL"))
 
-  setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
+setMethod("edgeL", "graphNEL", function(graph, index) {
+    if( missing(index) )
+        graph@edgeL
+    else
+        graph@edgeL[index]})
+
+setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 
   ##the map from the labels to the integers, 1:n must be used
   ## you must renumber the edges of the subGraph

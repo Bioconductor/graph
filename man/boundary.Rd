@@ -19,18 +19,20 @@ boundary(subgraph, graph)
     subgraph itself.}
 }
 \details{
-  This function returns a named list. The elements of the list
-  correspond to the nodes in the subgraph. The elements are lists of the
-  names of the nodes in the graph which share an edge with the
-  respective node in the subgraph.
+  The \emph{boundary} of a \emph{subgraph} is the set of nodes in the
+  graph which have an edge that connects them to the specified subgraph
+  but which are themselves not elements of the subgraph.
 
-  Element "a", say of the list corresponds to node "a" and the value in
-  this list is a vector of node labels. Those nodes are in the graph
-  (but not the subgraph) and share an edge with node "a" in the subgraph.
-
+  For convenience users can specify the subgraph as either a graph or a
+  vector of node labels.
 }
 \value{
-  A list that is a boundary of the subgraph will be returned.
+  This function returns a named list of length equal to the number of
+  nodes in \code{subgraph}. The elements of the list
+  correspond to the nodes in the \code{subgraph}. The elements are lists
+  of the nodes in \code{graph} which share an edge with the
+  respective node in \code{subgraph}.
+
 }
 
 \author{ Elizabeth Whalen and R. Gentleman }
@@ -39,7 +41,10 @@ boundary(subgraph, graph)
  }
 
 \examples{
-
+  set.seed(123)
+  g1 <- randomGraph(letters[1:10], 1:4, p=.3)
+  ##both should be "a"
+  boundary(c("g", "i"), g1)
 }
 \keyword{ manip }
 

@@ -13,12 +13,14 @@
 boundary<-function(subgraph, graph)
 {
   if ( !is(graph, "graph") )
-    stop("The first parameter must be an object of type graph.")
+    stop("The second parameter must be an object of type graph.")
 
   if( is(subgraph, "graph") )
       snodes <- nodes(subgraph)
-  else
+  else if( is.character(subgraph) )
       snodes <- subgraph
+  else
+      stop("wrong type of first argument")
 
   if( any( !(snodes %in% nodes(graph)) ) )
       stop("the supplied subgraph is not a subgraph of the supplied graph")
@@ -27,6 +29,7 @@ boundary<-function(subgraph, graph)
 
   lapply(subE, function(x) x[!(x %in% snodes)] )
 }
+
 
 ##check to see if any edges are duplicated, as we often don't have
 ##good ways to deal with that
@@ -84,9 +87,11 @@ ugraph <- function(graph)
            function(object, duplicates) {
                    ## Return a 2 row numeric matrix (from, to, weight)
                ed <- object@edgeL
+               ##reorder to the same order as nodes
+               ed <- ed[nodes(object)]
                nN <- length(ed)
                elem <- sapply(ed, function(x) length(x$edges))
-               from <- rep(order(nodes(object)), elem) # in case node labels unsorted
+               from <- rep(1:nN, elem)
                to <- unlist(sapply(ed, function(x) x$edges))
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
