@@ -40,7 +40,7 @@ Class \code{"graph"}, directly.
     \item{numNodes}{\code{signature(object = "distGraph")}: return the
       number of nodes. }
     \item{threshold}{\code{signature(object = "distGraph")}: remove all
-      distances below the supplied threshold. }
+      distances that are larger than the supplied threshold. }
   }
 }
 \references{Shamir's paper and Butte et al}
