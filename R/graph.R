@@ -1067,13 +1067,13 @@ setMethod("edgeNames",
     ## from-to matrix
     ft <- matrix(c(rep(from, listLen(to)), to=unlist(to)), ncol=2)
 
-    ## revert those edges for which 'from' > 'to'
-    revert <- ft[, 1] > ft[, 2]
-    ft[revert,] <- ft[revert, c(2, 1)]
-   
-    if (recipEdges == "combined")
+    if (recipEdges == "combined") {
+      ## revert those edges for which 'from' > 'to'
+      revert <- ft[, 1] > ft[, 2]
+      ft[revert,] <- ft[revert, c(2, 1)]
       ft <- ft[!duplicated.array(ft, MARGIN=1),, drop=FALSE]
-
+    }
+    
     return(paste(nodes(object)[ft[, 1]], nodes(object)[ft[, 2]], sep="~"))
   },
   valueClass="character")
