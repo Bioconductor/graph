@@ -166,6 +166,32 @@ ugraph <- function(graph)
 ##a given edgeMatrix and that that would be much better done
 ##in the edgeMatrix function
 ##we are presuming that eM has integer offsets in it
+##eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
+##                       "--"))
+##{
+##    unE <- unique(eM[1,])
+##    edL <- g@edgeL
+##    eE <- lapply(edL, function(x) x$edges)
+##    eW <- lapply(edL, function(x) {
+##        ans = x$weights
+##        ed = length(x$edges)
+##        if( is.null(ans) && ed > 0 )
+##            ans = rep(1, ed)
+##        ans})
+##
+##    nr <- listLen(eE)
+##    ##now we can subset -
+##    eMn <- paste(rep((1:length(nr))[unE],nr[unE]), unlist(eE[unE]), sep=sep)
+##    eWv <- unlist(eW[unE])
+##    dE <- paste(eM[1,], eM[2,], sep=sep)
+##    wh<-match(dE, eMn)
+##    if(any(is.na(wh)) )
+##        stop("edges in supplied edgematrix not found")
+##    ans <-eWv[wh]
+##    names(ans) <- eMn[wh]
+##    ans
+##}
+
 eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
                        "--"))
 {
@@ -179,15 +205,10 @@ eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
             ans = rep(1, ed)
         ans})
 
-    nr <- listLen(eE)
-    ##now we can subset -
-    eMn <- paste(rep((1:length(nr))[unE],nr[unE]), unlist(eE[unE]), sep=sep)
-    eWv <- unlist(eW[unE])
     dE <- paste(eM[1,], eM[2,], sep=sep)
-    wh<-match(dE, eMn)
-    if(any(is.na(wh)) )
-        stop("edges in supplied edgematrix not found")
-    ans <-eWv[wh]
-    names(ans) <- eMn[wh]
-    ans
+    a1 <- apply(eM, 2,
+                function(x) eW[[x[1]]][as.character(x[2])])
+    names(a1) <- dE
+    return(a1)
 }
+
