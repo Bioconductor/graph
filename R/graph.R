@@ -403,7 +403,53 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
       new("graphNEL", nodes=nn[ma], edgeL=newed) })
 
 
-  ###some other tools
+## a faster implementation of "intersection"
+## not yet fully tested...
+## wh 15.1.2005
+setGeneric("intersection3", function(x, y)
+           standardGeneric("intersection3"))
+
+setMethod("intersection2", c("graph", "graph"), function(x,y) {
+  if( edgemode(x) != edgemode(y) )
+    stop("both graphs must have the same edgemode")
+  xN <- nodes(x)
+  yN <- nodes(y)
+
+  bN <- intersect(xN, yN)
+  nn <- length(bN)
+  
+  if(nn==0)
+    return(new("graphNEL", nodes=character(0),
+               edgeL=vector("list", 0), edgemode=edgemode(x)))
+
+  if(!all(xN %in% bN))
+    x  <- subGraph(bN, x)
+  if(!all(yN %in% bN))
+    y  <- subGraph(bN, y)
+  ## stopifnot(identical(nodes(x), bN), identical(nodes(y), bN))
+
+  xE <- edgeMatrix(x)
+  yE <- edgeMatrix(y)
+  ## stopifnot(nrow(xE)==2, ncol(xE)==numEdges(x),
+  ##           nrow(yE)==2, ncol(yE)==numEdges(y))
+  
+  ft2i <- function(ft) { ft[1,]-1 + (ft[2,]-1)*nn }
+  i2ft <- function(i)  {  1 + rbind(i%%nn, i%/%nn) }
+  ## stopifnot(all(xE == i2ft(ft2i(xE))),
+  ##           all(yE == i2ft(ft2i(yE)))) 
+  
+  ## intersect
+  bft <- i2ft(intersect(ft2i(xE),  ft2i(yE)))
+  
+  ## replace integers by node names (characters)
+  bft <- rbind(bN[bft[1,]],
+               bN[bft[2,]])
+  
+  ftM2graphNEL(bft, V=bN, edgemode=edgemode(x))
+}
+
+
+### yet another implementation of "intersection", in C
 setGeneric("intersection2", function(x, y)
            standardGeneric("intersection2"))
 
