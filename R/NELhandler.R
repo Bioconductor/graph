@@ -1,14 +1,9 @@
 NELhandler <- function () 
 {
 #
-# handler for xmlEventParse for the node and edge
-# components of GXL 1.0.1
-#  REVISED 15 Aug 03 to recognize and return edgemode
-#  REVISED 1 apr 03 so that weights come into graphNEL if
-#   present as weights child of edges in GXL
-#
-#
-# local store
+# this function is to work with omegahat's XML xmlEventParse
+# current version: given a GXL graph, capture the node names and
+# edge data to return the graph as graph::graphNEL
 #
     graphID <- NULL
     curNode <- NULL
@@ -27,11 +22,10 @@ NELhandler <- function ()
 #   which lives under a node or an edge
 #
     startElement = function(x, atts, ...) {
-        if (x == "graph") 
-            {
+        if (x == "graph") {
             graphID <<- atts["id"]
             edgemode <<- atts["edgemode"]
-            }
+        }
         else if (x == "node") {
             inNode <<- TRUE
             nodeL[[atts["id"]]] <<- list()
@@ -44,10 +38,6 @@ NELhandler <- function ()
         else if (x == "edge") {
             inNode <<- FALSE
             inEdge <<- TRUE
-#
-# you should get rid of the dependence on atts["id"] to allow edgeids=FALSE GXL to succeed
-# consider an automatic edge labeler
-#
             edgeL[[atts["id"]]] <<- list()
             edgeL[[atts["id"]]][["span"]] <<- c(atts["from"], 
                 atts["to"])
@@ -70,41 +60,50 @@ NELhandler <- function ()
             inEdge <<- FALSE
     }
     dump = function() {
-        list(graphID = graphID, nodeL = nodeL, edgeL = edgeL, edgemode=edgemode)
+        list(graphID = graphID, nodeL = nodeL, edgeL = edgeL, 
+            edgemode = edgemode)
     }
     asGraphNEL = function() {
 #
-# just handles weights children of edges when present, needs to handle
-# arbitrary children of edges and nodes
+# revised Jun 16 2004
+# when callsed, nodeL is the named list of node data, edgeL is
+# named list of edge data (unrelated to edgeL of graphNEL!!!)
 #
         require(graph)
         ns <- names(nodeL)
-        if (length(edgeL) == 0)
-        return(new("graphNEL", nodes = ns, edgemode = edgemode))
+        if (length(edgeL) == 0) 
+            return(new("graphNEL", nodes = ns, edgemode = edgemode))
+#
+# edgeL has a span element giving source and destination of each
+# edge
+#
         src <- sapply(edgeL, function(x) x$span["from"])
         dest <- sapply(edgeL, function(x) x$span["to"])
-        wts <- sapply(edgeL, function(x) x[["weights"]])
-        IGNWTS <- FALSE
-        if (any(sapply(wts,function(x)is.null(x)))) IGNWTS <- TRUE
-        if (!IGNWTS) sw <- split(wts, src)
-        edl <- split(dest, src)
-        nne <- names(edl)
-        nl <- list()
-        if (!IGNWTS) for (i in 1:length(edl)) nl[[nne[i]]] <- list(edges = match(edl[[i]], 
-            ns), weights = as.numeric(sw[[i]]))
-        else for (i in 1:length(edl)) nl[[nne[i]]] <- list(edges = match(edl[[i]], 
-            ns))
-	chkENconsis <- match(ns, names(nl))
-        if (any(inn <- is.na(chkENconsis)))
-		{
-		badinds <- (1:length(chkENconsis))[inn==TRUE]
-		for (i in 1:length(badinds))
-			nl[[ ns[ badinds[i] ] ]] <- character(0)
-		}
-        g <- new("graphNEL", nodes = ns, edgeL = nl, edgemode = edgemode)
-        if (!validGraph(g)) stop("GXL did not define a valid graph package graphNEL object.\nMost likely there is a failure of reciprocity for edges in\nan undirected graph.  If there is a node for edge from A to B\nin an undirected graphNEL, there must also be an edge from B to A.")
-	g
+        wts <- sapply(edgeL, function(x) as.numeric(x$weights))
+        NOWTS <- FALSE
+        if (all(sapply(wts,length)==0)) NOWTS <- TRUE
+        names(wts) <- dest
+#
+# graphNEL edgeL structure is a named list with one element
+# for each node of graph.  the edges component for a node N
+# has node indices of the destinations of each edge starting at N
+#
+        desti <- match(dest, ns)
+        edl <- split(desti, src)
+        wtl <- split(wts, src)
+        for (i in 1:length(ns)) {
+            if (length(edl[[ns[i]]]) == 0) 
+                edl[[ns[i]]] <- integer(0)
+            else if (!NOWTS) edl[[ns[i]]] <- list(edges = edl[[ns[i]]], weights=wtl[[ns[i]]])
+            else edl[[ns[i]]] <- list(edges = edl[[ns[i]]])
+        }
+        edl <- edl[ns]
+        g <- new("graphNEL", nodes = ns, edgeL = edl, edgemode = edgemode)
+        if (!validGraph(g)) 
+            stop("GXL did not define a valid graph package graphNEL object.\nMost likely there is a failure of reciprocity for edges in\nan undirected graph.  If there is a node for edge from A to B\nin an undirected graphNEL, there must also be an edge from B to A.")
+        g
     }
     list(startElement = startElement, endElement = endElement, 
         text = text, dump = dump, asGraphNEL = asGraphNEL)
 }
+
