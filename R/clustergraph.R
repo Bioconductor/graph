@@ -135,7 +135,29 @@
      representation( clusters = "list"), contains="graph", where=where)
 
  setMethod("nodes", "clusterGraph", function(object)
-    unlist(object@clusters), where=where)
+    as.character(unlist(object@clusters)), where=where)
+
+ setMethod("edges", "clusterGraph", function(object) {
+     edges<-list()
+     for(clust in object@clusters) {
+         cc <- as.character(clust)
+         for(i in seq(along=cc) )
+             edges[[cc[i]]] <- cc[-i]
+     }
+     edges}, where=where)
+
+##FIXME: this should be done from distances, but for now...)
+##eg, if a distance matrix was supplied we could use that to define
+##edge weights -- as that seems appropriate
+
+ setMethod("edgeWeights", "clusterGraph", function(object, index) {
+     edg <- edges(object)
+     if( !missing(index) )
+         edg <- edg[index]
+
+     ans <- lapply(edg, function(x) { ans <- rep(1, length(x));
+                                      names(ans) <- x; ans})
+     ans}, where =where)
 
  setMethod("numNodes", "clusterGraph", function(object)
     sum(sapply(object@clusters, length)), where=where)

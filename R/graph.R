@@ -29,7 +29,8 @@ validGraph<-function(object)
 .initGraph <- function(where)
 {
   ## we define a virtual graph class -- to hold generic functions
-  setClass("graph", representation(edgemode="character"), where=where)
+  setClass("graph", representation(edgemode="character",
+                                   "VIRTUAL"), where=where)
 
   ## a node-edge-list graph
   ##the edgeL is a list, with edges, weights etc

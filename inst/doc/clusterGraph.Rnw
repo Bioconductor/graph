@@ -1,0 +1,59 @@
+%
+% NOTE -- ONLY EDIT howtogenefilter.Rnw!!!
+% Biobase.tex file will get overwritten.
+%
+%\VignetteIndexEntry{clusterGraph}
+%\VignetteDepends{graph, cluster, methods}
+%\VignetteKeywords{Graph}
+%\VignettePackage{graph}
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+\newcommand{\classdef}[1]{%
+  {\em #1}
+}
+
+\begin{document}
+\title{How To use clusterGraph}
+
+\maketitle
+
+\section*{Introduction}
+
+A \textit{clusterGraph} is a graph defined on a set of nodes that have
+been clustered or grouped in some fashion.
+The grouping must form a partition of the nodes.
+In this graph all nodes within the same cluster are adjacent while
+there are no edges between clusters.
+
+Thus, each cluster is a complete graph but there are no between
+cluster edges.
+
+<<clustering>>=
+library(methods)
+library(graph)
+library(cluster)
+data(ruspini)
+
+pm <- pam(ruspini, 4)
+
+cG <- new("clusterGraph",
+     clusters = split(names(pm$clustering), pm$clustering))
+
+
+nodes(cG)
+@
+
+We now have a graph that we could perform various operations on.
+
+
+\end{document}
+
