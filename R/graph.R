@@ -455,6 +455,17 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
           }
       }
 
+      ## Some graphs have edgeL's that are missing the original
+      ## node from the edgeL.  When we collated the edgeL above,
+      ## those nodes will be missing - so need to make sure that
+      ## all nodes are present, as the new("graphNEL") call below
+      ## will check to make sure that length(nodes) == length(edgeL)
+      for (missNode in newNodes[! newNodes %in% names(newEdgeL)]) {
+          newEdgeL[[length(newEdgeL) + 1]] <- list(edges=numeric(),
+                                                   weights=numeric())
+          names(newEdgeL)[length(newEdgeL)] <- missNode
+      }
+
       new("graphNEL", nodes=newNodes, edgeL=newEdgeL, edgemode=ex)
   })
 
