@@ -474,6 +474,13 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
                   curEntry$edges <- c(curEntry$edges, newEntry[[1]]$edges)
                   curEntry$weights <- c(curEntry$weights,
                                         newEntry[[1]]$weights)
+                  ##should be user adjustable -
+                  ##for now just remove extras
+                  dups = duplicated(curEntry$edges)
+                  if(any(dups) ) {
+                      curEntry$edges = curEntry$edges[!dups]
+                      curEntry$weights = curEntry$weights[!dups]
+                  }
                   if (!is.null(curEntry))
                       newEdgeL[[entry]] <- curEntry
               }
@@ -1003,7 +1010,6 @@ graph2SparseM <- function(g, useweights=FALSE) {
 if (is.null(getGeneric("edgeNames")))
     setGeneric("edgeNames", function(object, ...)
                standardGeneric("edgeNames"))
-
 
 setMethod("edgeNames", "graph", function(object,
                                            recipEdges=c("combined",
