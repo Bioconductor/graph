@@ -165,14 +165,19 @@ listEdges <- function(object, dropNULL=TRUE)
     for(i in 1:Nn) {
         Node <- Nd[i]
         ELi <- EL[[i]]
-        for( j in 1:length(ELi$edges) ) {
+        for( j in seq(along=ELi$edges) ) {
             toN <- Nd[ELi$edges[j]]
             btwn <- paste(sort(c(Node, toN)), collapse=":")
-            eList[[btwn]] <- list(eList[[btwn]], new("simpleEdge",
+            newN <-new("simpleEdge",
                     bNode=Node, eNode=toN,
-                    weight=ELi$weights[j],
+                    weight=if( is.null(ELi$weights[j])) 1 else ELi$weights[j] ,
                     directed = object@edgemode=="directed",
-                    edgeType=if(is.null(ELi$type[j])) "" else ELi$type[j]))
+                    edgeType=if(is.null(ELi$type[j])) "" else
+                       ELi$type[j])
+            if( is.null(eList[[btwn]]) )
+                eList[[btwn]] <- list(newN)
+            else
+                eList[[btwn]] <- list(eList[[btwn]], newN )
         }
     }
     return(eList)
