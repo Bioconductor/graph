@@ -145,3 +145,38 @@ numNoEdges<-function(objGraph)
 
 
 
+##########################################################
+##RG/2003
+##########################################################
+
+##listEdges: list all edges for every pair of nodes in the graph
+##so if there N nodes then there are N choose 2 possible entries
+##dropNULL=T/F says whether to drop those pairs with no edges
+
+
+listEdges <- function(object, dropNULL=TRUE)
+{
+    if( !is(object, "graphNEL") )
+        stop("listEdges only works for graphNEL objects")
+    Nd <- nodes(object)
+    Nn <- length(Nd)
+    EL <- object@edgeL
+    eList <- NULL
+    for(i in 1:Nn) {
+        Node <- Nd[i]
+        ELi <- EL[[i]]
+        for( j in 1:length(ELi$edges) ) {
+            toN <- Nd[ELi$edges[j]]
+            btwn <- paste(sort(c(Node, toN)), collapse=":")
+            eList[[btwn]] <- list(eList[[btwn]], new("simpleEdge",
+                    bNode=Node, eNode=toN,
+                    weight=ELi$weights[j],
+                    directed = object@edgemode=="directed",
+                    edgeType=if(is.null(ELi$type[j])) "" else ELi$type[j]))
+        }
+    }
+    return(eList)
+}
+
+
+

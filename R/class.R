@@ -57,6 +57,14 @@
           prototype = list(edgeID=nullgraphID, edgeType="unknown",
           directed=FALSE, bNode=nullgraphID, eNode=nullgraphID, weight=1))
 
+    setClass("simpleEdge",
+             representation(edgeType="character",
+                            weight="numeric",
+                            directed="logical",
+                            bNode="character",    ##begin - if directed
+                         eNode="character"),   ##end   - if directed
+          prototype = list(edgeType="unknown",
+          directed=FALSE, bNode="", eNode="", weight=1))
     ##setup the accessor functions
 
     if (is.null(getGeneric("edgeID")) && !exists("edgeID",
