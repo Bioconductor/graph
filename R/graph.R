@@ -1070,8 +1070,9 @@ setMethod("edgeNames",
     if (recipEdges == "combined") {
       ## revert those edges for which 'from' > 'to'
       revert <- ft[, 1] > ft[, 2]
-      ft[revert,] <- ft[revert, c(2, 1)]
-      ft <- ft[!duplicated.array(ft, MARGIN=1),, drop=FALSE]
+      ft2 <- ft
+      ft2[revert,] <- ft2[revert, c(2, 1)]
+      ft <- ft[!duplicated.array(ft2, MARGIN=1),, drop=FALSE]
     }
     
     return(paste(nodes(object)[ft[, 1]], nodes(object)[ft[, 2]], sep="~"))
