@@ -6,6 +6,7 @@
 \alias{edgeL}
 \alias{edgeWeights}
 \alias{uniqueEdges}
+\alias{graph2graphviz}
 \title{Class "graphNEL"}
 \description{
   This is a class of graphs that are represented in terms of nodes and
@@ -54,6 +55,18 @@ Class \code{"graph"}, directly.
       that returns a list of \code{gEdge} objects, representing the set
       of unique edges in the graph (ie in an undirected graph A<->B is
       only represented once.)}
+    \item{plot}{\code{signature(x="graphNEL",y,...,nodeLabels)}:A method
+      for plotting a \code{graphNEL} object.  Requires the package \code
+      {Rgraphviz} to be loaded.  Users can specify a layout engine with
+      the \code{y} parameter, being "dot", "neato" or "twopi", with
+      "dot" being the default.  Standard plotting parameters can be
+      passed in via the \code{...} argument.  Labels for the nodes
+      default to the names of the nodes, but can be customized using the
+      \code{nodeLabels} parameter.}
+    \item{graph2graphviz}{\code{signature(object = "graphNEL")}: A method
+      that will convert a \code{graphNEL} object into a matrix suitable
+      for interaction with \code{Rgraphviz}.  Not intended to be called
+      directly.}
   }
 }
 
