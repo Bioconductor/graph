@@ -150,10 +150,6 @@
     as.character(unlist(object@clusters)), where=where)
 
  setMethod("edges", c("clusterGraph", "missing"), function(object, which) {
-     nN <- nodes(object)
-     wh <- match(which, nN)
-     if( any(is.na(wh)) )
-         stop("not all nodes in the supplied graph")
      edges<-list()
      for(clust in object@clusters) {
          cc <- as.character(clust)
