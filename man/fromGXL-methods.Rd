@@ -57,6 +57,12 @@ as second record in the output.
 
 Some structures in a graphNEL and some tags in GXL may not be handled
 at this time.
+
+Note added 18 Jul 2003: It has been observed that graphviz dot2gxl generates
+GXL with graph attribute edgeids=FALSE.  fromGXL will fail to process
+the edges correctly.  You can manually add arbitrary edgeids to the dot2gxl
+output edges and fromGXL will succeed.  Perhaps fromGXL can be made less
+dependent on edge id attributes.
 }
 \examples{
 sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
