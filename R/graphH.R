@@ -45,8 +45,8 @@ setMethod("initialize",
                   edgesNames <- ls(edges, all=TRUE)
                   ## This should be done in C
                   for (i in seq(along=nodes)) {
-                      nodes[[i]]@fromEdges <- list()
-                      nodes[[i]]@toEdges <- list()
+                      fromEdges(nodes[[i]]) <- list()
+                      toEdges(nodes[[i]]) <- list()
                   }
                   for (eid in edgesNames) {
                       edge <- edges[[eid]]
