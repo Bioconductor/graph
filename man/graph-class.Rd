@@ -58,6 +58,8 @@
       edge lists are wanted.}
     \item{nodes<-}{A generic function that allows different
       implementations of the \code{graph} class to reset the node labels}
+    \item{plot}{Please see the help page for the \code{plot.graph}
+      method in the \code{Rgraphviz} package}
   }
 }
 \references{ Graph Theory and its Applications, J. Gross and J. Yellen. }

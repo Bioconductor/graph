@@ -51,24 +51,8 @@ Class \code{"graph"}, directly.
 	"graphNEL")}:A method for
       obtaining the induced subgraph based on the set of supplied nodes
       and the supplied graph.}
-    \item{plot}{\code{signature(x="graphNEL",y,...,nodeLabels,
-	centerNode, nodeCols=par("bg"), textCols=par("fg"))}:A method for
-      plotting a \code{graphNEL} object.  Requires the package
-      \code{Rgraphviz} to be loaded.  Users can specify a layout engine with
-      the \code{y} parameter, being "dot", "neato" or "twopi", with
-      "dot" being the default.  Standard plotting parameters can be
-      passed in via the \code{...} argument.  Labels for the nodes
-      default to the names of the nodes, but can be customized using the
-      \code{nodeLabels} parameter.  The \code{nodeCols} and
-      \code{textCols} will specify colors to be used for the nodes and
-      label text respectively - values can either be a single color or a
-      vector of colors (which will be cycled).  The \code{nodeCols}
-      argument will also accept a named vector of colors, where the
-      names of the vector must match up with the names of the nodes in
-      the graph - in which case the colors will be assigned to the
-      appropriate node.  A \code{centerNode} can
-      be specified (primarily for the "twopi" layout method) using this
-      argument.}
+    \item{plot}{Please see the help page for \code{plot.graphNEL} in the
+      \code{Rgraphviz} package}
     \item{graph2graphviz}{\code{signature(object = "graphNEL")}: A method
       that will convert a \code{graphNEL} object into a matrix suitable
       for interaction with \code{Rgraphviz}.  Not intended to be called
