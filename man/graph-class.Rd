@@ -109,6 +109,12 @@
   implementation of Trajan's algorithm to find \emph{strongly
   connected} components (\code{\link{strongComp}}).
 
+  In the \pkg{graph} implementation of \code{connComp} \emph{weak
+    connectivity} is used. If the argument to \code{connComp} is a
+  directed graph then \code{\link{ugraph}} is called to create the
+  underlying undirected graph and that is used to compute connected
+  components. Users who want different behavior are encouraged to use
+  \pkg{RBGL}.
 }
 
 \references{ Graph Theory and its Applications, J. Gross and J. Yellen. }
