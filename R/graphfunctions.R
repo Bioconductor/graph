@@ -240,7 +240,7 @@ eWV <- function (g, eM, sep = ifelse(edgemode(g) == "directed", "->",
 }
 
 
-pathWeights <- function (g, p, em = NULL) 
+pathWeights <- function (g, p, eM = NULL) 
 {
 #
 # a path is a vector of names of adjacent nodes
