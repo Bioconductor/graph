@@ -6,6 +6,7 @@
 \alias{degree}
 \alias{degree}
 \alias{edgemode}
+\alias{edgemode<-}
 \alias{intersection}
 \alias{isConnected}
 \alias{join}
@@ -18,6 +19,7 @@
 \alias{degree,graph,ANY-method}
 \alias{dfs,graph-method}
 \alias{edgemode,graph-method}
+\alias{edgemode<-,graph,character-method}
 \alias{intersection,graph,graph-method}
 \alias{isConnected,graph-method}
 \alias{join,graph,graph-method}
@@ -73,6 +75,14 @@
       implementations of the \code{graph} class to reset the node labels}
     \item{plot}{Please see the help page for the \code{plot.graph}
       method in the \code{Rgraphviz} package}
+    \item{edgemode}{\code{signature(object="graph")}: return the
+      \code{edgemode} for the graph. Currently this can be either
+      \code{directed} or \code{undirected}.}
+    \item{edgemode<-}{\code{signature(object="graph",
+	value="character")}: set the \code{edgemode}
+      for the graph. Currently this can be either
+      \code{directed} or \code{undirected}.}
+    
   }
 }
 \references{ Graph Theory and its Applications, J. Gross and J. Yellen. }

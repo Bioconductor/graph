@@ -75,6 +75,20 @@ validGraph<-function(object, quietly=FALSE)
   setMethod("edgemode", "graph", function(object) object@edgemode)
 
 
+  setGeneric("edgemode<-", function(object, value)
+             standardGeneric("edgemode<-"))
+
+  setReplaceMethod("edgemode", c("graph", "character"),
+             function(object, value) {
+                 if(length(value) != 1)
+                     stop("edgemode is the wrong length")
+                 if( !(value %in% c("directed", "undirected")) )
+                     stop(paste("supplied mode is", value,
+                                "it must be either directed or undirected"))
+                 object@edgemode <- value
+                 object
+             })
+
   ## a node-edge-list graph
   ##the edgeL is a list, with edges, weights etc
 
@@ -82,12 +96,16 @@ validGraph<-function(object, quietly=FALSE)
             contains="graph")
 
   setMethod("initialize", "graphNEL", function(.Object, nodes=character(0),
-       edgeL = vector("list",length=0), edgemode="undirected") {
+       edgeL = vector("list",length=0), edgemode) {
+       if( missing(edgemode) )
+           edgemode <- "undirected"
        if( !missing(edgeL) && length(edgeL) > 1 )
          if( is.character(edgeL[[1]]) )
              edgeL <- lapply(edgeL, function(x) match(x, nodes))
-
-
+       if( missing(edgeL) )
+           edgeL = vector("list",length=0)
+       if( missing(nodes) )
+           nodes = character(0)
 
        .Object@nodes <- nodes
        .Object@edgeL <- edgeL
