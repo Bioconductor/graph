@@ -5,7 +5,6 @@
 \alias{edgeL}
 \alias{edges}
 \alias{edges}
-\alias{edgeWeights}
 \alias{initialize}
 \alias{nodes<-}
 \alias{nodes}

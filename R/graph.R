@@ -204,6 +204,20 @@ validGraph<-function(object, quietly=FALSE)
       standardGeneric("edgeWeights"))
 
   setMethod("edgeWeights", "graphNEL", function(object, index) {
+           gN = nodes(object)
+           if( !missing(index) ) {
+               if(is.numeric(index) ) {
+                   if( any(index <= 0) )
+                       stop("only positive indices allowed")
+                   if( any(index > length(gN)) )
+                       stop("index too large")
+               }
+               if(is.character(index) ) {
+                   wh = match(index, gN)
+                   if( any(is.na(wh)) )
+                       stop("node name is incorrect")
+               }
+           }
            if( missing(index) )
            	tlist <- object@edgeL
            else
@@ -304,7 +318,7 @@ setGeneric("DFS", function(object, node, checkConn=FALSE)
            standardGeneric("DFS"))
 
 setMethod("DFS", c("graph", "character", "ANY"), function(object, node,
-    checkConn) {
+    checkConn=FALSE) {
     nNames <- nodes(object)
     marked <- rep(NA, length(nNames))
     names(marked) <- nNames

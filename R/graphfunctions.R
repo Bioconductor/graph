@@ -84,7 +84,7 @@ ugraph <- function(graph)
             function(object, duplicates=FALSE) standardGeneric("edgeMatrix"))
 
  setMethod("edgeMatrix", c("graphNEL", "ANY"),
-           function(object, duplicates) {
+           function(object, duplicates=FALSE) {
                    ## Return a 2 row numeric matrix (from, to, weight)
                ed <- object@edgeL
                ##reorder to the same order as nodes
@@ -213,8 +213,8 @@ ugraph <- function(graph)
 #}
 
 
-eWV <- function (g, eM, sep = ifelse(edgemode(g) == "directed", "->", 
-    "--"), useNNames = FALSE) 
+eWV <- function (g, eM, sep = ifelse(edgemode(g) == "directed", "->",
+    "--"), useNNames = FALSE)
 {
 #
 # returns vector of weights.  default has names equal to node
@@ -225,22 +225,22 @@ eWV <- function (g, eM, sep = ifelse(edgemode(g) == "directed", "->",
     eW <- lapply(edL, function(x) {
         ans = x$weights
         ed = length(x$edges)
-        if (is.null(ans) && ed > 0) 
+        if (is.null(ans) && ed > 0)
             ans = rep(1, ed)
-        if (length(ans) > 0) 
+        if (length(ans) > 0)
             names(ans) = x$edges
         ans
     })
     a1 <- apply(eM, 2, function(x) eW[[x[1]]][as.character(x[2])])
-    if (useNNames) 
-        names(a1) <- paste(nodes(g)[eM[1, ]], nodes(g)[eM[2, 
+    if (useNNames)
+        names(a1) <- paste(nodes(g)[eM[1, ]], nodes(g)[eM[2,
             ]], sep = sep)
     else names(a1) <- paste(eM[1, ], eM[2, ], sep = sep)
     return(a1)
 }
 
 
-pathWeights <- function (g, p, eM = NULL) 
+pathWeights <- function (g, p, eM = NULL)
 {
 #
 # a path is a vector of names of adjacent nodes
@@ -249,9 +249,9 @@ pathWeights <- function (g, p, eM = NULL)
 # for each step.  no checking is done to verify
 # that the path p exists in g
 #
-    if (length(p) < 2) 
+    if (length(p) < 2)
         stop("a path must have length > 1")
-    if (is.null(eM)) 
+    if (is.null(eM))
         eM <- edgeMatrix(g)
     wv <- eWV(g, eM, useNNames = TRUE)
     sep <- ifelse(edgemode(g) == "undirected", "--", "->")
