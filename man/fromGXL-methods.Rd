@@ -80,17 +80,17 @@ print(dumpGXL(sf))
 #
 # try( validateGXL(bad) )
 #
-#gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
-# a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
-# edgemode="directed")
+gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
+ a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
+ edgemode="directed")
 #
 # following requires that you are using XML bound with recent libxml2
 #
-#if (libxmlVersion()$major>=2 && libxmlVersion()$minor>=4)
-#  cat(saveXML(toGXL(gR)$value()))
-#wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
-#wtdg <- fromGXL(wtd)
-#print(edgeWeights(wtdg))
+if (libxmlVersion()$major>=2 && libxmlVersion()$minor>=4)
+  cat(saveXML(toGXL(gR)$value()))
+wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
+wtdg <- fromGXL(wtd)
+print(edgeWeights(wtdg))
 }
 \keyword{methods}
 \keyword{ models }
