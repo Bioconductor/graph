@@ -38,7 +38,7 @@ matrix or a \code{graphNEL} object respectively.  If \code{ft} is a
 and the second row the \code{to} nodes.  If \code{ft} is an \code{nx2}
 matrix, then the first column represents the \code{from} nodes and the
 second column the \code{to} nodes.  If it is 2x2, then the
-\code{from/to} nodes are taken to be represenred by the columns.
+\code{from/to} nodes are taken to be represented by the rows.
 
 This representation does not allow for unconnected nodes except with the
 \code{V} argument (see below).

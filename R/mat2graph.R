@@ -37,7 +37,7 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
    if(!is.matrix(ft) || !any(dim(ft)==2))
      stop("'ft' must be a 2xn or nx2 matrix")
      
-   if(ncol(ft)!=2)
+   if(nrow(ft)==2)
      ft <- t(ft)
    numE <- nrow(ft)
 
