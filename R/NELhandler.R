@@ -99,9 +99,15 @@ NELhandler <- function ()
         }
         edl <- edl[ns]
         g <- new("graphNEL", nodes = ns, edgeL = edl, edgemode = edgemode)
+        if (edgemode(g) == "undirected") 
+            {
+            edgemode(g) <- "directed" # allow ugraph to do something
+            g <- ugraph(g)
+            edgemode(g) <- "undirected"
+            }
         if (!validGraph(g)) 
             stop("GXL did not define a valid graph package graphNEL object.\nMost likely there is a failure of reciprocity for edges in\nan undirected graph.  If there is a node for edge from A to B\nin an undirected graphNEL, there must also be an edge from B to A.")
-        g
+	return(g)
     }
     list(startElement = startElement, endElement = endElement, 
         text = text, dump = dump, asGraphNEL = asGraphNEL)
