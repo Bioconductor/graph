@@ -3,6 +3,7 @@ NELhandler <- function ()
 #
 # handler for xmlEventParse for the node and edge
 # components of GXL 1.0.1
+#  REVISED 15 Aug 03 to recognize and return edgemode
 #  REVISED 1 apr 03 so that weights come into graphNEL if
 #   present as weights child of edges in GXL
 #
@@ -18,6 +19,7 @@ NELhandler <- function ()
     inAttr <- FALSE
     nodeL <- list()
     edgeL <- list()
+    edgemode <- NULL
 #
 # handler elements: start elements are cased for
 #  graph, node, attr, or edge
@@ -26,7 +28,10 @@ NELhandler <- function ()
 #
     startElement = function(x, atts, ...) {
         if (x == "graph") 
+            {
             graphID <<- atts["id"]
+            edgemode <<- atts["edgemode"]
+            }
         else if (x == "node") {
             inNode <<- TRUE
             nodeL[[atts["id"]]] <<- list()
@@ -65,7 +70,7 @@ NELhandler <- function ()
             inEdge <<- FALSE
     }
     dump = function() {
-        list(graphID = graphID, nodeL = nodeL, edgeL = edgeL)
+        list(graphID = graphID, nodeL = nodeL, edgeL = edgeL, edgemode=edgemode)
     }
     asGraphNEL = function() {
 #
@@ -75,7 +80,7 @@ NELhandler <- function ()
         require(graph)
         ns <- names(nodeL)
         if (length(edgeL) == 0)
-        return(new("graphNEL", nodes = ns, edgemode = "directed"))
+        return(new("graphNEL", nodes = ns, edgemode = edgemode))
         src <- sapply(edgeL, function(x) x$span["from"])
         dest <- sapply(edgeL, function(x) x$span["to"])
         wts <- sapply(edgeL, function(x) x[["weights"]])
@@ -96,7 +101,7 @@ NELhandler <- function ()
 		for (i in 1:length(badinds))
 			nl[[ ns[ badinds[i] ] ]] <- character(0)
 		}
-        new("graphNEL", nodes = ns, edgeL = nl, edgemode = "directed")
+        new("graphNEL", nodes = ns, edgeL = nl, edgemode = edgemode)
     }
     list(startElement = startElement, endElement = endElement, 
         text = text, dump = dump, asGraphNEL = asGraphNEL)
