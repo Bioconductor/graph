@@ -73,8 +73,8 @@ calcProb <- function(subgraph, origgraph)
 ################################################################
 # function:
 # calcSumProb takes two parameters:
-#   origgraph is the original graph from which the subgraph was made
-#   subgraph is the subgraph made from the original graph
+#   g   is the original graph from which the subgraph was made
+#   sg  is the subgraph made from the original graph
 # calcSumProb calculates the probability of having greater than or equal
 # to the number of edges found in the subgraph given that it was made
 # from origgraph.
@@ -88,13 +88,13 @@ calcProb <- function(subgraph, origgraph)
 # last updated: July 22, 2002
 ################################################################
 
-calcSumProb <- function(subgraph, origgraph)
+calcSumProb <- function(sg, g)
 {
-  origNumNodes<-length(nodes(origgraph)) #g
-  subNumNodes<-length(nodes(subgraph))   #gs
+  origNumNodes<-length(nodes(g)) #g
+  subNumNodes<-length(nodes(sg))   #gs
 
-  origNumEdges<-numEdges(origgraph)      #L
-  subNumEdges<-numEdges(subgraph)        #Ls
+  origNumEdges<-numEdges(g)      #L
+  subNumEdges<-numEdges(sg)        #Ls
 
   dyads <- (origNumNodes * (origNumNodes - 1) / 2) - origNumEdges
   sampledyads <- subNumNodes * (subNumNodes - 1) / 2
