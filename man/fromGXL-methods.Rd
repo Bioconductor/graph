@@ -63,11 +63,17 @@ GXL with graph attribute edgeids=FALSE.  fromGXL will fail to process
 the edges correctly.  You can manually add arbitrary edgeids to the dot2gxl
 output edges and fromGXL will succeed.  Perhaps fromGXL can be made less
 dependent on edge id attributes.
+
+Note added 15 August 2003: dot2gxl is supposed to introduce
+edgeids now.  
+
+Note added 15 August 2003: all GXL to be handled should possess
+an edgemode attribute.
 }
 \examples{
-#sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
-#show(fromGXL(sf))
-#print(dumpGXL(sf))
+sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
+show(fromGXL(sf))
+print(dumpGXL(sf))
 #validateGXL(sf)
 #bad <- file(system.file("GXL/c2.gxl", package="graph"))
 # here's how you can check if the GXL is well-formed
