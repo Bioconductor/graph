@@ -28,7 +28,7 @@ write.tlp <- function(graph, filename) {
   writeLines("(default \"\" \"\" )\n", con, sep="")
 
   for (i in seq(along=allnodes)) {
-    writeLines(c("(node ", as.character(i), allnodes[i], ")\n"), con, sep=" ")
+    writeLines(c("(node ", as.character(i), " \"", allnodes[i], "\")\n"), con, sep="")
   }
   writeLines(")\n", con, sep="")
   
