@@ -64,6 +64,7 @@ at this time.
 sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
 show(fromGXL(sf))
 print(dumpGXL(sf))
+close(sf)
 #validateGXL(sf)
 # bad <- file(system.file("GXL/c2.gxl", package="graph"))
 # here's how you can check if the GXL is well-formed, if
@@ -82,6 +83,7 @@ gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
   cat(saveXML(toGXL(gR)$value()))
 wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
 wtdg <- fromGXL(wtd)
+close(wtd)
 print(edgeWeights(wtdg))
 }
 \keyword{methods}
