@@ -347,21 +347,56 @@ validGraph<-function(object, quietly=FALSE)
       else
           stop("cannot handle different edgemodes, yet")
 
-      ## !! Really need a check to make sure we aren't duplicating
-      ## !! node names I think.  maybe not.
       nX <- nodes(x)
       numXnodes <- length(nX)
       nY <- nodes(y)
-      newNodes <- c(nX, nY)
+      ## Combine the two sets of nodes, removing any duplications
+      newNodes <- unique(c(nX, nY))
 
       eLX <- edgeL(x)
       eLY <- edgeL(y)
-      ## !! Can't just cat the edgeL's together like this
-      ## !! as the node #s have all changed.
-      for (i in 1:length(eLY))
-          eLY[[i]]$edges <- eLY[[i]]$edges + numXnodes
 
-      newEdgeL <- c(eLX, eLY)
+      newEdgeL <- eLX
+
+      ## Can't just cat the edgeL's together like this
+      ## as the node #s have all changed.
+      if (length(eLY) > 0) {
+          eLYnames <- names(eLY)
+          for (i in 1:length(eLY)) {
+              newEntry <- eLY[i]
+              ## !! first need to adjust the targets on the edges
+              newEdges <- newEntry[[1]]$edges
+              if (length(newEdges) > 0) {
+                  for (j in 1:length(newEdges)) {
+                      curTo <- nY[newEdges[j]]
+                      newTo <- match(curTo,newNodes)
+                      if (is.na(newTo))
+                          stop("Error reassigning duplicated nodes")
+                      newEdges[j] <- newTo
+                  }
+              }
+              newEntry[[1]]$edges <- newEdges
+
+              ## now need to attach it to the list.  If this
+              ## is a duplicated node, combine it with the
+              ## original, otherwise add it ot the list
+              if (length(newEdgeL) == 0)
+                  newEdgeL <- newEntry
+              else if (eLYnames[i] %in% nX) {
+                  entry <- which(names(newEdgeL) == eLYnames[i])
+                  if (length(entry) > 1)
+                      stop("Duplicated node names in original graph")
+                  curEntry <- newEdgeL[[entry]]
+                  curEntry$edges <- c(curEntry$edges, newEntry[[1]]$edges)
+                  curEntry$weights <- c(curEntry$weights,
+                                        newEntry[[1]]$weights)
+                  if (!is.null(curEntry))
+                      newEdgeL[[entry]] <- curEntry
+              }
+              else
+                  newEdgeL <- c(newEdgeL,newEntry)
+          }
+      }
 
       new("graphNEL", nodes=newNodes, edgeL=newEdgeL, edgemode=ex)
   })
