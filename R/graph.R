@@ -1037,17 +1037,17 @@ setMethod("edgeNames", "graph", function(object,
     stop("Edge names do not match node names.")
   
   ## unlist
-  from <- rep(from, listLen(to))
-  to   <- unlist(to)
+  ufrom <- rep(from, listLen(to))
+  uto   <- unlist(to)
   
   ## only keep those where from <= to
   if (recipEdges == "combined")
-    keep <- (from<=to)
+    keep <- (ufrom<=uto)
   else
-    keep <- rep(TRUE, length(from))
+    keep <- rep(TRUE, length(ufrom))
   
-  paste(nodes(object)[from[keep]],
-        nodes(object)[to[keep]], sep="~")
+  paste(nodes(object)[ufrom[keep]],
+        nodes(object)[uto[keep]], sep="~")
 })
 
 if (is.null(getGeneric("clusteringCoefficient")))
@@ -1057,7 +1057,9 @@ if (is.null(getGeneric("clusteringCoefficient")))
 ##--------------------------
 ## clustering coefficient
 ##--------------------------
-setMethod("clusteringCoefficient", "graph", function(object) {
+setMethod("clusteringCoefficient",
+  signature=c("graph", "ANY"),
+  definition=function(object, selfLoops=FALSE) {
   if(edgemode(object)!="undirected")
     return(NULL)
 
@@ -1070,15 +1072,26 @@ setMethod("clusteringCoefficient", "graph", function(object) {
   if(any(is.na(unlist(to)))||any(is.na(from)))
     stop("Edge names do not match node names.")
 
+  if(!selfLoops) {  
+    ufrom <- rep(from, listLen(to))
+    uto   <- unlist(to)
+    if(any(ufrom==uto))
+      stop("Graph must not contain self-loops.")
+    totEdges <- function(i) i*(i-1)
+  } else {
+    totEdges <- function(i) i*i
+  }
+
   clustCoef <- rep(as.numeric(NA), numNodes(object))
   names(clustCoef) <- nodes(object)
   for (i in which(listLen(to)>0)) {
     ## to[[i]] are all the nodes reached from i.
     ## to[ to[[i]] ] are all second-degree neihbours
     nb <- sapply(to[ to[[i]] ], function(x) sum(!is.na(match(x, to[[i]]))))
-    clustCoef[from[i]] <- sum(nb) / (length(nb)*(length(nb)-1))
+    clustCoef[from[i]] <- sum(nb) / totEdges(length(nb))
   }
   return(clustCoef)
-})
+  },
+  valueClass="numeric")
 
 
