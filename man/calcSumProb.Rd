@@ -13,12 +13,12 @@
   the hypergeometric.
 }
 \usage{
-calcSumProb(origgraph, subgraph)
+calcSumProb(subgraph, origgraph)
 }
 
 \arguments{
-  \item{origgraph}{ original graph object from which the subgraph was made }
   \item{subgraph}{ subgraph made from the original graph }
+  \item{origgraph}{ original graph object from which the subgraph was made }
 }
 
 \value{
@@ -31,9 +31,9 @@ calcSumProb(origgraph, subgraph)
 \seealso{ \code{\link{calcProb}} }
 
 \examples{
-#  data(pmedu95aAffy,package=graph)
-#  Anodes <- nodes(pmedu95aAffy)
-#  subAgraph <- subGraph(pmedu95aAffy,Anodes[1:10])
-#  calcSumProb(pmedu95aAffy,subAgraph)
+#  data(PMgAFFYu95a, package=BioGraph)
+#  Anodes <- nodes(PMgAFFYu95a)
+#  subAgraph <- subGraph(Anodes[1:10], PMgAFFYu95a )
+#  calcSumProb(subAgraph, PMgAFFYu95a)
 }
 \keyword{ manip }

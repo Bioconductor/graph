@@ -11,12 +11,12 @@ edges.
   probability (using the pdf).
 }
 \usage{
-calcProb(origgraph, subgraph)
+calcProb(subgraph, origgraph)
 }
 
 \arguments{
-  \item{origgraph}{ original graph object from which the subgraph was made }
   \item{subgraph}{ subgraph made from the original graph }
+  \item{origgraph}{ original graph object from which the subgraph was made }
 }
 
 \value{

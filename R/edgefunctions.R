@@ -54,7 +54,7 @@ numEdges <- function(graph)
 # last updated: July 22, 2002
 ################################################################
 
-calcProb <- function(origgraph,subgraph)
+calcProb <- function(subgraph, origgraph)
 {
   origNumNodes<-length(nodes(origgraph))
   subNumNodes<-length(nodes(subgraph))
@@ -88,7 +88,7 @@ calcProb <- function(origgraph,subgraph)
 # last updated: July 22, 2002
 ################################################################
 
-calcSumProb <- function(origgraph,subgraph)
+calcSumProb <- function(subgraph, origgraph)
 {
   origNumNodes<-length(nodes(origgraph)) #g
   subNumNodes<-length(nodes(subgraph))   #gs

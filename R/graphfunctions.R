@@ -1,6 +1,6 @@
 ################################################################
 # function:
-# graphBoundary takes three parameters:
+# boundary takes three parameters:
 #   graph is the original graph from which the subgraph will be created
 #   subgraph either the subgraph or the nodes of the subgraph
 # boundary returns a list of length equal to the number of nodes in the
@@ -10,7 +10,7 @@
 # last updated: Feb 15, 2003, RG
 ################################################################
 
-boundary<-function(graph, subgraph)
+boundary<-function(subgraph, graph)
 {
   if ( !is(graph, "graph") )
     stop("The first parameter must be an object of type graph.")
@@ -19,13 +19,15 @@ boundary<-function(graph, subgraph)
       snodes <- nodes(subgraph)
   else
       snodes <- subgraph
-  orignodes<-nodes(graph)
-  origedges<-edges(graph)
+
+  if( any( !(snodes %in% nodes(graph)) ) )
+      stop("the supplied subgraph is not a subgraph of the supplied graph")
+  
+  subE <- edges(graph)[
 
   #only use nodes that are in the original graph
   good <- snodes %in% orignodes
   if( any(!good) )
-      stop("the supplied subgraph is not a subgraph of the supplied graph")
   
   outnodes <- orignodes %in% snodes
   splE <- split(origedges, outnodes)

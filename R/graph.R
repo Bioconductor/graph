@@ -262,14 +262,14 @@ validGraph<-function(object)
         else
            graph@edgeL[index]}, where=where)
 
-  setGeneric("subGraph", function(graph, snodes) standardGeneric("subGraph"),
+  setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"),
     where=where)
 
   ##the map from the labels to the integers, 1:n must be used
   ## you must renumber the edges of the subGraph
   ##from 1 to length(snodes)
   ## it is important to get the subsets of the edgeList items right
-  setMethod("subGraph", "graphNEL", function(graph, snodes) {
+  setMethod("subGraph", c("character", "graphNEL"), function(snodes, graph) {
       nn<-nodes(graph)
       numN <- length(nn)
       if( is.character(snodes) ) {
@@ -307,7 +307,7 @@ validGraph<-function(object)
        xN <- nodes(x)
        yN <- nodes(y)
        bN <- intersect(xN,yN)
-       xSub <- subGraph(x, bN)
+       xSub <- subGraph(bN, x)
        xE <- edges(xSub)
        yE <- edges(y)[bN]
        rval <- vector("list", length=length(xE))
@@ -368,8 +368,11 @@ validGraph<-function(object)
         if( is.na(cnode) )
           done <- TRUE
     }
-    names(rval) <- NL[nused]
-    return(rval)
+    nmR <- NL[nused]
+    nc <- length(rval)
+    rL <- vector("list", length=nc)
+    for(i in 1:nc) rL[[i]]<-c(nmR[[i]], names(rval[[i]]))
+    return(rL)
  }, where=where)
 
   setGeneric("numNodes", function(object) standardGeneric("numNodes"),

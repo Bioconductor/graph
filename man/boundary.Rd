@@ -9,7 +9,7 @@
  length as the number of nodes in the subgraph.
 }
 \usage{
-boundary(graph, subgraph)
+boundary(subgraph, graph)
 }
 
 \arguments{
