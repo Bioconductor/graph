@@ -52,7 +52,9 @@ plotted using \code{Rgraphviz} and the \code{dot} layout, the bipartite structur
 the graph returned by \code{aM2bpG} should be evident. 
 
 An \code{adjacency} matrix can be directly coerced into a
-\code{graphNEL} using the \code{as} method.
+\code{graphNEL} using the \code{as} method.  If the matrix is a
+symmetric matrix, then the resulting graph will be \code{undirected},
+otherwise it will be \code{directed}.
 
 }
 \value{
