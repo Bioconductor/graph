@@ -2,6 +2,7 @@
 \alias{IMCA}
 \alias{IMCAAttrs}
 \alias{IMCAGraph}
+\alias{integrinMediatedCellAdhesion}
 \docType{data}
 \title{KEGG Integrin Mediated Cell Adhesion graph}
 \description{
