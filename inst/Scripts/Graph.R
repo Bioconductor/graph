@@ -9,8 +9,7 @@ library(hgu95a)
  xx <- ls(env = hgu95aGO)
 set.seed(1234)
  myGenes <- sample(xx, 100)
- mG <- multiget(myGenes, env=hgu95aGO)
-
+ mG <- mget(myGenes, env=hgu95aGO)
 
 makeGoGraph <- function(x) {
    library(GO)
@@ -29,7 +28,7 @@ makeGoGraph <- function(x) {
          numE <- length(newNodes)
          nedges <- vector("list", length=numE)
          names(nedges) <- newNodes
-         nedges <- multiget(newNodes, env=GOmolecularfunction)
+         nedges <- mget(newNodes, env=GOmolecularfunction)
          nedges <- nedges[!is.na(nedges)]
          oldEdges <- c(oldEdges, nedges)
          newNodes <- sort(unique(unlist(nedges)))
@@ -40,7 +39,7 @@ makeGoGraph <- function(x) {
    rE[names(oldEdges)] <- oldEdges
    return(list(nodes=oldNodes, edges=rE))
 }
-     
+
  Gmf1 <- makeGoGraph(myGenes[1])
 
 ##old examples
@@ -85,9 +84,9 @@ makeGoGraph <- function(x) {
  #.initGraph(globalenv())
 
  x<-1:100
- 
+
  rw <- rep("a", 100)
- for(i in 1:100) rw[i] <- paste(sample(letters, 10, replace=TRUE), 
+ for(i in 1:100) rw[i] <- paste(sample(letters, 10, replace=TRUE),
              sep="", collapse="")
 
 
@@ -126,7 +125,7 @@ makeGoGraph <- function(x) {
    for (j in jj) {
      wt <- 18*runif(1)
      y2[[i]]$edges <- c(y2[[i]]$edges, j)
-      y2[[i]]$weights <- c(y2[[i]]$weights, wt) 
+      y2[[i]]$weights <- c(y2[[i]]$weights, wt)
      y2[[j]]$edges <- c(y2[[j]]$edges, i)
      y2[[j]]$weights <- c(y2[[j]]$weights, wt)
    }
@@ -137,7 +136,7 @@ makeGoGraph <- function(x) {
  b1 <- isect(g1, g3)
 
  sN1 <- sample(1:100, 20)
- 
+
  g4 <- subGraph(g1, sN1)
 
  E1 <- edgeL(g3)
