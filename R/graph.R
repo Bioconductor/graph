@@ -83,9 +83,10 @@ validGraph<-function(object)
       lapply(object@edgeL, function(x) gNodes[x$edges])},
             where=where)
 
-  setMethod("edges", c("graphNEL", "character"), function(object, which) {
-      gNodes <- object@nodes[which]
-      lapply(object@edgeL[which], function(x) gNodes[x$edges])},
+  setMethod("edges", c("graphNEL", "character"),
+            function(object, which) {
+                gNodes <- nodes(object)
+                lapply(object@edgeL[which], function(x) gNodes[x$edges])},
             where=where)
 
   if (is.null(getGeneric("uniqueEdges")))

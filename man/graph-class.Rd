@@ -59,6 +59,10 @@
 \seealso{\code{\link{graphNEL-class}}, \code{\link{distGraph-class}} }
 
 \examples{
-##---- none yet
+  set.seed(123)
+  g1 <- randomGraph(letters[1:10], 1:4, p=.3)
+  edges(g1)
+  edges(g1, "a")
+
 }
 \keyword{classes}
