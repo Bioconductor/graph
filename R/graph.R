@@ -9,11 +9,13 @@ validGraph<-function(object, quietly=FALSE)
           if (!quietly ) cat("NA element in nodes.\n")
           bad <- TRUE
       }
-      if (any(is.na(unlist(objEdges,use.names=FALSE)))) {
-          if( !quietly )
-              cat ("NA element in edges.\n")
+      if(length(objEdges)>0)
+        if(any(is.na(unlist(objEdges,use.names=FALSE)))) {
+          if(!quietly)
+            cat("NA element in edges.\n")
           bad <- TRUE
-      }
+        }
+      
       ##don't think we want to force this one
 #      if (length(objNodes)!=length(objEdges)) {
 #          if( !quietly )
@@ -34,26 +36,26 @@ validGraph<-function(object, quietly=FALSE)
       ##paste to->from and from->to if any are not duplicated then
       ##the edge is not reciprocal. Note we are not going to handle
       ##multiedges well.
-      if( object@edgemode == "undirected") {
-          eds <- lapply(object@edgeL, function(x) x$edges)
-          v1 <- sapply(eds, length)
-          v2 <- sum(v1)
-          tM <- paste(rep(1:length(v1), v1), unlist(eds), sep=" -> " )
-          tM2 <- paste(unlist(eds), rep(1:length(v1), v1), sep=" -> " )
-          tM3 <- c(tM, tM2)
-          vv <- duplicated(tM3)
-          badn <- which(vv == FALSE)
-          badn <- badn[badn>v2]
-          if( length(badn)>0 ) {
-              if( !quietly ) {
-                  from <- badn-v2
-                  cat("The graph is undirected and\n")
-                  cat("the following edges are not reciprocated\n")
-                  cat(tM3[from], sep="\n")
-                  cat("\n")
-              }
-              return(FALSE)
+      if(object@edgemode == "undirected" && length(objEdges)>0 ) {
+        eds <- lapply(objEdges, function(x) x$edges)
+        v1 <- sapply(eds, length)
+        v2 <- sum(v1)
+        tM <- paste(rep(1:length(v1), v1), unlist(eds), sep=" -> " )
+        tM2 <- paste(unlist(eds), rep(1:length(v1), v1), sep=" -> " )
+        tM3 <- c(tM, tM2)
+        vv <- duplicated(tM3)
+        badn <- which(vv == FALSE)
+        badn <- badn[badn>v2]
+        if( length(badn)>0 ) {
+          if( !quietly ) {
+            from <- badn-v2
+            cat("The graph is undirected and\n")
+            cat("the following edges are not reciprocated\n")
+            cat(tM3[from], sep="\n")
+            cat("\n")
           }
+          bad <- TRUE
+        }
       }
   }
   else if( is(object, "distGraph") ) {
@@ -98,33 +100,43 @@ validGraph<-function(object, quietly=FALSE)
   ## a node-edge-list graph
   ##the edgeL is a list, with edges, weights etc
 
-  setClass("graphNEL",representation(nodes="vector",edgeL="list"),
-            contains="graph")
-
-  setMethod("initialize", "graphNEL", function(.Object, nodes=character(0),
-       edgeL = vector("list",length=0), edgemode) {
+  setClass("graphNEL",
+    contains="graph",
+    representation(nodes="vector",edgeL="list"),
+    validity=function(object) validGraph(object))
+           
+           
+  setMethod("initialize", "graphNEL",
+    ## FIXME: what about edge weights?        
+    function(.Object, nodes=character(0), edgeL, edgemode) {
        if( missing(edgemode) )
            edgemode <- "undirected"
-       if( !missing(edgeL) && length(edgeL) > 1 ) {
-           if(length(nodes) != length(edgeL) )
-               stop("nodes and edges must align")
-           nameE <- names(edgeL)
-           if( !is.null(nameE) && !all( nameE %in% nodes) )
-               stop("names of nodes and edges must agree")
-           if( !is.null(nameE) )
-               edgeL <- edgeL[nodes]
-           if( is.character(edgeL[[1]]) )
-               edgeL <- lapply(edgeL, function(x) match(x, nodes))
-       }
-       if( missing(edgeL) )
-           edgeL = vector("list",length=0)
-       if( missing(nodes) )
-           nodes = character(0)
+       if( missing(edgeL) ) {
+         edgeL <- vector(mode="list", length=length(nodes))
+         names(edgeL) <- nodes
+       } else {
+         if(length(nodes) != length(edgeL) )
+           stop("nodes and edges must align")
+         nameE <- names(edgeL)
+         if( !is.null(nameE) && !all( nameE %in% nodes) )
+           stop("names of nodes and edges must agree")
+         if( !is.null(nameE) )
+           edgeL <- edgeL[nodes]
+         ## (wh:) the following expression replaces one that was a bug
+         edgeL <- lapply(edgeL, function(x) {
+           if(is.character(x$edges))
+             x$edges <- match(x$edges, nodes)
+           return(x)
+         }) ## end lapply
+       } ## end else-if
 
        .Object@nodes <- nodes
        .Object@edgeL <- edgeL
        .Object@edgemode <- edgemode
-       .Object})
+
+       validObject(.Object)
+       return(.Object)
+     })
 
   setGeneric("nodes", function(object) standardGeneric("nodes"))
   setMethod("nodes", "graphNEL", function(object) object@nodes)

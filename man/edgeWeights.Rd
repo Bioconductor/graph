@@ -32,7 +32,7 @@ edgeWeights(object, index)
   names(edL2) <- V
   for(i in 1:4)
     edL2[[i]] <- list(edges=c(2,1,2,1)[i], weights=sqrt(i))
-  gR2 <- new("graphNEL", nodes=V, edgeL=edL2)
+  gR2 <- new("graphNEL", nodes=V, edgeL=edL2, edgemode="directed")
   edgeWeights(gR2, "C")
   edgeWeights(gR2)
 

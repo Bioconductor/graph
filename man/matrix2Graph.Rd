@@ -4,6 +4,7 @@
 \alias{ftM2graphNEL}
 
 \alias{coerce,matrix,graphNEL-method}
+\alias{coerce,graphNEL,matrix-method}
 
 \title{Coercions between matrix and graph representations}
 \description{
@@ -14,6 +15,8 @@ matrices into graph objects.
 aM2bpG(aM)
 ftM2adjM(ft, W=NULL, V=NULL, edgemode="directed")
 ftM2graphNEL(ft, W=NULL, V=NULL, edgemode="directed")
+\S4method{coerce}{graphNEL,matrix}(g,m)
+\S4method{coerce}{matrix,graphNEL}(m,g)
 }
 \arguments{
   \item{ft}{A 2xn or nx2 matrix containing the \code{from/to}
@@ -21,7 +24,10 @@ ftM2graphNEL(ft, W=NULL, V=NULL, edgemode="directed")
   \item{W}{An optional vector of edge weights.}
   \item{V}{An optional vector of node names.}
   \item{aM}{An affiliation matrix for a bipartite graph.}
-  \item{edgemode}{Specifies if the resulting graph is to be directed or undirected}
+  \item{edgemode}{Character. Specifies if the resulting graph is
+    to be directed or undirected.}
+  \item{g}{Object of class graphNEL.}
+  \item{m}{Matrix.}
 }
 \details{
 
@@ -79,6 +85,9 @@ For \code{ftM2adjM}, a matrix (the adjacency matrix representation).
 \author{Denise Scholtens, Wolfgang Huber}
 
 \examples{
+
+## From-To matrix
+
 From <- c("A","A","C","C")
 To   <- c("B","C","B","D")
 L <- cbind(From,To)
@@ -90,6 +99,19 @@ stopifnot(all(M1+t(M1)==M2))
 
 G1 <- ftM2graphNEL(L, W, edgemode="directed")
 G2 <- ftM2graphNEL(L, W, edgemode="undirected")
+
+## Adjacency matrix
+
+From <- matrix(runif(100), nrow=10, ncol=10)
+From <- (From+t(From)) > pi/4
+rownames(From) <- colnames(From) <- LETTERS[1:10]
+
+To <- as(From,"graphNEL")
+Back <- as(To,"matrix")
+
+stopifnot(all(From == Back))
+
+
 }
 
 \keyword{graphs }
