@@ -208,7 +208,7 @@
          for(i in seq(along=cc) )
            edges[[cc[i]]] <- cc[-i]
      }
-     edges})
+     edges[which]})
 
 
 ##FIXME: this should be done from distances, but for now...)
