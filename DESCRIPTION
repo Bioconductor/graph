@@ -1,8 +1,8 @@
 Package: graph
 Title: graph
-Version: 1.0
+Version: 1.0.1
 Author: R. Gentleman, Elizabeth Whalen
 Description: A package that implements some simple graph handling capabilities. 
 Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
 License: LGPL
-Depends: R (>= 1.5), Biobase
+Depends: R (>= 1.5), Biobase, cluster

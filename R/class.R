@@ -21,7 +21,7 @@
                          weight="numeric",
                          bNode="integer",    #begin
                          eNode="integer"),   #end
-          prototype = list(id=-1, type="unkown", begin=-1, end=-1),
+          prototype = list(edgeID=-1, edgeType="undirected", bNode=-1, eNode=-1),
           where = where)
 
    setGeneric("toEdges", function(object) standardGeneric("toEdges"),
@@ -37,12 +37,12 @@
       object}, where=where)
 
     setGeneric("fromEdges",
-               function(object) standardGeneric("fromEdges"), 
+               function(object) standardGeneric("fromEdges"),
                where=where)
-   setMethod("fromEdges", "gNode", function(object) object@fromEdges, 
+   setMethod("fromEdges", "gNode", function(object) object@fromEdges,
              where=where)
-    
-    setGeneric("fromEdges<-", 
+
+    setGeneric("fromEdges<-",
                function(object, value) standardGeneric("fromEdges<-"),
                where = where)
      setReplaceMethod("fromEdges", "gNode", function(object, value) {
@@ -56,21 +56,21 @@
 
      setGeneric("edgeOrder", function(object) standardGeneric("edgeOrder"),
    where=where)
-   setMethod("edgeOrder", "gNode", function(object) object@edgeOrder, 
+   setMethod("edgeOrder", "gNode", function(object) object@edgeOrder,
      where = where)
 
     setGeneric("nodeID", function(object) standardGeneric("nodeID"),
                where=where)
-    
-   setMethod("nodeID", "gNode", function(object) object@nodeID, 
-     where = where) 
+
+   setMethod("nodeID", "gNode", function(object) object@nodeID,
+     where = where)
 
     setGeneric("nodeType", function(object) standardGeneric("nodeType"),
                where=where)
-    
-   setMethod("nodeType", "gNode", function(object) object@nodeType, 
-     where = where) 
 
-} 
+   setMethod("nodeType", "gNode", function(object) object@nodeType,
+     where = where)
+
+}
 
 

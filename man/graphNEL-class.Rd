@@ -4,6 +4,7 @@
 \alias{graphNEL}
 \alias{edgeL}
 \alias{edgeWeights}
+\alias{uniqueEdges}
 \title{Class "graphNEL"}
 \description{
   This is a class of graphs that are represented in terms of nodes and
@@ -48,6 +49,10 @@ Class \code{"graph"}, directly.
     \item{subGraph}{\code{signature(graph = "graphNEL")}:A method for
       obtaining the induced subgraph based on the set of supplied nodes
       and the supplied graph.}
+    \item{uniqueEdges}{\code{signature(graph = "graphNEL")}:A method
+      that returns a list of \code{gEdge} objects, representing the set
+      of unique edges in the graph (ie in an undirected graph A<->B is
+      only represented once.)}
   }
 }
 
