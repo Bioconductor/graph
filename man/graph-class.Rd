@@ -1,19 +1,28 @@
 \name{graph-class}
 \docType{class}
-\alias{edgemode}
-\alias{connComp}
 \alias{graph-class}
-\alias{graph}
-\alias{nodes}
-\alias{edges}
-\alias{connComp}
-\alias{isConnected}
-\alias{degree}
-\alias{intersection}
-\alias{union}
 \alias{complement}
+\alias{connComp}
+\alias{degree}
+\alias{degree}
+\alias{edgemode}
+\alias{intersection}
+\alias{isConnected}
+\alias{join}
 \alias{numNodes}
-\alias{nodes<-}
+\alias{union}
+\alias{acc,graph-method}
+\alias{complement,graph-method}
+\alias{connComp,graph-method}
+\alias{degree,graph,missing-method}
+\alias{degree,graph,ANY-method}
+\alias{dfs,graph-method}
+\alias{edgemode,graph-method}
+\alias{intersection,graph,graph-method}
+\alias{isConnected,graph-method}
+\alias{join,graph,graph-method}
+\alias{numNodes,graph-method}
+\alias{union,graph,graph-method}
 \title{Class "graph" }
 \description{A virtual class that all graph classes should extend. }
 \section{Objects from the Class}

@@ -3,6 +3,9 @@
 \alias{hashtable-class}
 \alias{hash}
 \alias{contents}
+\alias{hash,ANY,ANY,hashtable-method}
+\alias{contents,hashtable-method}
+\alias{initialize,hashtable-method}
 \title{Class "hashtable" ~~~ }
 \description{  ~~ A concise (1-5 lines) description of what the class is.  ~~}
 \section{Objects from the Class}{

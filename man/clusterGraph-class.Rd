@@ -1,6 +1,17 @@
 \name{clusterGraph-class}
 \docType{class}
 \alias{clusterGraph-class}
+\alias{clusterGraph-class}
+\alias{acc,clusterGraph-method}
+\alias{adj,clusterGraph-method}
+\alias{connComp,clusterGraph-method}
+\alias{edges,clusterGraph,missing-method}
+\alias{edges,clusterGraph,character-method}
+\alias{edgeWeights,clusterGraph-method}
+\alias{nodes,clusterGraph-method}
+\alias{numNodes,clusterGraph-method}
+\alias{show,clusterGraph-method}
+\alias{subGraph,character,clusterGraph-method}
 \title{Class "clusterGraph" }
 \description{  A cluster graph is a special sort of graph for clustered
   data. Each cluster forms a completely connected subgraph. Three are no

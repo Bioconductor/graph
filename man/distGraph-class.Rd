@@ -4,6 +4,15 @@
 \alias{threshold}
 \alias{Dist}
 \alias{[.dist}
+\alias{distGraph-class}
+\alias{adj,distGraph-method}
+\alias{Dist,distGraph-method}
+\alias{edges,distGraph,missing-method}
+\alias{edges,distGraph,character-method}
+\alias{nodes,distGraph-method}
+\alias{numNodes,distGraph-method}
+\alias{show,distGraph-method}
+\alias{threshold,distGraph-method}
 \title{Class "distGraph"}
 \description{ A class definition for graphs that are based on
 distances.}

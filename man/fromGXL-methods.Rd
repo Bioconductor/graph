@@ -13,7 +13,9 @@
 \alias{validateGXL}
 \alias{connection-class}
 \alias{file-class}
-
+\alias{dumpGXL,connection-method}
+\alias{fromGXL,connection-method}
+\alias{validateGXL,connection-method}
 \description{GXL \url{www.gupro.de/GXL} is "an XML sublanguage designed
 to be a standard exchange format for graphs".  This document describes
 tools in the graph package for importing GXL data to R and for

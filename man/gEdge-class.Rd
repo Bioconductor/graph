@@ -4,6 +4,9 @@
 \alias{edgeID}
 \alias{bNode}
 \alias{eNode}
+\alias{edgeID,gEdge-method}
+\alias{bNode,gEdge-method}
+\alias{eNode,gEdge-method}
 \title{Class "gEdge" }
 \description{A very generic class for describing the edges of a graph.}
 \section{Objects from the Class}{

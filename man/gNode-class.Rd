@@ -9,6 +9,14 @@
 \alias{nodeID}
 \alias{nodeType}
 \alias{toEdges<-}
+\alias{edgeOrder,gNode-method}
+\alias{fromEdges,gNode-method}
+\alias{toEdges,gNode-method}
+\alias{fromEdges<-,gNode-method}
+\alias{label,gNode-method}
+\alias{nodeID,gNode-method}
+\alias{nodeType,gNode-method}
+\alias{toEdges<-,gNode-method}
 \title{Class "gNode"}
 \description{This is an implemention of a very general graph node class.
 It is patterned after the descriptions in GXL. }

@@ -1,6 +1,8 @@
 \name{generalGraph-class}
 \docType{class}
 \alias{generalGraph-class}
+\alias{coerce,generalGraph-method}
+\alias{initialize,generalGraph-method}
 \title{Class "generalGraph" ~~~ }
 \description{  ~~ A concise (1-5 lines) description of what the class is.  ~~}
 \section{Objects from the Class}{
