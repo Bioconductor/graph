@@ -68,7 +68,8 @@ Class \code{"graph"}, directly.
     \item{graph2graphviz}{\code{signature(object = "graphNEL")}: A method
       that will convert a \code{graphNEL} object into a matrix suitable
       for interaction with \code{Rgraphviz}.  Not intended to be called
-      directly.}
+      directly.  This function will insure that no NA's (or other
+      undesired values) are in the graph, or created by coersion.}
     \item{nodes<-}{\code{signature(object="graphNEL",
 	value="character")}: A method for replacing the nodes in a graph
       object. It checks to be sure the values are the right length and
