@@ -8,7 +8,6 @@
 \alias{initialize}
 \alias{nodes<-}
 \alias{nodes}
-\alias{show}
 \alias{addEdge,character,character,graphNEL,numeric-method}
 \alias{addNode,character,graphNEL-method}
 \alias{adj,graphNEL-method}
@@ -27,7 +26,6 @@
 \alias{numNodes,graphNEL-method}
 \alias{removeEdge,character,character,graphNEL-method}
 \alias{removeNode,character,graphNEL-method}
-\alias{show,graphNEL-method}
 \alias{toGXL,graphNEL-method}
 \title{Class "graphNEL"}
 \description{
@@ -56,8 +54,6 @@ Class \code{"graph"}, directly.
 }
 \section{Methods}{
   \describe{
-    \item{show}{\code{signature(object = "graphNEL")}:A print method for
-    the graph.}
     \item{adj}{\code{signature(object = "graphNEL")}: A method for
       finding nodes adjacent to the suplied node.}
     \item{edgeL}{\code{signature(graph = "graphNEL")}: A mehtod for
