@@ -1,0 +1,276 @@
+\section{Some new design concepts}
+
+Some notes based on the meeting at ATT on Dec 13, 2002.
+
+Ggobi uses graphViz to grab the x and y coordinates of the nodes
+(after layout). It then takes those and uses its own notions of edges
+to construct the graph.
+We should look at that and emulate.
+
+neato: uses straight lines and voronoi separation (need someone to
+look at the neato possibilities).
+
+They have written a dot to GXL translator. We need something similar
+for Bioconductor (the GXL package doesn't seem to do anything?)
+
+Emden and Steve are very interested in getting feedback on ideas and
+layouts that might be wanted.
+
+RG to send refs (George Church's lab) to Emden and Steve
+
+\subsection{Emden's partial wish list}
+
+Identify all trees and collapse (create a new graph where the trees
+are nodes in that graph.
+
+To be able to define groups of nodes (I think -- if so then this is
+just applying a categorical variable to the node set (or edge set)).
+
+Compute new edge weights (based on?)
+
+Nodes might not be genes but rather sets of genes.
+
+Projection of a graph: we gen a new graph where the nodes are the
+values that were projected.
+
+Iteration over the graph (we will need hooks as well). But the basic
+idea is that we iterate over a graph, following some pattern (dfs/bfs)
+and apply the function at each node that we encounter.
+
+Variables on nodes and or edges. We can select or transform based on
+these computed variables.
+
+
+\subsection{Other suggestions}
+
+Over things include
+\begin{itemize}
+\item look at attributes (variables on nodes/edges) and do something
+  based on these
+\item visit all neighbors of a selected node
+\item find in-edges and out-edges
+\item delete nodes and edges
+\item add nodes and edges
+
+\end{itemize}
+
+To draw the edges as determined by graphViz we will need to access the
+edge info data structures as well. Jeff to talk with Emden if he
+doesn't understand this. This should be similar to the way that Debbie
+does the node locations stuff -- but through a different data
+structure.
+
+Lots of stuff in graphViz for us to use (if we want to).
+ - jpeg and other outputs
+ - path planning library: find spline paths between objects that miss
+     intervening objects.
+
+ - packing library: take a laid out graph and pack it
+
+There is a web page that details the parameter settings we should be
+thinking about using. Emden or Debbie can give its location to us.
+
+They also have some algorithms for handling very large graphs very
+quickly (if they work, if not then there are some problems).
+
+\subsection{Andreas Buja's wish list}
+
+A distance computed from a given node (to all other nodes);
+  - how do we handle non-connected graphs?
+
+Distance to the nearest leaf node.
+(shortest path)
+
+Use a categorical variable to define a new graph. All between category
+edges have been removed.
+
+Given a categorical variable on the nodes generate a binary variable
+on the edges which indicates whether the edge crosses categories.
+We might want to know which categories. It seems that a matrix with 
+edges as rows and two columns -- one specifying the end category of
+each node would answer this (and could be used to implement the wish
+above).
+
+We are going to have to think about using uuid's or some such thing. 
+These are universally unique identifiers -- for both nodes and edges. 
+The labels on nodes and edges can change but we might want to keep the
+uuid across certain changes (and not others).
+
+\subsection{Implementation}
+
+Hash tables seem like they are going to require some work and thought.
+There appeared to be some consensus on the following points:
+\begin{itemize}
+\item The class of the returned value of the subset operator,
+  \verb+[+, should be the same as its first operand.
+\item We can think of allowing \verb+[[+ to accept only character
+  arguments. 
+\item The dollar operator \verb+$+ should be allowed with standard
+  semantics. 
+%$
+\item we need iterators (order is not guaranteed)
+\item we may need toList and fromList functions
+\item some discussion of using \verb+x[i,j]+ notation, where x is a
+  graph, i are nodes and j are edges. This is a bit odd though and may
+  take some careful consideration.
+\end{itemize}
+
+Agreement on the need to be able to permute node labels.
+
+We also agreed that attributes on nodes may be best implemented in a
+dataframe-like structure. In this case an attribute is really a node
+or edge level covariate. Attributes have a slightly differen
+meaninging in R (they tend to be specific to the object or instance,
+rather than being across objects of a particular type). Also, if we
+were to use R attributes we would have problems with some special
+names (like \verb+class+).
+
+If we do this then we have to consider how to implement single nodes
+and or edges. They have to have a data slot but it may not have
+anything in it(?).
+
+
+\subsection{Dec 15 design notes}
+
+We may need some manipulations like those in the exprSet class to
+ensure alignment of the node/edge covariate data and the actual node
+and edge instances.
+
+Node deletion/addition. The interface: 
+  deleteNode(graph, nodeID (nodeRef))
+what should this return?
+It could return a copy of graph with the specified node deleted.
+  addNode(graph, node)
+  addEdge(graph, edge)
+these can either be functional or not
+
+  aNode(graph) <- node
+  aEdge(graph) <- edge
+
+these are copy/replace -- still not references; but if we implement
+both the node and edge lists as environments then we could 
+have references.
+
+Should we have:
+  graph[[nodeID]] <- NULL
+
+  graph[[edgeID]] <- NULL
+
+-the problem is that these operations really do make copies. If our
+ graphs are large this doesn't seem like the best solution.
+
+The alternative is to hide all inside of an enviroment. Access is
+via methods only -- not slots. Then we can hide much of the ugliness. 
+There will be some substantial problems if environments are mixed with 
+non-reference slots: for example a change could be made in a function
+to the data in the environment but the meta-data is only a copy
+
+Here we see that the contents of \verb+b@b+ have changed after the
+call but those of \verb+b@a+ have not.
+Thus, some caution will be needed when mixing pass-by-reference and
+pass-by-value semantics.
+
+\begin{verbatim} 
+setClass("foo", representation(a="list", b="environment"))
+
+b<-new("foo")
+
+b@a <- list(a=3, b=4, c=5)
+
+b@b <- new.env()
+assign("a", 10, b@b)
+assign("b", 11, b@b)
+assign("c", 12, b@b)
+
+foobar <- function(x, what) {
+  rm(list=what, envir=x@b)
+  x@a[[what]] <- NULL
+}
+
+foobar(b, "c")
+
+\end{verbatim}
+
+I never did raise the question of specialized implementations.
+Are there advantages to specifying a graph to be 
+either directed or undirected?
+
+Right now we are breaking on some GO stuff because it is directed and
+our validity checking presumes that all graphs are undirected.
+
+Nodes in a graph seem to need to know both the fromEdges and the
+toEdges.
+For undirected graphs we keep two copies of all edges and so handle 
+that indirectly. For digraphs we don't and this will likely haunt us
+unless we make an adequate choice.
+
+So do we conceptually have a fromEdges and a toEdges slot for every
+node.
+If so how do we handle adding and deleting nodes?
+
+It seems that edges should return the edge set (however we
+conceptualize that). We could always return an environment filled with
+edge objects.
+
+If you want to add a new edge to a graph then there might be some
+primitives that work but mainly you would need to construct an
+edgeObject and then add that.
+These should be vectorized -- 
+ addEdges(graph, fromNodes, toNodes, edgeTypes)
+ 
+all three have to be the same length (last could be omitted)
+this returns a graph
+
+ deleteEdges(graph, edgeIDs)
+ 
+ returns a graph with the specified edges deleted
+
+How do we select edges:
+ - all edges
+ - toEdges/fromEdges
+
+ - given a set of nodes return the interior edges and the
+   exterior edges (or edge id's)
+
+ - given a categorical variable, return an nEdges by 2 matrix
+   that indicates the class of each node (from/to for each edge)
+
+  getNodeCategories(graph, catVar)
+
+
+ edges(graph, nodes=Nlist)
+ edgeIDs(graph, nodes=Nlist)
+
+ do we want these split by node -- so we can see which belong
+   to which nodes (and within that to be to/from?) -- or do we just 
+  put names on the vector and let the user split if they want to?
+
+ one returns a vector of edgeIDs the other an edgeSet (whatever that
+  might be)
+
+ 
+\section*{Immediate problems}
+
+ We need to get the uuid stuff sorted out. Then we can have 
+ graphPrimitiveIDs and they can go in where
+ the gEdges and gNodes classes have ID slots.
+
+ How do we specify the node to add it:
+  if we add a node it has no id, so we have to make a node
+  structure without these things and pass it in
+  (we also don't know any edge data -- we could ask for it
+   ahead of time)
+  nodes could go in without anything regarding edges,
+  then edges could be added -- how will they get the right nodeIDs
+  (the nodeLabels will also need to be unique, within a graph)
+
+  getNodeIDs(graph, nodeLabels)
+
+  getNodeLabels(graph, nodeIDs)
+
+  
+
+
+
+
+
