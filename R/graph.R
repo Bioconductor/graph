@@ -828,9 +828,13 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
                 oE <- oE[-oEd]
                 oW <- oW[-oEd]
             }
+            browser()
             ##there might be no edges to add
-            if( length(oE) > 0 )
+            if( length(oE) > 0 ) {
+                if (is.null(oW) )
+                  oW = rep(1, length(oE))
                 g2 <- addEdge(newName, oE, g2, oW)
+            }
             ##if directed we need to fix up the in edges
             if( !is.null(inE) ) {
                 nC <- length(inE)
@@ -841,6 +845,13 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
                     for( j in inE[[i]] )
                         oW <- c(oW, .edgeWeight(j, nmE[i], graph))
                 }
+                oEd = match(nodes, oE)
+                oEd = oEd[!is.na(oEd)]
+                if(length(oEd) > 0 ) {
+                      oE <- oE[-oEd]
+                      oW <- oW[-oEd]
+                }
+                if(is.null(oW)) oW=rep(1, length(oE))
                 g2 <- addEdge(oE, newName, g2, oW)
             }
             g2})
