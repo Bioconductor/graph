@@ -828,7 +828,7 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
                 oE <- oE[-oEd]
                 oW <- oW[-oEd]
             }
-            browser()
+
             ##there might be no edges to add
             if( length(oE) > 0 ) {
                 if (is.null(oW) )
