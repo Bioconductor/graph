@@ -25,33 +25,61 @@ aM2bpG<-function(aM){
 	return(g1)
 }
 
+## WH 23 June 2004
+ftM2adjM <- function(ft, W=NULL, V=NULL, edgemode="directed")
+  .ftM2other(ft, W, V, edgemode, "adjM")
 
-ftM2adjM <- function(ft, W=NULL, V=NULL, edgemode="directed") {
-    if(!is.null(V) && sum(!names(table(ft)) %in% V)>0)
-        stop("Node names in ft must be contained in V.")
+ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
+  .ftM2other(ft, W, V, edgemode, "graphNEL")
 
-	if(is.null(V)) V <- names(table(ft))
+.ftM2other <- function(ft, W, V, edgemode, targetclass) {
+   ## ft should be a 2xn or nx2 matrix. If nx2, transpose
+   if(!is.matrix(ft) || !any(dim(ft)==2))
+     stop("'ft' must be a 2xn or nx2 matrix")
+     
+   if(ncol(ft)!=2)
+     ft <- t(ft)
+   numE <- nrow(ft)
 
-    numN <- length(V)
-    numE <- dim(ft)[1]
+   ## deal with W
+   if(is.null(W)) W <- rep(1,numE)
+   if(!length(W)==numE)
+     stop("Length of 'W' must equal number of edges in 'ft'.")
 
-    if(is.null(W)) W <- rep(1,numE)
-    if(!length(W)==numE)
-        stop("Length of W must equal number of rows of ft.")
+   ## deal with edgemode
+   if(!edgemode %in% c("undirected", "directed"))
+     stop("'edgemode' most be either 'directed' or 'undirected'")
+   if(edgemode=="undirected") {
+     ft <- rbind(ft, ft[,2:1])
+     W  <- c(W,W)
+   }
+   
+   ## deal with V
+   if(is.null(V)) V <- names(table(ft))
+   ift <- cbind(match(ft[,1], V), match(ft[,2], V))
+   if(any(is.na(ift)))
+     stop("Node names in 'ft' must be contained in 'V'.")
+   numN <- length(V)
 
+   ind <- ift[,1]+(ift[,2]-1)*numN
+   if(any(duplicated(ind)))
+     stop("Please do not specify the same edge multiple times")
 
-    mat<-matrix(rep(0,numN*numN),nrow=numN)
-    rownames(mat) <- V
-    colnames(mat) <- V
-
-    for (e in 1:numE) {
-        temp1<-ft[e,1]
-        temp2<-ft[e,2]
-            mat[temp1,temp2]<-W[e]
-        if (edgemode == "undirected")
-            mat[temp2,temp1]<-W[e]
-        }
-    mat
+   switch(targetclass,
+    adjM = {
+      mat <-matrix(0, ncol=numN, nrow=numN, dimnames=list(V,V))
+      mat[ind] <- W
+      mat
+    },
+    graphNEL = {
+      toN <- split(ift[,2], ft[,1]) ## 1st column=from, 2nd column=to 
+      eW  <- split(W, ft[,1])
+      edgeL <- lapply(V, function(nm) list(edges=toN[[nm]], weights=eW[[nm]]))
+      names(edgeL) <- V
+      new("graphNEL", nodes=V, edgeL=edgeL, edgemode=edgemode)
+    },
+    stop(paste("Unknown targetclass '", targetclass, "'", sep=""))
+  ) ## end switch        
 }
 
 

@@ -33,7 +33,9 @@ pkgInstOrder(pkg, repGraph)
 }
 \author{Jeff Gentry}
 \examples{
-    repos <- getOption("repositories")()["BIOC"] ## Get BIOC repos
-    z <- buildRepDepGraph(repos)
+   repos <- getOption("repositories")()["BIOC"] ## Get BIOC repos
+
+   if("FIXME"=="Jeff, we can't assume that we're always online - wh")
+     buildRepDepGraph(repos)
 }
 \keyword{graphs}

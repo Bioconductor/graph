@@ -204,9 +204,9 @@
          stop("not all nodes are in the supplied graph")
      edges<-list()
      for(clust in object@clusters) {
-         cc <- as.character(clust)[which]
+         cc <- intersect(as.character(clust), which)
          for(i in seq(along=cc) )
-             edges[[cc[i]]] <- cc[-i]
+           edges[[cc[i]]] <- cc[-i]
      }
      edges})
 
