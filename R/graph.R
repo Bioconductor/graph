@@ -1,10 +1,10 @@
 
 validGraph<-function(object, quietly=FALSE)
 {
+  bad = FALSE
   if (class(object) == "graphNEL") {
       objEdges<-edges(object)
       objNodes<-nodes(object)
-      bad <- FALSE
       if (any(is.na(objNodes))) {
           if (!quietly ) cat("NA element in nodes.\n")
           bad <- TRUE
