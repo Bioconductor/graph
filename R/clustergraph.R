@@ -92,6 +92,31 @@
         new("distGraph", Dist=nd)
      })
 
+ setMethod("addNode", c("character", "distGraph", "list"),
+        function(node, object, edges) {
+            gN = nodes(object)
+            nNode = length(gN)
+            nAdd = length(node)
+            numE = sapply(edges, length)
+            if( any(numE != nNode+nAdd) )
+                stop("must supply all internode distances")
+            newN <- c(gN, node)
+            nmE <- names(edges)
+            if( length(nmE) != nAdd || any(!(names(edges) %in% node)))
+               stop("edges must be named")
+
+            edges <- edges[node]
+            lapply(edges, function(x) if(any( !(names(x) %in%
+                                                newN) ) )
+                   stop("bad edge specification"))
+            ordE <- lapply(edges, function(x) x[newN])
+            subM <- sapply(ordE, function(x) x) ##should be a matrix!
+            oldD <- as.matrix(Dist(object))
+            f1 <- cbind(oldD, subM[1:nNode,])
+            f2 <- rbind(f1, t(subM))
+            rv <- new("distGraph", Dist = as.dist(f2))
+        })
+
 
   setMethod("numNodes", "distGraph", function(object)
      attr(Dist(object), "Size"))

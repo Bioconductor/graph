@@ -547,7 +547,7 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
     index <- 1
     nused <- numeric(0)
     while( !done ) {
-	curracc <- acc(object, NL[cnode])
+	curracc <- acc(object, NL[cnode])[[1]]
         rval[[index]] <- curracc
         nused <- c(nused, cnode)
         index <- index + 1
@@ -580,11 +580,11 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 
   setMethod("numNodes", "graphNEL", function(object) length(object@nodes))
 
-  setGeneric("addNode", function(node, object)
+  setGeneric("addNode", function(node, object, edges)
     standardGeneric("addNode"))
 
-  setMethod("addNode", c("character", "graphNEL"),
-        function(node, object) {
+  setMethod("addNode", c("character", "graphNEL", "missing"),
+        function(node, object, edges) {
             gN = nodes(object)
             already <- match(node, gN)
             if( any(!is.na(already)) )
@@ -600,6 +600,69 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
             edgeL <- c(edgeL, nEd)
             new("graphNEL", gN, edgeL, edgemode(object))
         })
+
+ ##they need to supply a list of edges, one for each element of node
+ ##it might be better to do this by first adding the nodes then
+ ##calling addEdges on that graph
+
+ setMethod("addNode", c("character", "graphNEL", "list"),
+        function(node, object, edges) {
+            gN = nodes(object)
+            nNode = length(gN)
+            if( !all(names(edges) == node) )
+                stop("edges must be named and in the same order as nodes")
+            already <- match(node, gN)
+            if( any(!is.na(already)) )
+                stop(paste(node[already], "is already a node"))
+            ##add them on the end so we don't renumber
+            gN = c(gN, node)
+            edgeL <-  object@edgeL
+            nAdd <- length(node)
+            nEd <- vector("list", length=nAdd)
+            names(nEd) <- node
+            browser()
+            for(i in 1:nAdd) {
+                ed <- edges[[i]]
+                if( is.character(ed) ) {
+                    whE = match(ed, gN)
+                    wts = rep(1, length(whE))
+                } else if( is.numeric(ed) ) {
+                    whE = match(names(edges), gN)
+                    wts = ed
+                } else
+                stop("bad type for edgelist")
+                if( any(is.na(whE)) )
+                    stop("supplied edges not in the graph")
+                names(wts) = whE
+                nEd[[i]] <- list(edges=whE, weights=wts)
+            }
+            edgeL <- c(edgeL, nEd)
+            ##for undirected graphs we need to put the edges on
+            ##the other side
+            if( edgemode(object) == "undirected")
+                for(i in 1:nAdd) {
+                    ed <- edges[[i]]
+                    if( is.character(ed) ) {
+                        whE = match(ed, gN)
+                        wts = rep(1, length(whE))
+                    } else if( is.numeric(ed) ) {
+                        whE = match(names(edges), gN)
+                        wts = ed
+                    } else
+                    stop("bad type for edgelist")
+                    for(j in 1:length(whE) ) {
+                        idx = whE[j]
+                        nL <- NULL
+                        nL$edges <- c(edgeL[[idx]]$edges, nNode+i)
+                        nL$weights <- c(edgeL[[idx]]$weights, wts[j])
+                        names(nL$weights) <-
+                            c(names(edgeL[[idx]]$weights), nNode+i)
+                        edgeL[[idx]] <- nL
+                    }
+            }
+            new("graphNEL", gN, edgeL, edgemode(object))
+        })
+
 
   setGeneric("removeNode", function(node, object)
       standardGeneric("removeNode"))
