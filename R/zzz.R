@@ -1,6 +1,6 @@
 .First.lib <- function(libname, pkgname, where) {
     if( !require(methods)) stop("can only load graph with methods")
-    require("Biobase")
+    require("Biobase") || stop ("Package graph requires package Biobase.")
     where <- match(paste("package:", pkgname, sep=""), search())
     .initGraph(where)
     where <- match(paste("package:", pkgname, sep=""), search())
