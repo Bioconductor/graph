@@ -338,6 +338,34 @@ validGraph<-function(object, quietly=FALSE)
        new("graphNEL", nodes=bN, edgeL=rval, edgemode=edgemode(x))
    })
 
+  setGeneric("join", function(x, y) standardGeneric("join"))
+
+  setMethod("join", c("graph", "graph"), function(x, y) {
+      ex <- edgemode(x); ey <- edgemode(y);
+      if( ex == ey )
+          outmode <- ex
+      else
+          stop("cannot handle different edgemodes, yet")
+
+      ## !! Really need a check to make sure we aren't duplicating
+      ## !! node names I think.  maybe not.
+      nX <- nodes(x)
+      numXnodes <- length(nX)
+      nY <- nodes(y)
+      newNodes <- c(nX, nY)
+
+      eLX <- edgeL(x)
+      eLY <- edgeL(y)
+      ## !! Can't just cat the edgeL's together like this
+      ## !! as the node #s have all changed.
+      for (i in 1:length(eLY))
+          eLY[[i]]$edges <- eLY[[i]]$edges + numXnodes
+
+      newEdgeL <- c(eLX, eLY)
+
+      new("graphNEL", nodes=newNodes, edgeL=newEdgeL, edgemode=ex)
+  })
+
   setGeneric("union", function(x, y) standardGeneric("union"))
 
   setMethod("union", c("graph", "graph"), function(x, y) {
