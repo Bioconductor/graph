@@ -86,7 +86,7 @@ ugraph <- function(graph)
                ed <- object@edgeL
                nN <- length(ed)
                elem <- sapply(ed, function(x) length(x$edges))
-               from <- rep(1:nN, elem)
+               from <- rep(order(nodes(object)), elem) # in case node labels unsorted
                to <- unlist(sapply(ed, function(x) x$edges))
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
