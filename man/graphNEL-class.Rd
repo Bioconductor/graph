@@ -5,7 +5,6 @@
 \alias{subGraph}
 \alias{edgeL}
 \alias{edgeWeights}
-\alias{uniqueEdges}
 \alias{graph2graphviz}
 \title{Class "graphNEL"}
 \description{

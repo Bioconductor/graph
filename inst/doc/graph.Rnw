@@ -1,0 +1,152 @@
+%
+% NOTE -- ONLY EDIT howtogenefilter.Rnw!!!
+% Biobase.tex file will get overwritten.
+%
+%\VignetteIndexEntry{Graph}
+%\VignetteDepends{graph, cluster, methods}
+%\VignetteKeywords{Graph}
+%\VignettePackage{graph}
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+
+\newcommand{\classdef}[1]{%
+  {\em #1}
+}
+
+\begin{document}
+\title{How To use graph}
+
+\maketitle
+
+\section*{Introduction}
+
+The \Rpackage{graph} package constitutes a preliminary approach to an
+implementation of graphs (nodes and edges) in R.
+The approach is quite simplistic and will hopefully evolve as we learn
+what things need to be done and what is or is not efficient.
+
+The reader is likely to find it very helpful to have the
+\Rpackage{Rgraphviz} package also attached. It will be important to
+be able to visualize some of the many different graphs that can be
+drawn.
+
+\section*{Classes}
+
+The basic class, \Rclass{graph}, is a virtual class and all other
+classes will extend this class. There are three main implementations
+available. Which is best will depend on the particular data set and
+what the user wants to do with it.
+
+The class \Rclass{graphNEL} is a node and edge-list representation of
+a graph. That is the graph is comprised of two components a list of
+nodes and a list of the out edges for each node.
+
+The class \Rclass{graphAM} is an adjacency matrix implementation. It
+will be developed next and will use the \Rpackage{SparseM} package if
+it is available.
+
+The class \Rclass{clusterGraph} is a special form of graph for
+clustering. In this graph each cluster is a completely connected
+component (a clique) and there are no between cluster edges.
+
+\section*{Some Examples}
+
+From Chris Volinsky.
+<<example1>>=
+V <- LETTERS[1:4]
+edL1 <- vector("list", length=4)
+names(edL1) <- V
+for(i in 1:4)
+  edL1[[i]] <- list(edges=c(2,1,4,3)[i], weights=sqrt(i))
+gR <- new("graphNEL", nodes=V, edgeL=edL1)
+
+edL2 <- vector("list", length=4)
+names(edL2) <- V
+for(i in 1:4)
+  edL2[[i]] <- list(edges=c(2,1,2,1)[i], weights=sqrt(i))
+gR2 <- new("graphNEL", nodes=V, edgeL=edL2)
+
+
+ x1 <-  intersection(gR,gR2)
+ x1
+
+ x2 <-  union(gR,gR2)
+ x2
+
+ x3 <- complement(gR)
+
+ x3
+
+@
+Notice that while the graphs \Robject{gR} and \Robject{gR2} have
+different sets of edge weights these are lost when the
+\Rmethod{union}, \Rmethod{intersection} and \Rmethod{complement} are taken.
+It is not clear how they should be treated and in the current
+implementation they are ignored and replaced by weight 1 in the
+output.
+
+\section*{Random Graphs}
+
+Two basic strategies for finding random graphs have been included. One
+is the random edge model. In this graph the nodes are considered fixed
+and the edges are sampled, uniformly at random, from the set of possible
+edges in the complete graph.
+
+The function \Rfunction{randomEGraph} will generate graphs using the
+random edge model.
+<<randomEGraph>>=
+set.seed(333)
+V = letters[1:12]
+g1 = randomEGraph(V, .1)
+g1
+@
+
+A different method for generating random graphs has a sort of latent
+variable approach. In this model we presume that there are some latent
+variables that are appropriate for all nodes. Then two nodes will have
+an edge between them if the underlying latent variables are the same.
+
+<<randomGraph>>=
+
+  set.seed(23)
+  V <- LETTERS[1:20]
+  M <- 1:4
+  g1 <- randomGraph(V, M, .2)
+@
+We can find out about \Robject{g1} by typing its name or by applying
+  various functions to it.
+
+<<rGraph>>=
+ g1
+
+ g1cc <- connComp(g1)
+ g1cc
+
+ g1.sub <- subGraph(g1cc[[2]], g1)
+ g1.sub
+
+@
+The function \Rfunction{connComp} returns the connected components of
+a graph. There are many different times when different operations
+might be applied to the connected components separately.
+
+
+\end{document}
+

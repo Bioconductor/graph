@@ -99,43 +99,6 @@ validGraph<-function(object)
                 lapply(object@edgeL[which], function(x) gNodes[x$edges])},
             where=where)
 
-  if (is.null(getGeneric("uniqueEdges")))
-      setGeneric("uniqueEdges", function(object)
-                 standardGeneric("uniqueEdges"), where=where)
-
-  ##FIXME: seem to have broken this
-  setMethod("uniqueEdges", "graphNEL", function(object) {
-      browser()
-      edges <- edges(object)
-      weights <- edgeWeights(object)
-      nodes <- nodes(object)
-      done <- character()
-      outEdges <- list()
-
-      newEdgeObj <- function(x, ID) {
-          ## Helper function for the lapply below
-          ## Creates a new gEdge object given specified
-          ## information.
-          eNodeVal <- as.integer(match(x,nodes))
-          out <- new("gEdge", edgeID=newID(),
-                     bNode=ID,
-                     eNode=eNodeVal,
-                     weight=as.numeric(curWeights[as.character(eNodeVal)])
-                     )
-          out
-      }
-
-      for (i in seq(along=nodes)) {
-          curEdges <- edges[[i]]
-          curWeights <- weights[[i]]
-          newEdges <- curEdges[which(!(curEdges %in% done))]
-          done <- c(done,nodes[i])
-          outEdges <- c(outEdges,lapply(newEdges, newEdgeObj, ))
-      }
-      outEdges
-  }, where=where)
-
-
 
   ##we are going to need some notion of degree
   if( !isGeneric("degree") )
