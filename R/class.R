@@ -4,27 +4,27 @@
 ##the class structure is based on GXL
 
 .initGclass <- function(where) {
-
     setClass("graphID", where=where)
     ##some functions to allow nodes and edges to have identifiers
     ##there are lots of problems with the integer version --
-    if( require(Ruuid, quietly=TRUE) ) {
-        setIs( "Ruuid", "graphID")
-        haveUUID <- TRUE
-    }  else{
+##    if( require(Ruuid, quietly=TRUE) ) {
+##        setIs( "Ruuid", "graphID")
+##        haveUUID <- TRUE
+##    }  else{
         setIs("integer", "graphID")
         haveUUID <- FALSE
-        warning("without Ruuid you may have problems with node or edge IDS")
-    }
+##        warning("without Ruuid you may have problems with node or edge IDS")
+##    }
 
     ##here we set up some global variables (that should be internal to
     ##and will be once we have namespaces
     assign("idenv", new.env(hash=TRUE), pos="package:graph")
+    assign("idval", 1, env=idenv)
 
     if( haveUUID ) {
         assign("startids", function(x) NULL, pos="package:graph")
         assign("newID", getuuid, pos="package:graph")
-        assign("nullgraphID", new("Ruuid"), pos="package:graph")
+##        assign("nullgraphID", new("Ruuid"), pos="package:graph")
     } else {
         assign("startids", function(x) assign("idval", x, env=idenv),
                pos="package:graph")
