@@ -99,7 +99,7 @@ ugraph <- function(graph)
                if( edgemode(object) == "undirected"  && !duplicates) {
                    t1 <- apply(ans, 2, function(x) {paste(sort(x),
                                                            collapse="+")})
-                   ans <- ans[ ,!duplicated(t1)]
+                   ans <- ans[ ,!duplicated(t1), drop=FALSE]
                }
                ans
            })
@@ -145,7 +145,7 @@ ugraph <- function(graph)
                if( edgemode(object) == "undirected"  && !duplicates) {
                    t1 <- apply(ans, 2, function(x) {paste(sort(x),
                                                            collapse="+")})
-                   ans <- ans[ ,!duplicated(t1)]
+                   ans <- ans[ ,!duplicated(t1), drop=FALSE]
                }
                ans
            })

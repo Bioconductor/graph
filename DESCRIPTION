@@ -1,9 +1,9 @@
 Package: graph
 Title: graph: A package to handle graph data structures 
-Version: 1.2.1
+Version: 1.2.2
 Author: R. Gentleman, Elizabeth Whalen
 Description: A package that implements some simple graph handling capabilities. 
 Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
 License: LGPL
 Depends: R (>= 1.8.0), cluster, XML
-Collate: graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R zzz.R
+Collate: graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R write.tlp.R zzz.R
