@@ -85,6 +85,15 @@
     
   }
 }
+
+\details{
+  \code{degree} returns either a named vector (names correspond to the
+  nodes in the graph) containing the degree for undirected graphs or a
+  list with two components, \code{inDegree} and \code{outDegree} for
+  directed graphs.
+
+}
+
 \references{ Graph Theory and its Applications, J. Gross and J. Yellen. }
 \author{R. Gentleman and E. Whalen. }
 

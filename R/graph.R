@@ -147,23 +147,44 @@ validGraph<-function(object, quietly=FALSE)
   if( !isGeneric("degree") )
     setGeneric("degree", function(object, Nodes) standardGeneric("degree"))
 
+  ##handle directed graphs by a list inDegree and outDegree
   setMethod("degree", signature(object="graph", Nodes="missing"),
       function(object)  {
           ns <- nodes(object)
           nl <- edges(object)
           deg <- sapply(nl, length)
           names(deg) <- ns
-          deg
+          if( object@edgemode == "undirected" )
+              return(deg)
+          else if( object@edgemode == "directed" ) {
+              b1<- unlist(nl)
+              b2<- table(b1)
+              inDegree <- rep(0, length(ns))
+              names(inDegree) <- ns
+              inDegree[names(b2)]<-b2
+              return(list(inDegree=inDegree, outDegree=deg))
+          }
+          stop(paste("edgemode", object@edgemode, "is not valid"))
      })
 
   setMethod("degree", "graph",  function(object, Nodes) {
        nl <- edges(object)
-       nl <- nl[Nodes]
+       nls <- nl[Nodes]
 
-       deg <- sapply(nl, length)
+       deg <- sapply(nls, length)
        names(deg) <- Nodes
-       deg
-   })
+       if( object@edgemode == "undirected" )
+           return(deg)
+       else if( object@edgemode == "directed" ) {
+           b1 <- unlist(nl)
+           b2 <- table(b1)[Nodes]
+           inDegree <- rep(0, length(nls))
+           names(inDegree) <- Nodes
+           inDegree[names(b2)] <- b2
+           return(list(inDegree=inDegree, outDegree=deg))
+       }
+       stop(paste("edgemode", object@edgemode, "is not valid"))
+     })
 
   setGeneric("edgeWeights", function(object, index)
       standardGeneric("edgeWeights"))
