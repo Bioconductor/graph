@@ -8,13 +8,13 @@ validGraph<-function(object)
 
     if (any(is.na(objNodes)))
       stop("NA element in nodes.")
-    if (any(is.na(unlist(objEdges,use.names=F))))
+    if (any(is.na(unlist(objEdges,use.names=FALSE))))
       stop("NA element in edges.")
     if (length(objNodes)!=length(objEdges))
       stop("Nodes and edges must have the same length.")
     if (!all(objNodes==names(objEdges)))
       stop("Edges don't have the same names as the nodes.")
-    if (length(unlist(objEdges,use.names=F))%%2 != 0)
+    if (length(unlist(objEdges,use.names=FALSE))%%2 != 0)
       stop("Each edge must be duplicated.")
   }
   return(TRUE)
@@ -57,8 +57,6 @@ validGraph<-function(object)
        .Object},
        where=where)
 
-
-
   if (!isGeneric("nodes"))
   {
     if (is.function("nodes"))
@@ -80,6 +78,7 @@ validGraph<-function(object)
                  if(any(duplicated(value)))
                      stop("node names must be unique")
                  object@nodes <- value
+                 names(object@edgeL) <- value
                  object}, where=where)
 
   if (!exists("edges", mode="function"))
