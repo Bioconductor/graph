@@ -72,7 +72,7 @@ randomEGraph <- function(V, p, edges)
   if( !missing(p) )
       wh <- sample(c(TRUE, FALSE), numE, TRUE, p=c(p,1-p))
   else if( !missing(edges) )
-      wh <- sample(1:numE, edges, FALSE) 
+      wh <- sample(1:numE, edges, FALSE)
   tmat <- tmat[wh,]
   numE <- ifelse( is.logical(wh), sum(wh), length(wh))
   rval <- vector("list", length=numN)
@@ -94,5 +94,33 @@ randomEGraph <- function(V, p, edges)
 
 ## g2 <- randomEGraph(letters[1:10], .2)
 
+randomNodeGraph <- function(nodeDegree)
+{
+    if( any(nodeDegree < 0 ) )
+        stop("only positive degrees allowed")
+
+    numEdge <- sum(nodeDegree)
+    if( numEdge %% 2 != 0 )
+        stop("sum of degrees must be even")
+
+    wh <- sample(numEdge)
+    Nodes <- rep(names(nodeDegree), nodeDegree)
+    if( is.null(Nodes) )
+        stop("nodes must be named")
+
+    from <- Nodes[wh[1:(numEdge/2)]]
+    to <- Nodes[wh[(1+numEdge/2):numEdge]]
+    edL <- split(to, from)
+    eN <- names(nodeDegree)
+    outL <- lapply(edL, function(x) list(edges=match(x, eN),
+                                         weights=rep(1, length(x))))
+
+    oL <- vector("list", length=length(eN))
+    names(oL) <- eN
+    oL[names(outL)] <- outL
+    g <- new("graphNEL", nodes=names(oL), edgeL=oL,
+             edgemode="directed")
+    g
+}
 
 
