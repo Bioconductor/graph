@@ -147,6 +147,79 @@ The function \Rfunction{connComp} returns the connected components of
 a graph. There are many different times when different operations
 might be applied to the connected components separately.
 
+\section*{Direct Manipulation of Nodes and Edges}
+
+A number of functions have been added that allow the user to directly
+manipulate nodes and edges in graphs. Note that all of these functions
+make copies of the graph and manipulate the copies. The original graph
+should not be affected. Clearly this will not be the best approach for
+large graphs -- then we might need to do something different.
+
+Some examples. You will probably get more out of these examples if you
+use \Rpackage{Rgraphviz} to view the graphs.
+
+<<bigexamples>>=
+V <- LETTERS[1:4]
+edL1 <- vector("list", length=4)
+names(edL1) <- V
+for(i in 1:4)
+  edL1[[i]] <- list(edges=c(2,1,4,3)[i], weights=sqrt(i))
+gR <- new("graphNEL", nodes=V, edgeL=edL1)
+
+edL2 <- vector("list", length=4)
+names(edL2) <- V
+for(i in 1:4)
+  edL2[[i]] <- list(edges=c(2,1,2,1)[i], weights=sqrt(i))
+gR2 <- new("graphNEL", nodes=V, edgeL=edL2)
+
+##a directed graph
+edL3 <- vector("list", length=4)
+for(i in 1:4)
+  edL3[[i]] <- list(edges=(i%%4)+1, weights=i)
+names(edL3) <- V
+gR3 <- new("graphNEL", nodes=V, edgeL=edL3, "directed")
+
+ x1 <-  intersection(gR,gR2)
+ x1
+
+
+ x2 <-  union(gR,gR2)
+ x2
+
+ x3 <- complement(gR)
+
+ x3
+
+
+ v1 <- clearNode("A", gR)
+ v1
+
+ v2 <- removeNode("B", gR)
+ v2
+
+ v3 <- addNode("M", gR)
+ v3
+
+ v4 <- addEdge("M", "A", v3, 1)
+
+ v5 <- addEdge("A", c("C", "D"), v4, 1)
+
+ inEdges(c("M","B"), v5)
+
+ c1 <- combineNodes(c("A","M"), v5, "S")
+
+ c2 <- combineNodes(c("A","C"), v5, "S")
+
+ inEdges(c("C", "B"), gR3)
+
+  g4 <- addNode("X", gR3)
+
+ g5 <- addEdge("X", "C", g4, 1)
+
+ g6 <- combineNodes(c("B", "D"), g5, "E")
+
+
+@
 
 \end{document}
 
