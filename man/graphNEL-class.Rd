@@ -2,6 +2,7 @@
 \docType{class}
 \alias{graphNEL-class}
 \alias{graphNEL}
+\alias{subGraph}
 \alias{edgeL}
 \alias{edgeWeights}
 \alias{uniqueEdges}
