@@ -1,6 +1,6 @@
 \name{edgeMatrix}
 \alias{edgeMatrix}
-\alias{edgeWeightVector}
+\alias{eWV}
 \alias{edgeMatrix,graphNEL-method}
 \alias{edgeMatrix,clusterGraph-method}
 \S4method{edgeMatrix}{distGraph}
@@ -18,13 +18,17 @@
 }
 \usage{
 edgeMatrix(object, duplicates=FALSE)
-edgeWeightVector(g, ...)
+eWV(g, em, sep = ifelse(edgemode(g) == "directed", "->",
+                 "--"))
 }
 \arguments{
   \item{object}{An object that inherits from \code{graph}. }
   \item{g}{An object that inherits from \code{graph}. }
   \item{duplicates}{Whether or not duplicate edges should be produced
     for \dQuote{undirected} graphs. }
+  \item{em}{An edge matrix}
+  \item{sep}{a character string to concatenate node labels in
+    the edge label}
   \item{\dots}{arguments passed to \code{edgeMatrix}.}
 }
 \details{
@@ -46,7 +50,7 @@ edgeWeightVector(g, ...)
   g1 <- randomGraph(letters[1:10], 1:4, p=.3)
   edgeMatrix(g1)
   g2 <- new("clusterGraph", clusters=list(a=c(1,2,3), b=c(4,5,6)))
-  edgeMatrix(g2)
-  edgeWeightVector(g2)
+  em2 <- edgeMatrix(g2)
+  eWV(g1, edgeMatrix(g1))
 }
 \keyword{manip }

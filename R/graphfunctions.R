@@ -162,22 +162,6 @@ ugraph <- function(graph)
 
 
 
-##FIXME: why not do this with the edgeMatrix that you already have
-##why calculate the edgeMatrix twice?
-##This seems very broken - eWV below is much better
-edgeWeightVector <- function (g,...)
-{
-    m <- edgeMatrix(g,...)
-    w <- edgeWeights(g)
-    n <- apply(m,2,function(x)paste(x,collapse=
-       ifelse(edgemode(g)=="directed","->","--"),sep=""))
-    o <- rep(NA, ncol(m))
-    for (i in 1:ncol(m))
-        o[i] <- edgeWeights(g, m[1, i])[[1]][as.character(m[2,
-        i])]
-    names(o) <- n
-    o
-}
 ##it seems to me that we might want the edge weights for
 ##a given edgeMatrix and that that would be much better done
 ##in the edgeMatrix function
