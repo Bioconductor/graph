@@ -8,6 +8,7 @@
 \alias{edges,clusterGraph,character-method}
 \alias{edgeWeights,clusterGraph-method}
 \alias{nodes,clusterGraph-method}
+\alias{nodes<-,clusterGraph,character-method}
 \alias{numNodes,clusterGraph-method}
 \alias{show,clusterGraph-method}
 \title{Class "clusterGraph" }
@@ -36,6 +37,8 @@ Class \code{"graph"}, directly.
       adjacent nodes to the supplied node. }
     \item{nodes}{\code{signature(object = "clusterGraph")}: return the
       nodes. }
+    \item{nodes<-}{\code{signature(object="clusterGraph", value="character")}: 
+          replace the node names with the new labels given in \code{value}.}
     \item{numNodes}{\code{signature(object = "clusterGraph")}: return
       the number of nodes. }
   }
