@@ -195,20 +195,20 @@ ugraph <- function(graph)
 eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
                        "--"))
 {
-    unE <- unique(eM[1,])
     edL <- g@edgeL
-    eE <- lapply(edL, function(x) x$edges)
+    ##fix up the edgeweights so we really find them
     eW <- lapply(edL, function(x) {
         ans = x$weights
         ed = length(x$edges)
         if( is.null(ans) && ed > 0 )
             ans = rep(1, ed)
+        if( length(ans) > 0 )
+            names(ans) = x$edges
         ans})
 
-    dE <- paste(eM[1,], eM[2,], sep=sep)
     a1 <- apply(eM, 2,
                 function(x) eW[[x[1]]][as.character(x[2])])
-    names(a1) <- dE
+    names(a1) <- paste(eM[1,], eM[2,], sep=sep)
     return(a1)
 }
 
