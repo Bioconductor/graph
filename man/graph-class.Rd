@@ -24,6 +24,8 @@
 
 \alias{intersection}
 \alias{intersection,graph,graph-method}
+\alias{intersection2}
+\alias{intersection2,graph,graph-method}
 
 \alias{isConnected}
 \alias{isConnected,graph-method}

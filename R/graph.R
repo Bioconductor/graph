@@ -417,7 +417,7 @@ setMethod("intersection2", c("graph", "graph"), function(x,y) {
            edgeM <- 1
 
         .Call("graphIntersection", nodes(x), nodes(y),
-              edges(x), edges(y), edgeM)
+              edges(x), edges(y), edgeM, PACKAGE="graph")
 
 })
 

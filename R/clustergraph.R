@@ -66,6 +66,8 @@
    out
  }
 
+ setOldClass("dist")
+
  setClass("distGraph",
      representation( Dist = "dist"),
           prototype=list(edgemode="undirected"),
