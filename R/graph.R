@@ -71,20 +71,21 @@ validGraph<-function(object)
   setMethod("nodes", "graphNEL", function(object) object@nodes,
             where=where)
 
-  if (!isGeneric("edges"))
-  {
-    if (is.function("edges"))
-      fun <- edges
-    else
-      fun <- function(object) standardGeneric("edges")
-    setGeneric("edges", fun, where=where)
-  }
+
+  if (!exists("edges", mode="function"))
+      setGeneric("edges", function(object, which)
+                 standardGeneric("edges"), where=where)
 
   ##the graphNEL representation stores edges as indexes into the
   ##node label vector
-  setMethod("edges", "graphNEL", function(object) {
-           gNodes <- object@nodes
-           lapply(object@edgeL, function(x) gNodes[x$edges])},
+  setMethod("edges", c("graphNEL", "missing"), function(object, which) {
+      gNodes <- object@nodes
+      lapply(object@edgeL, function(x) gNodes[x$edges])},
+            where=where)
+
+  setMethod("edges", c("graphNEL", "character"), function(object, which) {
+      gNodes <- object@nodes[which]
+      lapply(object@edgeL[which], function(x) gNodes[x$edges])},
             where=where)
 
   if (is.null(getGeneric("uniqueEdges")))

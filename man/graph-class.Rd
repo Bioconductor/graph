@@ -1,5 +1,6 @@
 \name{graph-class}
 \docType{class}
+\alias{edgemode}
 \alias{graph-class}
 \alias{graph}
 \alias{nodes}
@@ -45,6 +46,11 @@
       Currently this returns an object of class \code{graphNEL}.}
     \item{numNodes}{\code{signature(object = "graph")}: compute the
       number of nodes in a graph. }
+    \item{edges}{\code{signature(object="graph", which="character")}:
+      return the edges indicated by \code{which}. \code{which} can be
+      missing in which case all edges are returned or it can be a
+      character vector with the node labels indicating the nodes whose
+      edge lists are wanted.} 
   }
 }
 \references{ Graph Theory and its Applications, J. Gross and J. Yellen. }

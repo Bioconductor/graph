@@ -1,6 +1,6 @@
 ################################################################
 # function:
-# boundary takes three parameters:
+# boundary takes two parameters:
 #   graph is the original graph from which the subgraph will be created
 #   subgraph either the subgraph or the nodes of the subgraph
 # boundary returns a list of length equal to the number of nodes in the

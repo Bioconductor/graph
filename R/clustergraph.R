@@ -137,7 +137,7 @@
  setMethod("nodes", "clusterGraph", function(object)
     as.character(unlist(object@clusters)), where=where)
 
- setMethod("edges", "clusterGraph", function(object) {
+ setMethod("edges", c("clusterGraph", "missing"), function(object, which) {
      edges<-list()
      for(clust in object@clusters) {
          cc <- as.character(clust)
@@ -145,6 +145,16 @@
              edges[[cc[i]]] <- cc[-i]
      }
      edges}, where=where)
+
+ setMethod("edges", c("clusterGraph", "character"), function(object, which) {
+     edges<-list()
+     for(clust in object@clusters) {
+         cc <- as.character(clust)[which]
+         for(i in seq(along=cc) )
+             edges[[cc[i]]] <- cc[-i]
+     }
+     edges}, where=where)
+
 
 ##FIXME: this should be done from distances, but for now...)
 ##eg, if a distance matrix was supplied we could use that to define
