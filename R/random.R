@@ -67,9 +67,9 @@ randomEGraph <- function(V, p, edges)
 
   ## sample the edges
   if(!missing(p)) {
-    ft <- ft[, runif(nEdges)<=p]
+    ft <- ft[, runif(nEdges)<=p, drop=FALSE]
   } else {
-    ft <- ft[, sample(nEdges, edges)]
+    ft <- ft[, sample(nEdges, edges), drop=FALSE]
   }
   return(ftM2graphNEL(ft, V=V, edgemode="undirected"))
 }
