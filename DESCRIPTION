@@ -5,4 +5,4 @@ Author: R. Gentleman, Elizabeth Whalen
 Description: A package that implements some simple graph handling capabilities. 
 Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
 License: LGPL
-Depends: R (>= 1.5), Biobase, cluster, XML
+Depends: R (>= 1.7), Ruuid, cluster, XML
