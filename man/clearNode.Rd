@@ -1,33 +1,36 @@
 \name{clearNode}
 \alias{clearNode}
-\title{  }
+\title{ clearNode }
 \description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+  This function removes all edges to or from the specified node in the graph.
 }
 \usage{
 clearNode(node, object)
 }
 \arguments{
-  \item{node}{ }
-  \item{object}{ }
+  \item{node}{a node }
+  \item{object}{a \code{graph} }
 }
 \details{
+  All edges to and from \code{node} are removed. \code{node} can be a
+  vector. 
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of `comp1'}
-  \item{comp2 }{Description of `comp2'}
-  ...
+  A new instance of the graph with all edges to and from the specified
+  node(s) removed.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\author{R. Gentleman}
 
-\seealso{ ~~objects to SEE ALSO as \code{\link{~~fun~~}}, ~~~ }
+\seealso{\code{\link{removeNode}}, \code{\link{removeEdge}}}
 
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
+  \examples{
+ V <- LETTERS[1:4]
+ edL3 <- vector("list", length=4)
+ for(i in 1:4)
+   edL3[[i]] <- list(edges=(i\%\%4)+1, weights=i)
+ names(edL3) <- V
+ gR3 <- new("graphNEL", nodes=V, edgeL=edL3, "directed")
+ g4 <- clearNode("A", gR3)
+
 }
-\keyword{ ~kwd1 }
+\keyword{manip }
