@@ -47,7 +47,8 @@ gxlTreeNEL <- function(gnel) {
 #<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.1.dtd">
 #<gxl xmlns:xlink="http://www.w3.org/1999/xlink">
  out$addTag("gxl",close=FALSE)
- out$addTag("graph", attrs=c(id="graphNEL", edgemode=edgemode(gnel)), close=FALSE)
+ out$addTag("graph", attrs=c(id="graphNEL", edgemode=
+          as.character(edgemode(gnel))), close=FALSE)
  for (i in 1:length(nds))
    {
    out$addTag("node", attrs=c(id=nds[i]), close=FALSE)
