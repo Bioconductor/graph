@@ -839,5 +839,40 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 
 
 
+##take a sparse matrix - csr and put it into a graph
+sparseM2Graph <- function(sM, nodeNames) {
+    require("SparseM") || stop("need SparseM for this operation")
+    nN <- dim(sM)[1]
+    dd <- diff(sM@ia)
+    e1 <- rep(1:nN, dd)
+    eL <- split(sM@ja, e1)
+    eW <- split(sM@ra, e1)
 
+    edL <- vector("list", length=nN)
+    names(edL) <- 1:nN
+    for(i in as.character(1:nN) ){
+        edL[[i]] <- list(edges=eL[[i]], weights=eW[[i]])
+    }
+    names(edL) <- nodeNames
+    new("graphNEL", nodes=nodeNames, edgeL=edL)
+}
+
+##translate a graph to a SparseMatrix:
+##ra - the values; these will be 1's for now
+##ja - the column indices
+##ia the row offsets (
+graph2SparseM <- function(g, useweights=FALSE) {
+    require("SparseM") || stop("need SparseM for this operation")
+    nr = nc = numNodes(g)
+    e1 = g@edgeL
+    e2 = lapply(e1, function(x) x$edges)
+    eL = listLen(e2)
+    if( useweights )
+        ra = unlist(lapply(e1, function(x) x$weights))
+    else
+        ra = rep(1, sum(eL))
+    ja = as.integer(unlist(e2))
+    ia = as.integer(cumsum(c(1, eL)))
+    new("matrix.csr", ra=ra, ja=ja, ia=ia, dimension=c(nr, nc))
+}
 
