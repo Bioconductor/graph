@@ -20,16 +20,17 @@ setClass("gNode",
 setMethod("initialize",
           signature(.Object = "gNode"),
           function (.Object, label, fromEdges, toEdges, edgeOrder,
-                    nodeType, property=list(), nodeID, ...)
+                    nodeType, property=list(), nodeID=getuuid(), ...)
       {
           property <- asGraphProperty(property)
           .Object <- callNextMethod()
-          if (missing(edgeID))
+          if (missing(nodeID))
               .Object@nodeID <- nodeID
           if (missing(property))
               .Object@property <- property
           .Object
       })
+
 
 ##I think we need to separate directed from the type of the edge
 ##if directed=FALSE then the bNode and eNode are just ends, not
