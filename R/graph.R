@@ -14,12 +14,13 @@ validGraph<-function(object, quietly=FALSE)
               cat ("NA element in edges.\n")
           bad <- TRUE
       }
-      if (length(objNodes)!=length(objEdges)) {
-          if( !quietly )
-              cat("Nodes and edges must have the same length.\n")
-          bad <- TRUE
-      }
-      if (!all(objNodes %in% names(objEdges))) {
+      ##don't think we want to force this one
+#      if (length(objNodes)!=length(objEdges)) {
+#          if( !quietly )
+#              cat("Nodes and edges must have the same length.\n")
+#          bad <- TRUE
+#      }
+      if (!all( names(objEdges) %in% objNodes )) {
            if( !quietly )
               cat("Edges don't have the same names as the nodes.\n")
            bad <- TRUE
