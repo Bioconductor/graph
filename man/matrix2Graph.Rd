@@ -33,7 +33,7 @@ is a directed or undirected graph.
   
 Also in \code{ftM2adjM}, \code{W} is an optional vector of edge weights.
 The order of the edge weights in the vector should correspond to the
-order of the edges recorded in \code{L}.  If it is not specified, edge
+order of the edges recorded in \code{ft}.  If it is not specified, edge
 weights of 1 are assigned by default.  The \code{V} argument is an
 optional vector of node names.  All nodes in \code{ft} must be contained
 in \code{V}, but not all nodes in \code{V} must be contained in
