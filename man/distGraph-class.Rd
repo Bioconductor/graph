@@ -51,6 +51,7 @@ Class \code{"graph"}, directly.
 \examples{
    set.seed(123)
    x <- rnorm(26)
+   names(x) <- letters
    library(mva)
    d1 <- dist(x)
    g1 <- new("distGraph", Dist=d1)
