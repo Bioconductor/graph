@@ -100,10 +100,10 @@
     graph} is the graph that results from removing all direction from
   the edges. This can be achieved using the function \code{\link{ugraph}}.
 
-  A \defn{weakly connected} component of a \emph{digraph} is one that is
+  A \dfn{weakly connected} component of a \emph{digraph} is one that is
   a connected component of the underlying graph. This is the default for
-  \code{connComp}. A \emph{digraph} is  \defn{strongly connected} if
-  every two vertices are mutually reachable. A \defn{strongly connected}
+  \code{connComp}. A \emph{digraph} is  \dfn{strongly connected} if
+  every two vertices are mutually reachable. A \dfn{strongly connected}
   component of a \emph{digraph}, \strong{D}, is a maximal \emph{strongly
   connected} subdigraph of \strong{D}. See the \pkg{RBGL} package for an
   implementation of Trajan's algorithm to find \emph{strongly
