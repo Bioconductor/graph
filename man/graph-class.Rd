@@ -37,43 +37,33 @@
 
 \section{Methods}{
   \describe{
-    \item{connComp}{\code{signature(object = "graph")}: find the
-      connected components of a graph.}
-    \item{isConnected}{\code{signature(object = "graph")}: A boolean
-      that details if a graph is fully connected or not.}
     \item{acc}{\code{signature(object = "graph")}: find all nodes
       accessible from the specified node. }
-    \item{degree}{\code{signature(object = "graph", Nodes = "missing")}:
-    find the \code{degree} of a node (number of coincident edges).}
-    \item{degree}{\code{signature(object = "graph", Nodes = "ANY")}: as
-      above.  }
-    \item{dfs}{\code{signature(object = "graph")}: execute a depth first
-    search on a graph starting with the specified node.}
-    \item{intersection}{\code{signature(x = "graph", y = "graph")}: compute the
-      intersection of the two supplied graphs. They must have identical
-      nodes. Currently this returns an object of class
-      \code{graphNEL}. With edge weights of 1 for any matching edge.}
-    \item{join}{\code{signature(x = "graph", y = "graph")}: returns the
-      joining of two graphs.  Nodes which are shared by both graphs will
-      have their edges merged.}
-    \item{union}{\code{signature(x = "graph", y = "graph")}: compute the
-      union of the two supplied graphs. They must have identical
-      nodes. Currently this returns an object of class \code{graphNEL}.}
-    \item{complement}{\code{signature(x = "graph")}: compute the
+
+        \item{complement}{\code{signature(x = "graph")}: compute the
       complement of the supplied graph. The complement is defined with
       respect to the complete graph on the nodes in \code{x}.
       Currently this returns an object of class \code{graphNEL}.}
-    \item{numNodes}{\code{signature(object = "graph")}: compute the
-      number of nodes in a graph. }
-    \item{edges}{\code{signature(object="graph", which="character")}:
+
+    \item{connComp}{\code{signature(object = "graph")}: find the
+      connected components of a graph.}
+
+
+    \item{degree}{\code{signature(object = "graph", Nodes = "missing")}:
+    find the \code{degree} of a node (number of coincident edges).}
+
+  \item{degree}{\code{signature(object = "graph", Nodes = "ANY")}: as
+      above.  }
+
+    \item{dfs}{\code{signature(object = "graph")}: execute a depth first
+    search on a graph starting with the specified node.}
+
+      \item{edges}{\code{signature(object="graph", which="character")}:
       return the edges indicated by \code{which}. \code{which} can be
       missing in which case all edges are returned or it can be a
       character vector with the node labels indicating the nodes whose
       edge lists are wanted.}
-    \item{nodes<-}{A generic function that allows different
-      implementations of the \code{graph} class to reset the node labels}
-    \item{plot}{Please see the help page for the \code{plot.graph}
-      method in the \code{Rgraphviz} package}
+
     \item{edgemode}{\code{signature(object="graph")}: return the
       \code{edgemode} for the graph. Currently this can be either
       \code{directed} or \code{undirected}.}
@@ -81,6 +71,32 @@
 	value="character")}: set the \code{edgemode}
       for the graph. Currently this can be either
       \code{directed} or \code{undirected}.}
+
+  \item{intersection}{\code{signature(x = "graph", y = "graph")}: compute the
+      intersection of the two supplied graphs. They must have identical
+      nodes. Currently this returns an object of class
+      \code{graphNEL}. With edge weights of 1 for any matching edge.}
+
+    \item{isConnected}{\code{signature(object = "graph")}: A boolean
+      that details if a graph is fully connected or not.}
+
+    \item{join}{\code{signature(x = "graph", y = "graph")}: returns the
+      joining of two graphs.  Nodes which are shared by both graphs will
+      have their edges merged.}
+
+    \item{nodes<-}{A generic function that allows different
+      implementations of the \code{graph} class to reset the node labels}
+
+    \item{numNodes}{\code{signature(object = "graph")}: compute the
+      number of nodes in a graph. }
+
+    \item{plot}{Please see the help page for the \code{plot.graph}
+      method in the \code{Rgraphviz} package}
+
+    \item{union}{\code{signature(x = "graph", y = "graph")}: compute the
+      union of the two supplied graphs. They must have identical
+      nodes. Currently this returns an object of class \code{graphNEL}.}
+
     
   }
 }
