@@ -24,7 +24,7 @@ ftM2adjM(ft, W=NULL, V=NULL, edgemode="directed")
 
 In the fuction \code{ftM2adjM}, a \code{from/to} matrix is converted
 into an \code{adjacency} matrix (which can then be coerced directly into
-a \code{\link{graphNEL}} with \code{as}.  Ths first column of the
+a \code{\link{graphNEL-class}} with \code{as}.  Ths first column of the
 \code{ft} represents the \code{from} nodes and the second column
 represents \code{to} nodes.  This representation does not allow for
 unconnected nodes except with the \code{V} argument (see below).  The
