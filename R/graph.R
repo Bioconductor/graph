@@ -407,7 +407,7 @@ setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 setGeneric("intersection2", function(x, y)
            standardGeneric("intersection2"))
 
-setMethod("intersection2", function(x,y) {
+setMethod("intersection2", c("graph", "graph"), function(x,y) {
         if (edgemode(x) != edgemode(y) )
            stop("both graphs must have the same edgemode")
 
