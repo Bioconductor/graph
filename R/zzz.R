@@ -7,5 +7,4 @@
     .initDistGraph(where)
     .initClustGraph(where)
     .initGraphPlotClasses(where)
-    cacheMetaData(as.environment(where))
 }
