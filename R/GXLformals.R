@@ -10,21 +10,21 @@
      setGeneric("fromGXL",function(con)standardGeneric("fromGXL"))
      setMethod("fromGXL", "connection", function(con)
        {
-       require("XML") || stop("XML package needed")
-       xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$asGraphNEL()
+           require("XML") || stop("XML package needed")
+           xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$asGraphNEL()
        })
 ## dumpGXL returns an R list with all? properties
      setGeneric("dumpGXL",function(con)standardGeneric("dumpGXL"))
      setMethod("dumpGXL", "connection", function(con)
        {
-       require(XML)
+       require("XML") || stop("XML package needed")
        xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$dump()
        })
 ## validate against the dtd
      setGeneric("validateGXL",function(con)standardGeneric("validateGXL"))
      setMethod("validateGXL", "connection", function(con)
        {
-       require(XML)
+       require("XML") || stop("XML package needed")
 # maybe need a try here, xmlTreeParse dumps the whole stream when it hits an error
        tmp <- xmlTreeParse(paste(readLines(con),collapse=""),asText=TRUE,
               validate=TRUE)
@@ -38,7 +38,7 @@
 
 
 gxlTreeNEL <- function(gnel) {
- require(XML)
+ require("XML") || stop("XML package needed")
  nds <- nodes(gnel)
  eds <- lapply(edges(gnel),unique)
  enms <- names(eds)

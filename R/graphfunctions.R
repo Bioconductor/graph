@@ -142,7 +142,7 @@ ugraph <- function(graph)
                NODES <- nodes(object)
                ed <- ed[NODES]
                nN <- length(ed)
-               if( require(Biobase) )
+               if( require("Biobase") )
                    elem <- listLen(ed)
                else
                    elem <- sapply(ed, length)
@@ -190,7 +190,7 @@ eWV <- function(g, eM, sep=ifelse(edgemode(g)=="directed", "->",
     eE <- lapply(edL, function(x) x$edges)
     eW <- lapply(edL, function(x) x$weights)
     nr <- listLen(eE)
-    ##now we can subset - 
+    ##now we can subset -
     eMn <- paste(rep((1:length(nr))[unE],nr[unE]), unlist(eE[unE]), sep=sep)
     eWv <- unlist(eW[unE])
     dE <- paste(eM[1,], eM[2,], sep=sep)
