@@ -15,7 +15,7 @@ validGraph<-function(object, quietly=FALSE)
             cat("NA element in edges.\n")
           bad <- TRUE
         }
-      
+
       ##don't think we want to force this one
 #      if (length(objNodes)!=length(objEdges)) {
 #          if( !quietly )
@@ -104,10 +104,10 @@ validGraph<-function(object, quietly=FALSE)
     contains="graph",
     representation(nodes="vector",edgeL="list"),
     validity=function(object) validGraph(object))
-           
-           
+
+
   setMethod("initialize", "graphNEL",
-    ## FIXME: what about edge weights?        
+    ## FIXME: what about edge weights?
     function(.Object, nodes=character(0), edgeL, edgemode) {
        if( missing(edgemode) )
            edgemode <- "undirected"
@@ -1030,11 +1030,11 @@ setMethod("edgeNames", "graph", function(object,
 
     to <- edges(object)
     from <- names(to)
-    edgeNames <- unlist(mapply(function(x,y) {
+    edgeNames <- as.vector(unlist(mapply(function(x,y) {
         if (length(x) > 0)
             paste(y,x,sep="~")
         else
-            NULL}, to, from))
+            NULL}, to, from)))
 
     if (recipEdges == "combined") {
         revNames <-  unlist(mapply(function(x,y) {
