@@ -91,7 +91,34 @@ Class \code{"graph"}, directly.
   }
 }
 
+\details{
+   The \code{graphNEL} class provides a very general structure for
+   representing graphs. It will be reasonably efficient for lists with
+   relatively more nodes than edges. The class is currently able to
+   handle multi-edges and edges of any type.
 
+   The \code{edgeL} is a named \code{list} of the same length as the
+   node vector. The names are the names of the nodes. Each element of
+   \code{edgeL} is itself a list. Each element of this (sub)list is a
+   vector (all must be the same length) and each element represents an
+   edge to another node. The sublist named \code{edges} holds index
+   values into the node vector. And each such entry represents an edge
+   from the node which has the same name as the component of
+   \code{edgeL} to the node with index provided. Another component that
+   is often used is named \code{weights}. It represents edge weights.
+   The user can specify any other edge attributes (such as types
+   etc). They are responsible for any special handling that
+   these might require.
+
+   Multi-edges are represented by multiple entries. For an
+   \code{undirected} instance all edges are reciprocated (there is an
+   edge from A to B and from B to A).
+
+   Note that the reason for using indices to represent the \code{to} end
+   of a node is so that we can easily support permutation of the node
+   labels as a way to generate randomizations of the graph.
+
+  }
 \author{R. Gentleman}
 
 \seealso{\code{\link{distGraph-class}},
