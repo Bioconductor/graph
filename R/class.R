@@ -137,13 +137,6 @@
                   assign(key, value, env= htable@hashtable)
               })
 
-      if( !isGeneric("contents") && !exists("contents", mode="function") )
-       setGeneric("contents", function(object)
-                  standardGeneric("contents"))
-
-    setMethod("contents", "hashtable",
-              function(object) ls(env=object@hashtable))
-
 
 #### define a general graph structure here
     setClass("generalGraph", representation(nodes="hashtable",
@@ -212,6 +205,4 @@
 
       new("generalGraph", nodes=nodeObj, edges=edgeObj)
   })
-
-# as(gR, "generalGraph")
 

@@ -4,6 +4,7 @@
 \alias{hash}
 \alias{contents}
 \alias{hash,ANY,ANY,hashtable-method}
+\alias{contents,hashtable,ANY-method}
 \alias{contents,hashtable-method}
 \alias{initialize,hashtable-method}
 \title{Class "hashtable"}
@@ -20,7 +21,8 @@ Objects can be created by calls of the form \code{new("hashtable", ...)}.
 \section{Methods}{
   \describe{
     \item{contents}{\code{signature(object = "hashtable")}: ... }
-    \item{hash}{\code{signature(key = "ANY", value = "ANY", htable = "hashtable")}: ... }
+    \item{hash}{\code{signature(key = "ANY", value = "ANY", htable =
+	"hashtable")}: ... } 
     \item{initialize}{\code{signature(.Object = "hashtable")}: ... }
   }
 }
