@@ -95,6 +95,7 @@ validGraph<-function(object)
 
   ##FIXME: seem to have broken this
   setMethod("uniqueEdges", "graphNEL", function(object) {
+      browser()
       edges <- edges(object)
       weights <- edgeWeights(object)
       nodes <- nodes(object)
