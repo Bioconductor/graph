@@ -1,24 +1,62 @@
 
-validGraph<-function(object)
+validGraph<-function(object, quietly=FALSE)
 {
   if (class(object) == "graphNEL") {
       objEdges<-edges(object)
       objNodes<-nodes(object)
-
-      if (any(is.na(objNodes)))
-          stop("NA element in nodes.")
-      if (any(is.na(unlist(objEdges,use.names=FALSE))))
-          stop("NA element in edges.")
-      if (length(objNodes)!=length(objEdges))
-          stop("Nodes and edges must have the same length.")
-      if (!all(objNodes %in% names(objEdges)))
-          stop("Edges don't have the same names as the nodes.")
-      if (any(duplicated(objNodes)))
-          stop("Node names may not be duplicated")
+      bad <- FALSE
+      if (any(is.na(objNodes))) {
+          if (!quietly ) cat("NA element in nodes.\n")
+          bad <- TRUE
+      }
+      if (any(is.na(unlist(objEdges,use.names=FALSE)))) {
+          if( !quietly )
+              cat ("NA element in edges.\n")
+          bad <- TRUE
+      }
+      if (length(objNodes)!=length(objEdges)) {
+          if( !quietly )
+              cat("Nodes and edges must have the same length.\n")
+          bad <- TRUE
+      }
+      if (!all(objNodes %in% names(objEdges))) {
+           if( !quietly )
+              cat("Edges don't have the same names as the nodes.\n")
+           bad <- TRUE
+       }
+      if (any(duplicated(objNodes))) {
+          if( !quietly )
+              cat("Node names may not be duplicated\n")
+          bad <- TRUE
+      }
+      ##check for reciprocity in undirected graphs
+      if( object@edgemode == "undirected") {
+          eds <- sapply(object@edgeL, function(x) x$edges)
+          v1 <- sapply(eds, length)
+          v2 <- sum(v1)
+          tM <- paste(rep(1:length(v1), v1), unlist(eds), sep=" -> " )
+          tM2 <- paste(unlist(eds), rep(1:length(v1), v1), sep=" -> " )
+          tM3 <- c(tM, tM2)
+          vv <- duplicated(tM3)
+          bad <- which(vv == FALSE)
+          bad <- bad[bad>v2]
+          if( length(bad)>0 ) {
+              if( !quietly ) {
+                  from <- bad-v2
+                  cat("The graph is undirected and\n")
+                  cat("the following edges are not reciprocated\n")
+                  cat(tM3[from], sep="\n")
+                  cat("\n")
+              }
+              return(FALSE)
+          }
+      }
   }
 
-  return(TRUE)
+  return(!bad)
 }
+
+
 
 #graph<-function(newnodes,newedges)
 #{

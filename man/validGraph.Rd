@@ -5,16 +5,21 @@
   validGraph is a validating function for a graph object.
 }
 \usage{
-validGraph(object)
+validGraph(object, quietly=FALSE)
 }
 
 \arguments{
   \item{object}{ a graph object to be tested }
+  \item{quietly}{ \code{TRUE} or \code{FALSE} indicating whether 
+  output should be printed.}
+}
 }
 
 \value{
- If the graph object is valid, TRUE is returned; else a warning 
- is returned that lists what is wrong with the graph object.
+ If the graph object is valid, \code{TRUE} is returned otherwise
+ \code{FALSE} is returned. If \code{object} is not a valid graph and
+ \code{quietly} is set to \code{FALSE} then descriptions of the problems
+ are printed.
 }
 
 \author{ Elizabeth Whalen }

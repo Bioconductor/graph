@@ -65,26 +65,26 @@ output edges and fromGXL will succeed.  Perhaps fromGXL can be made less
 dependent on edge id attributes.
 }
 \examples{
-sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
-show(fromGXL(sf))
-print(dumpGXL(sf))
-validateGXL(sf)
-bad <- file(system.file("GXL/c2.gxl", package="graph"))
+#sf <- file(system.file("GXL/simpleExample.gxl", package="graph"))
+#show(fromGXL(sf))
+#print(dumpGXL(sf))
+#validateGXL(sf)
+#bad <- file(system.file("GXL/c2.gxl", package="graph"))
 # here's how you can check if the GXL is well-formed
 #
 # try( validateGXL(bad) )
 #
-gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
- a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
- edgemode="directed")
+#gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
+# a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
+# edgemode="directed")
 #
 # following requires that you are using XML bound with recent libxml2
 #
-if (libxmlVersion()$major>=2 && libxmlVersion()$minor>=4)
-  cat(saveXML(toGXL(gR)$value()))
-wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
-wtdg <- fromGXL(wtd)
-print(edgeWeights(wtdg))
+#if (libxmlVersion()$major>=2 && libxmlVersion()$minor>=4)
+#  cat(saveXML(toGXL(gR)$value()))
+#wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
+#wtdg <- fromGXL(wtd)
+#print(edgeWeights(wtdg))
 }
 \keyword{methods}
 \keyword{ models }
