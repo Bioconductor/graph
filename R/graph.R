@@ -71,6 +71,16 @@ validGraph<-function(object)
   setMethod("nodes", "graphNEL", function(object) object@nodes,
             where=where)
 
+  setGeneric("nodes<-", function(object, value)
+             standardGeneric("nodes<-"), where=where)
+  setReplaceMethod("nodes", c("graphNEL", "character"),
+             function(object, value) {
+                 if(length(value) != length(object@nodes))
+                     stop("need as many names as there are nodes")
+                 if(any(duplicated(value)))
+                     stop("node names must be unique")
+                 object@nodes <- value
+                 object}, where=where)
 
   if (!exists("edges", mode="function"))
       setGeneric("edges", function(object, which)

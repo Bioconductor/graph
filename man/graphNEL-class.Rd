@@ -68,6 +68,10 @@ Class \code{"graph"}, directly.
       that will convert a \code{graphNEL} object into a matrix suitable
       for interaction with \code{Rgraphviz}.  Not intended to be called
       directly.}
+    \item{nodes<-}{\code{signature(object="graphNEL",
+	value="character")}: A method for replacing the nodes in a graph
+      object. It checks to be sure the values are the right length and
+      unique. }
   }
 }
 

@@ -11,6 +11,7 @@
 \alias{union}
 \alias{complement}
 \alias{numNodes}
+\alias{nodes<-}
 \title{Class "graph" }
 \description{A virtual class that all graph classes should extend. }
 \section{Objects from the Class}
@@ -50,7 +51,9 @@
       return the edges indicated by \code{which}. \code{which} can be
       missing in which case all edges are returned or it can be a
       character vector with the node labels indicating the nodes whose
-      edge lists are wanted.} 
+      edge lists are wanted.}
+    \item{nodes<-}{A generic function that allows different
+      implementations of the \code{graph} class to reset the node labels}
   }
 }
 \references{ Graph Theory and its Applications, J. Gross and J. Yellen. }
