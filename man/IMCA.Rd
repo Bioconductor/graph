@@ -2,35 +2,41 @@
 \alias{IMCA}
 \alias{IMCAAttrs}
 \alias{IMCAGraph}
-\alias{IMCALocusLink}
 \docType{data}
 \title{KEGG Integrin Mediated Cell Adhesion graph}
 \description{
   A graph representing the integrin-mediated cell adhesion pathway from
-  KEGG, as well as a data.frame of attributes for use in plotting the
-  graph with \code{Rgraphviz} and a list to compare the nodes with their
-  respective LocusLink IDs.  
+  KEGG, as well as a list of attributes for use in plotting the
+  graph with \code{Rgraphviz}.  
 }
 \usage{
 data(integrinMediatedCellAdhesion)
 }
 \details{
-  The \code{integrinMediatedCellAdhesion} data set contains three objects:
+  The \code{integrinMediatedCellAdhesion} data set contains two objects:
   
   The first is \code{IMCAGraph}, which is an object of class
   \code{graph-NEL} and represents the hsa04510 graph from \code{KEGG}.
 
-  The second is \code{IMCAAttrs}, which is a data.frame with two columns,
-  and a row for every node in \code{IMCAGraph}.  The first column lists
-  what color the node is represented with on the \code{KEGG} site.  The
-  second column lists the type of the node - either \code{genesym} or
-  \code{text}.  Most nodes are of type \code{genesym} as they represent
-  genes, but some of the nodes in the \code{KEGG} graph were not genes
-  and thus those nodes are of type \code{text}.
 
-  The third, \code{IMCALocusLink} is a named list where the names
-  correspond to the node names in \code{IMCAGraph}.  The values of the
-  list are the LocusLink IDs that correspond to that node in the KEGG graph.
+  The second is \code{IMCAAttrs}, which is a list of four elements.  The
+  first element, \code{defAttrs} corresponds to the \code{attrs}
+  arguments of \code{\link{agopen}} and \code{\link{plot.graph}}.  The
+  second element is \code{nodeAttrs} which corresponds to the
+  \code{nodeAttrs} argument in the same two functions from
+  \code{Rgraphviz}.  The third element, \code{subGList} corresponds to
+  the \code{subGList} argument in those functions.  Lastly, the fourth
+  element, \code{LocusLink} provides a named list where the names are
+  the nodes and the values are vectors of LocusLink ID values which
+  correspond to those nodes.
+  
+  The values from \code{defAttrs}, \code{nodeAttrs} and \code{subGList}
+  in the \code{IMCAAttrs} list are part of an ongoing attempt by
+  Bioconductor to provide the set of options to most accurately recreate
+  the actual visual image of the pathway from the KEGG site using
+  \code{Rgraphviz}.  Users may try out their own combination of
+  attributes and settings for their own needs, but these represent our
+  own efforts at as closely recreating the image as possible.
 }
 \source{
 \url{http://www.genome.ad.jp/kegg/pathway/hsa/hsa04510.html}
@@ -38,6 +44,7 @@ data(integrinMediatedCellAdhesion)
 \examples{
 data(integrinMediatedCellAdhesion)
 if (require("Rgraphviz") & interactive())
-  plot(IMCAGraph)
+  plot(IMCAGraph, attrs=IMCAAttrs$defAttrs,
+       nodeAttrs=IMCAAttrs$nodeAttrs, subGList=IMCAAttrs$subGList)
 }
 \keyword{datasets}
