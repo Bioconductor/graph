@@ -35,8 +35,7 @@ boundary(subgraph, graph)
 
 \author{ Elizabeth Whalen and R. Gentleman }
 
-\seealso{\code{\link{makeGraph}}},
-         \code{\link{subGraph}}, \code{\link{graph}}
+\seealso{ \code{\link{subGraph}}, \code{\link{graph}}
  }
 
 \examples{

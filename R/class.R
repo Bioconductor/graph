@@ -11,7 +11,7 @@
 ##        setIs( "Ruuid", "graphID")
 ##        haveUUID <- TRUE
 ##    }  else{
-        setIs("integer", "graphID")
+        setClassUnion("graphID", "integer")
         haveUUID <- FALSE
 ##        warning("without Ruuid you may have problems with node or edge IDS")
 ##    }
@@ -33,7 +33,7 @@
             assign("idval", val+1, env=idenv)
             return(val)
         }, pos="package:graph")
-        assign("nullgraphID", -1, pos="package:graph")
+        assign("nullgraphID", as.integer(-1), pos="package:graph")
         }
 
     ##for undirected graphs the toEdges and fromEdges lists are the same
@@ -44,7 +44,7 @@
                           fromEdges="list",
                           edgeOrder="numeric",
                           label="character" ),
-           prototype = list(nodeID=newID(), nodetype="unknown",
+           prototype = list(nodeID=as.integer(1), nodetype="unknown",
              edgeOrder=0, label=""),
            where=where)
     ##I think we need to separate directed from the type of the edge
@@ -57,7 +57,7 @@
                          directed="logical",
                          bNode="graphID",    ##begin - if directed
                          eNode="graphID"),   ##end   - if directed
-          prototype = list(edgeID=newID(), edgeType="unknown",
+          prototype = list(edgeID=nullgraphID, edgeType="unknown",
           directed=FALSE, bNode=nullgraphID, eNode=nullgraphID, weight=1),
           where = where)
 

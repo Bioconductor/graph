@@ -7,7 +7,6 @@
 \description{  ~~ A concise (1-5 lines) description of what the class is.  ~~}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("hashtable", ...)}.
-    ~~ describe objects here ~~ 
 }
 \section{Slots}{
   \describe{
@@ -22,14 +21,10 @@ Objects can be created by calls of the form \code{new("hashtable", ...)}.
     \item{initialize}{\code{signature(.Object = "hashtable")}: ... }
   }
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
+\author{R.Gentleman }
 
- ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{ ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
- or\code{\link{CLASSNAME-class}} for links to other classes }
+\seealso{  }
 
 \examples{
 ##---- Should be DIRECTLY executable !! ----
