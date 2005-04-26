@@ -1,0 +1,31 @@
+useDynLib(graph)
+
+import(methods,cluster)
+
+exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph, 
+  clusterGraph, graphH, graph, graphNEL, file, connection, propertyHolder) 
+
+exportMethods(DFS, Dist, acc, addEdge, addNode, adj, asGraphProperty,
+      bNode, clearNode, clusteringCoefficient, combineNodes, complement,
+      connComp, degree, dumpGXL, eNode, edgeID, edgeL, edgeMatrix,
+      edgeNames, edgeOrder, edgeWeights, edgemode, "edgemode<-", edges, fromEdges,
+      "fromEdges<-", "toEdges<-", "nodes<-",
+      fromGXL, getNodes, hash, idstring, inEdges, initialize, intersection,
+      intersection2, intersection3, isConnected, join, label, nodeID,
+      nodeType, nodes, numNodes, property, "property<-", removeEdge, removeNode, show,
+      subGraph, threshold, toEdges, toGXL, union, validateGXL, coerce)
+
+
+export(boundary, buildRepDepGraph, hashtable, calcProb, calcSumProb,
+       duplicatedEdges, graph2SparseM, listEdges, numEdges,
+       randomEGraph, randomGraph, randomNodeGraph, ugraph,
+       validGraph, eWV, pathWeights, .dropEdges, 
+       aveNumEdges, sparseM2Graph, gxlTreeNEL,
+       ftM2adjM, ftM2graphNEL, .ftM2other, NELhandler, int2ftM, 
+       ftM2int, aM2bpG, mostEdges, numNoEdges) 
+
+
+S3method(write,tlp)
+S3method("[",dist)
+
+

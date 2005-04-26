@@ -1,9 +1,8 @@
 
-.First.lib <- function(libname, pkgname, where) {
-    library.dynam("graph", pkgname, libname)
-    ##load time code
-    where = match(paste("package:", pkgname, sep=""), search())
-    .initGContents(where)
+.onLoad <- function(libname, pkgname) {
+    if (!require(methods))
+       print("Error on Load: methods package not able to load")
+    .initGContents()
 
  if((.Platform$OS.type == "windows") && ("Biobase" %in% installed.packages()[,"Package"])
     && (interactive()) && (.Platform$GUI ==  "Rgui")){
@@ -12,3 +11,4 @@
  }
 
 }
+
