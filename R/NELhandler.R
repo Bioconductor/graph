@@ -92,10 +92,12 @@ NELhandler <- function ()
         edl <- split(desti, src)
         wtl <- split(wts, src)
         for (i in 1:length(ns)) {
-            if (length(edl[[ns[i]]]) == 0) 
-                edl[[ns[i]]] <- integer(0)
-            else if (!NOWTS) edl[[ns[i]]] <- list(edges = edl[[ns[i]]], weights=wtl[[ns[i]]])
-            else edl[[ns[i]]] <- list(edges = edl[[ns[i]]])
+          if (length(edl[[ns[i]]]) == 0)
+            edl[[ns[i]]] <- list(edges = integer(0))
+          else if (!NOWTS)
+            edl[[ns[i]]] <- list(edges = edl[[ns[i]]], weights=wtl[[ns[i]]])
+          else
+            edl[[ns[i]]] <- list(edges = edl[[ns[i]]])
         }
         edl <- edl[ns]
         g <- new("graphNEL", nodes = ns, edgeL = edl, edgemode = edgemode)
