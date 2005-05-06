@@ -7,6 +7,6 @@ Description: A package that implements some simple graph handling capabilities.
 Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
 License: LGPL
 Depends: R (>= 1.8.0), cluster, Ruuid
-Suggests: Biobase, SparseM (>= 0.36), XML
+Suggests: SparseM (>= 0.36), XML
 Collate: contents.R buildDepGraph.R property.R graph.R class.R clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R NELhandler.R random.R write.tlp.R mat2graph.R zzz.R graphH.R standardLabeling.R
 SaveImage: yes
