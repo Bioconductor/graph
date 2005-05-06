@@ -91,10 +91,7 @@ ugraph <- function(graph)
                ed <- ed[nodes(object)]
                nN <- length(ed)
                eds<-lapply(ed, function(x) x$edges)
-               if( require("Biobase") )
-                   elem <- listLen(eds)
-               else
-                   elem <- sapply(ed, length)
+               elem <- listLen(eds)
                from <- rep(1:nN, elem)
                to <- unlist(eds)
                ans <- rbind(from, to)
@@ -142,10 +139,7 @@ ugraph <- function(graph)
                NODES <- nodes(object)
                ed <- ed[NODES]
                nN <- length(ed)
-               if( require("Biobase") )
-                   elem <- listLen(ed)
-               else
-                   elem <- sapply(ed, length)
+               elem <- listLen(ed)
                from <- rep(1:nN, elem)
                to <- match(unlist(ed), NODES)
                ans <- rbind(from, to)

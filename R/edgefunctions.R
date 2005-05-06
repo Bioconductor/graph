@@ -184,4 +184,7 @@ listEdges <- function(object, dropNULL=TRUE)
 }
 
 
+listLen <- function(list)
+    .Call("listLen", list, PACKAGE="graph")
+
 

@@ -8,10 +8,12 @@ SEXP R_scalarString(const char *);
 SEXP intersectStrings(SEXP, SEXP);
 SEXP graphIntersection(SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP checkEdgeList(SEXP, SEXP);
+SEXP listLen(SEXP);
 
 static const R_CallMethodDef R_CallDef[] = {
     {"intersectStrings", (DL_FUNC)&intersectStrings, 2},
     {"graphIntersection", (DL_FUNC)&graphIntersection, 5},
+    {"listLen", (DL_FUNC)&listLen, 1},
     {NULL, NULL, 0},
 };
 
@@ -176,4 +178,21 @@ SEXP checkEdgeList(SEXP eL, SEXP bN) {
     setAttrib(newEL, R_NamesSymbol, bN);
     UNPROTECT(2);
     return(newEL);
+}
+
+/* Taken from Biobase to avoid depending on it */
+SEXP listLen(SEXP x)
+{
+  SEXP ans;
+  int i;
+
+  if( !Rf_isNewList(x) )
+    error("require a list");
+
+  PROTECT(ans = allocVector(REALSXP, length(x)));
+
+  for(i=0; i<length(x); i++)
+    REAL(ans)[i] = length(VECTOR_ELT(x, i));
+  UNPROTECT(1);
+  return(ans);
 }

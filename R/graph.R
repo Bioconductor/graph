@@ -1070,10 +1070,6 @@ graph2SparseM <- function(g, useweights=FALSE) {
     e1 = g@edgeL
     e2 = lapply(e1, function(x) x$edges)
 
-    ## If they don't have Biobase installed, use this instead
-    if ( !require("Biobase", quietly=TRUE) )
-        listLen <- function(x) sapply(x, length)
-
     eL = listLen(e2)
     if( useweights )
         ra = unlist(lapply(e1, function(x) x$weights))
