@@ -14,6 +14,7 @@
 \alias{show,distGraph-method}
 \alias{threshold,distGraph-method}
 \alias{edgeWeights,distGraph-method}
+\alias{initialize,distGraph-method}
 \title{Class "distGraph"}
 \description{ A class definition for graphs that are based on distances.}
 \section{Objects from the Class}{
@@ -41,6 +42,8 @@ Class \code{"graph"}, directly.
       number of nodes. }
     \item{threshold}{\code{signature(object = "distGraph")}: remove all
       distances that are larger than the supplied threshold. }
+    \item{initialize}{\code{signature(object = "distGraph")}:
+        initialize a \code{distGraph} instance. }
   }
 }
 \references{Shamir's paper and Butte et al}
