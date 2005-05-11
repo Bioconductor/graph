@@ -18,8 +18,17 @@
 %\S4method{toDotR,graphNEL,missing,list,list-method}
 %\S4method{toDotR,graphNEL,missing,list,missing-method}
 \title{ Methods for Function toDotR, using R to generate a dot serialization} 
-\description{These methods write graphviz dot language for
-various graph structures.}
+
+\description{There are two basic methods of generating
+dot (\url{http://www.graphviz.org}) language serializations
+of R \code{\link[graph]{graph-class}} structures.  First,
+using the \code{\link[Graphviz]{toDot}} methods of the 
+Rgraphviz package, the native graphviz agraph-associated methods can be
+employed to create the dot serialization.
+Second, with the methods described here, R functions can
+be used to perform the serialization directly from
+the graph data structure, without Rgraphviz.}
+
 \section{Methods}{\describe{
 
 \item{G = "graphNEL", outDotFile = "character", renderList = "list", optList = "list"}{ create dot language descriptionof graph }
@@ -44,7 +53,7 @@ various graph structures.}
 
 \item{G = "compoundGraph", outDotFile = "missing", renderList = "list", optList = "missing"}{ create dot language descriptionof graph }
 }}
-\seealso{\code{\link[Rgraphviz]{toDot}}}
+\seealso{\code{\link[Rgraphviz]{toDot-methods}}}
 \examples{
 example(randomGraph)
 tmp <- tempfile()
