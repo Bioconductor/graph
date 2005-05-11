@@ -44,7 +44,7 @@ various graph structures.}
 
 \item{G = "compoundGraph", outDotFile = "missing", renderList = "list", optList = "missing"}{ create dot language descriptionof graph }
 }}
-\seealso{\code{\link[graph]{toDot}}}
+\seealso{\code{\link[Rgraphviz]{toDot}}}
 \examples{
 example(randomGraph)
 tmp <- tempfile()
