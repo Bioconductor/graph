@@ -22,7 +22,8 @@ data(integrinMediatedCellAdhesion)
 
   The second is \code{IMCAAttrs}, which is a list of four elements.  The
   first element, \code{defAttrs} corresponds to the \code{attrs}
-  arguments of \code{\link{agopen}} and \code{\link{plot.graph}}.  The
+  arguments of \code{\link[Rgraphviz]{agopen}} and 
+  \code{\link[Rgraphviz]{plot.graph}}.  The
   second element is \code{nodeAttrs} which corresponds to the
   \code{nodeAttrs} argument in the same two functions from
   \code{Rgraphviz}.  The third element, \code{subGList} corresponds to

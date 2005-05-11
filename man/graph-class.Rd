@@ -152,7 +152,7 @@ A virtual Class: No objects may be created from it.
   component of a \emph{digraph}, \strong{D}, is a maximal \emph{strongly
   connected} subdigraph of \strong{D}. See the \pkg{RBGL} package for an
   implementation of Trajan's algorithm to find \emph{strongly
-  connected} components (\code{\link{strongComp}}).
+  connected} components (\code{\link[RBGL]{strongComp}}).
 
   In the \pkg{graph} implementation of \code{connComp} \emph{weak
     connectivity} is used. If the argument to \code{connComp} is a
