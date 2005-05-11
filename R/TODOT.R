@@ -3,11 +3,11 @@
 # representation(grList="list",
 #  between="list"))
 
-setGeneric("grList",function(object)standardGeneric("grList"))
-setMethod("grList","compoundGraph", function(object)object@grList)
-
-setGeneric("between",function(object)standardGeneric("between"))
-setMethod("between", "compoundGraph", function(object)object@between)
+#setGeneric("grList",function(object)standardGeneric("grList"))
+#setMethod("grList","compoundGraph", function(object)object@grList)
+#
+#setGeneric("between",function(object)standardGeneric("between"))
+#setMethod("between", "compoundGraph", function(object)object@between)
 
 setGeneric("toDotR", function(G, outDotFile, renderList, optList)standardGeneric("toDotR"))
 setMethod("toDotR", c("graphNEL", "character", "list", "list"),
