@@ -16,18 +16,18 @@
 \alias{dumpGXL,connection-method}
 \alias{fromGXL,connection-method}
 \alias{validateGXL,connection-method}
-\description{GXL \url{www.gupro.de/GXL} is "an XML sublanguage designed
+\description{GXL \url{http://www.gupro.de/GXL} is "an XML sublanguage designed
 to be a standard exchange format for graphs".  This document describes
 tools in the graph package for importing GXL data to R and for
 writing graph data out as GXL.}
 \value{
 \item{fromGXL}{currently returns a graphNEL when possible.  This
-function is based on xmlEventParse with handlers defined
+function is based on \code{\link[XML]{xmlEventParse}} with handlers defined
 in the function NELhandler.  The dump()
 element of this handler should emit information on
 all children of nodes and edges; the asGraphNEL()
-element will return a graphNEL object with weights
-if child <attr> with name attribute "weights" is
+element will return a \code{\link[graph]{graphNEL}} object with weights
+if child \code{<attr>} with name attribute "weights" is
 present for each edge element.}
 \item{toGXL}{for an
 input of class "graphNEL", returns an object of class c("XMLInternalDOM", "XMLOutputStream");
