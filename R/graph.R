@@ -694,7 +694,7 @@ setGeneric("intersection", function(x, y) standardGeneric("intersection"))
             nNode <- length(node)
             nEd <- vector("list", length=nNode)
             names(nEd) <- node
-            for(i in 1:nNode)
+            for(i in seq(along=nEd))
                 nEd[[i]] <- list(edges=numeric(0), weights=numeric(0))
             edgeL <- c(edgeL, nEd)
             new("graphNEL", gN, edgeL, edgemode(object))
