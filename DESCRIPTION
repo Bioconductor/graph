@@ -5,7 +5,7 @@ Date: 26 May 2005
 Author: R. Gentleman, Elizabeth Whalen
 Description: A package that implements some simple graph handling
         capabilities.
-Maintainer: R. Gentleman <rgentlem@jimmy.harvard.edu>
+Maintainer: R. Gentleman <rgentlem@fhcrc.org>
 License: LGPL
 Depends: R (>= 1.8.0), cluster, Ruuid
 Suggests: SparseM (>= 0.36), XML
