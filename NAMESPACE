@@ -26,6 +26,5 @@ export(boundary, buildRepDepGraph, hashtable, calcProb, calcSumProb,
 
 
 S3method(write,tlp)
-S3method("[",dist)
 
 
