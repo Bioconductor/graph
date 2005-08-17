@@ -19,7 +19,7 @@ ftM2graphNEL(ft, W=NULL, V=NULL, edgemode="directed")
 \S4method{coerce}{matrix,graphNEL}(m,g)
 }
 \arguments{
-  \item{ft}{A 2xn or nx2 matrix containing the \code{from/to}
+  \item{ft}{An nx2 matrix containing the \code{from/to}
     representation of graph edges.}
   \item{W}{An optional vector of edge weights.}
   \item{V}{An optional vector of node names.}
@@ -33,17 +33,13 @@ ftM2graphNEL(ft, W=NULL, V=NULL, edgemode="directed")
 
 In the functions \code{ftM2adjM} and \code{ftM2graphNEL}, a
 \code{from/to} matrix \code{ft} is converted into an \code{adjacency}
-matrix or a \code{graphNEL} object respectively.  If \code{ft} is a
-\code{2xn} matrix, then the first row represents the \code{from} nodes
-and the second row the \code{to} nodes.  If \code{ft} is an \code{nx2}
-matrix, then the first column represents the \code{from} nodes and the
-second column the \code{to} nodes.  If it is 2x2, then the
-\code{from/to} nodes are taken to be represented by the rows.
+matrix or a \code{graphNEL} object respectively.  In \code{ft},
+the first column represents the \code{from} nodes and the
+second column the \code{to} nodes.
 
-This representation does not allow for unconnected nodes except with the
-\code{V} argument (see below).
-The \code{edgemode} parameter can be used to specify if the desired output
-is a directed or undirected graph. 
+To have unconnected nodes, use the \code{V} argument (see below).  The
+\code{edgemode} parameter can be used to specify if the desired output
+is a directed or undirected graph.
 
 The same edge must not occur twice in the \code{from/to} matrix.
 If \code{edgemode} is \code{undirected}, the edge \code{(u,v)} and

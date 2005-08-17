@@ -33,12 +33,9 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
   .ftM2other(ft, W, V, edgemode, "graphNEL")
 
 .ftM2other <- function(ft, W, V, edgemode, targetclass) {
-   ## ft should be a 2xn or nx2 matrix. If nx2, transpose
-   if(!is.matrix(ft) || !any(dim(ft)==2))
-     stop("'ft' must be a 2xn or nx2 matrix")
-     
-   if(nrow(ft)==2)
-     ft <- t(ft)
+   ## ft: nx2 matrix. 
+   if(!(is.matrix(ft) && ncol(ft)==2))
+     stop("'ft' must be an nx2 matrix.")
    numE <- nrow(ft)
 
    ## deal with W
