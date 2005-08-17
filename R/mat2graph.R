@@ -25,7 +25,7 @@ aM2bpG<-function(aM){
 	return(g1)
 }
 
-## WH 23 June 2004
+## WH 23 June 2004, Ladir CH
 ftM2adjM <- function(ft, W=NULL, V=NULL, edgemode="directed")
   .ftM2other(ft, W, V, edgemode, "adjM")
 
