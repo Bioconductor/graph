@@ -68,11 +68,6 @@
 
  setOldClass("dist")
 
- setClass("distGraph",
-     representation( Dist = "dist"),
-          prototype=list(edgemode="undirected"),
-          contains="graph")
-
  setMethod("initialize", "distGraph", function(.Object, Dist) {
        if( is.null( attr(Dist, "Labels") ) )
 	   attr(Dist, "Labels") = as.character(1:attr(Dist, "Size"))
@@ -83,7 +78,7 @@
  setMethod("nodes", "distGraph", function(object)
       attr(object@Dist, "Labels" ))
 
- setGeneric("Dist", function(object) standardGeneric("Dist"))
+ 
 
  setMethod("Dist", "distGraph", function(object)
     object@Dist)
@@ -92,9 +87,7 @@
     cat("distGraph with ", attr(object@Dist, "Size"),
    " nodes \n", sep="")})
 
-  setGeneric("threshold", function(object, k)
-  standardGeneric("threshold"))
-
+ 
   setMethod("threshold", "distGraph", function(object, k) {
         nd <- object@Dist
         nd[nd > k ] <- 0
@@ -190,9 +183,6 @@
 ##clusterGraph code here
 ####################################
 
- setClass("clusterGraph",
-     representation( clusters = "list"), contains="graph",
-          prototype=list(edgemode="undirected"))
 
  setMethod("nodes", "clusterGraph", function(object)
     as.character(unlist(object@clusters)))

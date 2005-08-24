@@ -2,26 +2,24 @@
 # GXL support
 #
 ## need methods on connections
-     setClass("file")
-     setClass("connection")
      setIs("file","connection")
 ## fromGXL returns the graphNEL object only, and it may
 ##  need to return more properties (7 mar 03)
-     setGeneric("fromGXL",function(con)standardGeneric("fromGXL"))
+
      setMethod("fromGXL", "connection", function(con)
        {
            require("XML") || stop("XML package needed")
            xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$asGraphNEL()
        })
 ## dumpGXL returns an R list with all? properties
-     setGeneric("dumpGXL",function(con)standardGeneric("dumpGXL"))
+
      setMethod("dumpGXL", "connection", function(con)
        {
        require("XML") || stop("XML package needed")
        xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$dump()
        })
 ## validate against the dtd
-     setGeneric("validateGXL",function(con)standardGeneric("validateGXL"))
+
      setMethod("validateGXL", "connection", function(con)
        {
        require("XML") || stop("XML package needed")
@@ -32,7 +30,7 @@
 #
 #  exporting
 #
-    setGeneric("toGXL", function(object)standardGeneric("toGXL"))
+
     setMethod("toGXL", "graphNEL", function(object)
        gxlTreeNEL(object))
 

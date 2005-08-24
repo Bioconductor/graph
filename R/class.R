@@ -3,19 +3,9 @@
 ##a class structure for graphs
 ##the class structure is based on GXL
 
-assign("nullgraphID", getuuid())
+
 
 ##for undirected graphs the toEdges and fromEdges lists are the same
-setClass("gNode",
-         representation(label="character",
-                        fromEdges="list",
-                        toEdges="list",
-                        edgeOrder="list",
-                        nodeType="character",
-                        nodeID="Ruuid"),
-         contains = "propertyHolder",
-         prototype = list(nodeID=getuuid(), nodetype="unknown",
-         label=""))
 
 setMethod("initialize",
           signature(.Object = "gNode"),
@@ -37,16 +27,6 @@ setMethod("initialize",
 ##I think we need to separate directed from the type of the edge
 ##if directed=FALSE then the bNode and eNode are just ends, not
 ##beginning and ending nodes
-setClass("gEdge",
-         representation(edgeID="Ruuid",
-                        edgeType="character",
-                        directed="logical",
-                        bNode="Ruuid",    ##begin - if directed
-                        eNode="Ruuid"),   ##end   - if directed
-         contains = "propertyHolder",
-         prototype = list(edgeID=nullgraphID, edgeType="unknown",
-                          directed=FALSE, bNode=nullgraphID,
-                          eNode=nullgraphID))
 
 setMethod("initialize",
           signature(.Object = "gEdge"),
@@ -67,78 +47,51 @@ setMethod("initialize",
           .Object
       })
 
-setClass("simpleEdge",
-         representation(edgeType="character",
-                        weight="numeric",
-                        directed="logical",
-                        bNode="character",    ##begin - if directed
-                        eNode="character"),   ##end   - if directed
-         prototype = list(edgeType="unknown",
-         directed=FALSE, bNode="", eNode="", weight=1))
 ##setup the accessor functions
 
-if (is.null(getGeneric("edgeID")) && !exists("edgeID",
-                                             mode="function") )
-    setGeneric("edgeID", function(object)
-               standardGeneric("edgeID"))
 setMethod("edgeID", "gEdge", function(object)
           object@edgeID)
 
-if (is.null(getGeneric("eNode")))
-    setGeneric("eNode", function(object)
-               standardGeneric("eNode"))
 setMethod("eNode", "gEdge", function(object)
           object@eNode)
-if (is.null(getGeneric("bNode")))
-    setGeneric("bNode", function(object)
-               standardGeneric("bNode"))
+
 setMethod("bNode", "gEdge", function(object)
           object@bNode)
 
-setGeneric("toEdges", function(object) standardGeneric("toEdges"))
 
 setMethod("toEdges", "gNode", function(object) object@toEdges)
 
-setGeneric("toEdges<-",
-           function(object, value) standardGeneric("toEdges<-"))
 setReplaceMethod("toEdges", "gNode", function(object, value) {
     object@toEdges <- value
     object})
 
-setGeneric("fromEdges",
-           function(object) standardGeneric("fromEdges"))
 setMethod("fromEdges", "gNode", function(object) object@fromEdges)
 
-setGeneric("fromEdges<-",
-           function(object, value) standardGeneric("fromEdges<-"))
 setReplaceMethod("fromEdges", "gNode", function(object, value) {
     object@fromEdges <- value
     object})
 
-setGeneric("label", function(object) standardGeneric("label"))
+
 setMethod("label", "gNode", function(object) object@label)
 
-setGeneric("edgeOrder", function(object) standardGeneric("edgeOrder"))
+
 setMethod("edgeOrder", "gNode", function(object) object@edgeOrder)
 
-setGeneric("nodeID", function(object) standardGeneric("nodeID"))
+
 
 setMethod("nodeID", "gNode", function(object) object@nodeID)
-
-setGeneric("nodeType", function(object) standardGeneric("nodeType"))
 
 setMethod("nodeType", "gNode", function(object) object@nodeType)
 
 
 #### hashtables -- very primitive start
 
-setClass("hashtable", representation(hashtable="environment"))
+
 setMethod("initialize", "hashtable", function(.Object) {
     .Object@hashtable=new.env(hash=TRUE)
     .Object})
 
-if( !exists("hash", mode="function") )
-    setGeneric("hash", function(key, value, htable) standardGeneric("hash"))
+
 
 setMethod("hash", signature("ANY", "ANY", "hashtable"),
           function(key, value, htable) {
@@ -149,9 +102,6 @@ setMethod("hash", signature("ANY", "ANY", "hashtable"),
 
 
 #### define a general graph structure here
-setClass("generalGraph", representation(nodes="hashtable",
-                                        edges="hashtable"),
-         contains="graph")
 
 setMethod("initialize", "generalGraph", function(.Object,
                                                  nodes=NULL, edges=NULL) {

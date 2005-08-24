@@ -3,13 +3,13 @@
 # representation(grList="list",
 #  between="list"))
 
-#setGeneric("grList",function(object)standardGeneric("grList"))
+
 #setMethod("grList","compoundGraph", function(object)object@grList)
 #
-#setGeneric("between",function(object)standardGeneric("between"))
+
 #setMethod("between", "compoundGraph", function(object)object@between)
 
-setGeneric("toDotR", function(G, outDotFile, renderList, optList)standardGeneric("toDotR"))
+
 setMethod("toDotR", c("graphNEL", "character", "list", "list"),
 function (G, outDotFile, renderList, optList=.standardToDotOptions) 
 {
@@ -171,7 +171,7 @@ setMethod("toDotR", c("graphNEL", "character", "missing", "list"),
 #   cat("dot file written to", outDotFile, " use 'dot -Tps [.dot] [.ps] to render\n")
 #})
 
-#setGeneric("adjMat",function(cg,ordvec)standardGeneric("adjMat"))
+
 #setMethod("adjMat", c("compoundGraph", "ANY"), function(cg, ordvec) {
 # if (length(ordvec)>2) stop("must specify indices of source and sink in ordvec, length(ordvec)==2")
 # arows <- nodes(grList(cg)[[ordvec[1]]])

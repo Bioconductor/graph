@@ -80,9 +80,7 @@ ugraph <- function(graph)
 }
 
 
- setGeneric("edgeMatrix",
-            function(object, duplicates=FALSE) standardGeneric("edgeMatrix"))
-
+ 
  setMethod("edgeMatrix", c("graphNEL", "ANY"),
            function(object, duplicates=FALSE) {
                    ## Return a 2 row numeric matrix (from, to, weight)

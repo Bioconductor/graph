@@ -1,11 +1,5 @@
 hashtable <- function() new.env(hash=TRUE)
 
-setClass("graphH",
-         representation(graphID="Ruuid",
-                        nodes="list",
-                        label2nodeID="character",
-                        edges="environment"),
-         contains = "graph")
 
 setMethod("initialize",
           signature(.Object="graphH"),
@@ -85,10 +79,6 @@ setMethod("initialize",
           .Object
       })
 
-if (!isGeneric("idstring"))
-    setGeneric("idstring",
-               function(x)
-               standardGeneric("idstring"))
 
 setMethod("idstring",
           signature(x="gNode"),
@@ -126,10 +116,6 @@ setReplaceMethod("nodes",
                  object
              })
 
-if (!isGeneric("getNodes"))
-    setGeneric("getNodes",
-               function(x, which)
-               standardGeneric("getNodes"))
 
 setMethod("getNodes",
           signature(x="graphH", which="missing"),

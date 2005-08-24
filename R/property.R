@@ -1,11 +1,4 @@
-setClass("propertyHolder",
-         representation(property="list"),
-         contains="VIRTUAL")
 
-if (!isGeneric("property"))
-    setGeneric("property",
-               function(x, prop)
-               standardGeneric("property"))
 
 setMethod("property",
           signature(x="propertyHolder", prop="character"),
@@ -16,10 +9,6 @@ setMethod("property",
           x@property[[prop]]
       })
 
-if (!isGeneric("property<-"))
-    setGeneric("property<-",
-               function(x, prop, value)
-               standardGeneric("property<-"))
 
 setReplaceMethod("property",
                  signature(x = "propertyHolder",
@@ -32,10 +21,6 @@ setReplaceMethod("property",
                  x
              })
 
-if (!isGeneric("asGraphProperty"))
-    setGeneric("asGraphProperty",
-               function(x, hasWeight)
-               standardGeneric("asGraphProperty"))
 
 setMethod("asGraphProperty",
           signature(x="list", hasWeight="missing"),

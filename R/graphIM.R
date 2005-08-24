@@ -12,9 +12,6 @@ validGraphIM <- function(object) {
     return(TRUE)
 }
 
-setClass("graphIM", contains="graph",
-         representation(inciMat="matrix"),
-         validity=function(object) validGraphIM(object))
 
 
 setMethod("edges", signature("graphIM", "missing"),
