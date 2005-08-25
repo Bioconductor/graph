@@ -66,7 +66,7 @@
    out
  }
 
- setOldClass("dist")
+
 
  setMethod("initialize", "distGraph", function(.Object, Dist) {
        if( is.null( attr(Dist, "Labels") ) )
