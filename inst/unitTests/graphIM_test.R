@@ -35,3 +35,32 @@ testEdgesSubset <- function() {
     checkEquals(expect, got)
 }
     
+
+testNodes <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    got <- nodes(g1)
+    expect <- letters[1:4]
+    checkEquals(expect, got)
+}
+
+
+testNodesReplace <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    nodes(g1) <- LETTERS[1:4]
+    expect <- LETTERS[1:4]
+    checkEquals(expect, nodes(g1))
+}
+
+
+testEdgeWeights <- function() {
+    ## default weight is 1
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    expect <- list(a=c(c=1, d=1), b=c(c=1, d=1), c=c(a=1, b=1, d=1),
+                   d=c(a=1, b=1, c=1))
+    checkEquals(expect, edgeWeights(g1))
+}
+    
+    
