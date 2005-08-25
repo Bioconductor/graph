@@ -10,7 +10,7 @@ setClass("graphNEL",
 
 ## Incidence Matrix representation
 setClass("graphIM", contains="graph",
-         representation(inciMat="matrix"),
+         representation(inciMat="matrix", nodes="environment"),
          validity=function(object) validGraphIM(object))
 
 

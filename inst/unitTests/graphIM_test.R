@@ -13,6 +13,18 @@ testInvalidNonSquare <- function() {
 }
 
 
+testConstructWithNodeObjects <- function() {
+    mat <- simpleInciMat()
+    nodeObjects <- lapply(1:4, function(x) {
+        value <- x
+        type <- "NodeObject"
+        list(value=value, type=type)})
+    names(nodeObjects) <- colnames(mat)
+    g1 <- new("graphIM", inciMat=mat, nodes=nodeObjects)
+    gotNodes <- nodes(g1)
+    checkEquals(nodeObjects, gotNodes)
+}
+
 testEdges <- function() {
     mat <- simpleInciMat() 
     g1 <- new("graphIM", inciMat=mat)
@@ -36,31 +48,31 @@ testEdgesSubset <- function() {
 }
     
 
-testNodes <- function() {
+testNodeNames <- function() {
     mat <- simpleInciMat()
     g1 <- new("graphIM", inciMat=mat)
-    got <- nodes(g1)
+    got <- nodeNames(g1)
     expect <- letters[1:4]
     checkEquals(expect, got)
 }
 
 
-testNodesReplace <- function() {
+testNodeNamesReplace <- function() {
     mat <- simpleInciMat()
     g1 <- new("graphIM", inciMat=mat)
-    nodes(g1) <- LETTERS[1:4]
+    nodeNames(g1) <- LETTERS[1:4]
     expect <- LETTERS[1:4]
-    checkEquals(expect, nodes(g1))
+    checkEquals(expect, nodeNames(g1))
 }
 
 
-testEdgeWeights <- function() {
-    ## default weight is 1
-    mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
-    expect <- list(a=c(c=1, d=1), b=c(c=1, d=1), c=c(a=1, b=1, d=1),
-                   d=c(a=1, b=1, c=1))
-    checkEquals(expect, edgeWeights(g1))
-}
+## testEdgeWeights <- function() {
+##     ## default weight is 1
+##     mat <- simpleInciMat()
+##     g1 <- new("graphIM", inciMat=mat)
+##     expect <- list(a=c(c=1, d=1), b=c(c=1, d=1), c=c(a=1, b=1, d=1),
+##                    d=c(a=1, b=1, c=1))
+##     checkEquals(expect, edgeWeights(g1))
+## }
     
     

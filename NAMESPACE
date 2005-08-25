@@ -13,7 +13,7 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj, asGraphProperty,
       "fromEdges<-", "toEdges<-", "nodes<-",
       fromGXL, getNodes, hash, idstring, inEdges, initialize, intersection,
       intersection2, intersection3, isConnected, join, label, nodeID,
-      nodeType, nodes, numNodes, property, "property<-", removeEdge, removeNode, show,
+      nodeType, nodes, nodeNames, "nodeNames<-", numNodes, property, "property<-", removeEdge, removeNode, show,
       subGraph, threshold, toEdges, toGXL, union, validateGXL, coerce, toDotR)
 
 

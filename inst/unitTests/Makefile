@@ -5,7 +5,7 @@ all: test
 
 test:
 	cd ${TOP}; \
-	R CMD INSTALL graph; \
+	R CMD INSTALL graph && \
 	cd ${RUNIT_DIR}
 	R --slave < runalltests.R
 

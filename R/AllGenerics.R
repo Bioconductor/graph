@@ -14,10 +14,17 @@ setGeneric("edgemode", function(object) standardGeneric("edgemode"))
 setGeneric("edgemode<-", function(object, value) standardGeneric("edgemode<-"))
 
 
-setGeneric("nodes", function(object) standardGeneric("nodes"))
+setGeneric("nodes", function(object, ...) standardGeneric("nodes"))
 
 
 setGeneric("nodes<-", function(object, value) standardGeneric("nodes<-"))
+
+
+setGeneric("nodeNames", function(object) standardGeneric("nodeNames"))
+
+
+setGeneric("nodeNames<-", function(object, value)
+           standardGeneric("nodeNames<-"))
 
 
 setGeneric("edges", function(object, which) standardGeneric("edges"))
