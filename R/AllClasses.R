@@ -10,7 +10,8 @@ setClass("graphNEL",
 
 ## Incidence Matrix representation
 setClass("graphIM", contains="graph",
-         representation(inciMat="matrix", nodes="environment"),
+         representation(inciMat="matrix",
+                        nodes="environment"),
          validity=function(object) validGraphIM(object))
 
 
@@ -79,9 +80,12 @@ setClass("simpleEdge",
            directed=FALSE, bNode="", eNode="", weight=1))
 
 
-setClass("edgeSet", representation(data="environment",
-                                   attrList="list",
-                                   keySep="character"))
+setClass("propertySet", representation(data="environment"))
+
+
+setClass("edgeSet", representation(attrList="list",
+                                   keySep="character"),
+         contains="propertySet")
 
 
 ## Misc classes

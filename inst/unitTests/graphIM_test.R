@@ -116,7 +116,13 @@ testNumEdges <- function() {
 }
 
 
+## testSubgraph <- function() {
+##     mat <- simpleInciMat() 
+##     g1 <- new("graphIM", inciMat=mat)
+##     g2 <- subgraph(c("a", "b", "c"), ffff)
 
+##                }
+    
 ## testEdgeWeights <- function() {
 ##     ## default weight is 1
 ##     mat <- simpleInciMat()

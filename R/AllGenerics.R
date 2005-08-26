@@ -75,15 +75,15 @@ setGeneric("addEdge", function(from, to, graph, weights)
            standardGeneric("addEdge"))
 
 
-setGeneric("addEdge2", function(from, to, object, ...)
+setGeneric("addEdge2", function(container, from, to, ...)
            standardGeneric("addEdge2"))
 
 
-setGeneric("getEdge", function(from, to, object)
+setGeneric("getEdge", function(container, from, to)
            standardGeneric("getEdge"))
 
 
-setGeneric("getEdges", function(from, to, object)
+setGeneric("getEdges", function(container, from, to)
            standardGeneric("getEdges"))
 
 
@@ -91,7 +91,7 @@ setGeneric("removeEdge", function(from, to, graph)
            standardGeneric("removeEdge"))
 
 
-setGeneric("removeEdges", function(from, to, object, ...)
+setGeneric("removeEdges", function(container, from, to, ...)
            standardGeneric("removeEdges"))
 
 
