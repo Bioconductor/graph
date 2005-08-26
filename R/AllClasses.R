@@ -79,6 +79,11 @@ setClass("simpleEdge",
            directed=FALSE, bNode="", eNode="", weight=1))
 
 
+setClass("edgeSet", representation(data="environment",
+                                   attrList="list",
+                                   keySep="character"))
+
+
 ## Misc classes
 
 setClass("hashtable", representation(hashtable="environment"))

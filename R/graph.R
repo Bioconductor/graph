@@ -1,18 +1,26 @@
+setMethod("isDirected", signature("graph"),
+          function(object) {
+              if (object@edgemode == "directed")
+                TRUE
+              else
+                FALSE
+          })
+
 
 setMethod("edgemode", "graph", function(object) object@edgemode)
 
 
 
-  setReplaceMethod("edgemode", c("graph", "character"),
-             function(object, value) {
-                 if(length(value) != 1)
-                     stop("edgemode is the wrong length")
-                 if( !(value %in% c("directed", "undirected")) )
-                     stop(paste("supplied mode is", value,
-                                "it must be either directed or undirected"))
-                 object@edgemode <- value
-                 object
-             })
+setReplaceMethod("edgemode", c("graph", "character"),
+                 function(object, value) {
+                     if(length(value) != 1)
+                       stop("edgemode is the wrong length")
+                     if( !(value %in% c("directed", "undirected")) )
+                       stop(paste("supplied mode is", value,
+                                  "it must be either directed or undirected"))
+                     object@edgemode <- value
+                     object
+                 })
 
   ## a node-edge-list graph
   ##the edgeL is a list, with edges, weights etc
@@ -413,24 +421,15 @@ setMethod("isConnected", "graph",
 setMethod("numNodes", "graph", function(object) length(nodes(object)))
 
 
-##print methods
-setMethod("show", "graph",
-          function(object)
-      {
-     numNull<-numNoEdges(object)
-     numNodes<- numNodes(object)
-     numEdge<-numEdges(object)
-##     totalEdgesPossible<-numNodes*(numNodes-1)/2
-##     nodeMostEdges<-mostEdges(object)
-##     aveEdge<-aveNumEdges(object)
-     cat("A graph with ", object@edgemode, " edges\n")
-     cat("Number of Nodes = ",numNodes,"\n",sep="")
-     cat("Number of Edges = ",numEdge,"\n",sep="")
-##     cat("Number of Nodes with no edges = ",numNull,"\n",sep="")
-##     cat("If the graph was completely linked, the number of edges would be ",format(totalEdgesPossible,big.mark=","),".\n",sep="")
-##     cat("The node with the most edges is ",nodeMostEdges$id," with ", nodeMostEdges$maxLen, " edges.","\n",sep="")
-##     cat("The average number of edges is ",format(aveEdge,digits=3),".\n",sep="")
-   })
+setMethod("show", signature("graph"),
+          function(object) {
+              numNodes<- numNodes(object)
+              numEdge<-numEdges(object)
+              cat("A", class(object), "graph with", object@edgemode, "edges\n")
+              cat("Number of Nodes =", numNodes, "\n")
+              cat("Number of Edges =", numEdge, "\n")
+          })
+
 
 .dropEdges <- function(x,z) {
     ans =  lapply(z,function(ww) {

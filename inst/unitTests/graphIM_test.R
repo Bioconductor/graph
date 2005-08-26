@@ -25,6 +25,38 @@ testConstructWithNodeObjects <- function() {
     checkEquals(nodeObjects, gotNodes)
 }
 
+
+testConstructBadNodeObjects <- function() {
+    mat <- simpleInciMat()
+    nodeObjects <- lapply(1:4, function(x) {
+        value <- x
+        type <- "NodeObject"
+        list(value=value, type=type)})
+    ## use wrong names
+    names(nodeObjects) <- LETTERS[1:4]
+    myCheckException(new("graphIM", inciMat=mat, nodes=nodeObjects))
+    ## use too few node objects
+    names(nodeObjects) <- colnames(mat)
+    tooFew <- nodeObjects[1:2]
+    myCheckException(new("graphIM", inciMat=mat, nodes=tooFew))
+    ## fail to specify names
+    names(nodeObjects) <- NULL
+    myCheckException(new("graphIM", inciMat=mat, nodes=nodeObjects))
+}
+
+
+testNodesSubset <- function() {
+    mat <- simpleInciMat()
+    nodeObjects <- lapply(1:4, function(x) {
+        value <- x
+        type <- "NodeObject"
+        list(value=value, type=type)})
+    names(nodeObjects) <- colnames(mat)
+    g1 <- new("graphIM", inciMat=mat, nodes=nodeObjects)
+    checkEquals(nodeObjects[c("a", "c")], nodes(g1, c("a", "c")))
+}
+
+
 testEdges <- function() {
     mat <- simpleInciMat() 
     g1 <- new("graphIM", inciMat=mat)
@@ -37,6 +69,7 @@ testEdges <- function() {
     expect <- expect[c("a", "d")]
     checkEquals(expect, got)
 }
+
 
 testEdgesSubset <- function() {
     mat <- simpleInciMat() 
@@ -64,6 +97,24 @@ testNodeNamesReplace <- function() {
     expect <- LETTERS[1:4]
     checkEquals(expect, nodeNames(g1))
 }
+
+
+testNumNodes <- function() {
+    mat <- simpleInciMat() 
+    g1 <- new("graphIM", inciMat=mat)
+    checkEquals(nrow(mat), numNodes(g1))
+}
+
+
+testNumEdges <- function() {
+    mat <- simpleInciMat() 
+    g1 <- new("graphIM", inciMat=mat)
+    checkEquals(5, numEdges(g1))
+
+    edgemode(g1) <- "directed"
+    checkEquals(10, numEdges(g1))
+}
+
 
 
 ## testEdgeWeights <- function() {

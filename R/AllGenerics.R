@@ -3,6 +3,9 @@
 
 ## Generic methods that all graph representation classes must support
 
+setGeneric("isDirected", function(object) standardGeneric("isDirected"))
+
+
 ## Node and edge access
 
 setGeneric("getNodes", function(x, which) standardGeneric("getNodes"))
@@ -48,6 +51,13 @@ setGeneric("acc", function(object, index) standardGeneric("acc"))
 setGeneric("numNodes", function(object) standardGeneric("numNodes"))
 
 
+## default function numEdges(graph) already exists
+##setGeneric("numEdges", function(object) standardGeneric("numEdges"))
+
+## default function numNoEdges(objGraph) already exists
+##setGeneric("numNoEdges", function(object) standardGeneric("numNoEdges"))
+
+
 setGeneric("addNode", function(node, object, edges) standardGeneric("addNode"))
 
 
@@ -65,8 +75,24 @@ setGeneric("addEdge", function(from, to, graph, weights)
            standardGeneric("addEdge"))
 
 
+setGeneric("addEdge2", function(from, to, object, ...)
+           standardGeneric("addEdge2"))
+
+
+setGeneric("getEdge", function(from, to, object)
+           standardGeneric("getEdge"))
+
+
+setGeneric("getEdges", function(from, to, object)
+           standardGeneric("getEdges"))
+
+
 setGeneric("removeEdge", function(from, to, graph)
            standardGeneric("removeEdge"))
+
+
+setGeneric("removeEdges", function(from, to, object, ...)
+           standardGeneric("removeEdges"))
 
 
 ## Basic operations

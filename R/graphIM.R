@@ -58,6 +58,7 @@ setMethod("initialize", signature("graphIM"),
                       .Object@nodes[[n]] <- nodes[[n]]
                   }
               }
+              edgemode(.Object) <- "undirected"
               .Object
           })
 
@@ -107,4 +108,20 @@ setReplaceMethod("nodeNames", signature("graphIM", "character"),
                      colnames(object@inciMat) <- value
                      object
                  })
+
+
+setMethod("numNodes", signature("graphIM"),
+          function(object) length(nodeNames(object)))
+
+
+setMethod("numEdges", signature("graphIM"),
+          function(graph) {
+              nE <- sum(graph@inciMat != 0)
+              if (!isDirected(graph))
+                nE <- nE / 2
+              nE
+          })
+
+
+              
 
