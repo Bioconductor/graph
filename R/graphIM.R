@@ -44,18 +44,18 @@ validGraphIM <- function(object) {
 
 
 setMethod("initialize", signature("graphIM"),
-          function(.Object, inciMat, nodes=NULL) {
+          function(.Object, inciMat, nodeSet=NULL) {
               nNames <- .isValidInciMat(inciMat)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(inciMat), sep="")
               colnames(inciMat) <- nNames
               rownames(inciMat) <- NULL
               .Object@inciMat <- inciMat
-              if (!is.null(nodes)) {
-                  .isValidNodeList(nodes, nNames)
-                   .Object@nodes <- new.env(hash=TRUE, parent=NULL)
+              if (!is.null(nodeSet)) {
+                  .isValidNodeList(nodeSet, nNames)
+                   .Object@nodeSet <- new.env(hash=TRUE, parent=NULL)
                   for (n in nNames) {
-                      .Object@nodes[[n]] <- nodes[[n]]
+                      .Object@nodeSet[[n]] <- nodeSet[[n]]
                   }
               }
               edgemode(.Object) <- "undirected"
@@ -72,34 +72,25 @@ setMethod("initialize", signature("graphIM"),
 
 setMethod("edges", signature("graphIM", "missing"),
           function(object) {
-              .getEdgeList(object@inciMat, nodeNames(object))
+              .getEdgeList(object@inciMat, nodes(object))
           })
 
 
 setMethod("edges", signature("graphIM", "character"),
           function(object, which) {
               idx <- base::which(colnames(object@inciMat) %in% which)
-              .getEdgeList(object@inciMat[idx, ], nodeNames(object)[idx])
+              .getEdgeList(object@inciMat[idx, ], nodes(object)[idx])
           })
 
 
 setMethod("nodes", signature("graphIM"),
-          function(object, which) {
-              if (missing(which))
-                return(as.list(object@nodes))
-              else
-                return(mget(which, object@nodes))
-          })
-
-
-setMethod("nodeNames", signature("graphIM"),
           function(object) {
               ## initialize gaurantees colnames
               colnames(object@inciMat)
           })
 
 
-setReplaceMethod("nodeNames", signature("graphIM", "character"),
+setReplaceMethod("nodes", signature("graphIM", "character"),
                  function(object, value) {
                      if(length(value) != ncol(object@inciMat))
                        stop("need as many names as there are nodes")
@@ -111,7 +102,7 @@ setReplaceMethod("nodeNames", signature("graphIM", "character"),
 
 
 setMethod("numNodes", signature("graphIM"),
-          function(object) length(nodeNames(object)))
+          function(object) length(nodes(object)))
 
 
 setMethod("numEdges", signature("graphIM"),
@@ -121,6 +112,13 @@ setMethod("numEdges", signature("graphIM"),
                 nE <- nE / 2
               nE
           })
+
+
+setMethod("nodeSet", signature("graphIM"),
+          function(object) {
+              as.list(object@nodeSet)
+          })
+
 
 
               

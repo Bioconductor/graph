@@ -30,6 +30,9 @@ setGeneric("nodeNames<-", function(object, value)
            standardGeneric("nodeNames<-"))
 
 
+setGeneric("nodeSet", function(object) standardGeneric("nodeSet"))
+
+
 setGeneric("edges", function(object, which) standardGeneric("edges"))
 
 
