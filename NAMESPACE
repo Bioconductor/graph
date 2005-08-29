@@ -6,7 +6,7 @@ exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph, edge
   clusterGraph, graphH, graph, graphNEL, file, connection,
   propertyHolder, graphIM) 
 
-exportMethods(DFS, Dist, acc, addEdge, addNode, adj, asGraphProperty,
+exportMethods(DFS, Dist, acc, addEdge, addNode, addNodes, adj, asGraphProperty,
       bNode, clearNode, clusteringCoefficient, combineNodes, complement,
       connComp, degree, dumpGXL, eNode, edgeSetAttributes,
       "edgeSetAttributes<-", edgeSetAttr, "edgeSetAttr<-", edgeAttributes,

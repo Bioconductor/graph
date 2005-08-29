@@ -88,6 +88,9 @@ setGeneric("numNodes", function(object) standardGeneric("numNodes"))
 setGeneric("addNode", function(node, object, edges) standardGeneric("addNode"))
 
 
+setGeneric("addNodes", function(object, nodes, ...) standardGeneric("addNodes"))
+
+
 setGeneric("removeNode", function(node, object) standardGeneric("removeNode"))
 
 

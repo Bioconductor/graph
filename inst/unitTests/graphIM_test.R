@@ -230,3 +230,44 @@ testEdgeAttributes <- function() {
 }
 
 
+testAddNodes <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+
+    newNodes <- c("r", "s", "a", "b")
+    checkException(addNodes(g1, newNodes))
+
+    newNodes <- c("r", "s")
+    expect <- c(nodes(g1), newNodes)
+    g1 <- addNodes(g1, newNodes)
+    checkEquals(expect, nodes(g1))
+}
+
+
+testAddEdge <- function() {
+    ## I would like different order of the args in the generic, but not sure it is
+    ## worth it to change... but would seem more consistent.
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    g1 <- addNodes(g1, "e")
+    checkEquals(FALSE, isAdjacent(g1, "b", "e"))
+    g1 <- addEdge(graph=g1, from="b", to="e")
+    checkEquals(TRUE, isAdjacent(g1, "b", "e"))
+}
+
+
+testGraphIMCloning <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    origNodes <- nodes(g1)
+
+    g2 <- g1
+
+    ## modify g1
+    g1 <- addNodes(g1, "z")
+    edgeSetAttributes(g1) <- list(weight=2, color="green")
+
+    checkEquals(list(), edgeSetAttributes(g2))
+    checkEquals(origNodes, nodes(g2))
+}
+

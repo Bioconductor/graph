@@ -1,6 +1,6 @@
 setMethod("initialize", signature("edgeSet"),
           function(.Object, attrList) {
-              .Object@data <- new.env(hash=TRUE, parent=NULL)
+              .Object@data <- list()
               ## hard code the key separator
               .Object@keySep <- "|"
               if (missing(attrList))

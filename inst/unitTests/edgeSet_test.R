@@ -46,6 +46,20 @@ testEdgeProps <- function() {
 }
 
 
+testEdgeSetCloning <- function() {
+    ## Verify that making a copy works as most R users will expect
+    edgePropList <- list(weight=1, color="blue", friends=c("bob", "alice"))
+    es <- new("edgeSet", attrList=edgePropList)
+
+    es2 <- es
+
+    edgeProps(es, "n1", "n2") <- list(weight=888, color="red")
+
+    checkEquals(1, edgeProps(es2, "n1", "n2")$weight)
+    checkEquals(888, edgeProps(es, "n1", "n2")$weight)
+}
+
+
 ## Example of vectorized access to edge properties
 ## testGetEdges <- function() {
 ##     es <- basicEdgeSet()

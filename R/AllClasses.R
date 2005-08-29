@@ -10,14 +10,14 @@ setClass("graphNEL",
 
 
 ## Incidence Matrix representation
-setClass("edgeSet", representation(data="environment",
+setClass("edgeSet", representation(data="list",
                                    attrList="list",
                                    keySep="character"))
 
 
 setClass("graphIM", contains="graph",
          representation(inciMat="matrix",
-                        nodeSet="environment",
+                        nodeSet="list",
                         edgeSet="edgeSet"),
          validity=function(object) validGraphIM(object))
 

@@ -44,7 +44,7 @@ validGraphIM <- function(object) {
 
 
 setMethod("initialize", signature("graphIM"),
-          function(.Object, inciMat, nodeSet=NULL) {
+          function(.Object, inciMat, nodeSet=NULL, edgemode="undirected") {
               nNames <- .isValidInciMat(inciMat)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(inciMat), sep="")
@@ -53,13 +53,13 @@ setMethod("initialize", signature("graphIM"),
               .Object@inciMat <- inciMat
               if (!is.null(nodeSet)) {
                   .isValidNodeList(nodeSet, nNames)
-                   .Object@nodeSet <- new.env(hash=TRUE, parent=NULL)
+                   .Object@nodeSet <- list()
                   for (n in nNames) {
                       .Object@nodeSet[[n]] <- nodeSet[[n]]
                   }
               }
               .Object@edgeSet <- new("edgeSet")
-              edgemode(.Object) <- "undirected"
+              edgemode(.Object) <- edgemode
               .Object
           })
 
@@ -132,6 +132,67 @@ setMethod("isAdjacent",
                 stop("Unknown node", sQuote(to), "specified in to")
               return(object@inciMat[i, j] != 0)
           })
+
+
+.extendInciMat <- function(inciMat, nodes) {
+    nms <- c(colnames(inciMat), nodes)
+    curCols <- ncol(inciMat)
+    newCols <- matrix(0, nrow=curCols, ncol=length(nodes))
+    inciMat <- cbind(inciMat, newCols)
+    newRows <- matrix(0, nrow=length(nodes), ncol=ncol(inciMat))
+    inciMat <- rbind(inciMat, newRows)
+    colnames(inciMat) <- nms
+    inciMat
+}
+
+
+.getIndices <- function(nodes, from, to) {
+    ## Return indices into the inciMat for nodes from and to.
+    i <- match(from, nodes, nomatch=0)
+    if (i == 0)
+      stop("Unknown node", sQuote(from), "specified in from")
+    j <- match(to, nodes, nomatch=0)
+    if (j == 0)
+      stop("Unknown node", sQuote(to), "specified in to")
+    list(from=i, to=j)
+}
+    
+
+
+setMethod("addNodes",
+          signature(object="graphIM", nodes="character"),
+          function(object, nodes) {
+              ## TODO: allow adding node objects and possibly edges
+              ## TODO: Can the verification code be shared?  Perhaps put it
+              ##       in the generic?
+              already <- nodes %in% nodes(object)
+              if(any(already))
+                stop(paste(sQuote(nodes[already]), collapse=", "),
+                           " are already nodes in the graph")
+              object@inciMat <- .extendInciMat(object@inciMat, nodes)
+              ## need to clone edgeSet
+              object
+          })
+
+
+setMethod("addEdge",
+          signature(from="character", to="character", graph="graphIM",
+                    weights="missing"),
+          function(from, to, graph) {
+              if (isAdjacent(graph, from, to))
+                stop("edge from ", sQuote(from), " to ", sQuote(to),
+                     "already exists")
+              idx <- .getIndices(nodes(graph), from, to)
+              graph@inciMat[idx$from, idx$to] <- 1
+              if (! isDirected(graph))
+                graph@inciMat[idx$to, idx$from] <- 1
+              graph
+          })
+              
+              
+          
+          
+
           
 
 ## Edge attribute access
