@@ -120,6 +120,70 @@ setMethod("nodeSet", signature("graphIM"),
           })
 
 
+## Edge attribute access
 
-              
+setMethod("edgeSetAttributes", signature("graphIM"),
+          function(object) {
+              object@edgeSet@attrList
+          })
+
+
+setReplaceMethod("edgeSetAttributes",
+                 signature(object="graphIM", value="list"),
+                 function(object, value) {
+                     curList <- object@edgeSet@attrList
+                     if (length(curList) == 0)
+                       object@edgeSet@attrList <- value
+                     else
+                       stop("edgeSet attribute list already present")
+                     object
+                 })
+
+
+setMethod("edgeSetAttr", signature(object="graphIM", attrName="character"),
+          function(object, attrName) {
+              if (! attrName %in% names(object@edgeSet@attrList))
+                stop("No such attribute:", sQuote(attrName))
+              object@edgeSet@attrList[[attrName]]
+          })
+
+
+
+setReplaceMethod("edgeSetAttr",
+                 signature(object="graphIM", attrName="character", value="ANY"),
+                 function(object, attrName, value) {
+                     object@edgeSet@attrList[[attrName]] <- value
+                     object
+                 })
+
+
+setMethod("edgeAttributes", signature(object="graphIM", from="character",
+                                      to="character"),
+          function(object, from, to) {
+              if (FALSE)
+                xxx <- 1  ## handle custom case here
+              else {
+                  ## pickup defaults
+                  object@edgeSet@attrList
+              }
+          })
+
+
+setReplaceMethod("edgeAttributes",
+                 signature(object="graphIM", from="character",
+                           to="character", value="list"),
+                 function(object, from, to, value) {
+                     allowed <- names(object@edgeSet@attrList)
+                     if (! all(names(value) %in% allowed)) {
+                         nms <- names(value)
+                         badNms <- nms[! nms %in% allowed]
+                         stop("The following attribute names",
+                              "were not found in the edgeSet attributes:",
+                              paste(badNms, collapse=", "))
+                     }
+                     object
+                 })
+
+
+
 

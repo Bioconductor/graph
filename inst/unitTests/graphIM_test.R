@@ -199,6 +199,10 @@ testEdgeAttributes <- function() {
     ## pickup default values
     checkEquals(myEdgeAttributes, edgeAttributes(g1, from="a", to="d"))
 
-    ## we want a connected(g1, from="a", to="d")
+    ## disallow assigning names not in edgeSetAttributes
+    badEdgeAttributes <- list(weight=400, style="modern", type="fruit")
+    myCheckException(edgeAttributes(g1, "a", "d") <- badEdgeAttributes)
 
+    ## No such edge
+    myCheckException(edgeAttributes(g1, "a", "b"))
 }

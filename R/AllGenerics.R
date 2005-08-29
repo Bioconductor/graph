@@ -40,6 +40,30 @@ setGeneric("edgeWeights", function(object, index)
            standardGeneric("edgeWeights"))
 
 
+setGeneric("edgeSetAttributes", function(object)
+           standardGeneric("edgeSetAttributes"))
+
+
+setGeneric("edgeSetAttributes<-", function(object, value)
+           standardGeneric("edgeSetAttributes<-"))
+
+
+setGeneric("edgeSetAttr", function(object, attrName)
+           standardGeneric("edgeSetAttr"))
+
+
+setGeneric("edgeSetAttr<-", function(object, attrName, value)
+           standardGeneric("edgeSetAttr<-"))
+
+
+setGeneric("edgeAttributes", function(object, from, to)
+           standardGeneric("edgeAttributes"))
+
+
+setGeneric("edgeAttributes<-", function(object, from, to, value)
+           standardGeneric("edgeAttributes<-"))
+
+
 ## Node and edge operations
 
 setGeneric("degree", function(object, Nodes) standardGeneric("degree"))
