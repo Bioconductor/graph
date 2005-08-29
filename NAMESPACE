@@ -6,17 +6,17 @@ exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph, edge
   clusterGraph, graphH, graph, graphNEL, file, connection,
   propertyHolder, graphIM) 
 
-exportMethods(DFS, Dist, acc, addEdge, addEdge2, addNode, adj, asGraphProperty,
+exportMethods(DFS, Dist, acc, addEdge, addNode, adj, asGraphProperty,
       bNode, clearNode, clusteringCoefficient, combineNodes, complement,
       connComp, degree, dumpGXL, eNode, edgeSetAttributes,
       "edgeSetAttributes<-", edgeSetAttr, "edgeSetAttr<-", edgeAttributes,
       "edgeAttributes<-", edgeID, edgeL, edgeMatrix, edgeNames, edgeOrder,
-      edgeWeights, edgemode, "edgemode<-", edges, fromEdges, "fromEdges<-",
-      "toEdges<-", "nodes<-", fromGXL, getEdge, getEdges, getNodes, hash,
+      edgeProps, "edgeProps<-", edgeWeights, edgemode, "edgemode<-", edges,
+      fromEdges, "fromEdges<-", "toEdges<-", "nodes<-", fromGXL, getNodes, hash,
       idstring, inEdges, initialize, intersection, intersection2, intersection3,
-      isConnected, isDirected, join, label, nodeID, nodeType, nodes, nodeNames,
-      "nodeNames<-", nodeSet, numNodes, property, "property<-", removeEdge,
-      removeEdges, removeNode, show, subGraph, threshold, toEdges, toGXL, union,
+      isAdjacent, isConnected, isDirected, join, label, nodeID, nodeType, nodes,
+      nodeNames, "nodeNames<-", nodeSet, numNodes, property, "property<-",
+      removeEdge, removeNode, show, subGraph, threshold, toEdges, toGXL, union,
       validateGXL, coerce, toDotR)
 
 

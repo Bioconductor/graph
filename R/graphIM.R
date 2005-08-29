@@ -58,6 +58,7 @@ setMethod("initialize", signature("graphIM"),
                       .Object@nodeSet[[n]] <- nodeSet[[n]]
                   }
               }
+              .Object@edgeSet <- new("edgeSet")
               edgemode(.Object) <- "undirected"
               .Object
           })
@@ -120,6 +121,19 @@ setMethod("nodeSet", signature("graphIM"),
           })
 
 
+setMethod("isAdjacent",
+          signature(object="graphIM", from="character", to="character"),
+          function(object, from, to) {
+              i <- match(from, nodes(object), nomatch=0)
+              if (i == 0)
+                stop("Unknown node", sQuote(from), "specified in from")
+              j <- match(to, nodes(object), nomatch=0)
+              if (j == 0)
+                stop("Unknown node", sQuote(to), "specified in to")
+              return(object@inciMat[i, j] != 0)
+          })
+          
+
 ## Edge attribute access
 
 setMethod("edgeSetAttributes", signature("graphIM"),
@@ -160,12 +174,9 @@ setReplaceMethod("edgeSetAttr",
 setMethod("edgeAttributes", signature(object="graphIM", from="character",
                                       to="character"),
           function(object, from, to) {
-              if (FALSE)
-                xxx <- 1  ## handle custom case here
-              else {
-                  ## pickup defaults
-                  object@edgeSet@attrList
-              }
+              if (! isAdjacent(object, from, to))
+                stop("No edge from", sQuote(from), "to", sQuote(to))
+              edgeProps(object@edgeSet, from, to)
           })
 
 
@@ -173,14 +184,9 @@ setReplaceMethod("edgeAttributes",
                  signature(object="graphIM", from="character",
                            to="character", value="list"),
                  function(object, from, to, value) {
-                     allowed <- names(object@edgeSet@attrList)
-                     if (! all(names(value) %in% allowed)) {
-                         nms <- names(value)
-                         badNms <- nms[! nms %in% allowed]
-                         stop("The following attribute names",
-                              "were not found in the edgeSet attributes:",
-                              paste(badNms, collapse=", "))
-                     }
+                     if (! isAdjacent(object, from, to))
+                       stop("No edge from", sQuote(from), "to", sQuote(to))
+                     edgeProps(object@edgeSet, from, to) <- value
                      object
                  })
 

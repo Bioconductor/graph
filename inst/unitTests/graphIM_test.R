@@ -125,6 +125,19 @@ testNumEdges <- function() {
 }
 
 
+testIsAdjacent <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+
+    checkEquals(TRUE, isAdjacent(g1, "a", "c"))
+    checkEquals(TRUE, isAdjacent(g1, "c", "a"))
+    checkEquals(FALSE, isAdjacent(g1, "a", "b"))
+    checkEquals(FALSE, isAdjacent(g1, "b", "a"))
+    myCheckException(isAdjacent(g1, "z", "a"))
+    myCheckException(isAdjacent(g1, "a", "z"))
+}
+
+
 ## testSubgraph <- function() {
 ##     mat <- simpleInciMat() 
 ##     g1 <- new("graphIM", inciMat=mat)
@@ -192,17 +205,28 @@ testEdgeAttributes <- function() {
 
     ## If nothing defined, empty list for now
     checkEquals(list(), edgeAttributes(g1, from="a", to="d"))
-    
-    myEdgeAttributes <- list(weight=1, color="blue")
-    edgeSetAttributes(g1) <- myEdgeAttributes
+
+    ## Exception if node not found
+    myCheckException(edgeAttributes(g1, from="a", to="nosuchnode"))
+    myCheckException(edgeAttributes(g1, from="nosuchnode", to="a"))
+
+    ## Exception if edge not found
+    myCheckException(edgeAttributes(g1, from="a", to="b"))
+
 
     ## pickup default values
+    myEdgeAttributes <- list(weight=1, color="blue")
+    edgeSetAttributes(g1) <- myEdgeAttributes
     checkEquals(myEdgeAttributes, edgeAttributes(g1, from="a", to="d"))
 
     ## disallow assigning names not in edgeSetAttributes
     badEdgeAttributes <- list(weight=400, style="modern", type="fruit")
     myCheckException(edgeAttributes(g1, "a", "d") <- badEdgeAttributes)
 
-    ## No such edge
-    myCheckException(edgeAttributes(g1, "a", "b"))
+    ## Customize existing edges
+    edgeAttributes(g1, "a", "d") <- list(weight=800)
+    checkEquals(800, edgeAttributes(g1, "a", "d")$weight)
+    checkEquals("blue", edgeAttributes(g1, "a", "d")$color)
 }
+
+

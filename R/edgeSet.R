@@ -21,20 +21,6 @@ setMethod("initialize", signature("edgeSet"),
 }
 
 
-setMethod("addEdge2", signature(container="edgeSet", from="character", to="character"),
-          function(container, from, to, attrList) {
-              eName <- .makeKey(container, from, to)
-              if (exists(eName, container@data))
-                stop("Cannot add edge because it already exists")
-              if (missing(attrList))
-                attrList <- list()
-              ## XXX: rely on data slot being an environment
-              ##      and hence a reference.
-              container@data[[eName]] <- attrList
-              invisible(container)
-          })
-
-
 .addDefaultAttrs <- function(propList, defaults) {
     missingAttrs <- ! (names(defaults) %in%  names(propList))
     propList <- c(propList, defaults[missingAttrs])
@@ -42,34 +28,42 @@ setMethod("addEdge2", signature(container="edgeSet", from="character", to="chara
 }
 
 
-setMethod("getEdge", signature(container="edgeSet", from="character",
-                               to="character"),
-          function(container, from, to) {
+.verifyAttrListNames <- function(propList, defaults) {
+    if (any(! names(propList)  %in% names(defaults))) {
+        nms <- names(propList)
+        badNms <- nms[! nms %in% names(defaults)]
+        stop("The following attribute names",
+             "were not found in the edgeSet attributes:",
+             paste(badNms, collapse=", "))
+    } else {
+        TRUE
+    }
+}
+
+
+setMethod("edgeProps",
+          signature(object="edgeSet", from="character", to="character"),
+          function(object, from, to) {
+              ## TODO: make edgeProps access vectorized, for now, force single edges
               if (length(from) != 1 || length(to) != 1)
                 stop("from and to must specify single nodes")
-              eName <- .makeKey(container, from, to)
-              attrs <- container@data[[eName]]
-              attrs <- .addDefaultAttrs(attrs, container@attrList)
+              eName <- .makeKey(object, from, to)
+              attrs <- object@data[[eName]]
+              attrs <- .addDefaultAttrs(attrs, object@attrList)
               attrs
           })
 
 
-setMethod("getEdges", signature(container="edgeSet", from="character",
-                                to="character"),
-          function(container, from, to) {
-              eNames <- .makeKey(container, from, to)
-              eAttrs <- mget(eNames, container@data)
-              eAttrs <- lapply(eAttrs, .addDefaultAttrs, container@attrList)
-              eAttrs
-          })
-
-
-setMethod("removeEdges", signature(container="edgeSet", from="character",
-                                   to="character"),
-          function(container, from, to) {
-              eNames <- .makeKey(container, from, to)
-              remove(list=eNames, envir=container@data)
-          })
+setReplaceMethod("edgeProps",
+                 signature(object="edgeSet", from="character", to="character",
+                           value="list"),
+                 function(object, from, to, value) {
+                     .verifyAttrListNames(value, object@attrList)
+                     eName <- .makeKey(object, from, to)
+                     object@data[[eName]] <- value
+                     object
+                 })
+              
 
 
 

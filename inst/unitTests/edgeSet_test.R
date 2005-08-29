@@ -18,45 +18,47 @@ testCreation <- function() {
 }
 
 
-testAddAndGetEdge <- function() {
-    edgeProps <- list(weight=1, color="blue", friends=c("bob", "alice"))
-    es <- new("edgeSet", attrList=edgeProps)
-    addEdge2(es, from="n1", to="n2")
-    ## you get the default attributes if you don't specify any when adding
-    checkEquals(edgeProps, getEdge(es, from="n1", to="n2"))
-    
-    ## adding a duplicate raises an error
-    myCheckException(addEdge2(es, from="n1", to="n2"))
-    
-    ## verify nothing fishy going on w/ references
-    es2 <- new("edgeSet")
-    addEdge2(es2, from="n1", to="n2")
+testEdgeProps <- function() {
+    ## XXX:
+    ## You have to have all generics in NAMESPACE :-(
+    ## if you want to hide a utility method, you cannot do this to test it:
+    ## pkg:::foo(obj) <- 1 if it is a replace method.
+    edgePropList <- list(weight=1, color="blue", friends=c("bob", "alice"))
+    es <- new("edgeSet", attrList=edgePropList)
 
-    eProps <- list(weight=2, color="red")
-    expectProps <- c(eProps, edgeProps["friends"])
-    addEdge2(es, from="n1", to="n3", eProps)
-    checkEquals(expectProps, getEdge(es, from="n1", to="n3")[names(expectProps)])
+    ## get defaults
+    checkEquals(edgePropList, edgeProps(es, from="n3", to="n4"))
+    
+    ## set custom properties for an edge
+    someProps <- list(weight=400, color="red")
+    edgeProps(es, from="n1", to="n2") <- someProps
+    expect <- c(someProps, edgePropList["friends"])
+    checkEquals(expect, edgeProps(es, "n1", "n2"))
+    ## can update
+    someProps <- list(weight=99, color="purple")
+    edgeProps(es, from="n1", to="n2") <- someProps
+    expect <- c(someProps, edgePropList["friends"])
+    checkEquals(expect, edgeProps(es, "n1", "n2"))
+
+    ## exception if properites contain unknown name
+    badEdgeProps <- list(weight=400, published=TRUE, phone=900)
+    myCheckException(edgeProps(es, "n1", "n2") <- badEdgeProps)
 }
 
 
-testGetEdges <- function() {
-    es <- basicEdgeSet()
-    got <- getEdges(es, from=c("n1", "n1"), to=c("n2", "n3"))
-    expect <- list("n1|n2"=edgeProps,
-                   "n1|n3"=c(n1n3Props, edgeProps["friends"])[names(edgeProps)])
-    checkEquals(expect, got)
-}
-    
-
-testRemoveEdges <- function() {
-    es <- basicEdgeSet()
-    removeEdges(es, from=c("n1", "n1"), to=c("n2", "n3"))
-    checkEquals(character(0), ls(es@data))
-}
-
-    
-## testEdgeAttr <- function() {
+## Example of vectorized access to edge properties
+## testGetEdges <- function() {
 ##     es <- basicEdgeSet()
-##     propList <- edgeAttr(es, from="n1", to="n2", attrNames="color")
-
+##     got <- getEdges(es, from=c("n1", "n1"), to=c("n2", "n3"))
+##     expect <- list("n1|n2"=edgeProps,
+##                    "n1|n3"=c(n1n3Props, edgeProps["friends"])[names(edgeProps)])
+##     checkEquals(expect, got)
 ## }
+##
+## testRemoveEdges <- function() {
+##     es <- basicEdgeSet()
+##     removeEdges(es, from=c("n1", "n1"), to=c("n2", "n3"))
+##     checkEquals(character(0), ls(es@data))
+## }
+
+    

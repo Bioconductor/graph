@@ -102,16 +102,12 @@ setGeneric("addEdge", function(from, to, graph, weights)
            standardGeneric("addEdge"))
 
 
-setGeneric("addEdge2", function(container, from, to, ...)
-           standardGeneric("addEdge2"))
+setGeneric("edgeProps", function(object, from, to, ...)
+           standardGeneric("edgeProps"))
 
 
-setGeneric("getEdge", function(container, from, to)
-           standardGeneric("getEdge"))
-
-
-setGeneric("getEdges", function(container, from, to)
-           standardGeneric("getEdges"))
+setGeneric("edgeProps<-", function(object, from, to, value)
+           standardGeneric("edgeProps<-"))
 
 
 setGeneric("removeEdge", function(from, to, graph)
@@ -158,6 +154,10 @@ setGeneric("inEdges", function(node, object) standardGeneric("inEdges"))
 
 
 setGeneric("edgeNames", function(object, ...) standardGeneric("edgeNames"))
+
+
+setGeneric("isAdjacent", function(object, from, to, ...)
+           standardGeneric("isAdjacent"))
 
 
 ## Generics for graph components
