@@ -65,7 +65,13 @@ setMethod("initialize", signature("graphIM"),
 
 
 .getEdgeList <- function(inciMat, nodeNames) {
-    eList <- apply(inciMat, 1, function(aRow) names(base::which(aRow != 0)))
+    eList <- apply(inciMat, 1, function(aRow) {
+        result <- names(base::which(aRow != 0))
+        if (is.null(result))
+          character(0)
+        else
+          result
+    })
     names(eList) <- nodeNames
     eList
 }
@@ -190,7 +196,10 @@ setMethod("addEdge",
           })
               
               
-          
+## setMethod("clearNode",
+##           signature(node="character", object="graphIM"),
+##           function(node, object) {
+              
           
 
           

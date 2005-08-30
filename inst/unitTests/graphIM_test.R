@@ -16,6 +16,29 @@ simpleInciMat <- function() {
 }
 
 
+simpleDirectedGraph <- function() {
+    ## Here's a simple graph for testing
+    ##    a           b
+    ##    |\         /^
+    ##    | \__>c<__/ |
+    ##    |     ^     |
+    ##    \     |     /
+    ##     \___>d____/
+    ##
+    ##
+    mat <- matrix(c(0, 0, 1, 1,
+                    0, 0, 1, 0,
+                    0, 0, 0, 0,
+                    0, 1, 1, 0),
+                  byrow=TRUE, ncol=4)
+    rownames(mat) <- letters[1:4]
+    colnames(mat) <- letters[1:4]
+    mat
+    new("graphIM", inciMat=mat, edgemode="directed")
+}
+    
+
+
 testInvalidNonSquare <- function() {
     mat <- cbind(c(0, 0, 1), c(1, 1, 1))
     myCheckException(new("graphIM", inciMat=mat))
@@ -77,6 +100,14 @@ testEdges <- function() {
     got <- edges(g1, c("a", "d"))
     expect <- expect[c("a", "d")]
     checkEquals(expect, got)
+}
+
+
+testEdgesDirected <- function() {
+    g1 <- simpleDirectedGraph()
+    expect <- list(a=c("c", "d"), b="c", c=character(0),
+                   d=c("b", "c"))
+    checkEquals(expect, edges(g1))
 }
 
 
@@ -256,6 +287,22 @@ testAddEdge <- function() {
 }
 
 
+testClearNode <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    edgeSetAttr(g1, "weight") <- 1
+    edgeAttributes(g1, "a", "c") <- list(weight=400)
+    
+    checkEquals(TRUE, isAdjacent(g1, "a", "c"))
+    checkEquals(TRUE, isAdjacent(g1, "a", "d"))
+    checkEquals(400, edgeAttributes(g1, "a", "c")$weight)
+    g1 <- clearNode(g1, "a")
+    checkEquals(FALSE, isAdjacent(g1, "a", "c"))
+    checkEquals(FALSE, isAdjacent(g1, "a", "d"))
+    checkException(edgeAttributes(g1, "a", "c"))
+}
+
+
 testGraphIMCloning <- function() {
     mat <- simpleInciMat()
     g1 <- new("graphIM", inciMat=mat)
@@ -266,7 +313,7 @@ testGraphIMCloning <- function() {
     ## modify g1
     g1 <- addNodes(g1, "z")
     edgeSetAttributes(g1) <- list(weight=2, color="green")
-
+    ## g2 should not have changed
     checkEquals(list(), edgeSetAttributes(g2))
     checkEquals(origNodes, nodes(g2))
 }
