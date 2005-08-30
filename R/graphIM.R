@@ -16,6 +16,8 @@ validGraphIM <- function(object) {
 .isValidInciMat <- function(inciMat) {
     if (! nrow(inciMat) == ncol(inciMat))
       stop("incidence matrix must be square")
+    if (any(inciMat < 0))
+      stop("negative values not allowed in incidence matrix")
     if (is.null(dimnames(inciMat))) {
         nNames <- NULL
     } else {
@@ -43,6 +45,15 @@ validGraphIM <- function(object) {
 }
 
 
+## .initEdgeSet <- function(inciMat) {
+##     edgeData <- new("edgeSet", attrList=list(weight=1))
+##     for (j in 1:ncol(inciMat)) {
+##         haveW <- which(inciMat[, j] > 1)
+##         if (length(
+    
+##      edgeProps(object@edgeSet, from, to) <- value    
+
+
 setMethod("initialize", signature("graphIM"),
           function(.Object, inciMat, nodeSet=NULL, edgemode="undirected") {
               nNames <- .isValidInciMat(inciMat)
@@ -58,8 +69,10 @@ setMethod("initialize", signature("graphIM"),
                       .Object@nodeSet[[n]] <- nodeSet[[n]]
                   }
               }
+              ##.Object@edgeSet <- .initEdgeSet(.Object@inciMat)
               .Object@edgeSet <- new("edgeSet")
               edgemode(.Object) <- edgemode
+              
               .Object
           })
 

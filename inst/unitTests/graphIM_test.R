@@ -45,6 +45,12 @@ testInvalidNonSquare <- function() {
 }
 
 
+testInvalidNegativeValues <- function() {
+    mat <- matrix(c(0, 1, -4, -1), ncol=2)
+    myCheckException(new("graphIM", inciMat=mat))
+}
+
+
 testConstructWithNodeObjects <- function() {
     mat <- simpleInciMat()
     nodeObjects <- lapply(1:4, function(x) {
