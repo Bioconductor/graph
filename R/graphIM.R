@@ -196,11 +196,39 @@ setMethod("addEdge",
           })
               
               
-## setMethod("clearNode",
-##           signature(node="character", object="graphIM"),
-##           function(node, object) {
+setMethod("clearNode",
+          signature(node="character", object="graphIM"),
+          function(node, object) {
+              idx <- match(node, nodes(object), nomatch=NA)
+              if (is.na(idx))
+                stop("Unknown node", sQuote(node))
+              zeroVect <- rep(0, ncol(object@inciMat))
+              ## clear edges from node to other
+              object@inciMat[idx, ] <- zeroVect
+              ## clear edges from other to node
+              object@inciMat[, idx] <- zeroVect
+
+              ## TODO: clear edge attributes
+
+
+              object
+          })
+
+
+## TODO: implement a clearEdgeAttributes method
+
+setMethod("removeNode",
+          signature(node="character", object="graphIM"),
+          function(node, object) {
+              idx <- match(node, nodes(object), nomatch=NA)
+              if (is.na(idx))
+                stop("Unknown node", sQuote(node))
+              object@inciMat <- object@inciMat[-idx, -idx]
+
+              ## TODO: clear edge attributes
               
-          
+              object
+          })
 
           
 

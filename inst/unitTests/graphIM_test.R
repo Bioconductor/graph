@@ -296,10 +296,21 @@ testClearNode <- function() {
     checkEquals(TRUE, isAdjacent(g1, "a", "c"))
     checkEquals(TRUE, isAdjacent(g1, "a", "d"))
     checkEquals(400, edgeAttributes(g1, "a", "c")$weight)
-    g1 <- clearNode(g1, "a")
+    g1 <- clearNode("a", g1)
     checkEquals(FALSE, isAdjacent(g1, "a", "c"))
     checkEquals(FALSE, isAdjacent(g1, "a", "d"))
     checkException(edgeAttributes(g1, "a", "c"))
+}
+
+
+testRemoveNode <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    origNodes <- nodes(g1)
+
+    checkEquals(TRUE, "b" %in% origNodes)
+    g1 <- removeNode("b", g1)
+    checkEquals(FALSE, "b" %in% nodes(g1))
 }
 
 
