@@ -45,13 +45,23 @@ validGraphIM <- function(object) {
 }
 
 
-## .initEdgeSet <- function(inciMat) {
-##     edgeData <- new("edgeSet", attrList=list(weight=1))
-##     for (j in 1:ncol(inciMat)) {
-##         haveW <- which(inciMat[, j] > 1)
-##         if (length(
-    
-##      edgeProps(object@edgeSet, from, to) <- value    
+.initEdgeSet <- function(inciMat) {
+    edgeData <- new("edgeSet", attrList=list(weight=1))
+    nodeNames <- colnames(inciMat)
+    for (j in 1:ncol(inciMat)) {
+        ## work column-wise for efficiency
+        haveW <- which(inciMat[, j] > 1)
+        if (length(haveW) > 0) {
+            toNode <- nodeNames[j]
+            for (fromIdx in haveW) {
+                fromNode <- nodeNames[fromIdx]
+                props <- list(weight=inciMat[fromIdx, j])
+                edgeProps(edgeData, fromNode, toNode) <- props
+            }
+        }
+    }
+    edgeData
+}
 
 
 setMethod("initialize", signature("graphIM"),
@@ -69,9 +79,9 @@ setMethod("initialize", signature("graphIM"),
                       .Object@nodeSet[[n]] <- nodeSet[[n]]
                   }
               }
-              ##.Object@edgeSet <- .initEdgeSet(.Object@inciMat)
-              .Object@edgeSet <- new("edgeSet")
               edgemode(.Object) <- edgemode
+              .Object@edgeSet <- .initEdgeSet(.Object@inciMat)
+              ##.Object@edgeSet <- new("edgeSet")
               
               .Object
           })
@@ -212,9 +222,7 @@ setMethod("addEdge",
 setMethod("clearNode",
           signature(node="character", object="graphIM"),
           function(node, object) {
-              idx <- match(node, nodes(object), nomatch=NA)
-              if (is.na(idx))
-                stop("Unknown node", sQuote(node))
+              idx <- .getNodeIndex(nodes(object), node)
               zeroVect <- rep(0, ncol(object@inciMat))
               ## clear edges from node to other
               object@inciMat[idx, ] <- zeroVect
@@ -233,9 +241,7 @@ setMethod("clearNode",
 setMethod("removeNode",
           signature(node="character", object="graphIM"),
           function(node, object) {
-              idx <- match(node, nodes(object), nomatch=NA)
-              if (is.na(idx))
-                stop("Unknown node", sQuote(node))
+              idx <- .getNodeIndex(nodes(object), node)
               object@inciMat <- object@inciMat[-idx, -idx]
 
               ## TODO: clear edge attributes
@@ -243,6 +249,27 @@ setMethod("removeNode",
               object
           })
 
+
+.getNodeIndex <- function(nodeNames, node) {
+    idx <- match(node, nodeNames, nomatch=NA)
+    if (is.na(idx))
+      stop("Unknown node", sQuote(node))
+    idx
+}
+
+
+setMethod("removeEdge",
+          signature(from="character", to="character", graph="graphIM"),
+          function(from, to, graph) {
+              ## remove props
+              edgeAttributes(graph, from, to) <- list()
+              fromIdx <- .getNodeIndex(nodes(graph), from)
+              toIdx <- .getNodeIndex(nodes(graph), to)
+              graph@inciMat[fromIdx, toIdx] <- 0
+              if (!isDirected(graph))
+                graph@inciMat[toIdx, fromIdx] <- 0
+              graph
+          })
           
 
 ## Edge attribute access
@@ -257,10 +284,10 @@ setReplaceMethod("edgeSetAttributes",
                  signature(object="graphIM", value="list"),
                  function(object, value) {
                      curList <- object@edgeSet@attrList
-                     if (length(curList) == 0)
-                       object@edgeSet@attrList <- value
-                     else
-                       stop("edgeSet attribute list already present")
+                     ## XXX: TODO: prevent resetting edgeSet attribute list
+                     ##            the problem is that we will have orphaned attributes
+                     ##            attached to particular edges.
+                     object@edgeSet@attrList <- value
                      object
                  })
 

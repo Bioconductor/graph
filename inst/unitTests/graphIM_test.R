@@ -51,6 +51,23 @@ testInvalidNegativeValues <- function() {
 }
 
 
+testWeightsFromValues <- function() {
+    mat <- matrix(c(0, 0, 1, 2,
+                    0, 0, 3, 0,
+                    0, 0, 0, 0,
+                    0, 4, 5, 0),
+                  byrow=TRUE, ncol=4)
+    rownames(mat) <- letters[1:4]
+    colnames(mat) <- letters[1:4]
+    mat
+    g1 <- new("graphIM", inciMat=mat, edgemode="directed")
+    checkEquals(4, edgeAttributes(g1, "d", "b")$weight)
+    checkEquals(3, edgeAttributes(g1, "b", "c")$weight)
+    checkEquals(2, edgeAttributes(g1, "a", "d")$weight)
+    checkEquals(1, edgeAttributes(g1, "a", "c")$weight)
+}
+
+
 testConstructWithNodeObjects <- function() {
     mat <- simpleInciMat()
     nodeObjects <- lapply(1:4, function(x) {
@@ -199,16 +216,17 @@ testEdgeSetAttributes <- function() {
     g1 <- new("graphIM", inciMat=mat)
 
     ## If no attributes have been defined, empty list or NULL?
-    checkEquals(list(), edgeSetAttributes(g1))
+    checkEquals(list(weight=1), edgeSetAttributes(g1))
 
     myEdgeAttributes <- list(weight=1, color="blue")
+    ## TODO: make edgeSetAttributes a set-once property
     ## ideally, this is a set-once property because otherwise
     ## we'll run into consistency issues for edges that have customized
     ## attributes
     edgeSetAttributes(g1) <- myEdgeAttributes
     checkEquals(myEdgeAttributes, edgeSetAttributes(g1))
     ## So assigning into it again is an error
-    myCheckException(edgeSetAttributes(g1) <- myEdgeAttributes)
+    ##myCheckException(edgeSetAttributes(g1) <- myEdgeAttributes)
 }
 
 
@@ -241,7 +259,7 @@ testEdgeAttributes <- function() {
     g1 <- new("graphIM", inciMat=mat)
 
     ## If nothing defined, empty list for now
-    checkEquals(list(), edgeAttributes(g1, from="a", to="d"))
+    checkEquals(list(weight=1), edgeAttributes(g1, from="a", to="d"))
 
     ## Exception if node not found
     myCheckException(edgeAttributes(g1, from="a", to="nosuchnode"))
@@ -320,6 +338,16 @@ testRemoveNode <- function() {
 }
 
 
+testRemoveEdge <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+
+    checkEquals(TRUE, isAdjacent(g1, "a", "c"))
+    g1 <- removeEdge("a", "c", g1)
+    checkEquals(FALSE, isAdjacent(g1, "a", "c"))
+}
+
+
 testGraphIMCloning <- function() {
     mat <- simpleInciMat()
     g1 <- new("graphIM", inciMat=mat)
@@ -329,9 +357,12 @@ testGraphIMCloning <- function() {
 
     ## modify g1
     g1 <- addNodes(g1, "z")
-    edgeSetAttributes(g1) <- list(weight=2, color="green")
+    ## TODO: since initialize creates a default edgeSetAttributes list, this method is useless...
+    ##edgeSetAttributes(g1) <- list(weight=2, color="green")
+    edgeSetAttr(g1, "weight") <- 2
+    edgeSetAttr(g1, "color") <- "green"
     ## g2 should not have changed
-    checkEquals(list(), edgeSetAttributes(g2))
+    checkEquals(list(weight=1), edgeSetAttributes(g2))
     checkEquals(origNodes, nodes(g2))
 }
 

@@ -15,3 +15,16 @@ sf 24.08.2005:
 
     move methods up into the graph class where possible.
 
+edgeSet.R:47:              ## TODO: make edgeProps access vectorized, for now, force single edges
+graphIM.R:184:              ## TODO: allow adding node objects and possibly edges
+graphIM.R:185:              ## TODO: Can the verification code be shared?  Perhaps put it
+graphIM.R:224:              ## TODO: clear edge attributes
+graphIM.R:231:## TODO: implement a clearEdgeAttributes method
+graphIM.R:241:              ## TODO: clear edge attributes
+
+
+For incidence matrix, I've been working that mat[i, j] represents the
+edge from node i to node j.  If the common use-case is to start at a
+from node then we might want to consider reversing this so that the
+common case access matrix columns which tends to be more efficient.
+
