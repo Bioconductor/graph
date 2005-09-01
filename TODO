@@ -28,3 +28,18 @@ edge from node i to node j.  If the common use-case is to start at a
 from node then we might want to consider reversing this so that the
 common case access matrix columns which tends to be more efficient.
 
+Add signature edgeAttributes(g1, from) and edgeAttributes(g1, to) that
+returns a list of edge attributes for all edges from node j (or to
+node j).
+
+Limit vectorization of edgeAttributes to vectors where length(from) ==
+length(to).
+
+Look into passing graphIM objects to RBGL
+
+Test row/col names don't matter which is specified for construction.
+
+
+
+
+

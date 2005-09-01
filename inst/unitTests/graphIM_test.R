@@ -51,7 +51,18 @@ testInvalidNegativeValues <- function() {
 }
 
 
-testWeightsFromValues <- function() {
+testInvalidNonSymmetric <- function() {
+    mat <- matrix(c(0, 1, 1,
+                    0, 0, 1,
+                    0, 0, 0), ncol=3, byrow=TRUE)
+    colnames(mat) <- letters[1:3]
+    myCheckException(new("graphIM", inciMat=mat))
+    myCheckException(new("graphIM", inciMat=mat, edgemode="undirected"))
+    g1 <- new("graphIM", inciMat=mat, edgemode="directed")
+}
+
+
+testValuesToAttr <- function() {
     mat <- matrix(c(0, 0, 1, 2,
                     0, 0, 3, 0,
                     0, 0, 0, 0,
@@ -60,11 +71,26 @@ testWeightsFromValues <- function() {
     rownames(mat) <- letters[1:4]
     colnames(mat) <- letters[1:4]
     mat
-    g1 <- new("graphIM", inciMat=mat, edgemode="directed")
-    checkEquals(4, edgeAttributes(g1, "d", "b")$weight)
-    checkEquals(3, edgeAttributes(g1, "b", "c")$weight)
-    checkEquals(2, edgeAttributes(g1, "a", "d")$weight)
-    checkEquals(1, edgeAttributes(g1, "a", "c")$weight)
+    g1 <- new("graphIM", inciMat=mat, edgemode="directed",
+              values=list(weight=1))
+    checkEquals(4, edgeAttributes(g1, "d", "b")[[1]]$weight)
+    checkEquals(3, edgeAttributes(g1, "b", "c")[[1]]$weight)
+    checkEquals(2, edgeAttributes(g1, "a", "d")[[1]]$weight)
+    checkEquals(1, edgeAttributes(g1, "a", "c")[[1]]$weight)
+
+    myCheckException(new("graphIM", inciMat=mat, edgemode="directed",
+                         values=list(weight=1, not=2)))
+    myCheckException(new("graphIM", inciMat=mat, edgemode="directed",
+                         values=list("must", "name")))
+    myCheckException(new("graphIM", inciMat=mat, edgemode="directed",
+                         values="weight"))
+
+    g1 <- new("graphIM", inciMat=mat, edgemode="directed",
+              values=list(type=4))
+    checkEquals(4, edgeAttributes(g1, "d", "b")[[1]]$type)
+    checkEquals(3, edgeAttributes(g1, "b", "c")[[1]]$type)
+    checkEquals(2, edgeAttributes(g1, "a", "d")[[1]]$type)
+    checkEquals(1, edgeAttributes(g1, "a", "c")[[1]]$type)
 }
 
 
@@ -192,6 +218,18 @@ testIsAdjacent <- function() {
 }
 
 
+testIsAdjacentVectorized <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+
+    fr <- c("a", "c", "a", "b")
+    to <- c("c", "a", "b", "a")
+    expect <- c(TRUE, TRUE, FALSE, FALSE)
+    checkEquals(expect, isAdjacent(g1, fr, to))
+    checkEquals(expect, isAdjacent(g1, to, fr))
+}
+
+
 ## testSubgraph <- function() {
 ##     mat <- simpleInciMat() 
 ##     g1 <- new("graphIM", inciMat=mat)
@@ -216,7 +254,7 @@ testEdgeSetAttributes <- function() {
     g1 <- new("graphIM", inciMat=mat)
 
     ## If no attributes have been defined, empty list or NULL?
-    checkEquals(list(weight=1), edgeSetAttributes(g1))
+    checkEquals(list(), edgeSetAttributes(g1))
 
     myEdgeAttributes <- list(weight=1, color="blue")
     ## TODO: make edgeSetAttributes a set-once property
@@ -259,7 +297,7 @@ testEdgeAttributes <- function() {
     g1 <- new("graphIM", inciMat=mat)
 
     ## If nothing defined, empty list for now
-    checkEquals(list(weight=1), edgeAttributes(g1, from="a", to="d"))
+    checkEquals(list(), edgeAttributes(g1, from="a", to="d")[[1]])
 
     ## Exception if node not found
     myCheckException(edgeAttributes(g1, from="a", to="nosuchnode"))
@@ -272,7 +310,7 @@ testEdgeAttributes <- function() {
     ## pickup default values
     myEdgeAttributes <- list(weight=1, color="blue")
     edgeSetAttributes(g1) <- myEdgeAttributes
-    checkEquals(myEdgeAttributes, edgeAttributes(g1, from="a", to="d"))
+    checkEquals(myEdgeAttributes, edgeAttributes(g1, from="a", to="d")[[1]])
 
     ## disallow assigning names not in edgeSetAttributes
     badEdgeAttributes <- list(weight=400, style="modern", type="fruit")
@@ -280,8 +318,36 @@ testEdgeAttributes <- function() {
 
     ## Customize existing edges
     edgeAttributes(g1, "a", "d") <- list(weight=800)
-    checkEquals(800, edgeAttributes(g1, "a", "d")$weight)
-    checkEquals("blue", edgeAttributes(g1, "a", "d")$color)
+    checkEquals(800, edgeAttributes(g1, "a", "d")[[1]]$weight)
+    checkEquals("blue", edgeAttributes(g1, "a", "d")[[1]]$color)
+}
+
+
+testEdgeAttributesVectorized <- function() {
+    g1 <- simpleDirectedGraph()
+    myEdgeAttributes <- list(weight=1, color="blue")
+    edgeSetAttributes(g1) <- myEdgeAttributes
+
+    eAttrs <- edgeAttributes(g1, from="a")
+    checkEquals(TRUE, setequal(c("a|c", "a|d"), names(eAttrs)))
+
+    ## test with to="missing"
+    myCheckException(edgeAttributes(g1, from="c"))
+    checkEquals("b|c", names(edgeAttributes(g1, from="b")))
+
+    ## test with from="missing"
+    myCheckException(edgeAttributes(g1, to="a"))
+    checkEquals("d|b", names(edgeAttributes(g1, to="b")))
+    expect <- paste(c("a", "b", "d"), "c", sep="|")
+    checkEquals(expect, names(edgeAttributes(g1, to="c")))
+
+    fr <- c("a", "a", "d", "b", "d")
+    to <- c("d", "c", "b", "c", "c")
+    eAttrs <- edgeAttributes(g1, from=fr, to=to)
+    expectNames <- paste(fr, to, sep="|")
+    checkEquals(expectNames, names(eAttrs))
+
+    
 }
 
 
@@ -319,7 +385,7 @@ testClearNode <- function() {
     
     checkEquals(TRUE, isAdjacent(g1, "a", "c"))
     checkEquals(TRUE, isAdjacent(g1, "a", "d"))
-    checkEquals(400, edgeAttributes(g1, "a", "c")$weight)
+    checkEquals(400, edgeAttributes(g1, "a", "c")[[1]]$weight)
     g1 <- clearNode("a", g1)
     checkEquals(FALSE, isAdjacent(g1, "a", "c"))
     checkEquals(FALSE, isAdjacent(g1, "a", "d"))
@@ -362,7 +428,7 @@ testGraphIMCloning <- function() {
     edgeSetAttr(g1, "weight") <- 2
     edgeSetAttr(g1, "color") <- "green"
     ## g2 should not have changed
-    checkEquals(list(weight=1), edgeSetAttributes(g2))
+    checkEquals(list(), edgeSetAttributes(g2))
     checkEquals(origNodes, nodes(g2))
 }
 

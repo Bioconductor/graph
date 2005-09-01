@@ -27,18 +27,18 @@ testEdgeProps <- function() {
     es <- new("edgeSet", attrList=edgePropList)
 
     ## get defaults
-    checkEquals(edgePropList, edgeProps(es, from="n3", to="n4"))
+    checkEquals(edgePropList, edgeProps(es, from="n3", to="n4")[[1]])
     
     ## set custom properties for an edge
     someProps <- list(weight=400, color="red")
     edgeProps(es, from="n1", to="n2") <- someProps
     expect <- c(someProps, edgePropList["friends"])
-    checkEquals(expect, edgeProps(es, "n1", "n2"))
+    checkEquals(expect, edgeProps(es, "n1", "n2")[[1]])
     ## can update
     someProps <- list(weight=99, color="purple")
     edgeProps(es, from="n1", to="n2") <- someProps
     expect <- c(someProps, edgePropList["friends"])
-    checkEquals(expect, edgeProps(es, "n1", "n2"))
+    checkEquals(expect, edgeProps(es, "n1", "n2")[[1]])
 
     ## exception if properites contain unknown name
     badEdgeProps <- list(weight=400, published=TRUE, phone=900)
@@ -55,8 +55,8 @@ testEdgeSetCloning <- function() {
 
     edgeProps(es, "n1", "n2") <- list(weight=888, color="red")
 
-    checkEquals(1, edgeProps(es2, "n1", "n2")$weight)
-    checkEquals(888, edgeProps(es, "n1", "n2")$weight)
+    checkEquals(1, edgeProps(es2, "n1", "n2")[[1]]$weight)
+    checkEquals(888, edgeProps(es, "n1", "n2")[[1]]$weight)
 }
 
 

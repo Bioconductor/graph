@@ -13,9 +13,12 @@ validGraphIM <- function(object) {
 }
 
 
-.isValidInciMat <- function(inciMat) {
+.isValidInciMat <- function(inciMat, mode="undirected") {
     if (! nrow(inciMat) == ncol(inciMat))
       stop("incidence matrix must be square")
+    if (mode == "undirected")
+      if (any(inciMat != t(inciMat))) ## XXX: this could be slow
+        stop("incidence matrix must be symmetric for undirected graphs")
     if (any(inciMat < 0))
       stop("negative values not allowed in incidence matrix")
     if (is.null(dimnames(inciMat))) {
@@ -45,17 +48,22 @@ validGraphIM <- function(object) {
 }
 
 
-.initEdgeSet <- function(inciMat) {
-    edgeData <- new("edgeSet", attrList=list(weight=1))
+.initEdgeSet <- function(inciMat, values) {
+    if (!is.list(values) || length(values) != 1 || is.null(names(values)))
+      stop("values must be a named list with one element")
+    edgeData <- new("edgeSet", attrList=values)
     nodeNames <- colnames(inciMat)
+    defaultValue <- values[[1]]
+    valName <- names(values)[1]
     for (j in 1:ncol(inciMat)) {
         ## work column-wise for efficiency
-        haveW <- which(inciMat[, j] > 1)
+        haveW <- which(inciMat[, j] != defaultValue)
         if (length(haveW) > 0) {
             toNode <- nodeNames[j]
             for (fromIdx in haveW) {
                 fromNode <- nodeNames[fromIdx]
-                props <- list(weight=inciMat[fromIdx, j])
+                props <- list()
+                props[[valName]] <- inciMat[fromIdx, j]
                 edgeProps(edgeData, fromNode, toNode) <- props
             }
         }
@@ -65,8 +73,8 @@ validGraphIM <- function(object) {
 
 
 setMethod("initialize", signature("graphIM"),
-          function(.Object, inciMat, nodeSet=NULL, edgemode="undirected") {
-              nNames <- .isValidInciMat(inciMat)
+          function(.Object, inciMat, nodeSet=NULL, edgemode="undirected", values) {
+              nNames <- .isValidInciMat(inciMat, edgemode)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(inciMat), sep="")
               colnames(inciMat) <- nNames
@@ -80,8 +88,10 @@ setMethod("initialize", signature("graphIM"),
                   }
               }
               edgemode(.Object) <- edgemode
-              .Object@edgeSet <- .initEdgeSet(.Object@inciMat)
-              ##.Object@edgeSet <- new("edgeSet")
+              if (!missing(values))
+                .Object@edgeSet <- .initEdgeSet(.Object@inciMat, values)
+              else
+                .Object@edgeSet <- new("edgeSet")
               
               .Object
           })
@@ -150,16 +160,25 @@ setMethod("nodeSet", signature("graphIM"),
           })
 
 
+
+
 setMethod("isAdjacent",
           signature(object="graphIM", from="character", to="character"),
           function(object, from, to) {
-              i <- match(from, nodes(object), nomatch=0)
-              if (i == 0)
-                stop("Unknown node", sQuote(from), "specified in from")
-              j <- match(to, nodes(object), nomatch=0)
-              if (j == 0)
-                stop("Unknown node", sQuote(to), "specified in to")
-              return(object@inciMat[i, j] != 0)
+              if (length(from) != length(to))
+                stop("from and to must be the same length")
+              fromIdx <- match(from, nodes(object), nomatch=0)
+              toIdx <- match(to, nodes(object), nomatch=0)
+              if (any(fromIdx == 0))
+                stop("Unknown nodes in from: ",
+                     paste(from[fromIdx == 0], collapse=", "))
+              if (any(toIdx == 0))
+                stop("Unknown nodes in to: ",
+                     paste(to[toIdx == 0], collapse=", "))
+              result <- logical(length(fromIdx))
+              for (i in 1:length(fromIdx))
+                  result[i] <- object@inciMat[fromIdx[i], toIdx[i]] != 0
+              result
           })
 
 
@@ -312,8 +331,10 @@ setReplaceMethod("edgeSetAttr",
 setMethod("edgeAttributes", signature(object="graphIM", from="character",
                                       to="character"),
           function(object, from, to) {
-              if (! isAdjacent(object, from, to))
-                stop("No edge from", sQuote(from), "to", sQuote(to))
+              adj <- isAdjacent(object, from, to) 
+              if (any(!adj))
+                stop(paste("No edge from", sQuote(from[!adj]), "to",
+                           sQuote(to[!adj]), collapse="\n"))
               edgeProps(object@edgeSet, from, to)
           })
 
@@ -327,6 +348,37 @@ setReplaceMethod("edgeAttributes",
                      edgeProps(object@edgeSet, from, to) <- value
                      object
                  })
+
+
+setMethod("edgeAttributes",
+          signature(object="graphIM", from="character", to="missing"),
+          function(object, from) {
+              if (length(from) != 1)
+                stop("can only specify a single from node for this call")
+              fromIdx <- .getNodeIndex(nodes(object), from)
+              toIndices <- which(object@inciMat[fromIdx, ] != 0)
+              if (length(toIndices) == 0)
+                stop("specified from node has no outgoing edges")
+              toNodes <- nodes(object)[toIndices]
+              fromNodes <- rep(from, length(toNodes))
+              edgeAttributes(object=object, from=fromNodes, to=toNodes)
+          })
+
+
+setMethod("edgeAttributes",
+          signature(object="graphIM", from="missing", to="character"),
+          function(object, to) {
+              if (length(to) != 1)
+                stop("can only specify a single to node for this call")
+              toIdx <- .getNodeIndex(nodes(object), to)
+              fromIndices <- which(object@inciMat[, toIdx] != 0)
+              if (length(fromIndices) == 0)
+                stop("specified to node has no outgoing edges")
+              fromNodes <- nodes(object)[fromIndices]
+              toNodes <- rep(to, length(fromNodes))
+              edgeAttributes(object=object, from=fromNodes, to=toNodes)
+          })
+
 
 
 

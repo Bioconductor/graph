@@ -45,11 +45,14 @@ setMethod("edgeProps",
           signature(object="edgeSet", from="character", to="character"),
           function(object, from, to) {
               ## TODO: make edgeProps access vectorized, for now, force single edges
-              if (length(from) != 1 || length(to) != 1)
-                stop("from and to must specify single nodes")
-              eName <- .makeKey(object, from, to)
-              attrs <- object@data[[eName]]
-              attrs <- .addDefaultAttrs(attrs, object@attrList)
+              if (length(from) != length(to))
+                stop("length of from and to must be equal")
+##               if (length(from) != 1 || length(to) != 1)
+##                 stop("from and to must specify single nodes")
+              eNames <- .makeKey(object, from, to)
+              attrs <- object@data[eNames]
+              attrs <- lapply(attrs, .addDefaultAttrs, object@attrList)
+              names(attrs) <- eNames
               attrs
           })
 
