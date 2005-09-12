@@ -5,9 +5,9 @@
 
 setGeneric("isDirected", function(object) standardGeneric("isDirected"))
 
-
+## ---------------------------------------------------------------------
 ## Node and edge access
-
+## ---------------------------------------------------------------------
 setGeneric("getNodes", function(x, which) standardGeneric("getNodes"))
 
 
@@ -38,8 +38,12 @@ setGeneric("edges", function(object, which) standardGeneric("edges"))
 
 setGeneric("edgeWeights", function(object, index)
            standardGeneric("edgeWeights"))
+## ---------------------------------------------------------------------
 
 
+## ---------------------------------------------------------------------
+## Node and Edge Attribute access
+## ---------------------------------------------------------------------
 setGeneric("edgeSetAttributes", function(object)
            standardGeneric("edgeSetAttributes"))
 
@@ -63,9 +67,34 @@ setGeneric("edgeAttributes", function(object, from, to)
 setGeneric("edgeAttributes<-", function(object, from, to, value)
            standardGeneric("edgeAttributes<-"))
 
+setGeneric("nodeSetAttributes", function(object)
+           standardGeneric("nodeSetAttributes"))
 
+
+setGeneric("nodeSetAttributes<-", function(object, value)
+           standardGeneric("nodeSetAttributes<-"))
+
+
+setGeneric("nodeSetAttr", function(object, attrName)
+           standardGeneric("nodeSetAttr"))
+
+
+setGeneric("nodeSetAttr<-", function(object, attrName, value)
+           standardGeneric("nodeSetAttr<-"))
+
+
+setGeneric("nodeAttributes", function(object, n)
+           standardGeneric("nodeAttributes"))
+
+
+setGeneric("nodeAttributes<-", function(object, n, value)
+           standardGeneric("nodeAttributes<-"))
+## ---------------------------------------------------------------------
+
+
+## ---------------------------------------------------------------------
 ## Node and edge operations
-
+## ---------------------------------------------------------------------
 setGeneric("degree", function(object, Nodes) standardGeneric("degree"))
 
 
@@ -105,6 +134,18 @@ setGeneric("addEdge", function(from, to, graph, weights)
            standardGeneric("addEdge"))
 
 
+setGeneric("removeEdge", function(from, to, graph)
+           standardGeneric("removeEdge"))
+
+
+setGeneric("removeEdges", function(container, from, to, ...)
+           standardGeneric("removeEdges"))
+## ---------------------------------------------------------------------
+
+
+## ---------------------------------------------------------------------
+## Generics for edgeSet and nodeSet classes
+## ---------------------------------------------------------------------
 setGeneric("edgeProps", function(object, from, to, ...)
            standardGeneric("edgeProps"))
 
@@ -113,12 +154,14 @@ setGeneric("edgeProps<-", function(object, from, to, value)
            standardGeneric("edgeProps<-"))
 
 
-setGeneric("removeEdge", function(from, to, graph)
-           standardGeneric("removeEdge"))
+setGeneric("nodeProps", function(object, n, ...)
+           standardGeneric("nodeProps"))
 
 
-setGeneric("removeEdges", function(container, from, to, ...)
-           standardGeneric("removeEdges"))
+setGeneric("nodeProps<-", function(object, n, value)
+           standardGeneric("nodeProps<-"))
+## ---------------------------------------------------------------------
+
 
 
 ## Basic operations

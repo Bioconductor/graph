@@ -73,20 +73,14 @@ validGraphIM <- function(object) {
 
 
 setMethod("initialize", signature("graphIM"),
-          function(.Object, inciMat, nodeSet=NULL, edgemode="undirected", values) {
+          function(.Object, inciMat, edgemode="undirected", values) {
               nNames <- .isValidInciMat(inciMat, edgemode)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(inciMat), sep="")
               colnames(inciMat) <- nNames
               rownames(inciMat) <- NULL
               .Object@inciMat <- inciMat
-              if (!is.null(nodeSet)) {
-                  .isValidNodeList(nodeSet, nNames)
-                   .Object@nodeSet <- list()
-                  for (n in nNames) {
-                      .Object@nodeSet[[n]] <- nodeSet[[n]]
-                  }
-              }
+              .Object@nodeSet <- new("nodeSet")
               edgemode(.Object) <- edgemode
               if (!missing(values))
                 .Object@edgeSet <- .initEdgeSet(.Object@inciMat, values)
@@ -289,10 +283,11 @@ setMethod("removeEdge",
                 graph@inciMat[toIdx, fromIdx] <- 0
               graph
           })
-          
 
+
+## ---------------------------------------------------------------------
 ## Edge attribute access
-
+## ---------------------------------------------------------------------
 setMethod("edgeSetAttributes", signature("graphIM"),
           function(object) {
               object@edgeSet@attrList
@@ -378,7 +373,64 @@ setMethod("edgeAttributes",
               toNodes <- rep(to, length(fromNodes))
               edgeAttributes(object=object, from=fromNodes, to=toNodes)
           })
+## ---------------------------------------------------------------------
 
+
+## ---------------------------------------------------------------------
+## Node attributes
+## ---------------------------------------------------------------------
+setMethod("nodeSetAttributes", signature("graphIM"),
+          function(object) {
+              object@nodeSet@attrList
+          })
+
+
+setReplaceMethod("nodeSetAttributes",
+                 signature(object="graphIM", value="list"),
+                 function(object, value) {
+                     curList <- object@nodeSet@attrList
+                     ## XXX: TODO: prevent resetting edgeSet attribute list
+                     ##            the problem is that we will have orphaned attributes
+                     ##            attached to particular edges.
+                     object@nodeSet@attrList <- value
+                     object
+                 })
+
+
+setMethod("nodeSetAttr", signature(object="graphIM", attrName="character"),
+          function(object, attrName) {
+              if (! attrName %in% names(object@nodeSet@attrList))
+                stop("No such attribute:", sQuote(attrName))
+              object@nodeSet@attrList[[attrName]]
+          })
+
+
+
+setReplaceMethod("nodeSetAttr",
+                 signature(object="graphIM", attrName="character", value="ANY"),
+                 function(object, attrName, value) {
+                     object@nodeSet@attrList[[attrName]] <- value
+                     object
+                 })
+
+
+setMethod("nodeAttributes", signature(object="graphIM", n="character"),
+          function(object, n) {
+              unknownNodes <- n[! n %in% nodes(object)]
+              if (length(unknownNodes) > 0)
+                  stop("Unknown nodes: ",
+                       paste(unknownNodes, collapse=", "))
+              nodeProps(object@nodeSet, n)
+          })
+
+
+setReplaceMethod("nodeAttributes",
+                 signature(object="graphIM", n="character", value="list"),
+                 function(object, n, value) {
+                     nodeProps(object@nodeSet, n) <- value
+                     object
+                 })
+## ---------------------------------------------------------------------
 
 
 

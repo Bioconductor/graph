@@ -4,7 +4,7 @@ import(methods,cluster)
 
 exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph, edgeSet,
   clusterGraph, graphH, graph, graphNEL, file, connection,
-  propertyHolder, graphIM) 
+  propertyHolder, graphIM, nodeSet) 
 
 exportMethods(DFS, Dist, acc, addEdge, addNode, addNodes, adj, asGraphProperty,
       bNode, clearNode, clusteringCoefficient, combineNodes, complement,
@@ -17,7 +17,9 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, addNodes, adj, asGraphProperty,
       isAdjacent, isConnected, isDirected, join, label, nodeID, nodeType, nodes,
       nodeNames, "nodeNames<-", nodeSet, numNodes, property, "property<-",
       removeEdge, removeNode, show, subGraph, threshold, toEdges, toGXL, union,
-      validateGXL, coerce, toDotR)
+      validateGXL, coerce, toDotR, nodeSetAttributes, "nodeSetAttributes<-",
+              nodeAttributes, "nodeAttributes<-", nodeSetAttr, "nodeSetAttr<-",
+              nodeProps, "nodeProps<-")
 
 
 export(boundary, buildRepDepGraph, hashtable, calcProb, calcSumProb,

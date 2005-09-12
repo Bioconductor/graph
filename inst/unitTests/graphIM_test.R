@@ -94,50 +94,6 @@ testValuesToAttr <- function() {
 }
 
 
-testConstructWithNodeObjects <- function() {
-    mat <- simpleInciMat()
-    nodeObjects <- lapply(1:4, function(x) {
-        value <- x
-        type <- "NodeObject"
-        list(value=value, type=type)})
-    names(nodeObjects) <- colnames(mat)
-    g1 <- new("graphIM", inciMat=mat, nodeSet=nodeObjects)
-    gotNodes <- nodeSet(g1)
-    checkEquals(nodeObjects, gotNodes)
-}
-
-
-testConstructBadNodeObjects <- function() {
-    mat <- simpleInciMat()
-    nodeObjects <- lapply(1:4, function(x) {
-        value <- x
-        type <- "NodeObject"
-        list(value=value, type=type)})
-    ## use wrong names
-    names(nodeObjects) <- LETTERS[1:4]
-    myCheckException(new("graphIM", inciMat=mat, nodeSet=nodeObjects))
-    ## use too few node objects
-    names(nodeObjects) <- colnames(mat)
-    tooFew <- nodeObjects[1:2]
-    myCheckException(new("graphIM", inciMat=mat, nodeSet=tooFew))
-    ## fail to specify names
-    names(nodeObjects) <- NULL
-    myCheckException(new("graphIM", inciMat=mat, nodeSet=nodeObjects))
-}
-
-
-testNodesSubset <- function() {
-    mat <- simpleInciMat()
-    nodeObjects <- lapply(1:4, function(x) {
-        value <- x
-        type <- "NodeObject"
-        list(value=value, type=type)})
-    names(nodeObjects) <- colnames(mat)
-    g1 <- new("graphIM", inciMat=mat, nodeSet=nodeObjects)
-    checkEquals(nodeObjects[c("a", "c")], nodeSet(g1)[c("a", "c")])
-}
-
-
 testEdges <- function() {
     mat <- simpleInciMat() 
     g1 <- new("graphIM", inciMat=mat)
@@ -348,6 +304,76 @@ testEdgeAttributesVectorized <- function() {
     checkEquals(expectNames, names(eAttrs))
 
     
+}
+
+
+## Tests for node attributes
+testNodeSetAttributes <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+
+    ## If no attributes have been defined, empty list or NULL?
+    checkEquals(list(), nodeSetAttributes(g1))
+
+    myEdgeAttributes <- list(foo=1, bar="blue")
+    nodeSetAttributes(g1) <- myEdgeAttributes
+    checkEquals(myEdgeAttributes, nodeSetAttributes(g1))
+}
+
+
+testNodeSetAttr <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+
+    myCheckException(nodeSetAttr(g1, "noSuchAttr"))
+    
+    ## You can add attributes via nodeSetAttr and redefine default values
+    nodeSetAttr(g1, "weight") <- 1
+    checkEquals(1, nodeSetAttr(g1, "weight"))
+
+    ## redefine
+    val <- list(a=1, b=2)
+    nodeSetAttr(g1, "weight") <- val
+    checkEquals(val, nodeSetAttr(g1, "weight"))
+
+    ## add
+    nodeSetAttr(g1, "color") <- "blue"
+
+    expect <- list(weight=val, color="blue")
+    checkEquals(expect, nodeSetAttributes(g1))
+}
+
+
+testNodeAttributes <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    
+    ## If nothing defined, empty list for now
+    checkEquals(list(), nodeAttributes(g1, n="a")[[1]])
+    
+    ## Exception if node not found
+    myCheckException(nodeAttributes(g1, n="nosuchNode"))
+    myCheckException(nodeAttributes(g1, n=c("a", "b", "NOPE")))
+                     
+    ## pickup default values
+    myNodeAttributes <- list(weight=1, color="blue")
+    nodeSetAttributes(g1) <- myNodeAttributes
+    checkEquals(myNodeAttributes, nodeAttributes(g1, n="d")[[1]])
+
+    ## Customize existing edges
+    nodeAttrs <- list(a=list(weight=800), d=list(weight=700))
+    nodeAttributes(g1, c("a", "d")) <- nodeAttrs
+    checkEquals(800, nodeAttributes(g1, "a")[[1]]$weight)
+    checkEquals("blue", nodeAttributes(g1, "a")[[1]]$color)
+
+    ## disallow assigning names not in nodeSetAttributes
+    badNodeAttributes <- list(weight=400, style="modern", type="fruit")
+    myCheckException(nodeAttributes(g1, "a") <- badEdgeAttributes)
+                     
+    myCheckException(nodeAttributes(g1, c("a", "b"))
+                     <- list("a"=badNodeAttributes,
+                             "b"=badNodeAttributes))
+
 }
 
 
