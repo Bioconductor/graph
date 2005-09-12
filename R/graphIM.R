@@ -427,6 +427,10 @@ setMethod("nodeAttributes", signature(object="graphIM", n="character"),
 setReplaceMethod("nodeAttributes",
                  signature(object="graphIM", n="character", value="list"),
                  function(object, n, value) {
+                     unknownNodes <- n[! n %in% nodes(object)]
+                     if (length(unknownNodes) > 0)
+                       stop("Unknown nodes: ",
+                            paste(unknownNodes, collapse=", "))
                      nodeProps(object@nodeSet, n) <- value
                      object
                  })

@@ -68,11 +68,9 @@ setReplaceMethod("nodeProps",
                  function(object, n, value) {
                      if (is.null(names(value)))
                          stop("must specify nodeProps with a named list")
-                     nodeNames <- names(value)
-                     nil <- lapply(value, .verifyAttrListNames, object@attrList)
+                     .verifyAttrListNames(value, object@attrList)
                      for (nodeName in n) {
-                         val <- value[[nodeName]]
-                         object@data[[nodeName]] <- val
+                         object@data[[nodeName]] <- value
                      }
                      object
                  })

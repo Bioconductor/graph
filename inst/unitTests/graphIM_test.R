@@ -338,9 +338,11 @@ testNodeSetAttr <- function() {
 
     ## add
     nodeSetAttr(g1, "color") <- "blue"
-
     expect <- list(weight=val, color="blue")
     checkEquals(expect, nodeSetAttributes(g1))
+
+    ## NOT currently vectorized
+    myCheckException(nodeSetAttr(g1, c("a1", "a2")) <- list(100, "something"))
 }
 
 
@@ -361,19 +363,17 @@ testNodeAttributes <- function() {
     checkEquals(myNodeAttributes, nodeAttributes(g1, n="d")[[1]])
 
     ## Customize existing edges
-    nodeAttrs <- list(a=list(weight=800), d=list(weight=700))
-    nodeAttributes(g1, c("a", "d")) <- nodeAttrs
+    nodeAttrs <- list(weight=800)
+    ## sets weight for nodes a and d
+    nodeAttributes(g1, c("a", "d")) <- nodeAttrs  
     checkEquals(800, nodeAttributes(g1, "a")[[1]]$weight)
+    checkEquals(800, nodeAttributes(g1, "d")[[1]]$weight)
     checkEquals("blue", nodeAttributes(g1, "a")[[1]]$color)
 
     ## disallow assigning names not in nodeSetAttributes
     badNodeAttributes <- list(weight=400, style="modern", type="fruit")
-    myCheckException(nodeAttributes(g1, "a") <- badEdgeAttributes)
-                     
-    myCheckException(nodeAttributes(g1, c("a", "b"))
-                     <- list("a"=badNodeAttributes,
-                             "b"=badNodeAttributes))
-
+    myCheckException(nodeAttributes(g1, "a") <- badNodeAttributes)
+    myCheckException(nodeAttributes(g1, c("a", "b")) <- badNodeAttributes)
 }
 
 

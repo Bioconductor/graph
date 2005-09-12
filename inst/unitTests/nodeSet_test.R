@@ -30,22 +30,20 @@ testNodeProps <- function() {
     checkEquals(nodePropList, nodeProps(es, "n3")[[1]])
     
     ## set custom properties for an node
-    someProps <- list(n1=list(weight=400, color="red"))
+    someProps <- list(weight=400, color="red")
     ##nodeProps(es, "n1") <- someProps
     nodeProps(es, "n1") <- someProps
-    expect <- someProps
-    expect[["n1"]] <- c(expect[["n1"]], nodePropList["friends"])
+    expect <- list(n1=c(someProps, nodePropList["friends"]))
     checkEquals(expect, nodeProps(es, "n1"))
     checkEquals(expect[[1]], nodeProps(es, "n1")[[1]])
     ## can update
-    someProps <- list(n1=list(weight=99, color="purple"))
+    someProps <- list(weight=99, color="purple")
     nodeProps(es, "n1") <- someProps
-    expect <- someProps
-    expect[["n1"]] <- c(expect[["n1"]], nodePropList["friends"])
+    expect <- list(n1=c(someProps, nodePropList["friends"]))
     checkEquals(expect, nodeProps(es, "n1"))
 
     ## exception if properites contain unknown name
-    badNodeProps <- list(n2=list(weight=400, published=TRUE, phone=900))
+    badNodeProps <- list(weight=400, published=TRUE, phone=900)
     myCheckException(nodeProps(es, "n2") <- badNodeProps)
 }
 
@@ -57,7 +55,7 @@ testNodeSetCloning <- function() {
 
     es2 <- es
 
-    nodeProps(es, "n1") <- list(n1=list(weight=888, color="red"))
+    nodeProps(es, "n1") <- list(weight=888, color="red")
 
     checkEquals(1, nodeProps(es2, c("n1", "n2"))[[1]]$weight)
     checkEquals(888, nodeProps(es, c("n1", "n2"))[[1]]$weight)
