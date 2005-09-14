@@ -209,5 +209,60 @@ The edge attributes as described above have been implemented for the
 package.  The node attributes have noy yet been implemented.  Please
 see the Subversion source repository for implementation details.
 
+\section{Alternate Interface}
+
+Based on comments from Li Long...
+
+<<defaultAttributes>>=
+## Getting default attributes
+nodeDataDefaults(g1)
+nodeDataDefaults(g1, attr="weight")
+
+edgeDataDefaults(g1)
+edgeDataDefaults(g1, attr="weight")
+
+## Setting/creating default attributes
+nodeDataDefaults(g1) <- list(weight=1, prob=.5)
+nodeDataDefaults(g1, attr="weight") <- 1
+
+edgeDataDefaults(g1) <- list(weight=1, prob=.5)
+edgeDataDefaults(g1, attr="weight") <- 1
+@ 
+
+<<customizingAttributes, eval=FALSE>>=
+## Getting attributes
+
+nodeData(g1, x=c("n1", "n2"), attr="weight")
+nodeData(g1, attr="weight") ## all nodes
+
+## allow k/k, 1/k, k/1 for from/to lengths
+edgeData(g1, from=c("n1", "n2"), to=c("n3", "n4"), attr="weight")
+edgeData(g1, from="n1", to=c("n3", "n4"), attr="weight")
+edgeData(g1, from=c("n1", "n2"), to="n3", attr="weight")
+edgeData(g1, from=c("n1", "n2"), attr="weight")
+edgeData(g1, to=c("n1", "n2"), attr="weight")
+edgeData(g1, attr="weight")  ## all edges
+
+
+## Setting attributes
+## set same attr list for multiple nodes
+nodeData(g1, x=c("n1", "n2"), attr="weight") <- 50
+nodeData(g1, x=c("n1", "n2"), attr="weight") <- c(50, 40)
+nodeData(g1, attr="weight") <- 50
+## if you want to assign the value c(50, 40) to each of n1 and n2 do this
+nodeData(g1, x=c("n1", "n2"), attr="weight") <- I(c(50, 40))
+
+
+## set same attr list for multiple edges
+edgeData(g1, from=c("n1", "n2"), to=c("n3", "n4"), attr="weight") <- 50
+edgeData(g1, from=c("n1", "n2"), to=c("n3", "n4"), attr="weight") <- c(50, 40)
+edgeData(g1, from=c("n1", "n2"), attr="weight") <- 50
+edgeData(g1, to=c("n1", "n2"), attr="weight") <- 50
+
+## possibly consider
+nodeData(g1) <- someDataFrame
+edgeData(g1) <- someDataFrame
+@ 
+
 \end{document}
 
