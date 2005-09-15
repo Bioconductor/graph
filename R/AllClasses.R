@@ -11,7 +11,7 @@ setClass("graphNEL",
 
 ## Incidence Matrix representation
 setClass("attrData", representation(data="list",
-                                   attrList="list"))
+                                    defaults="list"))
          
 setClass("nodeSet", representation(data="list",
                                    attrList="list"))

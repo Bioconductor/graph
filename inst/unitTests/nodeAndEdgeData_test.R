@@ -85,23 +85,23 @@ testEdgeDataDefaults <- function() {
 }
 
 
-testNodeDataGetting <- function() {
-    mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
-    myEdgeAttributes <- list(size=1, dim=c(3, 3), name="fred")
-    nodeDataDefaults(g1) <- myEdgeAttributes
+## testNodeDataGetting <- function() {
+##     mat <- simpleInciMat()
+##     g1 <- new("graphIM", inciMat=mat)
+##     myEdgeAttributes <- list(size=1, dim=c(3, 3), name="fred")
+##     nodeDataDefaults(g1) <- myEdgeAttributes
 
-    checkEquals("fred", nodeData(g1, "a", attr="name")[[1]])
+##     checkEquals("fred", nodeData(g1, "a", attr="name")[[1]])
 
-    someNodes <- c("a", "b")
-    expect <- as.list(c(1, 1))
-    names(expect) <- someNodes
-    checkEquals(expect, nodeData(g1, n=someNodes, attr="size"))
+##     someNodes <- c("a", "b")
+##     expect <- as.list(c(1, 1))
+##     names(expect) <- someNodes
+##     checkEquals(expect, nodeData(g1, n=someNodes, attr="size"))
 
-    expect <- as.list(rep("fred", length(nodes(g1))))
-    names(expect) <- nodes(g1)
-    checkEquals(expect, nodeData(g1, attr="size"))
-}
+##     expect <- as.list(rep("fred", length(nodes(g1))))
+##     names(expect) <- nodes(g1)
+##     checkEquals(expect, nodeData(g1, attr="size"))
+## }
 
 
 testNodeDataSetting <- function() {

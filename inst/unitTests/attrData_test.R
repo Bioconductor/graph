@@ -2,13 +2,13 @@ basicProps <- list(weight=1, color="blue", friends=c("bob", "alice"))
 
 
 testCreation <- function() {
-    aset <- new("attrData", attrList=basicProps)
+    aset <- new("attrData", defaults=basicProps)
     checkEquals(TRUE, is(aset, "attrData"))
 }
 
 
 testDefaultAttributesGetting <- function() {
-    aset <- new("attrData", attrList=basicProps)
+    aset <- new("attrData", defaults=basicProps)
 
     ## Get the entire list
     checkEquals(basicProps, attrDefaults(aset))
@@ -25,7 +25,7 @@ testDefaultAttributesGetting <- function() {
 
 
 testDefaultAttributesSetting <- function() {
-    aset <- new("attrData", attrList=basicProps)
+    aset <- new("attrData", defaults=basicProps)
 
     ## Edit default value, type changes are allowed
     attrDefaults(aset, attr="weight") <- 100
@@ -44,75 +44,68 @@ testDefaultAttributesSetting <- function() {
 }
 
 
-testItemGettingAndSetting <- function() {
-    aset <- new("attrData", attrList=basicProps)
+testItemGettingAndSettingSimple <- function() {
+    aset <- new("attrData", defaults=basicProps)
 
-    checkEquals(1, attrDataItem(aset, x="k1", attr="weight"))
-    checkEquals(rep(1, 3), attrDataItem(aset, x=letters[1:3], attr="weight"))
+    ## access to defaults
+    checkEquals(1, attrDataItem(aset, x="k1", attr="weight")[[1]])
+    expect <- as.list(rep(1, 3))
+    names(expect) <- letters[1:3]
+    checkEquals(expect, attrDataItem(aset, x=letters[1:3], attr="weight"))
+
+    ## mixed custom/defaults
     attrDataItem(aset, x="k1", attr="weight") <- 900
-    checkEquals(900, attrDataItem(aset, x="k1", attr="weight"))
+    checkEquals(900, attrDataItem(aset, x="k1", attr="weight")[[1]])
+
+    ## Retrieve entire attribute list 
+    expect <- basicProps
+    expect[["weight"]] <- 900
+    checkEquals(expect, attrDataItem(aset, x=c("k1", "newone"))[[1]])
+    checkEquals(basicProps, attrDataItem(aset, x=c("k1", "newone"))[[2]])
 }
+
+
+testItemGettingAndSettingVectorized <- function() {
+    aset <- new("attrData", defaults=basicProps)
+    keys <- c("k1", "k2", "k3")
     
-    
+    ## Set multiple with same value 1
+    attrDataItem(aset, x=keys, attr="weight") <- 222
+    expectPerElem <- basicProps
+    expectPerElem[["weight"]] <- 222
+    for(k in keys)
+      checkEquals(expectPerElem, attrDataItem(aset, k)[[1]])
 
+    ## Set multiple with same value 2
+    ## If value is sequence type of same length as key list, then must
+    ## use I().
+    complexVal <- list(a=as.list(1:3), b="ccc", c=1:5)
+    attrDataItem(aset, x=keys, attr="weight") <- I(complexVal)
+    expectPerElem <- basicProps
+    expectPerElem[["weight"]] <- complexVal
+    checkEquals(expectPerElem, attrDataItem(aset, "k1")[[1]])
+    checkEquals(expectPerElem, attrDataItem(aset, "k2")[[1]])
+    checkEquals(expectPerElem, attrDataItem(aset, "k3")[[1]])
 
-## testNodeProps <- function() {
-##     ## XXX:
-##     ## You have to have all generics in NAMESPACE :-(
-##     ## if you want to hide a utility method, you cannot do this to test it:
-##     ## pkg:::foo(obj) <- 1 if it is a replace method.
-##     nodePropList <- list(weight=1, color="blue", friends=c("bob", "alice"))
-##     es <- new("nodeSet", attrList=nodePropList)
+    ## Set multiple with same value 3
+    ## If length doesn't match, then no I() needed
+    complexVal <- list(a=as.list(1:3), b="ccc", c=1:5, d="extra")
+    attrDataItem(aset, x=keys, attr="weight") <- complexVal
+    expectPerElem <- basicProps
+    expectPerElem[["weight"]] <- complexVal
+    for(k in keys)
+      checkEquals(expectPerElem, attrDataItem(aset, k)[[1]])
 
-##     ## get defaults
-##     checkEquals(nodePropList, basicProps(es, "n3")[[1]])
-    
-##     ## set custom properties for an node
-##     someProps <- list(weight=400, color="red")
-##     ##basicProps(es, "n1") <- someProps
-##     basicProps(es, "n1") <- someProps
-##     expect <- list(n1=c(someProps, nodePropList["friends"]))
-##     checkEquals(expect, basicProps(es, "n1"))
-##     checkEquals(expect[[1]], basicProps(es, "n1")[[1]])
-##     ## can update
-##     someProps <- list(weight=99, color="purple")
-##     basicProps(es, "n1") <- someProps
-##     expect <- list(n1=c(someProps, nodePropList["friends"]))
-##     checkEquals(expect, basicProps(es, "n1"))
+    ## Set multiple with distinct values 1
+    wVect <- c(10, 20, 30)
+    attrDataItem(aset, x=keys, attr="weight") <- wVect
+    for (i in 1:length(wVect))
+      checkEquals(wVect[i], attrDataItem(aset, keys[i], "weight")[[1]])
 
-##     ## exception if properites contain unknown name
-##     badNodeProps <- list(weight=400, published=TRUE, phone=900)
-##     myCheckException(basicProps(es, "n2") <- badNodeProps)
-## }
-
-
-## testNodeSetCloning <- function() {
-##     ## Verify that making a copy works as most R users will expect
-##     nodePropList <- list(weight=1, color="blue", friends=c("bob", "alice"))
-##     es <- new("nodeSet", attrList=nodePropList)
-
-##     es2 <- es
-
-##     basicProps(es, "n1") <- list(weight=888, color="red")
-
-##     checkEquals(1, basicProps(es2, c("n1", "n2"))[[1]]$weight)
-##     checkEquals(888, basicProps(es, c("n1", "n2"))[[1]]$weight)
-## }
-
-
-## ## Example of vectorized access to node properties
-## ## testGetNodes <- function() {
-## ##     es <- basicNodeSet()
-## ##     got <- getNodes(es, from=c("n1", "n1"), to=c("n2", "n3"))
-## ##     expect <- list("n1|n2"=basicProps,
-## ##                    "n1|n3"=c(n1n3Props, basicProps["friends"])[names(basicProps)])
-## ##     checkEquals(expect, got)
-## ## }
-## ##
-## ## testRemoveNodes <- function() {
-## ##     es <- basicNodeSet()
-## ##     removeNodes(es, from=c("n1", "n1"), to=c("n2", "n3"))
-## ##     checkEquals(character(0), ls(es@data))
-## ## }
-
+    ## Set multiple with distinct values 2
+    wVect <- list(list(a=1), list(a=2), list(a=3))
+    attrDataItem(aset, x=keys, attr="weight") <- wVect
+    for (i in 1:length(wVect))
+      checkEquals(wVect[[i]], attrDataItem(aset, keys[i], "weight")[[1]])
+}
     
