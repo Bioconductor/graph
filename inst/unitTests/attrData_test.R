@@ -62,6 +62,10 @@ testItemGettingAndSettingSimple <- function() {
     expect[["weight"]] <- 900
     checkEquals(expect, attrDataItem(aset, x=c("k1", "newone"))[[1]])
     checkEquals(basicProps, attrDataItem(aset, x=c("k1", "newone"))[[2]])
+
+    ## error on unknown attrs
+    myCheckException(attrDataItem(aset, "k1", "UNKNOWN"))
+    myCheckException(attrDataItem(aset, "k1", "UNKNOWN") <- "BAD")
 }
 
 

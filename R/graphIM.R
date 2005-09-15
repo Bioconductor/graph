@@ -80,7 +80,6 @@ setMethod("initialize", signature("graphIM"),
               colnames(inciMat) <- nNames
               rownames(inciMat) <- NULL
               .Object@inciMat <- inciMat
-              .Object@nodeSet <- new("nodeSet")
               edgemode(.Object) <- edgemode
               if (!missing(values))
                 .Object@edgeSet <- .initEdgeSet(.Object@inciMat, values)
@@ -377,65 +376,10 @@ setMethod("edgeAttributes",
 
 
 ## ---------------------------------------------------------------------
-## Node attributes
-## ---------------------------------------------------------------------
-setMethod("nodeSetAttributes", signature("graphIM"),
-          function(object) {
-              object@nodeSet@attrList
-          })
 
-
-setReplaceMethod("nodeSetAttributes",
-                 signature(object="graphIM", value="list"),
-                 function(object, value) {
-                     curList <- object@nodeSet@attrList
-                     ## XXX: TODO: prevent resetting edgeSet attribute list
-                     ##            the problem is that we will have orphaned attributes
-                     ##            attached to particular edges.
-                     object@nodeSet@attrList <- value
-                     object
-                 })
-
-
-setMethod("nodeSetAttr", signature(object="graphIM", attrName="character"),
-          function(object, attrName) {
-              if (! attrName %in% names(object@nodeSet@attrList))
-                stop("No such attribute:", sQuote(attrName))
-              object@nodeSet@attrList[[attrName]]
-          })
-
-
-
-setReplaceMethod("nodeSetAttr",
-                 signature(object="graphIM", attrName="character", value="ANY"),
-                 function(object, attrName, value) {
-                     object@nodeSet@attrList[[attrName]] <- value
-                     object
-                 })
-
-
-setMethod("nodeAttributes", signature(object="graphIM", n="character"),
-          function(object, n) {
-              unknownNodes <- n[! n %in% nodes(object)]
-              if (length(unknownNodes) > 0)
-                  stop("Unknown nodes: ",
-                       paste(unknownNodes, collapse=", "))
-              nodeProps(object@nodeSet, n)
-          })
-
-
-setReplaceMethod("nodeAttributes",
-                 signature(object="graphIM", n="character", value="list"),
-                 function(object, n, value) {
-                     unknownNodes <- n[! n %in% nodes(object)]
-                     if (length(unknownNodes) > 0)
-                       stop("Unknown nodes: ",
-                            paste(unknownNodes, collapse=", "))
-                     nodeProps(object@nodeSet, n) <- value
-                     object
-                 })
-## ---------------------------------------------------------------------
-
+##
+## node data access
+##
 setMethod("nodeDataDefaults", signature(self="graphIM", attr="missing"),
           function(self, attr) attrDefaults(self@nodeData))
 
@@ -460,6 +404,45 @@ setReplaceMethod("nodeDataDefaults", signature(self="graphIM", attr="character",
                  })
 
 
+setMethod("nodeData",
+          signature(self="graphIM", n="character", attr="character"),
+          function(self, n, attr) {
+              unknownNodes <- n[! n %in% nodes(self)]
+              if (length(unknownNodes) > 0)
+                  stop("Unknown nodes: ",
+                       paste(unknownNodes, collapse=", "))
+              attrDataItem(self@nodeData, x=n, attr=attr)
+          })
+
+
+setMethod("nodeData",
+          signature(self="graphIM", n="character", attr="missing"),
+          function(self, n, attr) {
+              unknownNodes <- n[! n %in% nodes(self)]
+              if (length(unknownNodes) > 0)
+                  stop("Unknown nodes: ",
+                       paste(unknownNodes, collapse=", "))
+              attrDataItem(self@nodeData, x=n)
+          })
+
+
+setMethod("nodeData",
+          signature(self="graphIM", n="missing", attr="character"),
+          function(self, n, attr) {
+              attrDataItem(self@nodeData, x=nodes(self), attr=attr)
+          })
+
+
+setMethod("nodeData",
+          signature(self="graphIM", n="missing", attr="missing"),
+          function(self, n, attr) {
+              attrDataItem(self@nodeData, x=nodes(self))
+          })
+
+
+##
+## edge data access
+##
 setMethod("edgeDataDefaults", signature(self="graphIM", attr="missing"),
           function(self, attr) attrDefaults(self@edgeData))
 
@@ -492,12 +475,3 @@ setReplaceMethod("edgeDataDefaults", signature(self="graphIM", attr="character",
                  })
 
 
-setMethod("nodeData", signature(self="graphIM", n="character",
-                                attr="character"),
-          function(self, n, attr) {
-              unknownNodes <- n[! n %in% nodes(self)]
-              if (length(unknownNodes) > 0)
-                  stop("Unknown nodes: ",
-                       paste(unknownNodes, collapse=", "))
-              attrDataItem(self@nodeData, x=n, attr=attr)
-          })

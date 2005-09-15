@@ -23,7 +23,6 @@ setClass("edgeSet", representation(data="list",
 
 setClass("graphIM", contains="graph",
          representation(inciMat="matrix",
-                        nodeSet="nodeSet",
                         edgeSet="edgeSet",
                         nodeData="attrData",
                         edgeData="attrData"),
