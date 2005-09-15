@@ -12,6 +12,6 @@ Suggests: SparseM (>= 0.36), XML
 Collate: AllClasses.R AllGenerics.R contents.R buildDepGraph.R property.R graph.R graphNEL.R class.R
         clustergraph.R edgefunctions.R edgeSet.R graphfunctions.R GXLformals.R
         NELhandler.R random.R write.tlp.R mat2graph.R zzz.R graphH.R
-        nodeSet.R standardLabeling.R TODOT.R graphIM.R
+        nodeSet.R standardLabeling.R TODOT.R graphIM.R attrData.R
 SaveImage: yes
 

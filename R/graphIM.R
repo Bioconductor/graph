@@ -436,6 +436,68 @@ setReplaceMethod("nodeAttributes",
                  })
 ## ---------------------------------------------------------------------
 
+setMethod("nodeDataDefaults", signature(self="graphIM", attr="missing"),
+          function(self, attr) attrDefaults(self@nodeData))
 
 
+setMethod("nodeDataDefaults", signature(self="graphIM", attr="character"),
+          function(self, attr) attrDefaults(self@nodeData, attr))
 
+
+setReplaceMethod("nodeDataDefaults", signature(self="graphIM", attr="missing",
+                                               value="list"),
+                 function(self, attr, value) {
+                     attrDefaults(self@nodeData) <- value
+                     self
+                 })
+
+
+setReplaceMethod("nodeDataDefaults", signature(self="graphIM", attr="character",
+                                               value="ANY"),
+                 function(self, attr, value) {
+                     attrDefaults(self@nodeData, attr) <- value
+                     self
+                 })
+
+
+setMethod("edgeDataDefaults", signature(self="graphIM", attr="missing"),
+          function(self, attr) attrDefaults(self@edgeData))
+
+
+setMethod("edgeDataDefaults", signature(self="graphIM", attr="character"),
+          function(self, attr) attrDefaults(self@edgeData, attr))
+
+
+setReplaceMethod("edgeDataDefaults", signature(self="graphIM", attr="missing",
+                                               value="list"),
+                 function(self, attr, value) {
+                     attrDefaults(self@edgeData) <- value
+                     self
+                 })
+
+
+setReplaceMethod("edgeDataDefaults", signature(self="graphIM", attr="missing",
+                                               value="list"),
+                 function(self, attr, value) {
+                     attrDefaults(self@edgeData) <- value
+                     self
+                 })
+
+
+setReplaceMethod("edgeDataDefaults", signature(self="graphIM", attr="character",
+                                               value="ANY"),
+                 function(self, attr, value) {
+                     attrDefaults(self@edgeData, attr) <- value
+                     self
+                 })
+
+
+setMethod("nodeData", signature(self="graphIM", n="character",
+                                attr="character"),
+          function(self, n, attr) {
+              unknownNodes <- n[! n %in% nodes(self)]
+              if (length(unknownNodes) > 0)
+                  stop("Unknown nodes: ",
+                       paste(unknownNodes, collapse=", "))
+              attrDataItem(self@nodeData, x=n, attr=attr)
+          })

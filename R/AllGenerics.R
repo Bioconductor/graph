@@ -146,6 +146,61 @@ setGeneric("removeEdges", function(container, from, to, ...)
 ## ---------------------------------------------------------------------
 ## Generics for edgeSet and nodeSet classes
 ## ---------------------------------------------------------------------
+setGeneric("attrDefaults", function(self, attr) standardGeneric("attrDefaults"))
+
+
+setGeneric("attrDefaults<-", function(self, attr, value)
+           standardGeneric("attrDefaults<-"))
+
+
+setGeneric("attrDataItem", function(self, x, attr)
+           standardGeneric("attrDataItem"))
+
+
+setGeneric("attrDataItem<-", function(self, x, attr, value)
+           standardGeneric("attrDataItem<-"))
+
+
+
+setGeneric("edgeDataDefaults", function(self, attr)
+           standardGeneric("edgeDataDefaults"))
+
+
+setGeneric("edgeDataDefaults<-", function(self, attr, value)
+           standardGeneric("edgeDataDefaults<-"))
+
+
+setGeneric("nodeDataDefaults", function(self, attr)
+           standardGeneric("nodeDataDefaults"))
+
+
+setGeneric("nodeDataDefaults<-", function(self, attr, value)
+           standardGeneric("nodeDataDefaults<-"))
+
+
+setGeneric("nodeData", function(self, n, attr)
+           standardGeneric("nodeData"))
+
+
+setGeneric("nodeData<-", function(self, n, attr, value)
+           standardGeneric("nodeData<-"))
+
+
+setGeneric("edgeData", function(self, from, to, attr)
+           standardGeneric("edgeData"))
+
+setGeneric("edgeData<-", function(self, from, to, attr, value)
+           standardGeneric("edgeData<-"))
+
+
+setGeneric("props", function(object, p, ...)
+           standardGeneric("props"))
+
+
+setGeneric("props<-", function(object, p, value)
+           standardGeneric("props<-"))
+
+
 setGeneric("edgeProps", function(object, from, to, ...)
            standardGeneric("edgeProps"))
 

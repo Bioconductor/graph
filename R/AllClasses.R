@@ -10,6 +10,9 @@ setClass("graphNEL",
 
 
 ## Incidence Matrix representation
+setClass("attrData", representation(data="list",
+                                   attrList="list"))
+         
 setClass("nodeSet", representation(data="list",
                                    attrList="list"))
          
@@ -21,7 +24,9 @@ setClass("edgeSet", representation(data="list",
 setClass("graphIM", contains="graph",
          representation(inciMat="matrix",
                         nodeSet="nodeSet",
-                        edgeSet="edgeSet"),
+                        edgeSet="edgeSet",
+                        nodeData="attrData",
+                        edgeData="attrData"),
          validity=function(object) validGraphIM(object))
 
 
