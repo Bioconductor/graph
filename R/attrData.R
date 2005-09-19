@@ -139,41 +139,7 @@ setReplaceMethod("attrDataItem",
                            self@data[[item]][[attr]] <- value[[i]]
                      }
                      self
-          })
-
-
-
-## setMethod("props",
-##           signature(object="attrData", p="character"),
-##           function(object, p) {
-##               attrs <- object@data[p]
-##               attrs <- lapply(attrs, .addDefaultAttrs, object@defaults)
-##               names(attrs) <- p
-##               attrs
-##           })
-
-
-## setMethod("props",
-##           signature(object="nodeSet", p="missing"),
-##           function(object, p) {
-##               attrs <- lapply(object@data, .addDefaultAttrs, object@defaults)
-##               names(attrs) <- names(object@data)
-##               attrs
-##           })
-
-
-## setReplaceMethod("props",
-##                  signature(object="attrData", p="character", value="list"),
-##                  function(object, p, value) {
-##                      if (is.null(names(value)))
-##                          stop("Attributes must be specified with a named list")
-##                      graph:::.verifyAttrListNames(value, object@defaults)
-##                      for (propName in p) {
-##                          object@data[[propName]] <- value
-##                      }
-##                      object
-##                  })
-              
+          })              
 
 
 

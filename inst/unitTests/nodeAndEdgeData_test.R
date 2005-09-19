@@ -111,145 +111,114 @@ testNodeDataGetting <- function() {
 
 
 testNodeDataSetting <- function() {
-TRUE
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    myAttributes <- list(size=1, dim=c(3, 3), name="fred")
+    nodeDataDefaults(g1) <- myAttributes
+
+    ## unknown node is error
+    myCheckException(nodeData(g1, n="UNKNOWN_NODE", attr="size") <- 5)
+
+    ## unknown attr is error
+    myCheckException(nodeData(g1, n="a", attr="UNKNOWN") <- 5)
+
+    nodeData(g1, n="a", attr="size") <- 5
+    checkEquals(5, nodeData(g1, n="a", attr="size")[[1]])
+
+    nodeData(g1, n=c("a", "b", "c"), attr="size") <- 50
+    expect <- myAttributes
+    expect[["size"]] <- 50
+    checkEquals(list(a=expect, b=expect, c=expect),
+                nodeData(g1, n=c("a", "b", "c")))
+
+    nodeData(g1, n=c("a", "b", "c"), attr="size") <- c(1, 2, 3)
+    checkEquals(c(1, 2, 3),
+                as.numeric(nodeData(g1, n=c("a", "b", "c"), attr="size")))
+
+    nodeData(g1, attr="name") <- "unknown"
+    expect <- as.list(rep("unknown", length(nodes(g1))))
+    names(expect) <- nodes(g1)
+    checkEquals(expect, nodeData(g1, attr="name"))                  
 }
 
 
+testEdgeDataGetting <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    myAttributes <- list(size=1, dim=c(3, 3), name="fred")
+    edgeDataDefaults(g1) <- myAttributes
+
+    checkEquals("fred", edgeData(g1, from="a", to="d", attr="name")[[1]])
+
+    fr <- c("a", "b")
+    to <- c("c", "c")
+    expect <- as.list(c(1, 1))
+    names(expect) <- c("a|c", "b|c")
+    checkEquals(expect, edgeData(g1, fr, to, attr="size"))
+
+    expect <- rep("fred", sum(sapply(edges(g1), length)))
+    checkEquals(expect, as.character(edgeData(g1, attr="name")))
+
+    checkEquals(myAttributes, edgeData(g1, from="a", to="c")[[1]])
+
+    everything <- edgeData(g1)
+    for (alist in everything)
+      checkEquals(myAttributes, alist)
+
+    got <- edgeData(g1, from="d", attr="size")
+    checkEquals(3, length(got))
+    checkEquals(rep(1, 3), as.numeric(got))
+
+    got <- edgeData(g1, to="d", attr="size")
+    checkEquals(3, length(got))
+    checkEquals(rep(1, 3), as.numeric(got))
+}
 
 
-## testNodeAttributes <- function() {
-##     mat <- simpleInciMat()
-##     g1 <- new("graphIM", inciMat=mat)
-    
-##     ## If nothing defined, empty list for now
-##     checkEquals(list(), nodeAttributes(g1, n="a")[[1]])
-    
-##     ## Exception if node not found
-##     myCheckException(nodeAttributes(g1, n="nosuchNode"))
-##     myCheckException(nodeAttributes(g1, n=c("a", "b", "NOPE")))
-                     
-##     ## pickup default values
-##     myNodeAttributes <- list(weight=1, color="blue")
-##     nodeSetAttributes(g1) <- myNodeAttributes
-##     checkEquals(myNodeAttributes, nodeAttributes(g1, n="d")[[1]])
+testEdgeDataSetting <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphIM", inciMat=mat)
+    myAttributes <- list(size=1, dim=c(3, 3), name="fred")
+    edgeDataDefaults(g1) <- myAttributes
 
-##     ## Customize existing edges
-##     nodeAttrs <- list(weight=800)
-##     ## sets weight for nodes a and d
-##     nodeAttributes(g1, c("a", "d")) <- nodeAttrs  
-##     checkEquals(800, nodeAttributes(g1, "a")[[1]]$weight)
-##     checkEquals(800, nodeAttributes(g1, "d")[[1]]$weight)
-##     checkEquals("blue", nodeAttributes(g1, "a")[[1]]$color)
+    edgeData(g1, from="a", to="d", attr="name") <- "Joe"
+    expect <- myAttributes
+    expect[["name"]] <- "Joe"
+    checkEquals(expect, edgeData(g1, from="a", to="d")[[1]])
 
-##     ## disallow assigning names not in nodeSetAttributes
-##     badNodeAttributes <- list(weight=400, style="modern", type="fruit")
-##     myCheckException(nodeAttributes(g1, "a") <- badNodeAttributes)
-##     myCheckException(nodeAttributes(g1, c("a", "b")) <- badNodeAttributes)
-## }
+    fr <- c("a", "b")
+    to <- c("c", "c")
+    expect <- as.list(c(5, 5))
+    names(expect) <- c("a|c", "b|c")
+    edgeData(g1, fr, to, attr="size") <- 5
+    checkEquals(expect, edgeData(g1, fr, to, attr="size"))
 
+    expect <- as.list(c(10, 20))
+    names(expect) <- c("a|c", "b|c")
+    edgeData(g1, fr, to, attr="size") <- c(10, 20)
+    checkEquals(expect, edgeData(g1, fr, to, attr="size"))
 
-## #
-## # Edge data
-## #
-## testEdgeSetAttributes <- function() {
-##     mat <- simpleInciMat()
-##     g1 <- new("graphIM", inciMat=mat)
+    edgeData(g1, from="a", attr="size") <- 555
+    checkEquals(rep(555, 2), as.numeric(edgeData(g1, from="a", attr="size")))
 
-##     ## If no attributes have been defined, empty list or NULL?
-##     checkEquals(list(), edgeSetAttributes(g1))
+    edgeData(g1, to="b", attr="size") <- 111
+    checkEquals(rep(111, 2), as.numeric(edgeData(g1, to="b", attr="size")))
 
-##     myEdgeAttributes <- list(weight=1, color="blue")
-##     ## TODO: make edgeSetAttributes a set-once property
-##     ## ideally, this is a set-once property because otherwise
-##     ## we'll run into consistency issues for edges that have customized
-##     ## attributes
-##     edgeSetAttributes(g1) <- myEdgeAttributes
-##     checkEquals(myEdgeAttributes, edgeSetAttributes(g1))
-##     ## So assigning into it again is an error
-##     ##myCheckException(edgeSetAttributes(g1) <- myEdgeAttributes)
-## }
+}
 
 
-## testEdgeSetAttr <- function() {
-##     mat <- simpleInciMat()
-##     g1 <- new("graphIM", inciMat=mat)
+testNormalizeEdges <- function() {
+    myCheckException(graph:::.normalizeEdges(c("b", "d"), c("a", "b", "c")))
+    myCheckException(graph:::.normalizeEdges(c("a", "b", "c"), c("a", "e")))
 
-##     myCheckException(edgeSetAttr(g1, "noSuchAttr"))
-    
-##     ## You can add attributes via edgeSetAttr and redefine default values
-##     edgeSetAttr(g1, "weight") <- 1
-##     checkEquals(1, edgeSetAttr(g1, "weight"))
-##     ## Note: the names is edgeSet Attr, not edge SetAttr, is this too confusing?
+    f <- letters[1:10]
+    t <- letters[11:20]
+    checkEquals(list(from=f, to=t), graph:::.normalizeEdges(f, t))
 
-##     ## redefine
-##     val <- list(a=1, b=2)
-##     edgeSetAttr(g1, "weight") <- val
-##     checkEquals(val, edgeSetAttr(g1, "weight"))
+    checkEquals(list(from=c("a", "a", "a"), to=c("a", "b", "c")),
+                graph:::.normalizeEdges("a", c("a", "b", "c")))
 
-##     ## add
-##     edgeSetAttr(g1, "color") <- "blue"
-
-##     expect <- list(weight=val, color="blue")
-##     checkEquals(expect, edgeSetAttributes(g1))
-## }
-
-
-## testEdgeAttributes <- function() {
-##     mat <- simpleInciMat()
-##     g1 <- new("graphIM", inciMat=mat)
-
-##     ## If nothing defined, empty list for now
-##     checkEquals(list(), edgeAttributes(g1, from="a", to="d")[[1]])
-
-##     ## Exception if node not found
-##     myCheckException(edgeAttributes(g1, from="a", to="nosuchnode"))
-##     myCheckException(edgeAttributes(g1, from="nosuchnode", to="a"))
-
-##     ## Exception if edge not found
-##     myCheckException(edgeAttributes(g1, from="a", to="b"))
-
-
-##     ## pickup default values
-##     myEdgeAttributes <- list(weight=1, color="blue")
-##     edgeSetAttributes(g1) <- myEdgeAttributes
-##     checkEquals(myEdgeAttributes, edgeAttributes(g1, from="a", to="d")[[1]])
-
-##     ## disallow assigning names not in edgeSetAttributes
-##     badEdgeAttributes <- list(weight=400, style="modern", type="fruit")
-##     myCheckException(edgeAttributes(g1, "a", "d") <- badEdgeAttributes)
-
-##     ## Customize existing edges
-##     edgeAttributes(g1, "a", "d") <- list(weight=800)
-##     checkEquals(800, edgeAttributes(g1, "a", "d")[[1]]$weight)
-##     checkEquals("blue", edgeAttributes(g1, "a", "d")[[1]]$color)
-## }
-
-
-## testEdgeAttributesVectorized <- function() {
-##     g1 <- simpleDirectedGraph()
-##     myEdgeAttributes <- list(weight=1, color="blue")
-##     edgeSetAttributes(g1) <- myEdgeAttributes
-
-##     eAttrs <- edgeAttributes(g1, from="a")
-##     checkEquals(TRUE, setequal(c("a|c", "a|d"), names(eAttrs)))
-
-##     ## test with to="missing"
-##     myCheckException(edgeAttributes(g1, from="c"))
-##     checkEquals("b|c", names(edgeAttributes(g1, from="b")))
-
-##     ## test with from="missing"
-##     myCheckException(edgeAttributes(g1, to="a"))
-##     checkEquals("d|b", names(edgeAttributes(g1, to="b")))
-##     expect <- paste(c("a", "b", "d"), "c", sep="|")
-##     checkEquals(expect, names(edgeAttributes(g1, to="c")))
-
-##     fr <- c("a", "a", "d", "b", "d")
-##     to <- c("d", "c", "b", "c", "c")
-##     eAttrs <- edgeAttributes(g1, from=fr, to=to)
-##     expectNames <- paste(fr, to, sep="|")
-##     checkEquals(expectNames, names(eAttrs))
-
-    
-## }
-
+    checkEquals(list(from=c("a", "b", "c"), to=c("d", "d", "d")),
+                graph:::.normalizeEdges(c("a", "b", "c"), "d"))
+}
 

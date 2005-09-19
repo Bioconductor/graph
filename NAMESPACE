@@ -2,26 +2,22 @@ useDynLib(graph)
 
 import(methods,cluster)
 
-exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph, edgeSet,
+exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph,
   clusterGraph, graphH, graph, graphNEL, file, connection,
-  propertyHolder, graphIM, nodeSet, attrData) 
+  propertyHolder, graphIM, attrData) 
 
 exportMethods(DFS, Dist, acc, addEdge, addNode, addNodes, adj, asGraphProperty,
       bNode, clearNode, clusteringCoefficient, combineNodes, complement,
-      connComp, degree, dumpGXL, eNode, edgeSetAttributes,
-      "edgeSetAttributes<-", edgeSetAttr, "edgeSetAttr<-", edgeAttributes,
-      "edgeAttributes<-", edgeID, edgeL, edgeMatrix, edgeNames, edgeOrder,
-      edgeProps, "edgeProps<-", edgeWeights, edgemode, "edgemode<-", edges,
-      fromEdges, "fromEdges<-", "toEdges<-", "nodes<-", fromGXL, getNodes, hash,
-      idstring, inEdges, initialize, intersection, intersection2, intersection3,
+      connComp, degree, dumpGXL, eNode, edgeID, edgeL, edgeMatrix, edgeNames,
+      edgeOrder, edgeWeights, edgemode, "edgemode<-", edges, fromEdges,
+      "fromEdges<-", "toEdges<-", "nodes<-", fromGXL, getNodes, hash, idstring,
+      inEdges, initialize, intersection, intersection2, intersection3,
       isAdjacent, isConnected, isDirected, join, label, nodeID, nodeType, nodes,
-      nodeNames, "nodeNames<-", nodeSet, numNodes, property, "property<-",
-      removeEdge, removeNode, show, subGraph, threshold, toEdges, toGXL, union,
-      validateGXL, coerce, toDotR, 
-              nodeProps, "nodeProps<-", "props", "props<-", attrDefaults,
-              "attrDefaults<-", edgeDataDefaults, "edgeDataDefaults<-",
-              nodeDataDefaults, "nodeDataDefaults<-", edgeData, "edgeData<-",
-              nodeData, "nodeData<-", attrDataItem, "attrDataItem<-")
+      nodeNames, "nodeNames<-", numNodes, property, "property<-", removeEdge,
+      removeNode, show, subGraph, threshold, toEdges, toGXL, union, validateGXL,
+      coerce, toDotR, attrDefaults, "attrDefaults<-", edgeDataDefaults,
+      "edgeDataDefaults<-", nodeDataDefaults, "nodeDataDefaults<-", edgeData,
+      "edgeData<-", nodeData, "nodeData<-", attrDataItem, "attrDataItem<-")
 
 
 export(boundary, buildRepDepGraph, hashtable, calcProb, calcSumProb,

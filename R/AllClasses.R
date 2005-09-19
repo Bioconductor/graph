@@ -13,17 +13,8 @@ setClass("graphNEL",
 setClass("attrData", representation(data="list",
                                     defaults="list"))
          
-setClass("nodeSet", representation(data="list",
-                                   attrList="list"))
-         
-setClass("edgeSet", representation(data="list",
-                                   attrList="list",
-                                   keySep="character"))
-
-
 setClass("graphIM", contains="graph",
          representation(inciMat="matrix",
-                        edgeSet="edgeSet",
                         nodeData="attrData",
                         edgeData="attrData"),
          validity=function(object) validGraphIM(object))

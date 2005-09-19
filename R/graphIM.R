@@ -48,33 +48,56 @@ validGraphIM <- function(object) {
 }
 
 
-.initEdgeSet <- function(inciMat, values) {
+## .initEdgeSet <- function(self, values) {
+##     if (!is.list(values) || length(values) != 1 || is.null(names(values)))
+##       stop("values must be a named list with one element")
+##     self@edgeData <- new("attrData", defaults=values)
+##     nodeNames <- colnames(self@inciMat)
+##     defaultValue <- values[[1]]
+##     valName <- names(values)[1]
+##     for (j in 1:ncol(self@inciMat)) {
+##         ## work column-wise for efficiency
+##         haveW <- which(self@inciMat[, j] != defaultValue)
+##         if (length(haveW) > 0) {
+##             toNode <- nodeNames[j]
+##             for (fromIdx in haveW) {
+##                 fromNode <- nodeNames[fromIdx]
+##                 v <- self@inciMat[fromIdx, j]
+##                 edgeData(self, fromNode, toNode, attr=valName) <- v
+##             }
+##         }
+##     }
+##     self
+## }
+
+
+.initEdgeSet <- function(self, values) {
     if (!is.list(values) || length(values) != 1 || is.null(names(values)))
       stop("values must be a named list with one element")
-    edgeData <- new("edgeSet", attrList=values)
-    nodeNames <- colnames(inciMat)
+    self@edgeData <- new("attrData", defaults=values)
+    nodeNames <- nodes(self)
     defaultValue <- values[[1]]
     valName <- names(values)[1]
-    for (j in 1:ncol(inciMat)) {
+    for (j in 1:ncol(self@inciMat)) {
         ## work column-wise for efficiency
-        haveW <- which(inciMat[, j] != defaultValue)
+        haveW <- which((self@inciMat[, j] != defaultValue)
+                       & (self@inciMat[, j] != 0))
         if (length(haveW) > 0) {
             toNode <- nodeNames[j]
             for (fromIdx in haveW) {
                 fromNode <- nodeNames[fromIdx]
-                props <- list()
-                props[[valName]] <- inciMat[fromIdx, j]
-                edgeProps(edgeData, fromNode, toNode) <- props
+                v <- self@inciMat[fromIdx, j]
+                edgeData(self, fromNode, toNode, attr=valName) <- v
             }
         }
     }
-    edgeData
+    self
 }
 
 
 setMethod("initialize", signature("graphIM"),
           function(.Object, inciMat, edgemode="undirected", values) {
-              nNames <- .isValidInciMat(inciMat, edgemode)
+              nNames <- graph:::.isValidInciMat(inciMat, edgemode)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(inciMat), sep="")
               colnames(inciMat) <- nNames
@@ -82,10 +105,10 @@ setMethod("initialize", signature("graphIM"),
               .Object@inciMat <- inciMat
               edgemode(.Object) <- edgemode
               if (!missing(values))
-                .Object@edgeSet <- .initEdgeSet(.Object@inciMat, values)
+                .Object <- graph:::.initEdgeSet(.Object, values)
               else
-                .Object@edgeSet <- new("edgeSet")
-              
+                .Object@edgeData <- new("attrData")
+              .Object@nodeData <- new("attrData")
               .Object
           })
 
@@ -147,19 +170,12 @@ setMethod("numEdges", signature("graphIM"),
           })
 
 
-setMethod("nodeSet", signature("graphIM"),
-          function(object) {
-              as.list(object@nodeSet)
-          })
-
-
-
-
 setMethod("isAdjacent",
           signature(object="graphIM", from="character", to="character"),
           function(object, from, to) {
-              if (length(from) != length(to))
-                stop("from and to must be the same length")
+              eSpec <- graph:::.normalizeEdges(from, to)
+              from <- eSpec$from
+              to <- eSpec$to
               fromIdx <- match(from, nodes(object), nomatch=0)
               toIdx <- match(to, nodes(object), nomatch=0)
               if (any(fromIdx == 0))
@@ -273,8 +289,6 @@ setMethod("removeNode",
 setMethod("removeEdge",
           signature(from="character", to="character", graph="graphIM"),
           function(from, to, graph) {
-              ## remove props
-              edgeAttributes(graph, from, to) <- list()
               fromIdx <- .getNodeIndex(nodes(graph), from)
               toIdx <- .getNodeIndex(nodes(graph), to)
               graph@inciMat[fromIdx, toIdx] <- 0
@@ -284,99 +298,8 @@ setMethod("removeEdge",
           })
 
 
-## ---------------------------------------------------------------------
-## Edge attribute access
-## ---------------------------------------------------------------------
-setMethod("edgeSetAttributes", signature("graphIM"),
-          function(object) {
-              object@edgeSet@attrList
-          })
-
-
-setReplaceMethod("edgeSetAttributes",
-                 signature(object="graphIM", value="list"),
-                 function(object, value) {
-                     curList <- object@edgeSet@attrList
-                     ## XXX: TODO: prevent resetting edgeSet attribute list
-                     ##            the problem is that we will have orphaned attributes
-                     ##            attached to particular edges.
-                     object@edgeSet@attrList <- value
-                     object
-                 })
-
-
-setMethod("edgeSetAttr", signature(object="graphIM", attrName="character"),
-          function(object, attrName) {
-              if (! attrName %in% names(object@edgeSet@attrList))
-                stop("No such attribute:", sQuote(attrName))
-              object@edgeSet@attrList[[attrName]]
-          })
-
-
-
-setReplaceMethod("edgeSetAttr",
-                 signature(object="graphIM", attrName="character", value="ANY"),
-                 function(object, attrName, value) {
-                     object@edgeSet@attrList[[attrName]] <- value
-                     object
-                 })
-
-
-setMethod("edgeAttributes", signature(object="graphIM", from="character",
-                                      to="character"),
-          function(object, from, to) {
-              adj <- isAdjacent(object, from, to) 
-              if (any(!adj))
-                stop(paste("No edge from", sQuote(from[!adj]), "to",
-                           sQuote(to[!adj]), collapse="\n"))
-              edgeProps(object@edgeSet, from, to)
-          })
-
-
-setReplaceMethod("edgeAttributes",
-                 signature(object="graphIM", from="character",
-                           to="character", value="list"),
-                 function(object, from, to, value) {
-                     if (! isAdjacent(object, from, to))
-                       stop("No edge from", sQuote(from), "to", sQuote(to))
-                     edgeProps(object@edgeSet, from, to) <- value
-                     object
-                 })
-
-
-setMethod("edgeAttributes",
-          signature(object="graphIM", from="character", to="missing"),
-          function(object, from) {
-              if (length(from) != 1)
-                stop("can only specify a single from node for this call")
-              fromIdx <- .getNodeIndex(nodes(object), from)
-              toIndices <- which(object@inciMat[fromIdx, ] != 0)
-              if (length(toIndices) == 0)
-                stop("specified from node has no outgoing edges")
-              toNodes <- nodes(object)[toIndices]
-              fromNodes <- rep(from, length(toNodes))
-              edgeAttributes(object=object, from=fromNodes, to=toNodes)
-          })
-
-
-setMethod("edgeAttributes",
-          signature(object="graphIM", from="missing", to="character"),
-          function(object, to) {
-              if (length(to) != 1)
-                stop("can only specify a single to node for this call")
-              toIdx <- .getNodeIndex(nodes(object), to)
-              fromIndices <- which(object@inciMat[, toIdx] != 0)
-              if (length(fromIndices) == 0)
-                stop("specified to node has no outgoing edges")
-              fromNodes <- nodes(object)[fromIndices]
-              toNodes <- rep(to, length(fromNodes))
-              edgeAttributes(object=object, from=fromNodes, to=toNodes)
-          })
-## ---------------------------------------------------------------------
-
 
 ## ---------------------------------------------------------------------
-
 ##
 ## node data access
 ##
@@ -404,24 +327,37 @@ setReplaceMethod("nodeDataDefaults", signature(self="graphIM", attr="character",
                  })
 
 
+.verifyNodes <- function(n, nodes) {
+    unknownNodes <- n[! n %in% nodes]
+    if (length(unknownNodes) > 0)
+      stop("Unknown nodes: ",
+           paste(unknownNodes, collapse=", "))
+    TRUE
+}
+
+
 setMethod("nodeData",
           signature(self="graphIM", n="character", attr="character"),
           function(self, n, attr) {
-              unknownNodes <- n[! n %in% nodes(self)]
-              if (length(unknownNodes) > 0)
-                  stop("Unknown nodes: ",
-                       paste(unknownNodes, collapse=", "))
+              graph:::.verifyNodes(n, nodes(self))
               attrDataItem(self@nodeData, x=n, attr=attr)
+          })
+
+
+setReplaceMethod("nodeData",
+                 signature(self="graphIM", n="character", attr="character",
+                           value="ANY"),
+                 function(self, n, attr, value) {
+                     graph:::.verifyNodes(n, nodes(self))
+                     attrDataItem(self@nodeData, x=n, attr=attr) <- value
+                     self
           })
 
 
 setMethod("nodeData",
           signature(self="graphIM", n="character", attr="missing"),
           function(self, n, attr) {
-              unknownNodes <- n[! n %in% nodes(self)]
-              if (length(unknownNodes) > 0)
-                  stop("Unknown nodes: ",
-                       paste(unknownNodes, collapse=", "))
+              graph:::.verifyNodes(n, nodes(self))
               attrDataItem(self@nodeData, x=n)
           })
 
@@ -430,6 +366,14 @@ setMethod("nodeData",
           signature(self="graphIM", n="missing", attr="character"),
           function(self, n, attr) {
               attrDataItem(self@nodeData, x=nodes(self), attr=attr)
+          })
+
+
+setReplaceMethod("nodeData",
+          signature(self="graphIM", n="missing", attr="character", value="ANY"),
+          function(self, n, attr, value) {
+              attrDataItem(self@nodeData, x=nodes(self), attr=attr) <- value
+              self
           })
 
 
@@ -473,5 +417,151 @@ setReplaceMethod("edgeDataDefaults", signature(self="graphIM", attr="character",
                      attrDefaults(self@edgeData, attr) <- value
                      self
                  })
+
+
+.normalizeEdges <- function(from, to) {
+    lenFr <- length(from)
+    lenTo <- length(to)
+    if (lenFr > lenTo) {
+        if (lenTo != 1)
+          stop("'to' must be length 1 or ", lenFr, " for this call.")
+        to <- rep(to, lenFr)
+    } else if (lenFr < lenTo) {
+        if (lenFr != 1)
+          stop("'from' must be length 1 or ", lenTo, " for this call.")
+        from <- rep(from, lenTo)
+    }
+    list(from=from, to=to)
+}
+
+
+.verifyEdges <- function(graph, from, to) {
+    stopifnot(length(from) == length(to))
+    adjList <- isAdjacent(graph, from, to)
+    if (any(!adjList)) {
+        badFr <- from[!adjList]
+        badTo <- to[!adjList]
+        res <- cbind(badFr, badTo)
+        stop("Edges not found", res)
+    }
+    TRUE
+}
+
+
+.makeEdgeKeys <- function(from, to) {
+    EDGE_KEY_SEP <- "|"
+    stopifnot(length(from) == length(to))
+    paste(from, to, sep=EDGE_KEY_SEP)
+}
+
+
+.getEdgeKeys <- function(graph, from, to) {
+    eSpec <- graph:::.normalizeEdges(from, to)
+    from <- eSpec$from
+    to <- eSpec$to
+    graph:::.verifyEdges(graph, from, to)
+    edgeKeys <- graph:::.makeEdgeKeys(from, to)
+    edgeKeys
+}
+
+
+setMethod("edgeData", signature(self="graphIM", from="character", to="character",
+                                attr="character"),
+          function(self, from, to, attr) {
+              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
+          })
+
+
+setMethod("edgeData", signature(self="graphIM", from="character", to="missing",
+                                attr="character"),
+          function(self, from, to, attr) {
+              to <- unlist(edges(self)[from])
+              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
+          })
+
+
+setMethod("edgeData", signature(self="graphIM", from="missing", to="character",
+                                attr="character"),
+          function(self, from, to, attr) {
+              from <- unlist(edges(self)[to])
+              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
+          })
+
+
+setReplaceMethod("edgeData",
+                 signature(self="graphIM", from="character", to="character",
+                           attr="character", value="ANY"),
+                 function(self, from, to, attr, value) {
+                     edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+                     attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
+                     self
+                 })
+
+
+setReplaceMethod("edgeData",
+                 signature(self="graphIM", from="character", to="missing",
+                           attr="character", value="ANY"),
+                 function(self, from, to, attr, value) {
+                     to <- unlist(edges(self)[from])
+                     edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+                     attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
+                     self
+                 })
+
+
+setReplaceMethod("edgeData",
+                 signature(self="graphIM", from="missing", to="character",
+                           attr="character", value="ANY"),
+                 function(self, from, to, attr, value) {
+                     from <- unlist(edges(self)[to])
+                     edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+                     attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
+                     self
+                 })
+
+
+.getAllEdges <- function(graph) {
+    e1 <- edges(graph)
+    n1 <- nodes(graph)
+    n1 <- rep(n1, sapply(e1, length))
+    list(from=n1, to=unlist(e1))
+}
+
+
+setMethod("edgeData", signature(self="graphIM", from="missing", to="missing",
+                                attr="character"),
+          function(self, from, to, attr) {
+              eSpec <- graph:::.getAllEdges(self)
+              from <- eSpec$from
+              to <- eSpec$to
+              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
+          })
+
+
+setMethod("edgeData", signature(self="graphIM", from="character", to="character",
+                                attr="missing"),
+          function(self, from, to, attr) {
+              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              attrDataItem(self@edgeData, x=edgeKeys)
+          })
+
+
+setMethod("edgeData", signature(self="graphIM", from="missing", to="missing",
+                                attr="missing"),
+          function(self, from, to, attr) {
+              eSpec <- graph:::.getAllEdges(self)
+              from <- eSpec$from
+              to <- eSpec$to
+              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              attrDataItem(self@edgeData, x=edgeKeys)
+          })
+
+
+
+              
 
 

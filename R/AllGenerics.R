@@ -42,57 +42,6 @@ setGeneric("edgeWeights", function(object, index)
 
 
 ## ---------------------------------------------------------------------
-## Node and Edge Attribute access
-## ---------------------------------------------------------------------
-setGeneric("edgeSetAttributes", function(object)
-           standardGeneric("edgeSetAttributes"))
-
-
-setGeneric("edgeSetAttributes<-", function(object, value)
-           standardGeneric("edgeSetAttributes<-"))
-
-
-setGeneric("edgeSetAttr", function(object, attrName)
-           standardGeneric("edgeSetAttr"))
-
-
-setGeneric("edgeSetAttr<-", function(object, attrName, value)
-           standardGeneric("edgeSetAttr<-"))
-
-
-setGeneric("edgeAttributes", function(object, from, to)
-           standardGeneric("edgeAttributes"))
-
-
-setGeneric("edgeAttributes<-", function(object, from, to, value)
-           standardGeneric("edgeAttributes<-"))
-
-setGeneric("nodeSetAttributes", function(object)
-           standardGeneric("nodeSetAttributes"))
-
-
-setGeneric("nodeSetAttributes<-", function(object, value)
-           standardGeneric("nodeSetAttributes<-"))
-
-
-setGeneric("nodeSetAttr", function(object, attrName)
-           standardGeneric("nodeSetAttr"))
-
-
-setGeneric("nodeSetAttr<-", function(object, attrName, value)
-           standardGeneric("nodeSetAttr<-"))
-
-
-setGeneric("nodeAttributes", function(object, n)
-           standardGeneric("nodeAttributes"))
-
-
-setGeneric("nodeAttributes<-", function(object, n, value)
-           standardGeneric("nodeAttributes<-"))
-## ---------------------------------------------------------------------
-
-
-## ---------------------------------------------------------------------
 ## Node and edge operations
 ## ---------------------------------------------------------------------
 setGeneric("degree", function(object, Nodes) standardGeneric("degree"))
@@ -189,32 +138,9 @@ setGeneric("nodeData<-", function(self, n, attr, value)
 setGeneric("edgeData", function(self, from, to, attr)
            standardGeneric("edgeData"))
 
+
 setGeneric("edgeData<-", function(self, from, to, attr, value)
            standardGeneric("edgeData<-"))
-
-
-setGeneric("props", function(object, p, ...)
-           standardGeneric("props"))
-
-
-setGeneric("props<-", function(object, p, value)
-           standardGeneric("props<-"))
-
-
-setGeneric("edgeProps", function(object, from, to, ...)
-           standardGeneric("edgeProps"))
-
-
-setGeneric("edgeProps<-", function(object, from, to, value)
-           standardGeneric("edgeProps<-"))
-
-
-setGeneric("nodeProps", function(object, n, ...)
-           standardGeneric("nodeProps"))
-
-
-setGeneric("nodeProps<-", function(object, n, value)
-           standardGeneric("nodeProps<-"))
 ## ---------------------------------------------------------------------
 
 
