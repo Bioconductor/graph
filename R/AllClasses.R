@@ -1,6 +1,11 @@
 ## Classes for representing graphs
+setClass("attrData", representation(data="list",
+                                    defaults="list"))
 
-setClass("graph", representation(edgemode="character", "VIRTUAL"))
+setClass("graph", representation(edgemode="character",
+                                 edgeData="attrData",
+                                 nodeData="attrData",
+                                 "VIRTUAL"))
 
 ## Node Edge List representation
 setClass("graphNEL",
@@ -10,13 +15,9 @@ setClass("graphNEL",
 
 
 ## Incidence Matrix representation
-setClass("attrData", representation(data="list",
-                                    defaults="list"))
          
 setClass("graphIM", contains="graph",
-         representation(inciMat="matrix",
-                        nodeData="attrData",
-                        edgeData="attrData"),
+         representation(inciMat="matrix"),
          validity=function(object) validGraphIM(object))
 
 
