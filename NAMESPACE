@@ -4,7 +4,7 @@ import(methods,cluster)
 
 exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph,
   clusterGraph, graphH, graph, graphNEL, file, connection,
-  propertyHolder, graphIM, attrData) 
+  propertyHolder, graphAM, attrData) 
 
 exportMethods(DFS, Dist, acc, addEdge, addNode, addNodes, adj, asGraphProperty,
       bNode, clearNode, clusteringCoefficient, combineNodes, complement,

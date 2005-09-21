@@ -13,6 +13,6 @@ biocViews: GraphsAndNetworks
 Collate: AllClasses.R AllGenerics.R contents.R buildDepGraph.R property.R methods-graph.R graphNEL.R class.R
         clustergraph.R edgefunctions.R graphfunctions.R GXLformals.R
         NELhandler.R random.R write.tlp.R mat2graph.R zzz.R graphH.R
-        standardLabeling.R TODOT.R graphIM.R attrData.R
+        standardLabeling.R TODOT.R methods-graphAM.R attrData.R
 SaveImage: yes
 

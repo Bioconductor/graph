@@ -34,20 +34,20 @@ simpleDirectedGraph <- function() {
     rownames(mat) <- letters[1:4]
     colnames(mat) <- letters[1:4]
     mat
-    new("graphIM", inciMat=mat, edgemode="directed")
+    new("graphAM", adjMat=mat, edgemode="directed")
 }
     
 
 
 testInvalidNonSquare <- function() {
     mat <- cbind(c(0, 0, 1), c(1, 1, 1))
-    myCheckException(new("graphIM", inciMat=mat))
+    myCheckException(new("graphAM", adjMat=mat))
 }
 
 
 testInvalidNegativeValues <- function() {
     mat <- matrix(c(0, 1, -4, -1), ncol=2)
-    myCheckException(new("graphIM", inciMat=mat))
+    myCheckException(new("graphAM", adjMat=mat))
 }
 
 
@@ -56,9 +56,9 @@ testInvalidNonSymmetric <- function() {
                     0, 0, 1,
                     0, 0, 0), ncol=3, byrow=TRUE)
     colnames(mat) <- letters[1:3]
-    myCheckException(new("graphIM", inciMat=mat))
-    myCheckException(new("graphIM", inciMat=mat, edgemode="undirected"))
-    g1 <- new("graphIM", inciMat=mat, edgemode="directed")
+    myCheckException(new("graphAM", adjMat=mat))
+    myCheckException(new("graphAM", adjMat=mat, edgemode="undirected"))
+    g1 <- new("graphAM", adjMat=mat, edgemode="directed")
 }
 
 
@@ -71,21 +71,21 @@ testValuesToAttr <- function() {
     rownames(mat) <- letters[1:4]
     colnames(mat) <- letters[1:4]
     mat
-    g1 <- new("graphIM", inciMat=mat, edgemode="directed",
+    g1 <- new("graphAM", adjMat=mat, edgemode="directed",
               values=list(weight=1))
     checkEquals(4, edgeData(g1, "d", "b", attr="weight")[[1]])
     checkEquals(3, edgeData(g1, "b", "c", attr="weight")[[1]])
     checkEquals(2, edgeData(g1, "a", "d", attr="weight")[[1]])
     checkEquals(1, edgeData(g1, "a", "c", attr="weight")[[1]])
 
-    myCheckException(new("graphIM", inciMat=mat, edgemode="directed",
+    myCheckException(new("graphAM", adjMat=mat, edgemode="directed",
                          values=list(weight=1, not=2)))
-    myCheckException(new("graphIM", inciMat=mat, edgemode="directed",
+    myCheckException(new("graphAM", adjMat=mat, edgemode="directed",
                          values=list("must", "name")))
-    myCheckException(new("graphIM", inciMat=mat, edgemode="directed",
+    myCheckException(new("graphAM", adjMat=mat, edgemode="directed",
                          values="weight"))
 
-    g1 <- new("graphIM", inciMat=mat, edgemode="directed",
+    g1 <- new("graphAM", adjMat=mat, edgemode="directed",
               values=list(type=4))
     checkEquals(4, edgeData(g1, "d", "b", attr="type")[[1]])
     checkEquals(3, edgeData(g1, "b", "c", attr="type")[[1]])
@@ -96,7 +96,7 @@ testValuesToAttr <- function() {
 
 testEdges <- function() {
     mat <- simpleInciMat() 
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     got <- edges(g1)
     expect <- list(a=c("c", "d"), b=c("c", "d"), c=c("a", "b", "d"),
                    d=c("a", "b", "c"))
@@ -118,7 +118,7 @@ testEdgesDirected <- function() {
 
 testEdgesSubset <- function() {
     mat <- simpleInciMat() 
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     got <- edges(g1)
     expect <- list(a=c("c", "d"), d=c("a", "b", "c"))
     got <- edges(g1, c("a", "d"))
@@ -128,7 +128,7 @@ testEdgesSubset <- function() {
 
 testNodeNames <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     got <- nodes(g1)
     expect <- letters[1:4]
     checkEquals(expect, got)
@@ -137,7 +137,7 @@ testNodeNames <- function() {
 
 testNodeNamesReplace <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     nodes(g1) <- LETTERS[1:4]
     expect <- LETTERS[1:4]
     checkEquals(expect, nodes(g1))
@@ -146,14 +146,14 @@ testNodeNamesReplace <- function() {
 
 testNumNodes <- function() {
     mat <- simpleInciMat() 
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     checkEquals(nrow(mat), numNodes(g1))
 }
 
 
 testNumEdges <- function() {
     mat <- simpleInciMat() 
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     checkEquals(5, numEdges(g1))
 
     edgemode(g1) <- "directed"
@@ -163,7 +163,7 @@ testNumEdges <- function() {
 
 testIsAdjacent <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
 
     checkEquals(TRUE, isAdjacent(g1, "a", "c"))
     checkEquals(TRUE, isAdjacent(g1, "c", "a"))
@@ -176,7 +176,7 @@ testIsAdjacent <- function() {
 
 testIsAdjacentVectorized <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
 
     fr <- c("a", "c", "a", "b")
     to <- c("c", "a", "b", "a")
@@ -188,7 +188,7 @@ testIsAdjacentVectorized <- function() {
 
 ## testSubgraph <- function() {
 ##     mat <- simpleInciMat() 
-##     g1 <- new("graphIM", inciMat=mat)
+##     g1 <- new("graphAM", adjMat=mat)
 ##     g2 <- subgraph(c("a", "b", "c"), ffff)
 
 ##                }
@@ -196,7 +196,7 @@ testIsAdjacentVectorized <- function() {
 ## testEdgeWeights <- function() {
 ##     ## default weight is 1
 ##     mat <- simpleInciMat()
-##     g1 <- new("graphIM", inciMat=mat)
+##     g1 <- new("graphAM", adjMat=mat)
 ##     expect <- list(a=c(c=1, d=1), b=c(c=1, d=1), c=c(a=1, b=1, d=1),
 ##                    d=c(a=1, b=1, c=1))
 ##     checkEquals(expect, edgeWeights(g1))
@@ -205,7 +205,7 @@ testIsAdjacentVectorized <- function() {
     
 testAddNodes <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
 
     newNodes <- c("r", "s", "a", "b")
     checkException(addNodes(g1, newNodes))
@@ -221,7 +221,7 @@ testAddEdge <- function() {
     ## I would like different order of the args in the generic, but not sure it is
     ## worth it to change... but would seem more consistent.
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     g1 <- addNodes(g1, "e")
     checkEquals(FALSE, isAdjacent(g1, "b", "e"))
     g1 <- addEdge(graph=g1, from="b", to="e")
@@ -231,7 +231,7 @@ testAddEdge <- function() {
 
 testClearNode <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     edgeDataDefaults(g1, attr="weight") <- 1
     edgeData(g1, "a", "c", attr="weight") <- 400
     
@@ -247,7 +247,7 @@ testClearNode <- function() {
 
 testRemoveNode <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     origNodes <- nodes(g1)
 
     checkEquals(TRUE, "b" %in% origNodes)
@@ -258,7 +258,7 @@ testRemoveNode <- function() {
 
 testRemoveEdge <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
 
     checkEquals(TRUE, isAdjacent(g1, "a", "c"))
     g1 <- removeEdge("a", "c", g1)
@@ -268,7 +268,7 @@ testRemoveEdge <- function() {
 
 testGraphIMCloning <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     origNodes <- nodes(g1)
 
     g2 <- g1

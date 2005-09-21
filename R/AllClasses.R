@@ -16,8 +16,8 @@ setClass("graphNEL",
 
 ## Incidence Matrix representation
          
-setClass("graphIM", contains="graph",
-         representation(inciMat="matrix"),
+setClass("graphAM", contains="graph",
+         representation(adjMat="matrix"),
          validity=function(object) validGraphIM(object))
 
 

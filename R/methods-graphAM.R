@@ -1,11 +1,11 @@
 ## Incidence matrix representation of a graph
 
 validGraphIM <- function(object) {
-    inciMatDims <- dim(object@inciMat)
-    if (inciMatDims[1] != inciMatDims[2])
+    adjMatDims <- dim(object@adjMat)
+    if (adjMatDims[1] != adjMatDims[2])
       return("incidence matrix must be square")
-    cn <- colnames(object@inciMat)
-    rn <- rownames(object@inciMat)
+    cn <- colnames(object@adjMat)
+    rn <- rownames(object@adjMat)
     if (!is.null(cn) || !is.null(rn))
       if (!all(cn == rn))
         return("incidence matrix row and column names must match")
@@ -13,25 +13,25 @@ validGraphIM <- function(object) {
 }
 
 
-.isValidInciMat <- function(inciMat, mode="undirected") {
-    if (! nrow(inciMat) == ncol(inciMat))
+.isValidInciMat <- function(adjMat, mode="undirected") {
+    if (! nrow(adjMat) == ncol(adjMat))
       stop("incidence matrix must be square")
     if (mode == "undirected")
-      if (any(inciMat != t(inciMat))) ## XXX: this could be slow
+      if (any(adjMat != t(adjMat))) ## XXX: this could be slow
         stop("incidence matrix must be symmetric for undirected graphs")
-    if (any(inciMat < 0))
+    if (any(adjMat < 0))
       stop("negative values not allowed in incidence matrix")
-    if (is.null(dimnames(inciMat))) {
+    if (is.null(dimnames(adjMat))) {
         nNames <- NULL
     } else {
         ## take first non-null dimname
-        nonNullIndices <- which(!is.null(dimnames(inciMat)))
-        nNames <- dimnames(inciMat)[[nonNullIndices[1]]]
+        nonNullIndices <- which(!is.null(dimnames(adjMat)))
+        nNames <- dimnames(adjMat)[[nonNullIndices[1]]]
         if (any(duplicated(nNames)))
           stop("node names must be distinct")
         if (length(nonNullIndices) == 2) {
             ## verify rownames match colnames
-            if (any(rownames(inciMat) != colnames(inciMat)))
+            if (any(rownames(adjMat) != colnames(adjMat)))
               stop("row and column names must match")
         }
     }
@@ -55,15 +55,15 @@ validGraphIM <- function(object) {
     nodeNames <- nodes(self)
     defaultValue <- values[[1]]
     valName <- names(values)[1]
-    for (j in 1:ncol(self@inciMat)) {
+    for (j in 1:ncol(self@adjMat)) {
         ## work column-wise for efficiency
-        haveW <- which((self@inciMat[, j] != defaultValue)
-                       & (self@inciMat[, j] != 0))
+        haveW <- which((self@adjMat[, j] != defaultValue)
+                       & (self@adjMat[, j] != 0))
         if (length(haveW) > 0) {
             toNode <- nodeNames[j]
             for (fromIdx in haveW) {
                 fromNode <- nodeNames[fromIdx]
-                v <- self@inciMat[fromIdx, j]
+                v <- self@adjMat[fromIdx, j]
                 edgeData(self, fromNode, toNode, attr=valName) <- v
             }
         }
@@ -72,14 +72,14 @@ validGraphIM <- function(object) {
 }
 
 
-setMethod("initialize", signature("graphIM"),
-          function(.Object, inciMat, edgemode="undirected", values) {
-              nNames <- graph:::.isValidInciMat(inciMat, edgemode)
+setMethod("initialize", signature("graphAM"),
+          function(.Object, adjMat, edgemode="undirected", values) {
+              nNames <- graph:::.isValidInciMat(adjMat, edgemode)
               if (is.null(nNames))
-                nNames <- paste("n", 1:ncol(inciMat), sep="")
-              colnames(inciMat) <- nNames
-              rownames(inciMat) <- NULL
-              .Object@inciMat <- inciMat
+                nNames <- paste("n", 1:ncol(adjMat), sep="")
+              colnames(adjMat) <- nNames
+              rownames(adjMat) <- NULL
+              .Object@adjMat <- adjMat
               edgemode(.Object) <- edgemode
               if (!missing(values))
                 .Object <- graph:::.initEdgeSet(.Object, values)
@@ -90,8 +90,8 @@ setMethod("initialize", signature("graphIM"),
           })
 
 
-.getEdgeList <- function(inciMat, nodeNames) {
-    eList <- apply(inciMat, 1, function(aRow) {
+.getEdgeList <- function(adjMat, nodeNames) {
+    eList <- apply(adjMat, 1, function(aRow) {
         result <- names(base::which(aRow != 0))
         if (is.null(result))
           character(0)
@@ -103,44 +103,44 @@ setMethod("initialize", signature("graphIM"),
 }
 
 
-setMethod("edges", signature("graphIM", "missing"),
+setMethod("edges", signature("graphAM", "missing"),
           function(object) {
-              .getEdgeList(object@inciMat, nodes(object))
+              .getEdgeList(object@adjMat, nodes(object))
           })
 
 
-setMethod("edges", signature("graphIM", "character"),
+setMethod("edges", signature("graphAM", "character"),
           function(object, which) {
-              idx <- base::which(colnames(object@inciMat) %in% which)
-              .getEdgeList(object@inciMat[idx, ], nodes(object)[idx])
+              idx <- base::which(colnames(object@adjMat) %in% which)
+              .getEdgeList(object@adjMat[idx, ], nodes(object)[idx])
           })
 
 
-setMethod("nodes", signature("graphIM"),
+setMethod("nodes", signature("graphAM"),
           function(object) {
               ## initialize gaurantees colnames
-              colnames(object@inciMat)
+              colnames(object@adjMat)
           })
 
 
-setReplaceMethod("nodes", signature("graphIM", "character"),
+setReplaceMethod("nodes", signature("graphAM", "character"),
                  function(object, value) {
-                     if(length(value) != ncol(object@inciMat))
+                     if(length(value) != ncol(object@adjMat))
                        stop("need as many names as there are nodes")
                      if(any(duplicated(value)))
                        stop("node names must be unique")
-                     colnames(object@inciMat) <- value
+                     colnames(object@adjMat) <- value
                      object
                  })
 
 
-setMethod("numNodes", signature("graphIM"),
+setMethod("numNodes", signature("graphAM"),
           function(object) length(nodes(object)))
 
 
-setMethod("numEdges", signature("graphIM"),
+setMethod("numEdges", signature("graphAM"),
           function(graph) {
-              nE <- sum(graph@inciMat != 0)
+              nE <- sum(graph@adjMat != 0)
               if (!isDirected(graph))
                 nE <- nE / 2
               nE
@@ -148,7 +148,7 @@ setMethod("numEdges", signature("graphIM"),
 
 
 setMethod("isAdjacent",
-          signature(object="graphIM", from="character", to="character"),
+          signature(object="graphAM", from="character", to="character"),
           function(object, from, to) {
               eSpec <- graph:::.normalizeEdges(from, to)
               from <- eSpec$from
@@ -163,25 +163,25 @@ setMethod("isAdjacent",
                      paste(to[toIdx == 0], collapse=", "))
               result <- logical(length(fromIdx))
               for (i in 1:length(fromIdx))
-                  result[i] <- object@inciMat[fromIdx[i], toIdx[i]] != 0
+                  result[i] <- object@adjMat[fromIdx[i], toIdx[i]] != 0
               result
           })
 
 
-.extendInciMat <- function(inciMat, nodes) {
-    nms <- c(colnames(inciMat), nodes)
-    curCols <- ncol(inciMat)
+.extendInciMat <- function(adjMat, nodes) {
+    nms <- c(colnames(adjMat), nodes)
+    curCols <- ncol(adjMat)
     newCols <- matrix(0, nrow=curCols, ncol=length(nodes))
-    inciMat <- cbind(inciMat, newCols)
-    newRows <- matrix(0, nrow=length(nodes), ncol=ncol(inciMat))
-    inciMat <- rbind(inciMat, newRows)
-    colnames(inciMat) <- nms
-    inciMat
+    adjMat <- cbind(adjMat, newCols)
+    newRows <- matrix(0, nrow=length(nodes), ncol=ncol(adjMat))
+    adjMat <- rbind(adjMat, newRows)
+    colnames(adjMat) <- nms
+    adjMat
 }
 
 
 .getIndices <- function(nodes, from, to) {
-    ## Return indices into the inciMat for nodes from and to.
+    ## Return indices into the adjMat for nodes from and to.
     i <- match(from, nodes, nomatch=0)
     if (i == 0)
       stop("Unknown node", sQuote(from), "specified in from")
@@ -194,7 +194,7 @@ setMethod("isAdjacent",
 
 
 setMethod("addNodes",
-          signature(object="graphIM", nodes="character"),
+          signature(object="graphAM", nodes="character"),
           function(object, nodes) {
               ## TODO: allow adding node objects and possibly edges
               ## TODO: Can the verification code be shared?  Perhaps put it
@@ -203,36 +203,36 @@ setMethod("addNodes",
               if(any(already))
                 stop(paste(sQuote(nodes[already]), collapse=", "),
                            " are already nodes in the graph")
-              object@inciMat <- .extendInciMat(object@inciMat, nodes)
+              object@adjMat <- .extendInciMat(object@adjMat, nodes)
               ## need to clone edgeSet
               object
           })
 
 
 setMethod("addEdge",
-          signature(from="character", to="character", graph="graphIM",
+          signature(from="character", to="character", graph="graphAM",
                     weights="missing"),
           function(from, to, graph) {
               if (isAdjacent(graph, from, to))
                 stop("edge from ", sQuote(from), " to ", sQuote(to),
                      "already exists")
               idx <- .getIndices(nodes(graph), from, to)
-              graph@inciMat[idx$from, idx$to] <- 1
+              graph@adjMat[idx$from, idx$to] <- 1
               if (! isDirected(graph))
-                graph@inciMat[idx$to, idx$from] <- 1
+                graph@adjMat[idx$to, idx$from] <- 1
               graph
           })
               
               
 setMethod("clearNode",
-          signature(node="character", object="graphIM"),
+          signature(node="character", object="graphAM"),
           function(node, object) {
               idx <- .getNodeIndex(nodes(object), node)
-              zeroVect <- rep(0, ncol(object@inciMat))
+              zeroVect <- rep(0, ncol(object@adjMat))
               ## clear edges from node to other
-              object@inciMat[idx, ] <- zeroVect
+              object@adjMat[idx, ] <- zeroVect
               ## clear edges from other to node
-              object@inciMat[, idx] <- zeroVect
+              object@adjMat[, idx] <- zeroVect
 
               ## TODO: clear edge attributes
 
@@ -244,10 +244,10 @@ setMethod("clearNode",
 ## TODO: implement a clearEdgeAttributes method
 
 setMethod("removeNode",
-          signature(node="character", object="graphIM"),
+          signature(node="character", object="graphAM"),
           function(node, object) {
               idx <- .getNodeIndex(nodes(object), node)
-              object@inciMat <- object@inciMat[-idx, -idx]
+              object@adjMat <- object@adjMat[-idx, -idx]
 
               ## TODO: clear edge attributes
               
@@ -264,13 +264,13 @@ setMethod("removeNode",
 
 
 setMethod("removeEdge",
-          signature(from="character", to="character", graph="graphIM"),
+          signature(from="character", to="character", graph="graphAM"),
           function(from, to, graph) {
               fromIdx <- .getNodeIndex(nodes(graph), from)
               toIdx <- .getNodeIndex(nodes(graph), to)
-              graph@inciMat[fromIdx, toIdx] <- 0
+              graph@adjMat[fromIdx, toIdx] <- 0
               if (!isDirected(graph))
-                graph@inciMat[toIdx, fromIdx] <- 0
+                graph@adjMat[toIdx, fromIdx] <- 0
               graph
           })
 

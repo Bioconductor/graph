@@ -37,13 +37,13 @@ simpleDirectedGraph <- function() {
     rownames(mat) <- letters[1:4]
     colnames(mat) <- letters[1:4]
     mat
-    new("graphIM", inciMat=mat, edgemode="directed")
+    new("graphAM", adjMat=mat, edgemode="directed")
 }
 
 
 testNodeDataDefaults <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
 
     ## If no attributes have been defined, empty list.
     checkEquals(list(), nodeDataDefaults(g1))
@@ -65,7 +65,7 @@ testNodeDataDefaults <- function() {
 
 testEdgeDataDefaults <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
 
     ## If no attributes have been defined, empty list.
     checkEquals(list(), edgeDataDefaults(g1))
@@ -87,7 +87,7 @@ testEdgeDataDefaults <- function() {
 
 testNodeDataGetting <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     myAttributes <- list(size=1, dim=c(3, 3), name="fred")
     nodeDataDefaults(g1) <- myAttributes
 
@@ -112,7 +112,7 @@ testNodeDataGetting <- function() {
 
 testNodeDataSetting <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     myAttributes <- list(size=1, dim=c(3, 3), name="fred")
     nodeDataDefaults(g1) <- myAttributes
 
@@ -144,7 +144,7 @@ testNodeDataSetting <- function() {
 
 testEdgeDataGetting <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     myAttributes <- list(size=1, dim=c(3, 3), name="fred")
     edgeDataDefaults(g1) <- myAttributes
 
@@ -177,7 +177,7 @@ testEdgeDataGetting <- function() {
 
 testEdgeDataSetting <- function() {
     mat <- simpleInciMat()
-    g1 <- new("graphIM", inciMat=mat)
+    g1 <- new("graphAM", adjMat=mat)
     myAttributes <- list(size=1, dim=c(3, 3), name="fred")
     edgeDataDefaults(g1) <- myAttributes
 
