@@ -14,6 +14,20 @@
 
 \alias{dfs,graph-method}
 
+\alias{edgeDataDefaults<-,graph,missing,list-method}
+\alias{edgeDataDefaults<-,graph,character-method}
+\alias{edgeDataDefaults,graph,missing-method}
+\alias{edgeDataDefaults,graph,character-method}
+\alias{edgeData<-,graph,character,character,character-method}
+\alias{edgeData<-,graph,character,missing,character-method}
+\alias{edgeData<-,graph,missing,character,character-method}
+\alias{edgeData,graph,character,character,character-method}
+\alias{edgeData,graph,character,character,missing-method}
+\alias{edgeData,graph,character,missing,character-method}
+\alias{edgeData,graph,missing,character,character-method}
+\alias{edgeData,graph,missing,missing,character-method}
+\alias{edgeData,graph,missing,missing,missing-method}
+
 \alias{edgemode}
 \alias{edgemode<-}
 \alias{edgemode,graph-method}
@@ -31,11 +45,27 @@
 \alias{intersection3}
 \alias{intersection3,graph,graph-method}
 
+\alias{isAdjacent,graph,character,character-method}
+
 \alias{isConnected}
 \alias{isConnected,graph-method}
 
+\alias{isDirected}
+\alias{isDirected,graph-method}
+
 \alias{join}
 \alias{join,graph,graph-method}
+
+\alias{nodeDataDefaults<-,graph,missing,list-method}
+\alias{nodeDataDefaults<-,graph,character-method}
+\alias{nodeDataDefaults,graph,missing-method}
+\alias{nodeDataDefaults,graph,character-method}
+\alias{nodeData<-,graph,character,character-method}
+\alias{nodeData<-,graph,missing,character-method}
+\alias{nodeData,graph,character,character-method}
+\alias{nodeData,graph,character,missing-method}
+\alias{nodeData,graph,missing,character-method}
+\alias{nodeData,graph,missing,missing-method}
 
 \alias{numNodes}
 \alias{numNodes,graph-method}
@@ -89,6 +119,11 @@ A virtual Class: No objects may be created from it.
       character vector with the node labels indicating the nodes whose
       edge lists are wanted.}
 
+    \item{edgeDataDefaults}{Get and set default attributes for the edges
+      in the graph.}
+    
+    \item{edgeData}{Get and set attributes for edges in the graph}
+
     \item{edgemode}{\code{signature(object="graph")}: return the
       \code{edgemode} for the graph. Currently this can be either
       \code{directed} or \code{undirected}.}
@@ -97,20 +132,32 @@ A virtual Class: No objects may be created from it.
       for the graph. Currently this can be either
       \code{directed} or \code{undirected}.}
 
-  \item{intersection}{\code{signature(x = "graph", y = "graph")}: compute the
+    \item{intersection}{\code{signature(x = "graph", y = "graph")}: compute the
       intersection of the two supplied graphs. They must have identical
       nodes. Currently this returns an object of class
       \code{graphNEL}. With edge weights of 1 for any matching edge.}
 
+    \item{isAdjacent}{\code{signature(from="character",
+    to="character")}: Determine if edges exists between nodes.}
+    
     \item{isConnected}{\code{signature(object = "graph")}: A boolean
       that details if a graph is fully connected or not.}
+
+    \item{isDirected}{Return \code{TRUE} if the graph object has
+    directed edges and \code{FALSE} otherwise.}
 
     \item{join}{\code{signature(x = "graph", y = "graph")}: returns the
       joining of two graphs.  Nodes which are shared by both graphs will
       have their edges merged.}
 
     \item{nodes<-}{A generic function that allows different
-      implementations of the \code{graph} class to reset the node labels}
+      implementations of the \code{graph} class to reset the node
+      labels}
+
+    \item{nodeDataDefaults}{Get/set default attributes for nodes in the
+      graph.}
+
+    \item{nodeData}{Get/set attributes for nodes in the graph.}
 
     \item{numNodes}{\code{signature(object = "graph")}: compute the
       number of nodes in a graph. }

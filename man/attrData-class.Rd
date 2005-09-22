@@ -45,22 +45,22 @@ defaultProps <- list(weight=1, color="blue", friends=c("Bob", "Alice"))
 adat <- new("attrData", defaults=defaultProps)
 
 ## Get all defaults
-attrDefaults(aset)
+attrDefaults(adat)
 
 ## Or get only a specific attribute
-attrDefaults(aset, attr="color")
+attrDefaults(adat, attr="color")
 
 ## Update default weight
-attrDefaults(aset, attr="weight") <- 500
+attrDefaults(adat, attr="weight") <- 500
 
 ## Add new attribute
-attrDefaults(aset, attr="length") <- 0
+attrDefaults(adat, attr="length") <- 0
 
 ## Asking for the attributes of an element you haven't customized
 ## returns the defaults
-attrDataItem(aset, x=c("n1", "n2"), attr="length")
+attrDataItem(adat, x=c("n1", "n2"), attr="length")
 
 ## You can customize values
-attrDataItem(aset, x=c("n1", "n2"), attr="length") <- 5
+attrDataItem(adat, x=c("n1", "n2"), attr="length") <- 5
 }
 \keyword{classes}

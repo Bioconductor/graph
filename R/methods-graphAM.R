@@ -193,18 +193,14 @@ setMethod("isAdjacent",
     
 
 
-setMethod("addNodes",
-          signature(object="graphAM", nodes="character"),
-          function(object, nodes) {
-              ## TODO: allow adding node objects and possibly edges
-              ## TODO: Can the verification code be shared?  Perhaps put it
-              ##       in the generic?
-              already <- nodes %in% nodes(object)
+setMethod("addNode",
+          signature(node="character", object="graphAM", edges="missing"),
+          function(node, object) {
+              already <- node %in% nodes(object)
               if(any(already))
-                stop(paste(sQuote(nodes[already]), collapse=", "),
+                stop(paste(sQuote(node[already]), collapse=", "),
                            " are already nodes in the graph")
-              object@adjMat <- .extendInciMat(object@adjMat, nodes)
-              ## need to clone edgeSet
+              object@adjMat <- .extendInciMat(object@adjMat, node)
               object
           })
 

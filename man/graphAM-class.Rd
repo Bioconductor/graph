@@ -2,7 +2,7 @@
 \docType{class}
 \alias{graphAM-class}
 \alias{addEdge,character,character,graphAM,missing-method}
-\alias{addNodes,graphAM,character-method}
+\alias{addNode,character,graphAM,missing-method}
 \alias{clearNode,character,graphAM-method}
 \alias{edges,graphAM,missing-method}
 \alias{edges,graphAM,character-method}
@@ -44,7 +44,7 @@ Class \code{"graph"}, directly.
 \section{Methods}{
   \describe{
     \item{addEdge}{\code{signature(from = "character", to = "character", graph = "graphAM", weights = "missing")}: ... }
-    \item{addNodes}{\code{signature(object = "graphAM", nodes = "character")}: ... }
+    \item{addNode}{\code{signature(object = "graphAM", nodes = "character")}: ... }
     \item{clearNode}{\code{signature(node = "character", object = "graphAM")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "missing")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "character")}: ... }

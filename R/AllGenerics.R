@@ -23,16 +23,6 @@ setGeneric("nodes", function(object, ...) standardGeneric("nodes"))
 setGeneric("nodes<-", function(object, value) standardGeneric("nodes<-"))
 
 
-setGeneric("nodeNames", function(object) standardGeneric("nodeNames"))
-
-
-setGeneric("nodeNames<-", function(object, value)
-           standardGeneric("nodeNames<-"))
-
-
-setGeneric("nodeSet", function(object) standardGeneric("nodeSet"))
-
-
 setGeneric("edges", function(object, which) standardGeneric("edges"))
 
 
@@ -66,9 +56,6 @@ setGeneric("numNodes", function(object) standardGeneric("numNodes"))
 setGeneric("addNode", function(node, object, edges) standardGeneric("addNode"))
 
 
-setGeneric("addNodes", function(object, nodes, ...) standardGeneric("addNodes"))
-
-
 setGeneric("removeNode", function(node, object) standardGeneric("removeNode"))
 
 
@@ -93,7 +80,7 @@ setGeneric("removeEdges", function(container, from, to, ...)
 
 
 ## ---------------------------------------------------------------------
-## Generics for edgeSet and nodeSet classes
+## attrData generics
 ## ---------------------------------------------------------------------
 setGeneric("attrDefaults", function(self, attr) standardGeneric("attrDefaults"))
 
@@ -110,7 +97,9 @@ setGeneric("attrDataItem<-", function(self, x, attr, value)
            standardGeneric("attrDataItem<-"))
 
 
-
+## ---------------------------------------------------------------------
+## node and edge attribute generics
+## ---------------------------------------------------------------------
 setGeneric("edgeDataDefaults", function(self, attr)
            standardGeneric("edgeDataDefaults"))
 

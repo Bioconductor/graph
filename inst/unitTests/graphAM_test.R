@@ -203,16 +203,16 @@ testIsAdjacentVectorized <- function() {
 ## }
     
     
-testAddNodes <- function() {
+testAddNode <- function() {
     mat <- simpleInciMat()
     g1 <- new("graphAM", adjMat=mat)
 
     newNodes <- c("r", "s", "a", "b")
-    checkException(addNodes(g1, newNodes))
+    checkException(addNode(newNodes, g1))
 
     newNodes <- c("r", "s")
     expect <- c(nodes(g1), newNodes)
-    g1 <- addNodes(g1, newNodes)
+    g1 <- addNode(newNodes, g1)
     checkEquals(expect, nodes(g1))
 }
 
@@ -222,7 +222,7 @@ testAddEdge <- function() {
     ## worth it to change... but would seem more consistent.
     mat <- simpleInciMat()
     g1 <- new("graphAM", adjMat=mat)
-    g1 <- addNodes(g1, "e")
+    g1 <- addNode("e", g1)
     checkEquals(FALSE, isAdjacent(g1, "b", "e"))
     g1 <- addEdge(graph=g1, from="b", to="e")
     checkEquals(TRUE, isAdjacent(g1, "b", "e"))
@@ -274,7 +274,7 @@ testGraphIMCloning <- function() {
     g2 <- g1
 
     ## modify g1
-    g1 <- addNodes(g1, "z")
+    g1 <- addNode("NEW", g1)
     edgeDataDefaults(g1, "weight") <- 2
     edgeDataDefaults(g1, "color") <- "green"
     ## g2 should not have changed
