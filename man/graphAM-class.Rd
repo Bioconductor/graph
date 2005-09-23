@@ -4,6 +4,7 @@
 \alias{addEdge,character,character,graphAM,missing-method}
 \alias{addNode,character,graphAM,missing-method}
 \alias{clearNode,character,graphAM-method}
+\alias{coerce,graphAM,graphNEL-method}
 \alias{edges,graphAM,missing-method}
 \alias{edges,graphAM,character-method}
 \alias{initialize,graphAM-method}
@@ -46,6 +47,7 @@ Class \code{"graph"}, directly.
     \item{addEdge}{\code{signature(from = "character", to = "character", graph = "graphAM", weights = "missing")}: ... }
     \item{addNode}{\code{signature(object = "graphAM", nodes = "character")}: ... }
     \item{clearNode}{\code{signature(node = "character", object = "graphAM")}: ... }
+    \item{coerce}{\code{signature(from = "graphAM", to = "graphNEL")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "missing")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "character")}: ... }
     \item{initialize}{\code{signature(.Object = "graphAM")}: ... }

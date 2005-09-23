@@ -289,4 +289,19 @@ testUndirectedAsGraphNEL <- function() {
     gNel <- as(g1, "graphNEL")
     checkEquals(edges(g1), edges(gNel))
     checkEquals(nodes(g1), nodes(gNel))
+    checkEquals(edgemode(g1), edgemode(gNel))
+    checkEquals(edgeDataDefaults(g1), edgeDataDefaults(gNel))
+    checkEquals(nodeDataDefaults(g1), nodeDataDefaults(gNel))
 }
+
+
+testDirectedAsGraphNEL <- function() {
+    g1 <- simpleDirectedGraph()
+    gNel <- as(g1, "graphNEL")
+    checkEquals(edges(g1), edges(gNel))
+    checkEquals(nodes(g1), nodes(gNel))
+    checkEquals(edgemode(g1), edgemode(gNel))
+    checkEquals(edgeDataDefaults(g1), edgeDataDefaults(gNel))
+    checkEquals(nodeDataDefaults(g1), nodeDataDefaults(gNel))
+}
+

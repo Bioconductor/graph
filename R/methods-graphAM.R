@@ -271,7 +271,14 @@ setMethod("removeEdge",
           })
 
 
-
-              
-
-
+setAs(from="graphAM", to="graphNEL",
+      function(from, to) {
+          n <- nodes(from)
+          edgeList <- lapply(edges(from), function(e) list(edges=match(e, n)))
+          gnel <- new("graphNEL", nodes=n, edgeL=edgeList,
+                      edgemode=edgemode(from))
+          ## copy edge and node attributes
+          gnel@edgeData <- from@edgeData
+          gnel@nodeData <- from@nodeData
+          gnel
+      })
