@@ -1,4 +1,4 @@
-simpleInciMat <- function() {
+simpleAdjMat <- function() {
     ## Here's a simple graph for testing
     ##    a           b
     ##    |\         /|
@@ -95,7 +95,7 @@ testValuesToAttr <- function() {
 
 
 testEdges <- function() {
-    mat <- simpleInciMat() 
+    mat <- simpleAdjMat() 
     g1 <- new("graphAM", adjMat=mat)
     got <- edges(g1)
     expect <- list(a=c("c", "d"), b=c("c", "d"), c=c("a", "b", "d"),
@@ -117,7 +117,7 @@ testEdgesDirected <- function() {
 
 
 testEdgesSubset <- function() {
-    mat <- simpleInciMat() 
+    mat <- simpleAdjMat() 
     g1 <- new("graphAM", adjMat=mat)
     got <- edges(g1)
     expect <- list(a=c("c", "d"), d=c("a", "b", "c"))
@@ -127,7 +127,7 @@ testEdgesSubset <- function() {
     
 
 testNodeNames <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     got <- nodes(g1)
     expect <- letters[1:4]
@@ -136,7 +136,7 @@ testNodeNames <- function() {
 
 
 testNodeNamesReplace <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     nodes(g1) <- LETTERS[1:4]
     expect <- LETTERS[1:4]
@@ -145,14 +145,14 @@ testNodeNamesReplace <- function() {
 
 
 testNumNodes <- function() {
-    mat <- simpleInciMat() 
+    mat <- simpleAdjMat() 
     g1 <- new("graphAM", adjMat=mat)
     checkEquals(nrow(mat), numNodes(g1))
 }
 
 
 testNumEdges <- function() {
-    mat <- simpleInciMat() 
+    mat <- simpleAdjMat() 
     g1 <- new("graphAM", adjMat=mat)
     checkEquals(5, numEdges(g1))
 
@@ -162,7 +162,7 @@ testNumEdges <- function() {
 
 
 testIsAdjacent <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
 
     checkEquals(TRUE, isAdjacent(g1, "a", "c"))
@@ -175,7 +175,7 @@ testIsAdjacent <- function() {
 
 
 testIsAdjacentVectorized <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
 
     fr <- c("a", "c", "a", "b")
@@ -187,7 +187,7 @@ testIsAdjacentVectorized <- function() {
 
 
 ## testSubgraph <- function() {
-##     mat <- simpleInciMat() 
+##     mat <- simpleAdjMat() 
 ##     g1 <- new("graphAM", adjMat=mat)
 ##     g2 <- subgraph(c("a", "b", "c"), ffff)
 
@@ -195,7 +195,7 @@ testIsAdjacentVectorized <- function() {
     
 ## testEdgeWeights <- function() {
 ##     ## default weight is 1
-##     mat <- simpleInciMat()
+##     mat <- simpleAdjMat()
 ##     g1 <- new("graphAM", adjMat=mat)
 ##     expect <- list(a=c(c=1, d=1), b=c(c=1, d=1), c=c(a=1, b=1, d=1),
 ##                    d=c(a=1, b=1, c=1))
@@ -204,7 +204,7 @@ testIsAdjacentVectorized <- function() {
     
     
 testAddNode <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
 
     newNodes <- c("r", "s", "a", "b")
@@ -220,7 +220,7 @@ testAddNode <- function() {
 testAddEdge <- function() {
     ## I would like different order of the args in the generic, but not sure it is
     ## worth it to change... but would seem more consistent.
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     g1 <- addNode("e", g1)
     checkEquals(FALSE, isAdjacent(g1, "b", "e"))
@@ -230,7 +230,7 @@ testAddEdge <- function() {
 
 
 testClearNode <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     edgeDataDefaults(g1, attr="weight") <- 1
     edgeData(g1, "a", "c", attr="weight") <- 400
@@ -246,7 +246,7 @@ testClearNode <- function() {
 
 
 testRemoveNode <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     origNodes <- nodes(g1)
 
@@ -257,7 +257,7 @@ testRemoveNode <- function() {
 
 
 testRemoveEdge <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
 
     checkEquals(TRUE, isAdjacent(g1, "a", "c"))
@@ -267,7 +267,7 @@ testRemoveEdge <- function() {
 
 
 testGraphIMCloning <- function() {
-    mat <- simpleInciMat()
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     origNodes <- nodes(g1)
 
@@ -282,3 +282,11 @@ testGraphIMCloning <- function() {
     checkEquals(origNodes, nodes(g2))
 }
 
+
+testUndirectedAsGraphNEL <- function() {
+    mat <- simpleAdjMat()
+    g1 <- new("graphAM", adjMat=mat)
+    gNel <- as(g1, "graphNEL")
+    checkEquals(edges(g1), edges(gNel))
+    checkEquals(nodes(g1), nodes(gNel))
+}

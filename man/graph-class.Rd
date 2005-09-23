@@ -50,7 +50,6 @@
 \alias{isConnected}
 \alias{isConnected,graph-method}
 
-\alias{isDirected}
 \alias{isDirected,graph-method}
 
 \alias{join}
