@@ -15,7 +15,9 @@ edgeDataDefaults(self, attr) <- value
   \item{self}{A \code{\link{graph-class}} instance}
   \item{attr}{A \code{character} vector of length one giving the name of
     the attribute}
-  \item{value}{An R class to use as the default value for the specified attribute}
+  \item{value}{An R class to use as the default value for the specified
+    attribute}
+}
 \description{
   Set default values for attributes associated with the edges of a graph.
 }
