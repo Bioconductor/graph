@@ -10,6 +10,19 @@ setMethod("isDirected", signature("graph"),
 setMethod("edgemode", "graph", function(object) object@edgemode)
 
 
+setMethod("numEdges", signature(object="graph"),
+          function(object) {
+              gEdges <- edges(object)
+              numEdges <- length(unlist(gEdges, use.names=FALSE))
+              if (!isDirected(object)) {
+                  numSelfLoops <- sum(mapply(function(e, n) sum(n == e),
+                                             gEdges, names(gEdges)))
+                  numEdges <- numSelfLoops + (numEdges - numSelfLoops) / 2
+              }
+              numEdges
+          })
+
+
 setReplaceMethod("edgemode", c("graph", "character"),
                  function(object, value) {
                      if(length(value) != 1)

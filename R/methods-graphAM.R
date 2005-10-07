@@ -138,11 +138,13 @@ setMethod("numNodes", signature("graphAM"),
           function(object) length(nodes(object)))
 
 
-setMethod("numEdges", signature("graphAM"),
-          function(graph) {
-              nE <- sum(graph@adjMat != 0)
-              if (!isDirected(graph))
-                nE <- nE / 2
+setMethod("numEdges", signature(object="graphAM"),
+          function(object) {
+              nE <- sum(object@adjMat != 0)
+              if (!isDirected(object)) {
+                  selfLoops <- sum(diag(object@adjMat) != 0)
+                  nE <- selfLoops + (nE - selfLoops)/2
+              }
               nE
           })
 

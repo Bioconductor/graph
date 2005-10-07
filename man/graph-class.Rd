@@ -66,6 +66,9 @@
 \alias{nodeData,graph,missing,character-method}
 \alias{nodeData,graph,missing,missing-method}
 
+\alias{numEdges}
+\alias{numEdges,graph-method}
+
 \alias{numNodes}
 \alias{numNodes,graph-method}
 
@@ -158,6 +161,9 @@ A virtual Class: No objects may be created from it.
 
     \item{nodeData}{Get/set attributes for nodes in the graph.}
 
+    \item{numEdges}{\code{signature(object = "graph")}: compute the
+      number of edges in a graph.}
+    
     \item{numNodes}{\code{signature(object = "graph")}: compute the
       number of nodes in a graph. }
 

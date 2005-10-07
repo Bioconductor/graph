@@ -22,3 +22,12 @@ testIsAdjacent <- function() {
     got <- isAdjacent(g1, c("a", "a", "a"), c("b", "c", "d"))
     checkEquals(expect, got)
 }
+
+
+testNumEdges <- function() {
+    mat <- matrix(c(1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0), ncol=4)
+    rownames(mat) <- letters[1:4]
+    colnames(mat) <- letters[1:4]
+    g <- as(mat, "graphNEL")
+    checkEquals(4, numEdges(g))
+}

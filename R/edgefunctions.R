@@ -14,31 +14,6 @@
 aveNumEdges<-function(objgraph)
   numEdges(objgraph)/length(nodes(objgraph))
 
-################################################################
-# function:
-# numEdges takes one parameter:
-#   objgraph is the graph object
-# numEdges counts the number of edges in the graph.  First, it
-# sums up all the length of the edge list and this sum must be
-# an even number because each edge is repeated twice.  To calculate
-# the number of edges, the sum is divided by two.  An integer
-# representing the number of edges will be returned.
-#
-# notes: The number of edges is divided by two because each edge
-# is repeated twice, for most of our ways of representing undirected
-# graphs
-#
-# created by: Elizabeth Whalen
-# last updated: July 22, 2002
-################################################################
-
-numEdges <- function(graph)
-{
-  numbEdges <- length(unlist(edges(graph),use.names=FALSE))
-  if( graph@edgemode == "undirected" )
-      numbEdges<-numbEdges/2
-  numbEdges
-}
 
 ################################################################
 # function:

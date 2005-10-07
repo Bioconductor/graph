@@ -161,6 +161,12 @@ testNumEdges <- function() {
 }
 
 
+testNumEdgesWithSelfLoop <- function() {
+    mat <- matrix(c(1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0), ncol=4)
+    g1 <- new("graphAM", adjMat=mat)
+    checkEquals(4, numEdges(g1))
+}
+
 testIsAdjacent <- function() {
     mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)

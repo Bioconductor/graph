@@ -46,8 +46,8 @@ setGeneric("acc", function(object, index) standardGeneric("acc"))
 setGeneric("numNodes", function(object) standardGeneric("numNodes"))
 
 
-## default function numEdges(graph) already exists
-##setGeneric("numEdges", function(object) standardGeneric("numEdges"))
+setGeneric("numEdges", function(object) standardGeneric("numEdges"))
+
 
 ## default function numNoEdges(objGraph) already exists
 ##setGeneric("numNoEdges", function(object) standardGeneric("numNoEdges"))
