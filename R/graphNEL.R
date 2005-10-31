@@ -208,7 +208,7 @@ setMethod("subGraph", c("character", "graphNEL"), function(snodes, graph) {
                                  if( length(ed) > 0 )
                                    lapply(x, function(y) {names(y) <- ed; y})})
     ##finally return
-    new("graphNEL", nodes=nn[ma], edgeL=newed) })
+    new("graphNEL", nodes=nn[ma], edgeL=newed, edgemode=edgemode(graph)) })
 
 
 setMethod("numNodes", "graphNEL", function(object) length(object@nodes))

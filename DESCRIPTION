@@ -1,8 +1,8 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.9.0
+Version: 1.9.1
 Date: 17 Aug 2005
-Author: R. Gentleman, Elizabeth Whalen
+Author: R. Gentleman, Elizabeth Whalen, W. Huber
 Description: A package that implements some simple graph handling
         capabilities.
 Maintainer: R. Gentleman <rgentlem@fhcrc.org>
