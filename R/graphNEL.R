@@ -65,6 +65,12 @@ validGraph<-function(object, quietly=FALSE) {
     return(!bad)
 }
 
+setMethod("initialize", "graphNEL",
+     function(.Object, ...) {
+        .Object <- callNextMethod()
+        validObject(.Object)
+        return(.Object)
+     })
 
 setMethod("initialize", "graphNEL",
           ## FIXME: what about edge weights?
