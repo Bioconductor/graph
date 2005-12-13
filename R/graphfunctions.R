@@ -23,9 +23,9 @@ boundary<-function(subgraph, graph)
       stop("wrong type of first argument")
 
   if( any( !(snodes %in% nodes(graph)) ) )
-      stop("the supplied subgraph is not a subgraph of the supplied graph")
+      stop("some nodes are not in the graph")
 
-  subE <- edges(graph)[snodes]
+  subE <- inEdges(graph)[snodes]
 
   lapply(subE, function(x) x[!(x %in% snodes)] )
 }
