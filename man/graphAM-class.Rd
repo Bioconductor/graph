@@ -8,6 +8,9 @@
 \alias{edges,graphAM,missing-method}
 \alias{edges,graphAM,character-method}
 \alias{initialize,graphAM-method}
+\alias{inEdges,missing,graphAM-method}
+\alias{inEdges,character,graphAM-method}
+\alias{inEdges,graphAM,missing-method}
 \alias{isAdjacent,graphAM,character,character-method}
 \alias{nodes<-,graphAM,character-method}
 \alias{nodes,graphAM-method}
@@ -23,7 +26,7 @@
   adjacency matrix.  The adjacency matrix is square and element
   \code{adjMat[i, j]} is non-zero if there is an edge from node i to
   node j.  
-  }
+}
 
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("graphAM", adjMat, edgemode, values)}.
@@ -51,6 +54,9 @@ Class \code{"graph"}, directly.
     \item{edges}{\code{signature(object = "graphAM", which = "missing")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "character")}: ... }
     \item{initialize}{\code{signature(.Object = "graphAM")}: ... }
+    \item{inEdges}{\code{signature(node = "character", object =
+        "graphNEL")}: Return the incoming edges for the specified
+      nodes.  See \code{\link{inEdges}}.}
     \item{isAdjacent}{\code{signature(object = "graphAM", from = "character", to = "character")}: ... }
     \item{nodes<-}{\code{signature(object = "graphAM", value = "character")}: ... }
     \item{nodes}{\code{signature(object = "graphAM")}: ... }

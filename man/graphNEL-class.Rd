@@ -18,6 +18,7 @@
 \alias{edges,graphNEL,missing-method}
 \alias{edges,graphNEL,character-method}
 \alias{edgeWeights,graphNEL-method}
+\alias{inEdges,graphNEL,missing-method}
 \alias{inEdges,missing,graphNEL-method}
 \alias{inEdges,character,graphNEL-method}
 \alias{initialize,graphNEL-method}
@@ -62,6 +63,9 @@ Class \code{"graph"}, directly.
       for obtaining the edge weights. }
     \item{edges}{\code{signature(object = "graphNEL")}: A method for
       obtaining the edges.}
+    \item{inEdges}{\code{signature(node = "character", object =
+        "graphNEL")}: Return the incoming edges for the specified
+        nodes.  See \code{\link{inEdges}}.}
     \item{nodes}{\code{signature(object = "graphNEL")}: A method for
       obtaining the nodes. }
     \item{numNodes}{\code{signature(object = "graphNEL")}:A method for

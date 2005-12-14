@@ -12,6 +12,20 @@ simpleGraphNEL <- function() {
  }
 
 
+simpleDirectedGraphNEL <- function() {
+    set.seed(123)
+     V <- letters[1:4]
+     edL <- vector("list", length=4)
+     names(edL) <- V
+     edL[["a"]] <- list(edges=c(3, 4), weights=runif(2))
+     edL[["b"]] <- list(edges=c(3), weights=runif(2))
+     edL[["c"]] <- list(edges=numeric(0), weights=numeric(0))
+     edL[["d"]] <- list(edges=c(2, 3), weights=runif(3))
+     gR <- new("graphNEL", nodes=V, edgeL=edL, edgemode="directed")
+     gR
+ }
+
+
 testIsAdjacent <- function() {
     g1 <- simpleGraphNEL()
 
@@ -30,4 +44,14 @@ testNumEdges <- function() {
     colnames(mat) <- letters[1:4]
     g <- as(mat, "graphNEL")
     checkEquals(4, numEdges(g))
+}
+
+
+testInEdges <- function() {
+    g <- simpleDirectedGraphNEL()
+    expectedInEdges <- list(a=character(0), b="d", c=c("a", "b", "d"),
+                            d="a")
+    checkEquals(expectedInEdges, inEdges(g))
+    n <- c("a", "d")
+    checkEquals(expectedInEdges[n], inEdges(n, g))
 }

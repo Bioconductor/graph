@@ -1,19 +1,9 @@
 ## Incidence matrix representation of a graph
 
-validGraphIM <- function(object) {
-    adjMatDims <- dim(object@adjMat)
-    if (adjMatDims[1] != adjMatDims[2])
-      return("incidence matrix must be square")
-    cn <- colnames(object@adjMat)
-    rn <- rownames(object@adjMat)
-    if (!is.null(cn) || !is.null(rn))
-      if (!all(cn == rn))
-        return("incidence matrix row and column names must match")
-    return(TRUE)
-}
-
-
 .isValidInciMat <- function(adjMat, mode="undirected") {
+    ## Determine if adjacency matrix adjMat is valid Element adjMat[i, j] == 1
+    ## if the graph contains an edge FROM node i TO node j.  If mode is
+    ## "undirected", then adjMat should be symmetrix.    
     if (! nrow(adjMat) == ncol(adjMat))
       stop("incidence matrix must be square")
     if (mode == "undirected")
@@ -270,6 +260,36 @@ setMethod("removeEdge",
               if (!isDirected(graph))
                 graph@adjMat[toIdx, fromIdx] <- 0
               graph
+          })
+
+
+## This signature looks strange, but to get in edges for all nodes
+## it makes sense to be able to write inEdges(g)
+setMethod("inEdges", signature(node="graphAM", object="missing"),
+          function(object, node) {
+              allNodes <- nodes(node)
+              return(inEdges(allNodes, node))
+          })
+
+## But we still want inEdges(object=g) to work
+setMethod("inEdges", signature(node="missing", object="graphAM"),
+          function(object, node) {
+              allNodes <- nodes(object)
+              return(inEdges(allNodes, object))
+          })
+
+
+setMethod("inEdges", signature(node="character", object="graphAM"),
+          function(node, object) {
+              allNodes <- nodes(object)
+              unknownNodes <- !(node %in% allNodes)
+              if (any(unknownNodes))
+                stop("Unknown nodes:\n", paste(unknownNodes, collapse=", "))
+              ## cols of adjMat tells us in edges
+              ans <- apply(object@adjMat[, node], 2, function(col) {
+                  allNodes[as.logical(col)]
+                  })
+              return(ans)
           })
 
 

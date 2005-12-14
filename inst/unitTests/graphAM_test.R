@@ -311,3 +311,9 @@ testDirectedAsGraphNEL <- function() {
     checkEquals(nodeDataDefaults(g1), nodeDataDefaults(gNel))
 }
 
+
+testInEdges <- function() {
+    g1 <- simpleDirectedGraph()
+    expected <- list(a=character(0), b="d", c=c("a", "b", "d"), d="a")
+    checkEquals(expected, inEdges(g1))
+}

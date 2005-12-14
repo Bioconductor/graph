@@ -1,28 +1,33 @@
 \name{inEdges}
 \alias{inEdges}
-\alias{inEdges,graphNEL,missing-method}
-\title{ inEdges }
+\title{Generic Method inEdges}
 \description{
-  Computes and returns a list of all the edges in to the specified set
-  of nodes.
+  Returns a list of all incoming edges for the specified nodes.
 }
 \usage{
 inEdges(node, object)
 }
 \arguments{
-  \item{node}{a set of nodes }
-  \item{object}{a \code{graph} object }
+  \item{node}{character vector of node names}
+  \item{object}{a \code{graph} object}
 }
 \details{
-  All in edges for the set of nodes are computed. For an undirected graph
-  this is also all the out edges.
+  If no \code{node} argument is specified, \code{inEdges} returns the
+  incoming edges for all nodes in the graph.
+
+  For an undirected graph, \code{inEdges} returns all edges for the
+  specified nodes.
 }
 \value{
-  A list with one element for each node, the values are the vector of
-  node labels for those nodes with edges to the specified node.
-}
-\author{R. Gentleman}
+  A list with length matching the length of \code{node}.  If \code{node}
+  was missing, a list containing an element for each node in the graph.
 
+  Each list element contains a character vector of node names giving the
+  nodes that have outgoing edges to the node given by the name of the
+  list element.
+}
+
+\author{R. Gentleman}
 \seealso{\code{\link{removeNode}}, \code{\link{clearNode}}}
 
 \examples{
