@@ -595,7 +595,7 @@ setMethod("edgeNames",
 ##--------------------------
 
 setMethod("clusteringCoefficient",
-  signature=c("graph", "ANY"),
+  signature=signature(object="graph"),
   definition=function(object, selfLoops=FALSE) {
   if(edgemode(object)!="undirected")
     return(NULL)

@@ -2,7 +2,7 @@
 \docType{methods}
 \alias{clusteringCoefficient}
 \alias{clusteringCoefficient,graph-method}
-\alias{clusteringCoefficient,graph,ANY-method}
+\alias{clusteringCoefficient,graph}
 
 \title{Clustering coefficient of a graph}
 
@@ -12,7 +12,7 @@ class. The graph needs to have \code{edgemode=="undirected"}. If it has
 \code{edgemode=="directed"}, the function will return NULL.
 }
 \usage{
-\S4method{clusteringCoefficient}{graph,ANY}(object, selfLoops=FALSE)
+\S4method{clusteringCoefficient}{graph}(object, selfLoops=FALSE)
 }
 \details{For a node with n adjacent nodes, if \code{selfLoops} is
   \code{FALSE}, the clustering coefficent is
