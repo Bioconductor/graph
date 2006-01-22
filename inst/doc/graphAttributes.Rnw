@@ -2,7 +2,7 @@
 % NOTE -- ONLY EDIT howtogenefilter.Rnw!!!
 % Biobase.tex file will get overwritten.
 %
-%\VignetteIndexEntry{Graph}
+%\VignetteIndexEntry{Attributes for Graph Objects}
 %\VignetteDepends{graph, cluster}
 %\VignetteKeywords{Graph}
 %\VignettePackage{graph}
@@ -28,7 +28,7 @@
 
 
 \begin{document}
-\title{Attributes for graph objects}
+\title{Attributes for Graph Objects}
 \author{Seth Falcon}
 \maketitle
 
