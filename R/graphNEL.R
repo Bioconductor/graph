@@ -155,12 +155,12 @@ setMethod("edgeWeights", "graphNEL", function(object, index) {
         wts <- x$weights
         if(is.null(wts)) {
             wts <- rep(1, length(x$edges))
-            names(wts) <- x$edges
+            names(wts) <- gN[x$edges]
         }
         ## Always make sure that the weight vector
         ## has names attached
         if (is.null(names(wts)))
-          names(wts) <- x$edges
+          names(wts) <- gN[x$edges]
 
         wts})
     wts})
