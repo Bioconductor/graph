@@ -100,6 +100,10 @@ NELhandler <- function ()
             edl[[ns[i]]] <- list(edges = edl[[ns[i]]])
         }
         edl <- edl[ns]
+        if (edgemode %in% c("undirected", "defaultundirected"))
+          edgemode <- "undirected"
+        else
+          edgemode <- "directed"
         g <- new("graphNEL", nodes = ns, edgeL = edl, edgemode = edgemode)
         if (edgemode(g) == "undirected") 
             {
