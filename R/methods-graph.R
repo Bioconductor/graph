@@ -13,6 +13,8 @@ setMethod("edgemode", "graph", function(object) object@edgemode)
 setMethod("numEdges", signature(object="graph"),
           function(object) {
               gEdges <- edges(object)
+              if (length(gEdges) == 0)
+                return(length(gEdges))
               numEdges <- length(unlist(gEdges, use.names=FALSE))
               if (!isDirected(object)) {
                   numSelfLoops <- sum(mapply(function(e, n) sum(n == e),
