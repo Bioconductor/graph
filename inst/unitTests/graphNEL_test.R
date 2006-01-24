@@ -55,3 +55,10 @@ testInEdges <- function() {
     n <- c("a", "d")
     checkEquals(expectedInEdges[n], inEdges(n, g))
 }
+
+
+testEmptyGraph <- function() {
+    g <- new("graphNEL")
+    checkEquals(0, numEdges(g))
+    checkEquals(0, numNodes(g))
+}

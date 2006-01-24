@@ -9,6 +9,7 @@
 \alias{nodes<-}
 \alias{nodes}
 \alias{addEdge,character,character,graphNEL,numeric-method}
+\alias{addEdge,character,character,graphNEL,missing-method}
 \alias{addNode,character,graphNEL-method}
 \alias{adj,graphNEL-method}
 \alias{clearNode,character,graphNEL-method}

@@ -36,6 +36,10 @@
 \alias{edgeNames}
 \alias{edgeNames,graph-method}
 
+\alias{edgeWeights,graph,character-method}
+\alias{edgeWeights,graph,numeric-method}
+\alias{edgeWeights,graph,missing-method}
+
 %% wh 16.1.05: I think intersection2 and intersection3 can go once we have an
 %% implementation that everybody is happy with
 \alias{intersection}
@@ -133,6 +137,9 @@ A virtual Class: No objects may be created from it.
 	value="character")}: set the \code{edgemode}
       for the graph. Currently this can be either
       \code{directed} or \code{undirected}.}
+
+    \item{edgeWeights}{Return a list of edge weights in a list format
+      similar to the \code{edges} method.}
 
     \item{intersection}{\code{signature(x = "graph", y = "graph")}: compute the
       intersection of the two supplied graphs. They must have identical

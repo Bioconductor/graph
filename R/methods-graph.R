@@ -154,6 +154,49 @@ setMethod("isAdjacent",signature(object="graph", from="character",
     })
 
 
+setMethod("edgeWeights", signature(object="graph", index="character"),
+          function(object, index) {
+              ew <- tryCatch(edgeData(object, from=index, attr="weight"),
+                             error=function(e) {
+                                 edgeDataDefaults(object, "weight") <- 1
+                                 edgeData(object, from=index, attr="weight")
+                             })
+              gEdges <- edges(object)[index]
+              edgeCounts <- sapply(gEdges, length)
+              nn <- rep(index, edgeCounts)
+              names(ew) <- unlist(gEdges)
+              ans = split(unlist(ew), nn)
+              ans <- c(ans, lapply(gEdges[edgeCounts == 0], as.numeric))
+              ans
+          })
+
+
+setMethod("edgeWeights", signature(object="graph", index="numeric"),
+          function(object, index) {
+              index <- nodes(object)[index]
+              edgeWeights(object, index)
+          })
+
+
+setMethod("edgeWeights", signature(object="graph", index="missing"),
+          function(object, index) {
+              index <- nodes(object)
+              edgeWeights(object, index)
+          })
+##               ew <- tryCatch(edgeData(object, attr="weight"),
+##                              error=function(e) {
+##                                  edgeDataDefaults(object, "weight") <- 1
+##                                  edgeData(object, attr="weight")
+##                              })
+##               edgeCounts <- sapply(edges(object), length)
+##               nn <- rep(nodes(object), edgeCounts)
+##               names(ew) <- unlist(edges(object))
+##               ans = split(unlist(ew), nn)
+##               ans <- c(ans, lapply(edges(g)[edgeCounts == 0], as.numeric))
+##               ans
+##           })
+
+
 setMethod("DFS", c("graph", "character", "ANY"), function(object, node,
     checkConn=FALSE) {
     nNames <- nodes(object)
@@ -776,8 +819,8 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
     if (any(!adjList)) {
         badFr <- from[!adjList]
         badTo <- to[!adjList]
-        res <- cbind(badFr, badTo)
-        stop("Edges not found", res)
+        res <- paste(badFr, badTo, sep="|", collapse=", ")
+        stop("Edges not found: ", res)
     }
     TRUE
 }
@@ -811,8 +854,15 @@ setMethod("edgeData", signature(self="graph", from="character", to="character",
 setMethod("edgeData", signature(self="graph", from="character", to="missing",
                                 attr="character"),
           function(self, from, to, attr) {
-              to <- unlist(edges(self)[from])
-              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              graph:::.verifyNodes(from, nodes(self))
+              gEdges <- edges(self)[from]
+              lens <- sapply(gEdges, length)
+              if (any(lens == 0))
+                warning("No edges from nodes: ",
+                        paste(from[lens == 0], collapse=", "))
+              fEdges <- rep(from, lens)
+              tEdges <- unlist(edges(self)[from])
+              edgeKeys <- graph:::.getEdgeKeys(self, fEdges, tEdges)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
 
@@ -840,8 +890,15 @@ setReplaceMethod("edgeData",
                  signature(self="graph", from="character", to="missing",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
-                     to <- unlist(edges(self)[from])
-                     edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+                     graph:::.verifyNodes(from, nodes(self))
+                     gEdges <- edges(self)[from]
+                     lens <- sapply(gEdges, length)
+                     if (any(lens == 0))
+                       warning("No edges from nodes: ",
+                               paste(from[lens == 0], collapse=", "))
+                     fEdges <- rep(from, lens)
+                     tEdges <- unlist(edges(self)[from])
+                     edgeKeys <- graph:::.getEdgeKeys(self, fEdges, tEdges)
                      attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
                      self
                  })

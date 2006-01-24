@@ -132,38 +132,38 @@ setMethod("edges", c("graphNEL", "character"),
               lapply(object@edgeL[which], function(x) gNodes[x$edges])})
 
 
-setMethod("edgeWeights", "graphNEL", function(object, index) {
-    gN = nodes(object)
-    if( !missing(index) ) {
-        if(is.numeric(index) ) {
-            if( any(index <= 0) )
-              stop("only positive indices allowed")
-            if( any(index > length(gN)) )
-              stop("index too large")
-        }
-        if(is.character(index) ) {
-            wh = match(index, gN)
-            if( any(is.na(wh)) )
-              stop("node name is incorrect")
-        }
-    }
-    if( missing(index) )
-      tlist <- object@edgeL
-    else
-      tlist <- object@edgeL[index]
-    wts <- lapply(tlist, function(x) {
-        wts <- x$weights
-        if(is.null(wts)) {
-            wts <- rep(1, length(x$edges))
-            names(wts) <- gN[x$edges]
-        }
-        ## Always make sure that the weight vector
-        ## has names attached
-        if (is.null(names(wts)))
-          names(wts) <- gN[x$edges]
-
-        wts})
-    wts})
+## setMethod("edgeWeights", "graphNEL", function(object, index) {
+##     gN = nodes(object)
+##     browser()
+##     if( !missing(index) ) {
+##         if(is.numeric(index) ) {
+##             if( any(index <= 0) )
+##               stop("only positive indices allowed")
+##             if( any(index > length(gN)) )
+##               stop("index too large")
+##         }
+##         if(is.character(index) ) {
+##             wh = match(index, gN)
+##             if( any(is.na(wh)) )
+##               stop("node name is incorrect")
+##         }
+##     }
+##     if( missing(index) )
+##       tlist <- object@edgeL
+##     else
+##       tlist <- object@edgeL[index]
+##     wts <- lapply(tlist, function(x) {
+##         wts <- x$weights
+##         if(is.null(wts)) {
+##             wts <- rep(1, length(x$edges))
+##             names(wts) <- gN[x$edges]
+##         }
+##         ## Always make sure that the weight vector
+##         ## has names attached
+##         if (is.null(names(wts)))
+##           names(wts) <- gN[x$edges]
+##         wts})
+##     wts})
 
 
 setMethod("adj", "graphNEL", function(object, index) {
@@ -214,7 +214,11 @@ setMethod("subGraph", c("character", "graphNEL"), function(snodes, graph) {
                                  if( length(ed) > 0 )
                                    lapply(x, function(y) {names(y) <- ed; y})})
     ##finally return
-    new("graphNEL", nodes=nn[ma], edgeL=newed, edgemode=edgemode(graph)) })
+    ans <- new("graphNEL", nodes=nn[ma], edgeL=newed, edgemode=edgemode(graph))
+    ans@edgeData <- graph@edgeData
+    ans@nodeData <- graph@nodeData
+    ans
+})
 
 
 setMethod("numNodes", "graphNEL", function(object) length(object@nodes))
@@ -235,7 +239,10 @@ setMethod("addNode", c("character", "graphNEL", "missing"),
               for(i in seq(along=nEd))
                 nEd[[i]] <- list(edges=numeric(0), weights=numeric(0))
               edgeL <- c(edgeL, nEd)
-              new("graphNEL", gN, edgeL, edgemode(object))
+              ans <- new("graphNEL", gN, edgeL, edgemode(object))
+              ans@edgeData <- object@edgeData
+              ans@nodeData <- object@nodeData
+              ans
           })
 
 
@@ -296,7 +303,11 @@ setMethod("addNode", c("character", "graphNEL", "list"),
                         edgeL[[idx]] <- nL
                     }
                 }
-              new("graphNEL", gN, edgeL, edgemode(object))
+              ans <- new("graphNEL", gN, edgeL, edgemode(object))
+              ans@edgeData <- object@edgeData
+              ans@nodeData <- object@nodeData
+              ans
+
           })
 
 
@@ -314,7 +325,10 @@ setMethod("removeNode", c("character", "graphNEL"),
                   el$edges <- match(oldN, gN)
                   el
               })
-              new("graphNEL", gN, nE2, edgemode(object))
+              ans <- new("graphNEL", gN, nE2, edgemode(object))
+              ans@edgeData <- object@edgeData
+              ans@nodeData <- object@nodeData
+              ans
           })
 
 
@@ -325,7 +339,10 @@ setMethod("clearNode", c("character", "graphNEL"), function(node, object) {
       stop(paste(whN[is.na(whN)], "is not a node in the graph"))
     gE <- .dropEdges(whN, object@edgeL)
     gE[[whN]] = list(edges=numeric(0), weights=numeric(0))
-    new("graphNEL", gN, gE, edgemode(object))
+    ans <- new("graphNEL", gN, gE, edgemode(object))
+    ans@edgeData <- object@edgeData
+    ans@nodeData <- object@nodeData
+    ans
 })
 
 
@@ -352,12 +369,16 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
                   nEd[[to]]$edges <- nEd[[to]]$edges[-whD]
                   nEd[[to]]$weights <- nEd[[to]]$weights[-whD]
               }
-              new("graphNEL", gN, nEd, edgemode(graph))
+              ans <- new("graphNEL", gN, nEd, edgemode(graph))
+              ans@edgeData <- graph@edgeData
+              ans@nodeData <- graph@nodeData
+              ans
           })
 
 
 ##FIXME: do  we care if the edge already exists?
-setMethod("addEdge", c("character", "character", "graphNEL", "numeric"),
+setMethod("addEdge", signature=signature(from="character", to="character",
+                       graph="graphNEL", weights="numeric"),
           function(from, to, graph, weights) {
               gN <- nodes(graph)
               whF <- match(from, gN)
@@ -396,9 +417,57 @@ setMethod("addEdge", c("character", "character", "graphNEL", "numeric"),
                     eL[[to[i]]] <- old
                 }
 
-              new("graphNEL", gN, eL, edgemode(graph))
+              ans <- new("graphNEL", gN, eL, edgemode(graph))
+              ans@edgeData <- graph@edgeData
+              ans@nodeData <- graph@nodeData
+              ans
           })
 
+
+
+##FIXME: do  we care if the edge already exists?
+setMethod("addEdge", signature=signature(from="character", to="character",
+                       graph="graphNEL", weights="missing"),
+          function(from, to, graph) {
+              gN <- nodes(graph)
+              whF <- match(from, gN)
+              if( any(is.na(whF)) )
+                stop(paste(from[is.na(whF)], "is not a node"))
+              whT <- match(to, gN)
+              if( any(is.na(whT)) )
+                stop(paste(to[is.na(whT)], "is not a node"))
+              ##roll out the shorter one
+              lenT <- length(to)
+              lenF <- length(from)
+              if( lenT > lenF ) {
+                  from <- rep(from, lenT)
+                  whF <- rep(whF, lenT)
+              }
+              if( lenF > lenT ) {
+                  whT <- rep(whT, lenF)
+                  to <- rep(to, lenF)
+              }
+              ##now the same
+              lenN <- max(lenT, lenF)
+              eL <- graph@edgeL
+              for(i in 1:lenN) {
+                  old <- eL[[from[i]]]
+                  old$edges <- c(old$edges, whT[i])
+                  eL[[from[i]]] <- old
+              }
+              ##if undirected, then we need to go in both directions
+              if( edgemode(graph) == "undirected")
+                for(i in 1:lenN) {
+                    old <- eL[[to[i]]]
+                    old$edges <- c(old$edges, whF[i])
+                    eL[[to[i]]] <- old
+                }
+              ans <- new("graphNEL", gN, eL, edgemode(graph))
+              ans@edgeData <- graph@edgeData
+              ans@nodeData <- graph@nodeData
+              ans
+          })
+ 
 
 setMethod("combineNodes", c("character", "graphNEL", "character"),
           function(nodes, graph, newName) {
@@ -461,7 +530,8 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
                   if(is.null(oW)) oW=rep(1, length(oE))
                   g2 <- addEdge(oE, newName, g2, oW)
               }
-              g2})
+              g2
+          })
 
 
 ##inEdges returns a list of all nodes with edges

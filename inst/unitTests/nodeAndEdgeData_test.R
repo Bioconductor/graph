@@ -172,6 +172,9 @@ testEdgeDataGetting <- function() {
     got <- edgeData(g1, to="d", attr="size")
     checkEquals(3, length(got))
     checkEquals(rep(1, 3), as.numeric(got))
+
+    expect <- c("a|c", "a|d", "d|a", "d|b", "d|c")
+    checkEquals(expect, names(edgeData(g1, from=c("a", "d"), attr="name")))
 }
 
 
@@ -204,6 +207,23 @@ testEdgeDataSetting <- function() {
     edgeData(g1, to="b", attr="size") <- 111
     checkEquals(rep(111, 2), as.numeric(edgeData(g1, to="b", attr="size")))
 
+}
+
+
+testEdgeDataSettingFromOnly <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphAM", adjMat=mat)
+    myAttributes <- list(size=1, dim=c(3, 3), name="fred")
+    edgeDataDefaults(g1) <- myAttributes
+
+    expect <- rep("fred", 5)
+    got <- unlist(edgeData(g1, from=c("a", "d"), attr="name"), use.names=FALSE)
+    checkEquals(expect, got, "precondition check")
+    
+    edgeData(g1, from=c("a", "d"), attr="name") <- "Sam"
+    expect <- rep("Sam", 5)
+    got <- unlist(edgeData(g1, from=c("a", "d"), attr="name"), use.names=FALSE)
+    checkEquals(expect, got, "use from only in assign")
 }
 
 

@@ -2,15 +2,19 @@
 # GXL support
 #
 ## need methods on connections
-     setIs("file","connection")
+setIs("file","connection")
 ## fromGXL returns the graphNEL object only, and it may
 ##  need to return more properties (7 mar 03)
 
-     setMethod("fromGXL", "connection", function(con)
-       {
-           require("XML") || stop("XML package needed")
-           xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$asGraphNEL()
-       })
+setMethod("fromGXL", signature(con="connection"),
+          function(con) {
+              require("XML") || stop("XML package needed")
+              contents <- paste(readLines(con), collapse="")
+              xmlEventParse(contents, graphNELhandler(),
+                            asText=TRUE)$asGraphNEL()
+          })
+
+
 ## dumpGXL returns an R list with all? properties
 
      setMethod("dumpGXL", "connection", function(con)
