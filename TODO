@@ -1,45 +1,18 @@
+sf 24.01.2006:
+   Need to improve toGXL so that attributes are properly written out.
+
 wh 28.01.2005: can we have a "==" function for graphs (e.g. graphNEL)?
 
 sf 24.08.2005: 
-    move methods into file named for primary class of dispatch.  For
-    example, all methods relating to graphNEL are in graphNEL.R.  This
-    follows the organization of the Matrix package.
+    move methods into file named for the generic.
 
     document all generics and all classes
 
-    document all methods within classe doc.
+    document all methods within class doc.
 
     each graph representation class should have its own validation
     function.  This way, adding a new representation doesn't require
     adding another if statement into a monolithic validation routine.
 
     move methods up into the graph class where possible.
-
-edgeSet.R:47:              ## TODO: make edgeProps access vectorized, for now, force single edges
-graphIM.R:184:              ## TODO: allow adding node objects and possibly edges
-graphIM.R:185:              ## TODO: Can the verification code be shared?  Perhaps put it
-graphIM.R:224:              ## TODO: clear edge attributes
-graphIM.R:231:## TODO: implement a clearEdgeAttributes method
-graphIM.R:241:              ## TODO: clear edge attributes
-
-
-For incidence matrix, I've been working that mat[i, j] represents the
-edge from node i to node j.  If the common use-case is to start at a
-from node then we might want to consider reversing this so that the
-common case access matrix columns which tends to be more efficient.
-
-Add signature edgeAttributes(g1, from) and edgeAttributes(g1, to) that
-returns a list of edge attributes for all edges from node j (or to
-node j).
-
-Limit vectorization of edgeAttributes to vectors where length(from) ==
-length(to).
-
-Look into passing graphIM objects to RBGL
-
-Test row/col names don't matter which is specified for construction.
-
-
-
-
 
