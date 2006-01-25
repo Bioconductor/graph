@@ -242,7 +242,7 @@ setGeneric("clusteringCoefficient", function(object, ...)
 setGeneric("fromGXL", function(con) standardGeneric("fromGXL"))
 setGeneric("dumpGXL", function(con) standardGeneric("dumpGXL"))
 setGeneric("validateGXL", function(con) standardGeneric("validateGXL"))
-setGeneric("toGXL", function(object) standardGeneric("toGXL"))
+setGeneric("toGXL", function(object, ...) standardGeneric("toGXL"))
 
 
 setGeneric("property", function(x, prop) standardGeneric("property"))

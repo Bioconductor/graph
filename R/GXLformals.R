@@ -35,41 +35,94 @@ setMethod("fromGXL", signature(con="connection"),
 #  exporting
 #
 
-    setMethod("toGXL", "graphNEL", function(object)
-       gxlTreeNEL(object))
+    setMethod("toGXL", signature(object="graphNEL"),
+              function(object, graph.name) {
+                  if (missing(graph.name)) {
+                      graph.name <- class(object)[1]
+                  }
+                  gxlTreeNEL(object, graph.name)
+              })
 
 
-gxlTreeNEL <- function(gnel) {
+gxlTreeNEL <- function(gnel, graph.name) {
     require("XML") || stop("XML package needed")
+    GXL_NAMESPACE <- c(gxl="http://www.gupro.de/GXL/gxl-1.1.dtd")
+    out <- xmlOutputDOM("gxl", nsURI=GXL_NAMESPACE, nameSpace="gxl")
+    ## NOTE: We could specify dtd="http://www.gupro.de/GXL/gxl-1.0.1.dtd",
+    ##       but this might mean that net access is required to write
+    ##       GXL which seems quite unacceptable.
+    nodeAttrs <- names(nodeDataDefaults(gnel))
+    edgeAttrs <- names(edgeDataDefaults(gnel))
+
+    writeAttr <- function(attrName, val) {
+        ## skip NA and NULL
+        if (is.null(val) || is.na(val))
+          return(NULL)
+        ## at present, can only handle length 1
+        if (length(val) > 1) {
+            warning("GXL conversion only handles attributes ",
+                    "with length 1.  Will try to represent ",
+                    "object of length ", length(val), " as a",
+                    "string.")
+            val <- paste(val, collapse=", ")
+        }
+        atag <- switch(typeof(val),
+                       integer="int",
+                       character="string",
+                       double="float",
+                       {
+                           warning("I don't know how to convert ",
+                                   "a ", typeof(val), " to GXL. ",
+                                   " Skipping.")
+                           NULL
+                       })
+        if (is.null(atag))
+          return(NULL)
+        out$addTag("attr", attrs=c(name=attrName), close=FALSE)
+        out$addTag(atag, as.character(val))
+        out$closeTag()
+    }
+    
+    writeNode <- function(n) {
+        ## Helper function to write a graphNEL node to XML
+        out$addTag("node", attrs=c(id=n), close=FALSE)
+        for (nodeAttr in nodeAttrs) {
+            val <- nodeData(gnel, n, attr=nodeAttr)[[1]]
+            writeAttr(nodeAttr, val)
+        }
+        out$closeTag() ## node
+    }
+
+    edgeCount <- 1
+    writeEdge <- function(from, to) {
+        ## Helper function to write a graphNEL node to XML
+        edgeId <- edgeCount
+        edgeCount <<- edgeCount + 1
+        out$addTag("edge", attrs=c(id=edgeId, from=from, to=to),
+                   close=FALSE)
+        for (edgeAttr in edgeAttrs) {
+            val <- edgeData(gnel, from, to, attr=edgeAttr)[[1]]
+            writeAttr(edgeAttr, val)
+        }
+        out$closeTag() ## node
+    }
+    
     nds <- nodes(gnel)
-    eds <- lapply(edges(gnel),unique)
+    eds <- edges(gnel)
+    ##FIXME: Do we need to deal with duplicate edges for undirected graphs?
     enms <- names(eds)
-    out <- xmlTree("gxl", #dtd="http://www.gupro.de/GXL/gxl-1.0.1.dtd",
-                   namespaces=c(gxl="http://www.w3.org/1999/xlink"))
-                                        #<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.1.dtd">
-                                        #<gxl xmlns:xlink="http://www.w3.org/1999/xlink">
-    out$addTag("gxl",close=FALSE)
-    out$addTag("graph", attrs=c(id="graphNEL", edgemode=
-                          as.character(edgemode(gnel))), close=FALSE)
-    for (i in 1:length(nds))
-      {
-          out$addTag("node", attrs=c(id=nds[i]), close=FALSE)
-          out$closeTag()
-      }
-    ued <- 0
-    for (i in 1:length(eds))
-      {
-          if (length(eds[[i]])>0) for (j in 1:length(eds[[i]]))
-            {
-                ued <- ued + 1
-                etag <- paste("e",ued,sep="")
-                out$addTag("edge", attrs=c(id=etag,from=enms[i],
-                                     to=eds[[i]][j]), close=FALSE)
-                out$closeTag()
-            }
-      }
+
+    out$addTag("graph", attrs=c(id=graph.name, edgemode=edgemode(gnel)),
+               close=FALSE)
+    for (n in nds) {
+        writeNode(n)
+    }
+    for (from in enms) {
+        for (to in eds[[from]]) {
+            writeEdge(from=from, to=to)
+        }
+    }
     out$closeTag() # graph
-    out$closeTag() # gxl
     out
 }
 
