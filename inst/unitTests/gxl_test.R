@@ -1,4 +1,5 @@
 simpleWithAttributes <- system.file("GXL/attributesExample.gxl", package="graph")
+
 if (nchar(simpleWithAttributes) == 0) stop("bad gxl path")
 
 testGxlNodes <- function() {
@@ -35,5 +36,10 @@ testGxlNodeAttrs <- function() {
 }
 
 
-
+testNodeEdgeOrderDoesNotMatter <- function() {
+    gxlFile <- system.file("GXL/outOfOrderExample.gxl", package="graph")
+    con <- file(gxlFile)
+    g <- fromGXL(con)
+    checkEquals(c("p", "v", "q", "w"), nodes(g))
+}
     

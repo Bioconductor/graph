@@ -42,9 +42,11 @@ graphNELhandler <- function ()
         }
         else if (x == "node") {
             inNode <<- TRUE
-            g <<- addNode(as.character(atts["id"]), g) 
-            nodeL[[atts["id"]]] <<- list()
-            curNode <<- atts["id"]
+            theNode <- as.character(atts["id"])
+            if (! (theNode %in% nodes(g)))
+              g <<- addNode(theNode, g) 
+            nodeL[[theNode]] <<- list()
+            curNode <<- theNode
         }
         else if (x == "attr") {
             inAttr <<- TRUE
@@ -53,13 +55,18 @@ graphNELhandler <- function ()
         else if (x == "edge") {
             inNode <<- FALSE
             inEdge <<- TRUE
-            g <<- addEdge(from=atts["from"],
-                          to=atts["to"],
+            from <- as.character(atts["from"])
+            to <- as.character(atts["to"])
+            if (!(from %in% nodes(g)))
+              g <<- addNode(from, g)
+            if (!(to %in% nodes(g)))
+              g <<- addNode(to, g)
+            g <<- addEdge(from=from,
+                          to=to,
                           g)
             edgeL[[atts["id"]]] <<- list()
-            edgeL[[atts["id"]]][["span"]] <<- c(atts["from"], 
-                                                atts["to"])
-            curEdge <<- list(from=atts["from"], to=atts["to"])
+            edgeL[[atts["id"]]][["span"]] <<- c(from, to)
+            curEdge <<- list(from=from, to=to)
         }
         else if (x == "int") {
             inInt <<- TRUE
