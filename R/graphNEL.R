@@ -229,7 +229,7 @@ setMethod("addNode", c("character", "graphNEL", "missing"),
               gN = nodes(object)
               already <- match(node, gN)
               if( any(!is.na(already)) )
-                stop(paste(node[already], "is already a node"))
+                stop(paste(gN[already], collapse=", "), " is already a node")
               ##add them on the end so we don't renumber
               gN = c(gN, node)
               edgeL <-  object@edgeL
