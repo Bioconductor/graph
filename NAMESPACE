@@ -1,6 +1,11 @@
 useDynLib(graph)
 
-import(methods,cluster)
+import(methods, cluster)
+
+importFrom(Ruuid, getuuid)
+importClassesFrom(Ruuid, Ruuid, uuidt)
+importMethodsFrom(Ruuid, uuid)
+exportClasses(Ruuid, uuidt)
 
 exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph,
   clusterGraph, graphH, graph, graphNEL, file, connection,

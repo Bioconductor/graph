@@ -3,6 +3,7 @@
 #
 ## need methods on connections
 setIs("file","connection")
+##setOldClass("connection")
 ## fromGXL returns the graphNEL object only, and it may
 ##  need to return more properties (7 mar 03)
 
@@ -11,7 +12,8 @@ setMethod("fromGXL", signature(con="connection"),
               require("XML") || stop("XML package needed")
               contents <- paste(readLines(con), collapse="")
               xmlEventParse(contents, graphNELhandler(),
-                            asText=TRUE)$asGraphNEL()
+                            asText=TRUE,
+                            saxVersion=2)$asGraphNEL()
           })
 
 
@@ -108,10 +110,21 @@ gxlTreeNEL <- function(gnel, graph.name) {
     }
     
     nds <- nodes(gnel)
-    eds <- edges(gnel)
-    ##FIXME: Do we need to deal with duplicate edges for undirected graphs?
+    if (!isDirected(gnel)) {
+        ## remove recipricol edges
+        eds <- lapply(gnel@edgeL, function(x) x$edges)
+        eds <- mapply(function(x, y) x[x < y], eds, seq(length=length(eds)))
+        names(eds) <- nodes(gnel)
+        eds <- lapply(eds, function(x) {
+            if (length(x) > 0)
+              nds[x]
+            else
+              character(0)
+        })
+    } else {
+        eds <- edges(gnel)
+    }
     enms <- names(eds)
-
     out$addTag("graph", attrs=c(id=graph.name, edgemode=edgemode(gnel)),
                close=FALSE)
     for (n in nds) {
