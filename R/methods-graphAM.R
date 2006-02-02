@@ -1,16 +1,16 @@
-## Incidence matrix representation of a graph
+## adjacency matrix representation of a graph
 
-.isValidInciMat <- function(adjMat, mode="undirected") {
+isValidAdjMat <- function(adjMat, mode="undirected") {
     ## Determine if adjacency matrix adjMat is valid Element adjMat[i, j] == 1
     ## if the graph contains an edge FROM node i TO node j.  If mode is
     ## "undirected", then adjMat should be symmetrix.    
     if (! nrow(adjMat) == ncol(adjMat))
-      stop("incidence matrix must be square")
+      stop("adjacency matrix must be square")
     if (mode == "undirected")
       if (any(adjMat != t(adjMat))) ## XXX: this could be slow
-        stop("incidence matrix must be symmetric for undirected graphs")
+        stop("adjacency matrix must be symmetric for undirected graphs")
     if (any(adjMat < 0))
-      stop("negative values not allowed in incidence matrix")
+      stop("negative values not allowed in adjacency matrix")
     if (is.null(dimnames(adjMat))) {
         nNames <- NULL
     } else {
@@ -29,7 +29,7 @@
 }
 
 
-.isValidNodeList <- function(nList, nNames) {
+isValidNodeList <- function(nList, nNames) {
     if (!is.list(nList) || is.null(names(nList)))
       stop("nodes must be specified as a named list")
     if (!setequal(names(nList), nNames))
@@ -38,7 +38,7 @@
 }
 
 
-.initEdgeSet <- function(self, values) {
+initEdgeSet <- function(self, values) {
     if (!is.list(values) || length(values) != 1 || is.null(names(values)))
       stop("values must be a named list with one element")
     self@edgeData <- new("attrData", defaults=values)
@@ -64,7 +64,7 @@
 
 setMethod("initialize", signature("graphAM"),
           function(.Object, adjMat, edgemode="undirected", values) {
-              nNames <- graph:::.isValidInciMat(adjMat, edgemode)
+              nNames <- graph:::isValidAdjMat(adjMat, edgemode)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(adjMat), sep="")
               colnames(adjMat) <- nNames
@@ -72,7 +72,7 @@ setMethod("initialize", signature("graphAM"),
               .Object@adjMat <- adjMat
               edgemode(.Object) <- edgemode
               if (!missing(values))
-                .Object <- graph:::.initEdgeSet(.Object, values)
+                .Object <- graph:::initEdgeSet(.Object, values)
               else
                 .Object@edgeData <- new("attrData")
               .Object@nodeData <- new("attrData")
@@ -80,7 +80,7 @@ setMethod("initialize", signature("graphAM"),
           })
 
 
-.getEdgeList <- function(adjMat, nodeNames) {
+getEdgeList <- function(adjMat, nodeNames) {
     eList <- apply(adjMat, 1, function(aRow) {
         result <- names(base::which(aRow != 0))
         if (is.null(result))
@@ -95,14 +95,14 @@ setMethod("initialize", signature("graphAM"),
 
 setMethod("edges", signature("graphAM", "missing"),
           function(object) {
-              .getEdgeList(object@adjMat, nodes(object))
+              getEdgeList(object@adjMat, nodes(object))
           })
 
 
 setMethod("edges", signature("graphAM", "character"),
           function(object, which) {
               idx <- base::which(colnames(object@adjMat) %in% which)
-              .getEdgeList(object@adjMat[idx, ], nodes(object)[idx])
+              getEdgeList(object@adjMat[idx, ], nodes(object)[idx])
           })
 
 
@@ -160,7 +160,7 @@ setMethod("isAdjacent",
           })
 
 
-.extendInciMat <- function(adjMat, nodes) {
+extendAdjMat <- function(adjMat, nodes) {
     nms <- c(colnames(adjMat), nodes)
     curCols <- ncol(adjMat)
     newCols <- matrix(0, nrow=curCols, ncol=length(nodes))
@@ -172,7 +172,7 @@ setMethod("isAdjacent",
 }
 
 
-.getIndices <- function(nodes, from, to) {
+getIndices <- function(nodes, from, to) {
     ## Return indices into the adjMat for nodes from and to.
     i <- match(from, nodes, nomatch=0)
     if (i == 0)
@@ -192,7 +192,7 @@ setMethod("addNode",
               if(any(already))
                 stop(paste(sQuote(node[already]), collapse=", "),
                            " are already nodes in the graph")
-              object@adjMat <- .extendInciMat(object@adjMat, node)
+              object@adjMat <- extendAdjMat(object@adjMat, node)
               object
           })
 
@@ -204,7 +204,7 @@ setMethod("addEdge",
               if (isAdjacent(graph, from, to))
                 stop("edge from ", sQuote(from), " to ", sQuote(to),
                      "already exists")
-              idx <- .getIndices(nodes(graph), from, to)
+              idx <- getIndices(nodes(graph), from, to)
               graph@adjMat[idx$from, idx$to] <- 1
               if (! isDirected(graph))
                 graph@adjMat[idx$to, idx$from] <- 1
@@ -215,7 +215,7 @@ setMethod("addEdge",
 setMethod("clearNode",
           signature(node="character", object="graphAM"),
           function(node, object) {
-              idx <- .getNodeIndex(nodes(object), node)
+              idx <- getNodeIndex(nodes(object), node)
               zeroVect <- rep(0, ncol(object@adjMat))
               ## clear edges from node to other
               object@adjMat[idx, ] <- zeroVect
@@ -234,7 +234,7 @@ setMethod("clearNode",
 setMethod("removeNode",
           signature(node="character", object="graphAM"),
           function(node, object) {
-              idx <- .getNodeIndex(nodes(object), node)
+              idx <- getNodeIndex(nodes(object), node)
               object@adjMat <- object@adjMat[-idx, -idx]
 
               ## TODO: clear edge attributes
@@ -243,7 +243,7 @@ setMethod("removeNode",
           })
 
 
-.getNodeIndex <- function(nodeNames, node) {
+getNodeIndex <- function(nodeNames, node) {
     idx <- match(node, nodeNames, nomatch=NA)
     if (is.na(idx))
       stop("Unknown node", sQuote(node))
@@ -254,8 +254,8 @@ setMethod("removeNode",
 setMethod("removeEdge",
           signature(from="character", to="character", graph="graphAM"),
           function(from, to, graph) {
-              fromIdx <- .getNodeIndex(nodes(graph), from)
-              toIdx <- .getNodeIndex(nodes(graph), to)
+              fromIdx <- getNodeIndex(nodes(graph), from)
+              toIdx <- getNodeIndex(nodes(graph), to)
               graph@adjMat[fromIdx, toIdx] <- 0
               if (!isDirected(graph))
                 graph@adjMat[toIdx, fromIdx] <- 0

@@ -14,7 +14,7 @@ setClass("graphNEL",
          validity=function(object) validGraph(object))
 
 
-## Incidence Matrix representation
+## Adjacency Matrix representation
          
 setClass("graphAM", contains="graph",
          representation(adjMat="matrix"),
