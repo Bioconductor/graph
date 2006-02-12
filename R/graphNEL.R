@@ -359,7 +359,8 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
                 stop(paste("no edge from", from, "to", to))
               nEd <- graph@edgeL
               nEd[[from]]$edges <- nEd[[from]]$edges[-whD]
-              nEd[[from]]$weights <- nEd[[from]]$weights[-whD]
+	      if( length(nEd[[from]]$weights) > 0 )
+                  nEd[[from]]$weights <- nEd[[from]]$weights[-whD]
               ##now if undirected we need to remove the other one
               if( edgemode(graph) == "undirected" ) {
                   nE <- edges(graph, to)
@@ -367,7 +368,8 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
                   if( is.na(whD) )
                     stop("problem with graph edges")
                   nEd[[to]]$edges <- nEd[[to]]$edges[-whD]
-                  nEd[[to]]$weights <- nEd[[to]]$weights[-whD]
+                  if( length(nEd[[to]]$weights) > 0 )
+                      nEd[[to]]$weights <- nEd[[to]]$weights[-whD]
               }
               ans <- new("graphNEL", gN, nEd, edgemode(graph))
               ans@edgeData <- graph@edgeData
