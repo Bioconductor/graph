@@ -72,30 +72,49 @@ setMethod("initialize", "graphNEL",
         return(.Object)
      })
 
+graphNEL_init_edgeL <- function(nodes, edgeL) {
+    if(length(nodes) != length(edgeL) )
+      stop("nodes and edges must align")
+    nameE <- names(edgeL)
+    if( !is.null(nameE) && !all( nameE %in% nodes) )
+      stop("names of nodes and edges must agree")
+    if( !is.null(nameE) )
+      edgeL <- edgeL[nodes]
+    edgeL <- lapply(edgeL, function(x) {
+        if(is.character(x$edges))
+          x$edges <- match(x$edges, nodes)
+        return(x)
+    })
+    edgeL
+}
+
+
+graphNEL_init_edges <- function(nodes, edges) {
+    nameE <- names(edges)
+    if (is.null(nameE) || !all(nameE %in% nodes))
+      stop("invalid arg: edges must have names corresponding to nodes")
+    edgeL <- lapply(edges, function(x) list(edges=match(x, nodes)))
+    edgeL
+}
+
+
 setMethod("initialize", "graphNEL",
           ## FIXME: what about edge weights?
-          function(.Object, nodes=character(0), edgeL, edgemode) {
+          function(.Object, nodes=character(0), edgeL, edgemode, edges) {
               if( missing(edgemode) )
                 edgemode <- "undirected"
+              if (!missing(edgeL) && !missing(edges))
+                stop("Invalid args: can only specify edgeL or edges")
               if( missing(edgeL) ) {
-                  edgeL <- vector(mode="list", length=length(nodes))
-                  names(edgeL) <- nodes
+                  if (!missing(edges))
+                    edgeL <- graphNEL_init_edges(nodes, edges)
+                  else {
+                      edgeL <- vector(mode="list", length=length(nodes))
+                      names(edgeL) <- nodes
+                  }
               } else {
-                  if(length(nodes) != length(edgeL) )
-                    stop("nodes and edges must align")
-                  nameE <- names(edgeL)
-                  if( !is.null(nameE) && !all( nameE %in% nodes) )
-                    stop("names of nodes and edges must agree")
-                  if( !is.null(nameE) )
-                    edgeL <- edgeL[nodes]
-                  ## (wh:) the following expression replaces one that was a bug
-                  edgeL <- lapply(edgeL, function(x) {
-                      if(is.character(x$edges))
-                        x$edges <- match(x$edges, nodes)
-                      return(x)
-                  }) ## end lapply
-              } ## end else-if
-
+                  edgeL <- graphNEL_init_edgeL(nodes, edgeL)
+              } 
               .Object@nodes <- nodes
               .Object@edgeL <- edgeL
               .Object@edgemode <- edgemode
