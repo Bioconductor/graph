@@ -178,9 +178,8 @@ testEdgeDataGetting <- function() {
 }
 
 
-testEdgeDataSetting <- function() {
-    mat <- simpleInciMat()
-    g1 <- new("graphAM", adjMat=mat)
+testEdgeDataSettingDirected <- function() {
+    g1 <- simpleDirectedGraph()
     myAttributes <- list(size=1, dim=c(3, 3), name="fred")
     edgeDataDefaults(g1) <- myAttributes
 
@@ -205,8 +204,46 @@ testEdgeDataSetting <- function() {
     checkEquals(rep(555, 2), as.numeric(edgeData(g1, from="a", attr="size")))
 
     edgeData(g1, to="b", attr="size") <- 111
-    checkEquals(rep(111, 2), as.numeric(edgeData(g1, to="b", attr="size")))
+    checkEquals(111, as.numeric(edgeData(g1, to="b", attr="size")))
+}
 
+
+testEdgeDataSettingUndirected <- function() {
+    mat <- simpleInciMat()
+    g1 <- new("graphAM", adjMat=mat)
+    myAttributes <- list(size=1, dim=c(3, 3), name="fred")
+    edgeDataDefaults(g1) <- myAttributes
+
+    edgeData(g1, from="a", to="d", attr="name") <- "Joe"
+    expect <- myAttributes
+    expect[["name"]] <- "Joe"
+    checkEquals(expect, edgeData(g1, from="a", to="d")[[1]])
+    ## verify reciprocal edge data was set
+    checkEquals("Joe", edgeData(g1, from="d", to="a", attr="name")[[1]])
+
+    fr <- c("a", "b")
+    to <- c("c", "c")
+    expect <- as.list(c(5, 5))
+    names(expect) <- c("a|c", "b|c")
+    edgeData(g1, fr, to, attr="size") <- 5
+    checkEquals(expect, edgeData(g1, fr, to, attr="size"))
+    names(expect) <- c("c|a", "c|b")
+    checkEquals(expect, edgeData(g1, to, fr, attr="size"))
+
+    expect <- as.list(c(10, 20))
+    names(expect) <- c("a|c", "b|c")
+    edgeData(g1, fr, to, attr="size") <- c(10, 20)
+    checkEquals(expect, edgeData(g1, fr, to, attr="size"))
+    names(expect) <- c("c|a", "c|b")
+    checkEquals(expect, edgeData(g1, to, fr, attr="size"))
+    
+    edgeData(g1, from="a", attr="size") <- 555
+    checkEquals(rep(555, 2), as.numeric(edgeData(g1, from="a", attr="size")))
+    checkEquals(555, edgeData(g1, from="c", to="a", attr="size")[[1]])
+
+    edgeData(g1, to="b", attr="size") <- 111
+    checkEquals(rep(111, 2), as.numeric(edgeData(g1, to="b", attr="size")))
+    checkEquals(111, edgeData(g1, from="c", to="b", attr="size")[[1]])
 }
 
 

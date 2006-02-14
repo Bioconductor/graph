@@ -500,17 +500,17 @@ setMethod("show", signature("graph"),
           })
 
 
-.dropEdges <- function(x,z) {
+.dropEdges <- function(x, z) {
     ans =  lapply(z,function(ww) {
         bad <- match(x, ww$edges)
         bad <- bad[!is.na(bad)]
         if(length(bad) > 0 )
-            ans = list(edges= ww$edges[-bad],
-            weights = ww$weights[-bad])
+            ans = list(edges=ww$edges[-bad])
         else
             ans = ww
     })
-    ans}
+    ans
+}
 
 
 .edgeWeight <- function(from, to, graph)
@@ -870,7 +870,8 @@ setMethod("edgeData", signature(self="graph", from="character", to="missing",
 setMethod("edgeData", signature(self="graph", from="missing", to="character",
                                 attr="character"),
           function(self, from, to, attr) {
-              from <- unlist(edges(self)[to])
+              eDat <- edges(self)
+              from <- names(eDat)[sapply(eDat, function(x) to[1] %in% x)]
               edgeKeys <- graph:::.getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
@@ -882,6 +883,11 @@ setReplaceMethod("edgeData",
                  function(self, from, to, attr, value) {
                      edgeKeys <- graph:::.getEdgeKeys(self, from, to)
                      attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
+                     if (!isDirected(self)) {
+                         edgeKeys <- graph:::.getEdgeKeys(self, to, from)
+                         attrDataItem(self@edgeData, x=edgeKeys,
+                                      attr=attr) <- value
+                     }
                      self
                  })
 
@@ -900,6 +906,11 @@ setReplaceMethod("edgeData",
                      tEdges <- unlist(edges(self)[from])
                      edgeKeys <- graph:::.getEdgeKeys(self, fEdges, tEdges)
                      attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
+                     if (!isDirected(self)) {
+                         edgeKeys <- graph:::.getEdgeKeys(self, tEdges, fEdges)
+                         attrDataItem(self@edgeData, x=edgeKeys,
+                                      attr=attr) <- value
+                     }
                      self
                  })
 
@@ -908,9 +919,15 @@ setReplaceMethod("edgeData",
                  signature(self="graph", from="missing", to="character",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
-                     from <- unlist(edges(self)[to])
+                     eDat <- edges(self)
+                     from <- names(eDat)[sapply(eDat, function(x) to[1] %in% x)]
                      edgeKeys <- graph:::.getEdgeKeys(self, from, to)
                      attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
+                     if (!isDirected(self)) {
+                         edgeKeys <- graph:::.getEdgeKeys(self, to, from)
+                         attrDataItem(self@edgeData, x=edgeKeys,
+                                      attr=attr) <- value
+                     }
                      self
                  })
 
@@ -951,4 +968,23 @@ setMethod("edgeData", signature(self="graph", from="missing", to="missing",
               edgeKeys <- graph:::.getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys)
           })
+
+
+clearEdgeData <- function(self, from, to) {
+    ##FIXME: make me a method
+    attrNames <- names(edgeDataDefaults(self))
+    for (attr in attrNames)
+      edgeData(self, from, to, attr=attr) <- NULL
+    self
+}
+
+
+clearNodeData <- function(self, n) {
+    ##FIXME: make me a method
+    attrNames <- names(nodeDataDefaults(self))
+    for (attr in attrNames)
+      nodeData(self, n, attr=attr) <- NULL
+    self
+}
+
 ## ---------------------------------------------------------------------

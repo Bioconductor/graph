@@ -89,6 +89,30 @@ graphNEL_init_edgeL <- function(nodes, edgeL) {
 }
 
 
+graphNEL_init_edgeL_weights <- function(gnel) {
+    edgeL <- gnel@edgeL
+    haveWeights <- FALSE
+    fromNodes <- names(edgeL)
+    for (frm in fromNodes) {
+        wts <- edgeL[[frm]]$weights
+        if (!is.null(wts)) {
+            if (!haveWeights) {
+                edgeDataDefaults(gnel, attr="weight") <- 1
+                haveWeights <- TRUE
+            }
+            if (!is.numeric(wts))
+              stop("weights in edgeL must be numeric")
+            if (length(wts) > 0)
+              edgeData(gnel, from=frm, attr="weight") <- wts
+        }
+    }
+    ## remove weights, since now stored in the edgeData
+    edgeL <- lapply(edgeL, function(x) x["edges"])
+    gnel@edgeL <- edgeL
+    gnel
+}
+
+
 graphNEL_init_edges <- function(nodes, edges) {
     nameE <- names(edges)
     if (is.null(nameE) || !all(nameE %in% nodes))
@@ -105,6 +129,7 @@ setMethod("initialize", "graphNEL",
                 edgemode <- "undirected"
               if (!missing(edgeL) && !missing(edges))
                 stop("Invalid args: can only specify edgeL or edges")
+              doWeights <- FALSE
               if( missing(edgeL) ) {
                   if (!missing(edges))
                     edgeL <- graphNEL_init_edges(nodes, edges)
@@ -114,11 +139,13 @@ setMethod("initialize", "graphNEL",
                   }
               } else {
                   edgeL <- graphNEL_init_edgeL(nodes, edgeL)
+                  doWeights <- TRUE
               } 
               .Object@nodes <- nodes
               .Object@edgeL <- edgeL
               .Object@edgemode <- edgemode
-
+              if (doWeights)
+                .Object <- graphNEL_init_edgeL_weights(.Object)
               validObject(.Object)
               return(.Object)
           })
@@ -256,7 +283,7 @@ setMethod("addNode", c("character", "graphNEL", "missing"),
               nEd <- vector("list", length=nNode)
               names(nEd) <- node
               for(i in seq(along=nEd))
-                nEd[[i]] <- list(edges=numeric(0), weights=numeric(0))
+                nEd[[i]] <- list(edges=numeric(0))
               edgeL <- c(edgeL, nEd)
               ans <- new("graphNEL", gN, edgeL, edgemode(object))
               ans@edgeData <- object@edgeData
@@ -287,7 +314,7 @@ setMethod("addNode", c("character", "graphNEL", "list"),
                   ed <- edges[[i]]
                   if( is.character(ed) ) {
                       whE = match(ed, gN)
-                      wts = rep(1, length(whE))
+                      wts = rep(1:1, length(whE))
                   } else if( is.numeric(ed) ) {
                       whE = match(names(edges), gN)
                       wts = ed
@@ -344,10 +371,9 @@ setMethod("removeNode", c("character", "graphNEL"),
                   el$edges <- match(oldN, gN)
                   el
               })
-              ans <- new("graphNEL", gN, nE2, edgemode(object))
-              ans@edgeData <- object@edgeData
-              ans@nodeData <- object@nodeData
-              ans
+              object@nodes <- gN
+              object@edgeL <- nE2
+              object
           })
 
 
@@ -356,18 +382,19 @@ setMethod("clearNode", c("character", "graphNEL"), function(node, object) {
     whN <- match(node, gN)
     if(any(is.na(whN)) )
       stop(paste(whN[is.na(whN)], "is not a node in the graph"))
+    ## clear node attributes
+    object <- clearNodeData(object, node)
     gE <- .dropEdges(whN, object@edgeL)
-    gE[[whN]] = list(edges=numeric(0), weights=numeric(0))
-    ans <- new("graphNEL", gN, gE, edgemode(object))
-    ans@edgeData <- object@edgeData
-    ans@nodeData <- object@nodeData
-    ans
+    gE[[whN]] = list(edges=numeric(0))
+    object@edgeL <- gE
+    object
 })
 
 
 ##FIXME: vectorize
 setMethod("removeEdge", c("character", "character", "graphNEL"),
           function(from, to, graph) {
+              graph <- clearEdgeData(graph, from, to)
               gN <- nodes(graph)
               wh <- match(c(from, to), gN)
               if( any(is.na(wh)) )
@@ -378,8 +405,6 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
                 stop(paste("no edge from", from, "to", to))
               nEd <- graph@edgeL
               nEd[[from]]$edges <- nEd[[from]]$edges[-whD]
-	      if( length(nEd[[from]]$weights) > 0 )
-                  nEd[[from]]$weights <- nEd[[from]]$weights[-whD]
               ##now if undirected we need to remove the other one
               if( edgemode(graph) == "undirected" ) {
                   nE <- edges(graph, to)
@@ -387,13 +412,9 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
                   if( is.na(whD) )
                     stop("problem with graph edges")
                   nEd[[to]]$edges <- nEd[[to]]$edges[-whD]
-                  if( length(nEd[[to]]$weights) > 0 )
-                      nEd[[to]]$weights <- nEd[[to]]$weights[-whD]
               }
-              ans <- new("graphNEL", gN, nEd, edgemode(graph))
-              ans@edgeData <- graph@edgeData
-              ans@nodeData <- graph@nodeData
-              ans
+              graph@edgeL <- nEd
+              graph
           })
 
 
@@ -401,49 +422,12 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
 setMethod("addEdge", signature=signature(from="character", to="character",
                        graph="graphNEL", weights="numeric"),
           function(from, to, graph, weights) {
-              gN <- nodes(graph)
-              whF <- match(from, gN)
-              if( any(is.na(whF)) )
-                stop(paste(from[is.na(whF)], "is not a node"))
-              whT <- match(to, gN)
-              if( any(is.na(whT)) )
-                stop(paste(to[is.na(whT)], "is not a node"))
-              ##roll out the shorter one
-              lenT <- length(to)
-              lenF <- length(from)
-              if( lenT > lenF ) {
-                  from <- rep(from, lenT)
-                  whF <- rep(whF, lenT)
-              }
-              if( lenF > lenT ) {
-                  whT <- rep(whT, lenF)
-                  to <- rep(to, lenF)
-              }
-              ##now the same
-              lenN <- max(lenT, lenF)
-              weights <- rep(weights, lenN)
-              eL <- graph@edgeL
-              for(i in 1:lenN) {
-                  old <- eL[[from[i]]]
-                  old$edges <- c(old$edges, whT[i])
-                  old$weights <- c(old$weights, weights[i])
-                  eL[[from[i]]] <- old
-              }
-              ##if undirected, then we need to go in both directions
-              if( edgemode(graph) == "undirected")
-                for(i in 1:lenN) {
-                    old <- eL[[to[i]]]
-                    old$edges <- c(old$edges, whF[i])
-                    old$weights <- c(old$weights, weights[i])
-                    eL[[to[i]]] <- old
-                }
-
-              ans <- new("graphNEL", gN, eL, edgemode(graph))
-              ans@edgeData <- graph@edgeData
-              ans@nodeData <- graph@nodeData
-              ans
+              graph <- addEdge(from, to, graph)
+              if (!("weight" %in% names(edgeDataDefaults(graph))))
+                edgeDataDefaults(graph, attr="weight") <- 1:1
+              edgeData(graph, from=from, to=to, attr="weight") <- weights
+              graph
           })
-
 
 
 ##FIXME: do  we care if the edge already exists?
@@ -483,10 +467,9 @@ setMethod("addEdge", signature=signature(from="character", to="character",
                     old$edges <- c(old$edges, whF[i])
                     eL[[to[i]]] <- old
                 }
-              ans <- new("graphNEL", gN, eL, edgemode(graph))
-              ans@edgeData <- graph@edgeData
-              ans@nodeData <- graph@nodeData
-              ans
+              graph@edgeL <- eL
+              ##FIXME: should we call validObject here?
+              graph
           })
  
 

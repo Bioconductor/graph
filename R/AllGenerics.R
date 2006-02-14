@@ -1,6 +1,3 @@
-## if (!isGeneric("foo"))
-##   setGeneric("foo", function(x, ...) standardGeneric("foo"))
-
 ## Generic methods that all graph representation classes must support
 
 setGeneric("isDirected", function(object) standardGeneric("isDirected"))

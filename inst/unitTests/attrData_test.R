@@ -112,4 +112,14 @@ testItemGettingAndSettingVectorized <- function() {
     for (i in 1:length(wVect))
       checkEquals(wVect[[i]], attrDataItem(aset, keys[i], "weight")[[1]])
 }
-    
+
+
+testItemRemovalSimple <- function() {
+    aset <- new("attrData", defaults=basicProps)
+
+    attrDataItem(aset, x="k1", attr="weight") <- 900
+    checkEquals(900, attrDataItem(aset, x="k1", attr="weight")[[1]])
+
+    attrDataItem(aset, x="k1", attr="weight") <- NULL
+    checkEquals(1, attrDataItem(aset, x="k1", attr="weight")[[1]])
+}

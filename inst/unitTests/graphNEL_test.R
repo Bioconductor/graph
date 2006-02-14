@@ -1,12 +1,11 @@
 simpleGraphNEL <- function() {
-     set.seed(123)
      V <- letters[1:4]
      edL <- vector("list", length=4)
      names(edL) <- V
-     edL[["a"]] <- list(edges=c(3, 4), weights=runif(2))
-     edL[["b"]] <- list(edges=c(3, 4), weights=runif(2))
-     edL[["c"]] <- list(edges=c(1, 2, 4), weights=runif(3))
-     edL[["d"]] <- list(edges=c(1, 2, 3), weights=runif(3))
+     edL[["a"]] <- list(edges=c(3, 4), weights=c(.13, .14))
+     edL[["b"]] <- list(edges=c(3, 4), weights=c(.23, .24))
+     edL[["c"]] <- list(edges=c(1, 2, 4), weights=c(.13, .23, .34))
+     edL[["d"]] <- list(edges=c(1, 2, 3), weights=c(.14, .24, .34))
      gR <- new("graphNEL", nodes=V, edgeL=edL)
      gR
  }
@@ -17,10 +16,10 @@ simpleDirectedGraphNEL <- function() {
      V <- letters[1:4]
      edL <- vector("list", length=4)
      names(edL) <- V
-     edL[["a"]] <- list(edges=c(3, 4), weights=runif(2))
-     edL[["b"]] <- list(edges=c(3), weights=runif(2))
+     edL[["a"]] <- list(edges=c(3, 4), weights=c(.13, .14))
+     edL[["b"]] <- list(edges=c(3), weights=.23)
      edL[["c"]] <- list(edges=numeric(0), weights=numeric(0))
-     edL[["d"]] <- list(edges=c(2, 3), weights=runif(3))
+     edL[["d"]] <- list(edges=c(2, 3), weights=c(.42, .43))
      gR <- new("graphNEL", nodes=V, edgeL=edL, edgemode="directed")
      gR
  }
@@ -80,3 +79,21 @@ testNotBothEdgesAndEdgeL <- function() {
                          edges=edges(g),
                          edgeL=g@edgeL))
 }
+
+
+testCaptureWeightsWithEdgeLUndirected <- function() {
+    g <- simpleGraphNEL()
+    expect <- as.list(c(.13, .14))
+    names(expect) <- c("a|c", "a|d")
+    checkEquals(expect, edgeData(g, from="a", attr="weight"))
+}
+
+
+testCaptureWeightsWithEdgeLDirected <- function() {
+    g <- simpleDirectedGraphNEL()
+    expect <- as.list(c(.13, .14))
+    names(expect) <- c("a|c", "a|d")
+    checkEquals(expect, edgeData(g, from="a", attr="weight"))
+}
+
+

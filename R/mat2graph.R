@@ -98,7 +98,7 @@ setAs("matrix", "graphNEL", function(from) {
                                       tmat[i, 2])
         ln <- length(rval[[tmat[i, 1]]]$edges)
         rval[[tmat[i, 1]]]$weights <- c(rval[[tmat[i, 1]]]$weights,
-                                        from[tmat[i,1],tmat[i,2]])
+                                        as.numeric(from[tmat[i,1],tmat[i,2]]))
         names(rval[[tmat[i, 1]]]$weights)[ln] <- tmat[i, 2]
     }
     names(rval) <- V
