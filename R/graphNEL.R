@@ -35,22 +35,16 @@ validGraph<-function(object, quietly=FALSE) {
         ##the edge is not reciprocal. Note we are not going to handle
         ##multiedges well.
         if(object@edgemode == "undirected" && length(objEdges)>0 ) {
-            eds <- lapply(objEdges, function(x) x$edges)
-            v1 <- sapply(eds, length)
-            v2 <- sum(v1)
-            tM <- paste(rep(1:length(v1), v1), unlist(eds), sep=" -> " )
-            tM2 <- paste(unlist(eds), rep(1:length(v1), v1), sep=" -> " )
-            tM3 <- c(tM, tM2)
-            vv <- duplicated(tM3)
-            badn <- which(vv == FALSE)
-            badn <- badn[badn>v2]
-            if( length(badn)>0 ) {
-                if( !quietly ) {
-                    from <- badn-v2
-                    cat("The graph is undirected and\n")
-                    cat("the following edges are not reciprocated\n")
-                    cat(tM3[from], sep="\n")
-                    cat("\n")
+            fr <- rep(names(objEdges), sapply(objEdges, length))
+            to <- unlist(objEdges)
+            frto <- paste(fr, to, sep="|")
+            tofr <- paste(to, fr, sep="|")
+            badEdges <- setdiff(tofr, frto)
+            if (length(badEdges) > 0) {
+                if (!quietly) {
+                    cat("The graph is undirected and the following edges",
+                        "are not reciprocated:\n",
+                        paste(badEdges, collapse=", "), "\n\n")
                 }
                 bad <- TRUE
             }
@@ -144,9 +138,9 @@ setMethod("initialize", "graphNEL",
               .Object@nodes <- nodes
               .Object@edgeL <- edgeL
               .Object@edgemode <- edgemode
+              validObject(.Object)
               if (doWeights)
                 .Object <- graphNEL_init_edgeL_weights(.Object)
-              validObject(.Object)
               return(.Object)
           })
 
