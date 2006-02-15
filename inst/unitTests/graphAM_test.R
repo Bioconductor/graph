@@ -214,7 +214,7 @@ testAddNode <- function() {
     g1 <- new("graphAM", adjMat=mat)
 
     newNodes <- c("r", "s", "a", "b")
-    checkException(addNode(newNodes, g1))
+    myCheckException(addNode(newNodes, g1))
 
     newNodes <- c("r", "s")
     expect <- c(nodes(g1), newNodes)
@@ -247,7 +247,7 @@ testClearNode <- function() {
     g1 <- clearNode("a", g1)
     checkEquals(FALSE, isAdjacent(g1, "a", "c"))
     checkEquals(FALSE, isAdjacent(g1, "a", "d"))
-    checkException(edgeData(g1, "a", "c", attr="weight"))
+    myCheckException(edgeData(g1, "a", "c", attr="weight"))
 }
 
 

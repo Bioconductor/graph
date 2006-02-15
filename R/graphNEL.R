@@ -264,90 +264,69 @@ setMethod("subGraph", c("character", "graphNEL"), function(snodes, graph) {
 setMethod("numNodes", "graphNEL", function(object) length(object@nodes))
 
 
-setMethod("addNode", c("character", "graphNEL", "missing"),
+setMethod("addNode", signature(node="character", object="graphNEL",
+                               edges="missing"),
           function(node, object, edges) {
               gN = nodes(object)
               already <- match(node, gN)
               if( any(!is.na(already)) )
                 stop(paste(gN[already], collapse=", "), " is already a node")
-              ##add them on the end so we don't renumber
+              ## add them on the end so we don't renumber
               gN = c(gN, node)
               edgeL <-  object@edgeL
-              nNode <- length(node)
-              nEd <- vector("list", length=nNode)
+              nEd <- vector("list", length=length(node))
               names(nEd) <- node
               for(i in seq(along=nEd))
                 nEd[[i]] <- list(edges=numeric(0))
               edgeL <- c(edgeL, nEd)
-              ans <- new("graphNEL", gN, edgeL, edgemode(object))
-              ans@edgeData <- object@edgeData
-              ans@nodeData <- object@nodeData
-              ans
+              object@nodes <- gN
+              object@edgeL <- edgeL
+              object
           })
 
 
 ##they need to supply a list of edges, one for each element of node
 ##it might be better to do this by first adding the nodes then
 ##calling addEdges on that graph
-setMethod("addNode", c("character", "graphNEL", "list"),
+setMethod("addNode", signature(node="character", object="graphNEL",
+                               edges="list"),
           function(node, object, edges) {
-              gN = nodes(object)
-              nNode = length(gN)
-              if( !all(names(edges) == node) )
+              ## first add the nodes, it does the checking too
+              object <- addNode(node, object)
+              ## now add the edges:
+              if (!all(names(edges) == node))
                 stop("edges must be named and in the same order as nodes")
-              already <- match(node, gN)
-              if( any(!is.na(already)) )
-                stop(paste(node[already], "is already a node"))
-              ##add them on the end so we don't renumber
-              gN = c(gN, node)
-              edgeL <-  object@edgeL
-              nAdd <- length(node)
-              nEd <- vector("list", length=nAdd)
-              names(nEd) <- node
-              for(i in 1:nAdd) {
-                  ed <- edges[[i]]
-                  if( is.character(ed) ) {
-                      whE = match(ed, gN)
-                      wts = rep(1:1, length(whE))
-                  } else if( is.numeric(ed) ) {
-                      whE = match(names(edges), gN)
-                      wts = ed
-                  } else
-                  stop("bad type for edgelist")
-                  if( any(is.na(whE)) )
-                    stop("supplied edges not in the graph")
-                  names(wts) = whE
-                  nEd[[i]] <- list(edges=whE, weights=wts)
-              }
-              edgeL <- c(edgeL, nEd)
-              ##for undirected graphs we need to put the edges on
-              ##the other side
-              if( edgemode(object) == "undirected")
-                for(i in 1:nAdd) {
-                    ed <- edges[[i]]
-                    if( is.character(ed) ) {
-                        whE = match(ed, gN)
-                        wts = rep(1, length(whE))
-                    } else if( is.numeric(ed) ) {
-                        whE = match(names(edges), gN)
-                        wts = ed
-                    } else
-                    stop("bad type for edgelist")
-                    for(j in 1:length(whE) ) {
-                        idx = whE[j]
-                        nL <- NULL
-                        nL$edges <- c(edgeL[[idx]]$edges, nNode+i)
-                        nL$weights <- c(edgeL[[idx]]$weights, wts[j])
-                        names(nL$weights) <-
-                          c(names(edgeL[[idx]]$weights), nNode+i)
-                        edgeL[[idx]] <- nL
-                    }
-                }
-              ans <- new("graphNEL", gN, edgeL, edgemode(object))
-              ans@edgeData <- object@edgeData
-              ans@nodeData <- object@nodeData
-              ans
+              doWeights <- FALSE
+              newEdges <- lapply(edges, function(x) {
+                  if (is.character(x))
+                    x
+                  else if (is.numeric(x)) {
+                      doWeights <<- TRUE  ## set flag in function scope
+                      if (length(x) == 0)
+                        enms <- character(0)
+                      else
+                        enms <- names(x)
+                      if (is.null(enms))
+                        stop("invalid arg ", sQuote("edges"), "\n",
+                             "elements must be character or have names ",
+                             "corresponding to nodes")
+                      enms
+                  } else {
+                      stop("invalid arg ", sQuote("edges"), "\n",
+                           "expecting character or numeric list elements.")
+                  }
+              })
 
+              for (i in seq(along=newEdges)) {
+                  if (length(newEdges[[i]]) == 0)
+                    next
+                  if (doWeights)
+                   object <- addEdge(from=node[i], to=newEdges[[i]], object,
+                                     weights=edges[[i]])
+                  else
+                    object <- addEdge(from=node[i], to=newEdges[[i]], object)
+              }
+              object
           })
 
 

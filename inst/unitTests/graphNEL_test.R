@@ -97,3 +97,51 @@ testCaptureWeightsWithEdgeLDirected <- function() {
 }
 
 
+testAddNode <- function() {
+    g1 <- simpleGraphNEL()
+    newNodes <- c("r", "s", "a", "b")
+    myCheckException(addNode(newNodes, g1))
+
+    newNodes <- c("r", "s")
+    expect <- c(nodes(g1), newNodes)
+    g1 <- addNode(newNodes, g1)
+    checkEquals(expect, nodes(g1))
+}
+
+
+testAddNodeWithEdges <- function() {
+    g1 <- simpleGraphNEL()
+    newNodes <- c("r", "s", "t")
+    newEdges <- list(r=c("a", "s"), s="b", t=character(0))
+    g2 <- addNode(newNodes, g1, newEdges)
+
+    checkEquals(c(nodes(g1), newNodes), nodes(g2))
+    expect <- list(r=c("a", "s"))
+    checkEquals(expect, edges(g2)["r"])
+    expectEdges <- edges(g1)
+    expectEdges[["a"]] <- c(expectEdges[["a"]], "r")
+    expectEdges[["b"]] <- c(expectEdges[["b"]], "s")
+    expectEdges[["r"]] <- c("a", "s")
+    expectEdges[["s"]] <- c("r", "b")
+    expectEdges[["t"]] <- character(0)
+    checkEquals(expectEdges, edges(g2))
+}
+
+
+testAddNodeWithEdgesAndWeights <- function() {
+    g1 <- simpleGraphNEL()
+    newNodes <- c("r", "s", "t")
+    newEdges <- list(r=c(a=11, s=22), s=c(b=33), t=numeric(0))
+    g2 <- addNode(newNodes, g1, newEdges)
+
+    checkEquals(c(nodes(g1), newNodes), nodes(g2))
+    expect <- list(r=c("a", "s"))
+    checkEquals(expect, edges(g2)["r"])
+    expectEdges <- edges(g1)
+    expectEdges[["a"]] <- c(expectEdges[["a"]], "r")
+    expectEdges[["b"]] <- c(expectEdges[["b"]], "s")
+    expectEdges[["r"]] <- c("a", "s")
+    expectEdges[["s"]] <- c("r", "b")
+    expectEdges[["t"]] <- character(0)
+    checkEquals(expectEdges, edges(g2))
+}
