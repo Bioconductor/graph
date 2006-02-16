@@ -63,21 +63,20 @@ testEmptyGraph <- function() {
 }
 
 
-testEdgesConstructor <- function() {
+testConstructor <- function() {
     g <- simpleGraphNEL()
     g2 <- new("graphNEL", nodes=nodes(g),
-              edges=edges(g))
+              edgeL=edges(g))
     checkEquals(nodes(g), nodes(g2))
     checkEquals(edges(g), edges(g2))
-}
 
+    ## We also support the more complicated list structure for describing graph
+    ## edges.
+    g2 <- new("graphNEL", nodes=nodes(g),
+              edgeL=g@edgeL)
+    checkEquals(nodes(g), nodes(g2))
+    checkEquals(edges(g), edges(g2))
 
-testNotBothEdgesAndEdgeL <- function() {
-    ## can't specify both edges and edgeL
-    g <- simpleGraphNEL()
-    myCheckException(new("graphNEL", nodes=nodes(g),
-                         edges=edges(g),
-                         edgeL=g@edgeL))
 }
 
 

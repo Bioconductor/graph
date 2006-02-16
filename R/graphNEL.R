@@ -66,7 +66,8 @@ setMethod("initialize", "graphNEL",
         return(.Object)
      })
 
-graphNEL_init_edgeL <- function(nodes, edgeL) {
+
+graphNEL_init_edges_nested <- function(nodes, edgeL) {
     if(length(nodes) != length(edgeL) )
       stop("nodes and edges must align")
     nameE <- names(edgeL)
@@ -118,23 +119,22 @@ graphNEL_init_edges <- function(nodes, edges) {
 
 setMethod("initialize", "graphNEL",
           ## FIXME: what about edge weights?
-          function(.Object, nodes=character(0), edgeL, edgemode, edges) {
+          function(.Object, nodes=character(0), edgeL, edgemode) {
               if( missing(edgemode) )
                 edgemode <- "undirected"
-              if (!missing(edgeL) && !missing(edges))
-                stop("Invalid args: can only specify edgeL or edges")
               doWeights <- FALSE
-              if( missing(edgeL) ) {
-                  if (!missing(edges))
-                    edgeL <- graphNEL_init_edges(nodes, edges)
-                  else {
-                      edgeL <- vector(mode="list", length=length(nodes))
-                      names(edgeL) <- nodes
-                  }
+              if (missing(edgeL)) {
+                  edgeL <- vector(mode="list", length=length(nodes))
+                  names(edgeL) <- nodes
               } else {
-                  edgeL <- graphNEL_init_edgeL(nodes, edgeL)
-                  doWeights <- TRUE
-              } 
+                  ## which list structure was used?
+                  edgeParser <- graphNEL_init_edges
+                  if (length(edgeL) > 0 && is.list(edgeL[[1]])) {
+                      edgeParser <- graphNEL_init_edges_nested
+                      doWeights <- TRUE
+                  }
+                  edgeL <- edgeParser(nodes, edgeL)
+              }
               .Object@nodes <- nodes
               .Object@edgeL <- edgeL
               .Object@edgemode <- edgemode
