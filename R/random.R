@@ -25,7 +25,7 @@ randomGraph <- function(V, M, p, weights = TRUE)
     lens <- sapply(nSel, length)
     objs <- unlist(nSel)
     wh <- rep(1:lenV, lens)
-    rval <- vector("list",lenV)
+    rval <- rep(list(list(edges=numeric(0))), lenV)
     names(rval) <- V
     tmp <- split(wh, objs)
     for( vec in tmp )
@@ -140,7 +140,7 @@ randomNodeGraph <- function(nodeDegree)
     outL <- lapply(edL, function(x) list(edges=match(x, eN),
                                          weights=rep(1, length(x))))
 
-    oL <- vector("list", length=length(eN))
+    oL <- rep(list(list(numeric(0))), length(eN))
     names(oL) <- eN
     oL[names(outL)] <- outL
     g <- new("graphNEL", nodes=names(oL), edgeL=oL,
