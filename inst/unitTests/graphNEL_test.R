@@ -76,7 +76,15 @@ testConstructor <- function() {
               edgeL=g@edgeL)
     checkEquals(nodes(g), nodes(g2))
     checkEquals(edges(g), edges(g2))
+}
 
+
+testNullHandlingInEdgeL <- function() {
+    g <- simpleDirectedGraphNEL()
+    eL <- g@edgeL
+    eL <- c(eL[c("a", "b", "c")], list(d=NULL))
+    g2 <- new("graphNEL", nodes(g), eL, "directed")
+    checkTrue(all(sapply(g2@edgeL, function(x) !is.null(x))))
 }
 
 

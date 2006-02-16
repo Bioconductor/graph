@@ -76,9 +76,11 @@ graphNEL_init_edges_nested <- function(nodes, edgeL) {
     if( !is.null(nameE) )
       edgeL <- edgeL[nodes]
     edgeL <- lapply(edgeL, function(x) {
-        if(is.character(x$edges))
+        if (is.character(x$edges))
           x$edges <- match(x$edges, nodes)
-        return(x)
+        if (is.null(x) || is.null(x$edges))
+          x <- list(edges=numeric(0))
+        x
     })
     edgeL
 }
@@ -112,7 +114,12 @@ graphNEL_init_edges <- function(nodes, edges) {
     nameE <- names(edges)
     if (is.null(nameE) || !all(nameE %in% nodes))
       stop("invalid arg: edges must have names corresponding to nodes")
-    edgeL <- lapply(edges, function(x) list(edges=match(x, nodes)))
+    edgeL <- lapply(edges, function(x) {
+        if (is.list(x))
+          stop("invalid arg ", sQuote("edgeL"), "\n",
+               "expecting a list of character or list of lists")
+        list(edges=match(x, nodes))
+    })
     edgeL
 }
 
@@ -129,6 +136,10 @@ setMethod("initialize", "graphNEL",
               } else {
                   ## which list structure was used?
                   edgeParser <- graphNEL_init_edges
+                  firstVal <- edgeL[[1]]
+                  if (is.null(firstVal))
+                    stop("invalid arg ", sQuote("edgeL"), "\n", 
+                         "elements must be character or list, got NULL")
                   if (length(edgeL) > 0 && is.list(edgeL[[1]])) {
                       edgeParser <- graphNEL_init_edges_nested
                       doWeights <- TRUE
