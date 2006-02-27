@@ -35,14 +35,17 @@ randomGraph <- function(V, M, p, weights = TRUE)
               pos <- match(j, rval[[i]]$edges)
               if(is.na(pos) ) {
                   rval[[i]]$edges <- c(rval[[i]]$edges, j)
-                  ln <-length(rval[[i]]$edges)
-                  rval[[i]]$weights <- c(rval[[i]]$weights, 1)
-                  names(rval[[i]]$weights)[ln] <- j
+                  if (weights) {
+                      ln <-length(rval[[i]]$edges)
+                      rval[[i]]$weights <- c(rval[[i]]$weights, 1)
+                      names(rval[[i]]$weights)[ln] <- j
+                  }
               }
               else
+                if (weights)
                   rval[[i]]$weights[[pos]] <- rval[[i]]$weights[[pos]]+1
           }
-      new("graphNEL", nodes = V, edgeL=rval)
+    new("graphNEL", nodes = V, edgeL=rval)
 }
 
 ##  gg<-randomGraph(letters[1:10], 1:4, .3)
