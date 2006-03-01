@@ -9,7 +9,6 @@ SEXP intersectStrings(SEXP, SEXP);
 SEXP graphIntersection(SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP checkEdgeList(SEXP, SEXP);
 SEXP listLen(SEXP);
-SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist, SEXP defaultVal);
 SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr);
 
 static const R_CallMethodDef R_CallDef[] = {
