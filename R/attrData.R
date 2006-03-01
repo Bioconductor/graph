@@ -94,16 +94,7 @@ setMethod("attrDataItem", signature(self="attrData", x="character",
                                     attr="character"),
           function(self, x, attr) {
               graph:::.verifyAttrName(attr, names(self@defaults))
-              itemData <- lapply(self@data[x], function(alist) {
-                  val <- alist[[attr]]
-                  if (is.null(val))
-                    self@defaults[[attr]]
-                  else
-                    val
-              })
-              ## unknown items will have name NA and value NULL
-              names(itemData) <- x 
-              itemData
+              .Call("graph_attrData_lookup", self, x, attr, PACKAGE="graph")
           })
 
 
@@ -139,9 +130,4 @@ setReplaceMethod("attrDataItem",
                            self@data[[item]][[attr]] <- value[[i]]
                      }
                      self
-          })              
-
-
-
-
-          
+          })

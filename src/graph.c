@@ -9,11 +9,14 @@ SEXP intersectStrings(SEXP, SEXP);
 SEXP graphIntersection(SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP checkEdgeList(SEXP, SEXP);
 SEXP listLen(SEXP);
+SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist, SEXP defaultVal);
+SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr);
 
 static const R_CallMethodDef R_CallDef[] = {
     {"intersectStrings", (DL_FUNC)&intersectStrings, 2},
     {"graphIntersection", (DL_FUNC)&graphIntersection, 5},
     {"listLen", (DL_FUNC)&listLen, 1},
+    {"graph_attrData_lookup", (DL_FUNC)&graph_attrData_lookup, 3},
     {NULL, NULL, 0},
 };
 
@@ -196,3 +199,59 @@ SEXP listLen(SEXP x)
   UNPROTECT(1);
   return(ans);
 }
+
+static SEXP graph_getListElement(SEXP list, char *str, SEXP defaultVal)
+{
+    SEXP elmt = defaultVal;
+    SEXP names = getAttrib(list, R_NamesSymbol);
+    int i;
+     
+    for (i = 0; i < length(list); i++)
+        if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
+            elmt = VECTOR_ELT(list, i);
+            break;
+        }
+    return elmt;
+}
+
+static SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist, 
+                                 SEXP defaultVal)
+{
+    SEXP ans, idx, names, el;
+    int ns, i, j;
+    sublist = STRING_ELT(sublist, 0);
+    ns = length(subs);
+    names = GET_NAMES(x);
+    PROTECT(idx = match(names, subs, -1));
+    PROTECT(ans = allocVector(VECSXP, ns));
+    for (i = 0; i < ns; i++) {
+        j = INTEGER(idx)[i];
+        if (j < 0)
+            SET_VECTOR_ELT(ans, i, defaultVal);
+        else {
+            el = graph_getListElement(VECTOR_ELT(x, j-1), CHAR(sublist), 
+                                      defaultVal);
+            SET_VECTOR_ELT(ans, i, el);
+        }
+    }
+    SET_NAMES(ans, subs);
+    UNPROTECT(2);
+    return ans;
+}
+
+SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr)
+{
+    SEXP data, defaults, defaultVal;
+    char* attribute;
+
+    data = GET_SLOT(attrObj, install("data"));
+    defaults = GET_SLOT(attrObj, install("defaults"));
+    attribute = CHAR(STRING_ELT(attr, 0));
+    /* We might want this to error out instead of grabbing a default.
+       The default value should exist.
+    */
+    defaultVal = graph_getListElement(defaults, attribute, R_NilValue);
+    return graph_sublist_lookup(data, keys, attr, defaultVal);
+}
+
+
