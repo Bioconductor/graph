@@ -130,7 +130,7 @@ setMethod("initialize", "graphNEL",
               if( missing(edgemode) )
                 edgemode <- "undirected"
               doWeights <- FALSE
-              if (missing(edgeL)) {
+              if (missing(edgeL) || (!is.null(edgeL) && length(edgeL) == 0)) {
                   edgeL <- vector(mode="list", length=length(nodes))
                   names(edgeL) <- nodes
               } else {
@@ -234,42 +234,32 @@ setMethod("edgeL", "graphNEL", function(graph, index) {
       graph@edgeL[index]})
 
 
-##the map from the labels to the integers, 1:n must be used
-## you must renumber the edges of the subGraph
-##from 1 to length(snodes)
-## it is important to get the subsets of the edgeList items right
-setMethod("subGraph", c("character", "graphNEL"), function(snodes, graph) {
-    nn<-nodes(graph)
-    numN <- length(nn)
-    if( is.character(snodes) ) {
-        ma <- match(snodes, nn)
-        if( any(is.na(ma)) )
-          stop("error the nodes in the graph do not match the subnodes")
-    }
-    else {
-        ma <- snodes
-        if( any( snodes < 0 ) || any( snodes > numN ) )
-          stop("subnodes must be between 1 and the number of nodes in G")
-    }
-    ##subset the edgeList elements here
-    ed <- edgeL(graph)[ma]
-    newed <- lapply(ed, function(x) { good <- x$edges %in% ma
-                                      lapply(x, function(y) y[good]) })
-
-    ##map from the old indices - 1:nn to the new 1:length(snodes)
-    t1 <- rep(NA, numN)
-    t1[ma] <- 1:length(snodes)
-    newed <- lapply(newed,
-                    function(x) {ed <- t1[x$edges] ##new names
-                                 x$edges <- ed
-                                 if( length(ed) > 0 )
-                                   lapply(x, function(y) {names(y) <- ed; y})})
-    ##finally return
-    ans <- new("graphNEL", nodes=nn[ma], edgeL=newed, edgemode=edgemode(graph))
-    ans@edgeData <- graph@edgeData
-    ans@nodeData <- graph@nodeData
-    ans
-})
+setMethod("subGraph", signature(snodes="character", graph="graphNEL"),
+          function(snodes, graph) {
+              origNodes <- nodes(graph)
+              snodesIdx <- match(snodes, origNodes)
+              if (any(is.na(snodesIdx))) {
+                  bad <- snodes[which(is.na(snodesIdx))]
+                  stop("invalid arg: snodes contains nodes not in the ",
+                       "graph:\n", paste(bad, collapse=", "))
+              }
+              killedNodes <- origNodes[-snodesIdx]
+              newEdges <- lapply(edges(graph)[snodes],
+                                 function(x) {
+                                     whD <- match(killedNodes, x, nomatch=0)
+                                     if (any(whD))
+                                       x[-whD]
+                                     else
+                                       x
+                                 })
+              ans <- new("graphNEL", nodes=snodes, edgeL=newEdges,
+                         edgemode=edgemode(graph))
+              ## FIXME: need to clean the attributes, right now we are passing
+              ##        too much.
+              ans@edgeData <- graph@edgeData
+              ans@nodeData <- graph@nodeData
+              ans
+          })
 
 
 setMethod("numNodes", "graphNEL", function(object) length(object@nodes))

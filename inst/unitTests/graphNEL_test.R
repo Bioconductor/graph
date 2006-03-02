@@ -63,17 +63,26 @@ testEmptyGraph <- function() {
 }
 
 
+testCreateGraphNoEdges <- function() {
+    g <- new("graphNEL", nodes=c("a", "b"))
+    checkEquals(0, numEdges(g))
+    checkEquals(2, numNodes(g))
+
+    g <- new("graphNEL", nodes=c("a", "b"), edgeL=list())
+    checkEquals(0, numEdges(g))
+    checkEquals(2, numNodes(g))
+}
+
+
 testConstructor <- function() {
     g <- simpleGraphNEL()
-    g2 <- new("graphNEL", nodes=nodes(g),
-              edgeL=edges(g))
+    g2 <- new("graphNEL", nodes=nodes(g), edgeL=edges(g))
     checkEquals(nodes(g), nodes(g2))
     checkEquals(edges(g), edges(g2))
 
     ## We also support the more complicated list structure for describing graph
     ## edges.
-    g2 <- new("graphNEL", nodes=nodes(g),
-              edgeL=g@edgeL)
+    g2 <- new("graphNEL", nodes=nodes(g), edgeL=g@edgeL)
     checkEquals(nodes(g), nodes(g2))
     checkEquals(edges(g), edges(g2))
 }
@@ -152,3 +161,22 @@ testAddNodeWithEdgesAndWeights <- function() {
     expectEdges[["t"]] <- character(0)
     checkEquals(expectEdges, edges(g2))
 }
+
+
+testSubGraphNoEdges <- function() {
+    g1 <- simpleGraphNEL()
+    g1 <- removeEdge("a", c("c", "d"), g1)
+    g2 <- subGraph("a", g1) ## g2 has no edges
+    checkEquals(0, numEdges(g2))
+    checkEquals(1, numNodes(g2))
+}
+
+
+testSubGraphNoEdgesDirected <- function() {
+    g1 <- simpleDirectedGraphNEL()
+    g1 <- removeEdge("a", c("c", "d"), g1)
+    g2 <- subGraph("a", g1) ## g2 has no edges
+    checkEquals(0, numEdges(g2))
+    checkEquals(1, numNodes(g2))
+ }
+
