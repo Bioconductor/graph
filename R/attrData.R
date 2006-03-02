@@ -103,31 +103,21 @@ setReplaceMethod("attrDataItem",
                            value="ANY"),
                  function(self, x, attr, value) {
                      graph:::.verifyAttrName(attr, names(self@defaults))
-                     wasAsIs <- FALSE
-                     if (is(value, "AsIs")) {
-                         wasAsIs <- TRUE
-                         ## TODO: consider removing AsIs class here
-                         ## this isn't trivial if we started w/ built-in
-                         ## class :-(
-                         classVect <- class(value)
-                         if (length(classVect) > 1)
-                           class(value) <- classVect[2:length(classVect)]
-                         else
-                             class(value) <- NULL
-                     }
-                     assignWholeItem <- FALSE
-                     if (length(value) == 1 || length(value) != length(x)
-                         || wasAsIs)
-                       assignWholeItem <- TRUE
-                     for (i in 1:length(x)) {
-                         item <- x[i]
-                         alist <- self@data[[item]]
-                         if (is.null(alist))
-                           self@data[[item]] <- list()
-                         if (assignWholeItem)
-                           self@data[[item]][[attr]] <- value
-                         else
-                           self@data[[item]][[attr]] <- value[[i]]
-                     }
+                     if (length(value) > 1 && length(value) != length(x))
+                       stop("invalid args: value must be length one or ",
+                            "have the same length as x")
+                     self@data <- .Call("graph_sublist_assign",
+                                        self@data, x, attr, value,
+                                        PACKAGE="graph")
                      self
           })
+
+
+setReplaceMethod("removeAttrDataItem",
+                 signature(self="attrData", x="character", value="NULL"),
+                 function(self, x, value) {
+                     idx <- match(x, names(self@data))
+                     idx <- idx[!is.na(idx)]
+                     self@data <- self@data[-idx]
+                     self
+                 })

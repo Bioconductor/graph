@@ -81,10 +81,8 @@ testItemGettingAndSettingVectorized <- function() {
       checkEquals(expectPerElem, attrDataItem(aset, k)[[1]])
 
     ## Set multiple with same value 2
-    ## If value is sequence type of same length as key list, then must
-    ## use I().
     complexVal <- list(a=as.list(1:3), b="ccc", c=1:5)
-    attrDataItem(aset, x=keys, attr="weight") <- I(complexVal)
+    attrDataItem(aset, x=keys, attr="weight") <- list(complexVal)
     expectPerElem <- basicProps
     expectPerElem[["weight"]] <- complexVal
     checkEquals(expectPerElem, attrDataItem(aset, "k1")[[1]])
@@ -92,9 +90,8 @@ testItemGettingAndSettingVectorized <- function() {
     checkEquals(expectPerElem, attrDataItem(aset, "k3")[[1]])
 
     ## Set multiple with same value 3
-    ## If length doesn't match, then no I() needed
     complexVal <- list(a=as.list(1:3), b="ccc", c=1:5, d="extra")
-    attrDataItem(aset, x=keys, attr="weight") <- complexVal
+    attrDataItem(aset, x=keys, attr="weight") <- list(complexVal)
     expectPerElem <- basicProps
     expectPerElem[["weight"]] <- complexVal
     for(k in keys)
@@ -120,6 +117,6 @@ testItemRemovalSimple <- function() {
     attrDataItem(aset, x="k1", attr="weight") <- 900
     checkEquals(900, attrDataItem(aset, x="k1", attr="weight")[[1]])
 
-    attrDataItem(aset, x="k1", attr="weight") <- NULL
+    removeAttrDataItem(aset, x="k1") <- NULL
     checkEquals(1, attrDataItem(aset, x="k1", attr="weight")[[1]])
 }

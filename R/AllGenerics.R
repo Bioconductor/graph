@@ -94,6 +94,10 @@ setGeneric("attrDataItem<-", function(self, x, attr, value)
            standardGeneric("attrDataItem<-"))
 
 
+setGeneric("removeAttrDataItem<-", function(self, x, value)
+           standardGeneric("removeAttrDataItem<-"))
+
+
 ## ---------------------------------------------------------------------
 ## node and edge attribute generics
 ## ---------------------------------------------------------------------

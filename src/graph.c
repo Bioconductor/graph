@@ -10,12 +10,14 @@ SEXP graphIntersection(SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP checkEdgeList(SEXP, SEXP);
 SEXP listLen(SEXP);
 SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr);
+SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values);
 
 static const R_CallMethodDef R_CallDef[] = {
     {"intersectStrings", (DL_FUNC)&intersectStrings, 2},
     {"graphIntersection", (DL_FUNC)&graphIntersection, 5},
     {"listLen", (DL_FUNC)&listLen, 1},
     {"graph_attrData_lookup", (DL_FUNC)&graph_attrData_lookup, 3},
+    {"graph_sublist_assign", (DL_FUNC)&graph_sublist_assign, 4},
     {NULL, NULL, 0},
 };
 
@@ -213,6 +215,18 @@ static SEXP graph_getListElement(SEXP list, char *str, SEXP defaultVal)
     return elmt;
 }
 
+static int graph_getListIndex(SEXP list, SEXP name)
+{
+    SEXP names = GET_NAMES(list);
+    int i;
+    char* str = CHAR(STRING_ELT(name, 0));
+     
+    for (i = 0; i < length(list); i++)
+        if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0)
+            return i;
+    return -1;
+}
+
 static SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist, 
                                  SEXP defaultVal)
 {
@@ -253,4 +267,136 @@ SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr)
     return graph_sublist_lookup(data, keys, attr, defaultVal);
 }
 
+static SEXP graph_list_lookup(SEXP x, SEXP subs, SEXP defaultVal)
+{
+    SEXP ans, idx, names, el;
+    int ns, i, j;
+    ns = length(subs);
+    names = GET_NAMES(x);
+    PROTECT(idx = match(names, subs, -1));
+    PROTECT(ans = allocVector(VECSXP, ns));
+    for (i = 0; i < ns; i++) {
+        j = INTEGER(idx)[i];
+        if (j < 0)
+            SET_VECTOR_ELT(ans, i, defaultVal); /* need to duplicate? */
+        else {
+            SET_VECTOR_ELT(ans, i, VECTOR_ELT(x, j-1));
+        }
+    }
+    SET_NAMES(ans, subs);
+    UNPROTECT(2);
+    return ans;
+}
+
+static SEXP graph_makeItem(SEXP s, int i)
+{
+    if (s == R_NilValue)
+        return s;
+    SEXP item;
+    switch (TYPEOF(s)) {
+    case STRSXP:
+    case EXPRSXP:
+    case VECSXP:
+        item = duplicate(VECTOR_ELT(s, i));
+        break;
+    case LGLSXP:
+        item = ScalarLogical(LOGICAL(s)[i]);
+        break;
+    case INTSXP:
+        item = ScalarInteger(INTEGER(s)[i]);
+	break;
+    case REALSXP:
+        item = ScalarReal(REAL(s)[i]);
+	break;
+    case CPLXSXP:
+        item = ScalarComplex(COMPLEX(s)[i]);
+	break;
+    case RAWSXP:
+        item = ScalarRaw(RAW(s)[i]);
+	break;
+    default:
+        error("unknown type");
+    }
+    return item;
+}
+
+static SEXP graph_addItemToList(SEXP list, SEXP item, SEXP name)
+{
+    SEXP ans, ansnames, listnames;
+    int len = length(list);
+    int i;
+
+    PROTECT(ans = allocVector(VECSXP, len + 1));
+    PROTECT(ansnames = allocVector(STRSXP, len + 1));
+    listnames = GET_NAMES(list);
+    for (i = 0; i < len; i++) {
+        SET_STRING_ELT(ansnames, i, STRING_ELT(listnames, i));
+        SET_VECTOR_ELT(ans, i, VECTOR_ELT(list, i));
+    }
+    SET_STRING_ELT(ansnames, len, STRING_ELT(name, 0));
+    SET_VECTOR_ELT(ans, len, item);
+    SET_NAMES(ans, ansnames);
+    UNPROTECT(2);
+    return ans;
+}
+
+SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
+{
+    SEXP idx, names, el, tmpItem, newsubs, ans, ansnames, val;
+    int ns, i, j, nnew, nextempty, origlen, numVals;
+    ns = length(subs);
+    origlen = length(x);
+    numVals = length(values);
+    if (numVals > 1 && ns != numVals)
+        error("invalid args: subs and values must be the same length");
+    names = GET_NAMES(x);
+    PROTECT(idx = match(names, subs, -1));
+    PROTECT(newsubs = allocVector(STRSXP, ns));
+    nnew = 0;
+    for (i = 0; i < ns; i++) {
+        if (INTEGER(idx)[i] == -1)
+            SET_STRING_ELT(newsubs, nnew++, STRING_ELT(subs, i));
+    }
+
+    PROTECT(ans = allocVector(VECSXP, origlen + nnew));
+    PROTECT(ansnames = allocVector(STRSXP, length(ans)));
+    for (i = 0; i < origlen; i++) {
+        SET_VECTOR_ELT(ans, i, duplicate(VECTOR_ELT(x, i)));
+        SET_VECTOR_ELT(ansnames, i, duplicate(VECTOR_ELT(names, i)));
+    }
+
+    j = origlen;
+    for (i = 0; i < nnew; i++)
+        SET_STRING_ELT(ansnames, j++, STRING_ELT(newsubs, i));
+    SET_NAMES(ans, ansnames);
+    UNPROTECT(1);
+
+    nextempty = origlen; /* index of next unfilled element of ans */
+    for (i = 0; i < ns; i++) {
+        if (numVals > 1)
+            val = graph_makeItem(values, i);
+        else {
+            if (numVals == 1 && isVectorList(values))
+                val = duplicate(VECTOR_ELT(values, 0));
+            else
+                val = duplicate(values);
+        }
+        j = INTEGER(idx)[i];
+        if (j < 0) { 
+            tmpItem = graph_addItemToList(R_NilValue, val, sublist);
+            SET_VECTOR_ELT(ans, nextempty, tmpItem); 
+            nextempty++;
+        } else {
+            tmpItem = VECTOR_ELT(ans, j-1);
+            int tmpIdx = graph_getListIndex(tmpItem, sublist);
+            if (tmpIdx == -1) {
+                tmpItem = graph_addItemToList(tmpItem, val, sublist);
+                SET_VECTOR_ELT(ans, j-1, tmpItem);
+            } else
+                SET_VECTOR_ELT(tmpItem, tmpIdx, val);
+        }
+    }
+    UNPROTECT(3);
+    return ans;
+}
 

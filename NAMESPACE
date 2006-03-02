@@ -22,7 +22,8 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj, asGraphProperty,
       removeNode, show, subGraph, threshold, toEdges, toGXL, union, validateGXL,
       coerce, toDotR, attrDefaults, "attrDefaults<-", edgeDataDefaults,
       "edgeDataDefaults<-", nodeDataDefaults, "nodeDataDefaults<-", edgeData,
-      "edgeData<-", nodeData, "nodeData<-", attrDataItem, "attrDataItem<-")
+      "edgeData<-", nodeData, "nodeData<-", attrDataItem, "attrDataItem<-",
+              "removeAttrDataItem<-")
 
 
 export(boundary, buildRepDepGraph, hashtable, calcProb, calcSumProb,
