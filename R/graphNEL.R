@@ -402,7 +402,6 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
           })
 
 
-##FIXME: do  we care if the edge already exists?
 setMethod("addEdge", signature=signature(from="character", to="character",
                        graph="graphNEL", weights="numeric"),
           function(from, to, graph, weights) {
@@ -414,7 +413,6 @@ setMethod("addEdge", signature=signature(from="character", to="character",
           })
 
 
-##FIXME: do  we care if the edge already exists?
 setMethod("addEdge", signature=signature(from="character", to="character",
                        graph="graphNEL", weights="missing"),
           function(from, to, graph) {
@@ -441,14 +439,16 @@ setMethod("addEdge", signature=signature(from="character", to="character",
               eL <- graph@edgeL
               for(i in 1:lenN) {
                   old <- eL[[from[i]]]
-                  old$edges <- c(old$edges, whT[i])
+                  ## remove duplicate edges
+                  old$edges <- unique(c(old$edges, whT[i]))
                   eL[[from[i]]] <- old
               }
               ##if undirected, then we need to go in both directions
               if( edgemode(graph) == "undirected")
                 for(i in 1:lenN) {
                     old <- eL[[to[i]]]
-                    old$edges <- c(old$edges, whF[i])
+                    ## remove duplicate edges
+                    old$edges <- unique(c(old$edges, whF[i]))
                     eL[[to[i]]] <- old
                 }
               graph@edgeL <- eL
