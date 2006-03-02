@@ -13,22 +13,19 @@ removeEdge(from, to, graph)
   \item{graph}{a \code{graph} object }
 }
 \details{
-  The edges in the graph from nodes in the \code{from} set to the
-  \code{to} set are removed and a new graph object returned.
-  Both \code{from} and \code{to} can be vectors, not necessarily of the
-  same length (in which case standard rules for replicating the shorter
-  one apply).
-
-  If the graph is \code{undirected} then the undirected edge is removed.
-  
+  A new graph instance is returned with the edges specified by
+  corresponding elements of the \code{from} and \code{to} vectors
+  removed.  If \code{from} and \code{to} are not the same length, one of
+  them should have length one.  All edges to be removed must exist in
+  \code{graph}.
 }
 \value{
   A new instance of a graph with the same class as \code{graph} is
-  returned. Any of the listed edges in \code{graph} have been removed.
+  returned with the specified edges removed.
 }
 \author{R. Gentleman}
 
-\seealso{\code{\link{addNode}},\code{\link{addEdge}},\code{\link{removeNode}},}
+\seealso{\code{\link{addNode}},\code{\link{addEdge}},\code{\link{removeNode}}}
 
 \examples{
   V <- LETTERS[1:4]
@@ -39,5 +36,9 @@ removeEdge(from, to, graph)
   gR <- new("graphNEL", nodes=V, edgeL=edL1)
 
   gX <- removeEdge("A", "B", gR)
+
+  set.seed(123)
+  g <- randomEGraph(V=letters[1:5],edges=5)
+  g2 <- removeEdge(from=c("a","b"), to=c("d","c"), g)
 }
 \keyword{manip}

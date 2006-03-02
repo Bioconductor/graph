@@ -375,8 +375,20 @@ setMethod("clearNode", c("character", "graphNEL"), function(node, object) {
 })
 
 
-##FIXME: vectorize
-setMethod("removeEdge", c("character", "character", "graphNEL"),
+edgeKiller <- function(edgeL, from, whichKill) {
+    for (i in seq(along=from)) {
+        toKill <- whichKill[[i]]
+        toKill <- toKill[!is.na(toKill)]
+        if (length(toKill) == 0)
+          stop("no edge from ", from[i], " to remove")
+        edgeL[[from[i]]]$edges <- edgeL[[from[i]]]$edges[-toKill]
+    }
+    edgeL
+}
+
+
+setMethod("removeEdge",
+          signature(from="character", to="character", graph="graphNEL"),
           function(from, to, graph) {
               graph <- clearEdgeData(graph, from, to)
               gN <- nodes(graph)
@@ -384,18 +396,15 @@ setMethod("removeEdge", c("character", "character", "graphNEL"),
               if( any(is.na(wh)) )
                 stop(paste(wh[is.na[wh]], "is not a node"))
               nE <- edges(graph, from)
-              whD <- match(to, nE[[1]])
-              if( is.na(whD) )
-                stop(paste("no edge from", from, "to", to))
-              nEd <- graph@edgeL
-              nEd[[from]]$edges <- nEd[[from]]$edges[-whD]
-              ##now if undirected we need to remove the other one
-              if( edgemode(graph) == "undirected" ) {
+              whD <- lapply(nE, function(x) match(to, x))
+              nEd <- edgeKiller(graph@edgeL, from, whD)
+              ## if undirected we need to remove the other one
+              if (!isDirected(graph)) {
                   nE <- edges(graph, to)
-                  whD <- match(from, nE[[1]])
-                  if( is.na(whD) )
-                    stop("problem with graph edges")
-                  nEd[[to]]$edges <- nEd[[to]]$edges[-whD]
+                  whD <- lapply(nE, function(x) match(from, x))
+                  ## XXX: assume graph is valid, if we got this far,
+                  ##      no NA's in whD
+                  nEd <- edgeKiller(nEd, to, whD)
               }
               graph@edgeL <- nEd
               graph
