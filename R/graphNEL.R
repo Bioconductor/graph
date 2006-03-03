@@ -87,22 +87,22 @@ graphNEL_init_edges_nested <- function(nodes, edgeL) {
 
 
 graphNEL_init_edgeL_weights <- function(gnel) {
+    defaultWeight <- 1
+    edgeDataDefaults(gnel, attr="weight") <- defaultWeight
     edgeL <- gnel@edgeL
-    haveWeights <- FALSE
-    fromNodes <- names(edgeL)
-    for (frm in fromNodes) {
-        wts <- edgeL[[frm]]$weights
-        if (!is.null(wts)) {
-            if (!haveWeights) {
-                edgeDataDefaults(gnel, attr="weight") <- 1
-                haveWeights <- TRUE
-            }
-            if (!is.numeric(wts))
-              stop("weights in edgeL must be numeric")
-            if (length(wts) > 0)
-              edgeData(gnel, from=frm, attr="weight") <- wts
-        }
-    }
+    wts <- unlist(lapply(edgeL, function(x) {
+        w <- x$weights
+        if (is.null(w) || length(w) == 0)
+          return(rep(defaultWeight, length(x$edges)))
+        w
+    }))
+    if (!is.numeric(wts))
+      stop("weights in edgeL must be numeric")
+    
+    eSpec <- graph:::.getAllEdges(gnel)
+    from <- eSpec$from
+    to <- eSpec$to
+    edgeData(gnel, from=from, to=to, attr="weight") <- wts
     ## remove weights, since now stored in the edgeData
     edgeL <- lapply(edgeL, function(x) x["edges"])
     gnel@edgeL <- edgeL

@@ -345,7 +345,8 @@ static SEXP graph_addItemToList(SEXP list, SEXP item, SEXP name)
 SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
 {
     SEXP idx, names, el, tmpItem, newsubs, ans, ansnames, val;
-    int ns, i, j, nnew, nextempty, origlen, numVals;
+    int ns, i, j, nnew, nextempty, origlen, numVals, tmpIdx;
+
     ns = length(subs);
     origlen = length(x);
     numVals = length(values);
@@ -359,14 +360,12 @@ SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
         if (INTEGER(idx)[i] == -1)
             SET_STRING_ELT(newsubs, nnew++, STRING_ELT(subs, i));
     }
-
     PROTECT(ans = allocVector(VECSXP, origlen + nnew));
     PROTECT(ansnames = allocVector(STRSXP, length(ans)));
     for (i = 0; i < origlen; i++) {
         SET_VECTOR_ELT(ans, i, duplicate(VECTOR_ELT(x, i)));
         SET_VECTOR_ELT(ansnames, i, duplicate(VECTOR_ELT(names, i)));
     }
-
     j = origlen;
     for (i = 0; i < nnew; i++)
         SET_STRING_ELT(ansnames, j++, STRING_ELT(newsubs, i));
@@ -376,13 +375,11 @@ SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
     nextempty = origlen; /* index of next unfilled element of ans */
     for (i = 0; i < ns; i++) {
         if (numVals > 1)
-            val = graph_makeItem(values, i);
-        else {
-            if (numVals == 1 && isVectorList(values))
-                val = duplicate(VECTOR_ELT(values, 0));
-            else
-                val = duplicate(values);
-        }
+            PROTECT(val = graph_makeItem(values, i));
+        else if (numVals == 1 && isVectorList(values))
+            PROTECT(val = duplicate(VECTOR_ELT(values, 0)));
+        else
+            PROTECT(val = duplicate(values));
         j = INTEGER(idx)[i];
         if (j < 0) { 
             tmpItem = graph_addItemToList(R_NilValue, val, sublist);
@@ -390,13 +387,14 @@ SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
             nextempty++;
         } else {
             tmpItem = VECTOR_ELT(ans, j-1);
-            int tmpIdx = graph_getListIndex(tmpItem, sublist);
+            tmpIdx = graph_getListIndex(tmpItem, sublist);
             if (tmpIdx == -1) {
                 tmpItem = graph_addItemToList(tmpItem, val, sublist);
                 SET_VECTOR_ELT(ans, j-1, tmpItem);
             } else
                 SET_VECTOR_ELT(tmpItem, tmpIdx, val);
         }
+        UNPROTECT(1);
     }
     UNPROTECT(3);
     return ans;
