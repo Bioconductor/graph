@@ -11,6 +11,7 @@ SEXP checkEdgeList(SEXP, SEXP);
 SEXP listLen(SEXP);
 SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr);
 SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values);
+SEXP graph_is_adjacent(SEXP fromEdges, SEXP to);
 
 static const R_CallMethodDef R_CallDef[] = {
     {"intersectStrings", (DL_FUNC)&intersectStrings, 2},
@@ -18,6 +19,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"listLen", (DL_FUNC)&listLen, 1},
     {"graph_attrData_lookup", (DL_FUNC)&graph_attrData_lookup, 3},
     {"graph_sublist_assign", (DL_FUNC)&graph_sublist_assign, 4},
+    {"graph_is_adjacent", (DL_FUNC)&graph_is_adjacent, 2},
     {NULL, NULL, 0},
 };
 
@@ -400,3 +402,24 @@ SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
     return ans;
 }
 
+SEXP graph_is_adjacent(SEXP fromEdges, SEXP to)
+{
+    SEXP ans, frEdges, toEdge, idx;
+    int i, j, lenTo;
+    int found = 0;
+
+    lenTo = length(to);
+    PROTECT(ans = allocVector(LGLSXP, lenTo));
+    for (i = 0; i < lenTo; i++) {
+        PROTECT(toEdge = ScalarString(STRING_ELT(to, i)));
+        frEdges = VECTOR_ELT(fromEdges, i);
+        idx = match(toEdge, frEdges, 0);
+        for (j = 0; j < length(idx); j++)
+            if (found = (INTEGER(idx)[j] > 0))
+                break;
+        LOGICAL(ans)[i] = found;
+        UNPROTECT(1);
+    }
+    UNPROTECT(1);
+    return ans;
+}

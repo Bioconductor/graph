@@ -45,11 +45,8 @@ setMethod("isAdjacent",signature(object="graph", from="character",
               if (length(from) != length(to))
                 stop("from and to must have the same length")
               fromEdges <- edges(object)[from]
-              ans <- vector(mode="logical", length=length(to))
-              for (i in 1:length(to)) {
-                  ans[i] <- to[i] %in% fromEdges[[i]]
-              }
-              ans
+              .Call("graph_is_adjacent", fromEdges, to,
+                    PACKAGE="graph")
           })
 
 
