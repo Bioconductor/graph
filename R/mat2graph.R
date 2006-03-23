@@ -20,9 +20,7 @@ aM2bpG<-function(aM){
         	names(rval[[tmat[i, 1]]]$weights)[ln] <- tmat[i, 2]
 	}
     	names(rval) <- V
-    	g1<-new("graphNEL", nodes = V, edgeL = rval)
-	g1@edgemode<-"directed"
-	return(g1)
+    	new("graphNEL", nodes = V, edgeL = rval, edgemode="directed")
 }
 
 ## WH 23 June 2004, Ladir CH
