@@ -83,32 +83,13 @@ setAs("matrix", "graphNEL", function(from) {
     if(is.null(colnames(from))) stop("from must have column names")
     if(!identical(rownames(from),colnames(from)))
         stop("Row and column names of from must be the same.")
-
-    V <- rownames(from)
-
-    tmat<-which(from>0,arr.ind=TRUE)
-    numN<-length(V)
     mode <- "directed"
-    if (length(tmat) > 0) {
-        numE<-dim(tmat)[1]
-        rval <- vector("list", length = numN)
-        for (i in 1:numE) {
-            rval[[tmat[i, 1]]]$edges <- c(rval[[tmat[i, 1]]]$edges,
-                                          tmat[i, 2])
-            ln <- length(rval[[tmat[i, 1]]]$edges)
-            rval[[tmat[i, 1]]]$weights <- c(rval[[tmat[i, 1]]]$weights,
-                                            as.numeric(from[tmat[i,1],tmat[i,2]]))
-            names(rval[[tmat[i, 1]]]$weights)[ln] <- tmat[i, 2]
-        }
-        names(rval) <- V
-        if (all(from == t(from))) 
-          mode <- "undirected"
-    } else {
-        rval <- list()
-    }
-    g1<-new("graphNEL", nodes = V, edgeL = rval, edgemode = mode)
-    g1
+    if (all(from == t(from)))
+      mode <- "undirected"
+    g <- new("graphAM", from, edgemode=mode, values=list(weight=1))
+    as(g, "graphNEL")
 })
+
 
 setAs("graphNEL","matrix",function(from) {
   nr = nc = numNodes(from)

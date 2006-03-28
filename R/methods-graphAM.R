@@ -42,22 +42,14 @@ initEdgeSet <- function(self, values) {
     if (!is.list(values) || length(values) != 1 || is.null(names(values)))
       stop("values must be a named list with one element")
     self@edgeData <- new("attrData", defaults=values)
-    nodeNames <- nodes(self)
-    defaultValue <- values[[1]]
     valName <- names(values)[1]
-    for (j in 1:ncol(self@adjMat)) {
-        ## work column-wise for efficiency
-        haveW <- which((self@adjMat[, j] != defaultValue)
-                       & (self@adjMat[, j] != 0))
-        if (length(haveW) > 0) {
-            toNode <- nodeNames[j]
-            for (fromIdx in haveW) {
-                fromNode <- nodeNames[fromIdx]
-                v <- self@adjMat[fromIdx, j]
-                edgeData(self, fromNode, toNode, attr=valName) <- v
-            }
-        }
-    }
+    eSpec <- graph:::.getAllEdges(self)
+    from <- eSpec$from
+    to <- eSpec$to
+    v <- t(self@adjMat)
+    v <- v[v != 0] ## this unrolls the matrix in the right way
+    edgeData(self, from=from, to=to, attr=valName) <- v
+    ## FIXME: consider storing matrix as logical
     self
 }
 
