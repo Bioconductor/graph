@@ -9,6 +9,8 @@
 \alias{attrDefaults,attrData,missing-method}
 \alias{attrDefaults,attrData,character-method}
 \alias{initialize,attrData-method}
+\alias{removeAttrDataItem<-}
+\alias{removeAttrDataItem<-,attrData,character,NULL-method}
 
 \title{Class "attrData"}
 \description{A container class to manage generic attributes.  Supports
@@ -36,6 +38,9 @@ initial attribute names and default values.
     \item{attrDefaults}{\code{signature(self = "attrData", attr = "missing")}: ... }
     \item{attrDefaults}{\code{signature(self = "attrData", attr = "character")}: ... }
     \item{initialize}{\code{signature(.Object = "attrData")}: ... }
+    \item{removeAttrDataItem}{\code{signature(self="attrData",
+        x="character", value="NULL")}: Remove the data associated with
+        the key specified by \code{x}.}
   }
 }
 \author{Seth Falcon}
