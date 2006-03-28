@@ -199,14 +199,14 @@ testIsAdjacentVectorized <- function() {
 
 ##                }
     
-## testEdgeWeights <- function() {
-##     ## default weight is 1
-##     mat <- simpleAdjMat()
-##     g1 <- new("graphAM", adjMat=mat)
-##     expect <- list(a=c(c=1, d=1), b=c(c=1, d=1), c=c(a=1, b=1, d=1),
-##                    d=c(a=1, b=1, c=1))
-##     checkEquals(expect, edgeWeights(g1))
-## }
+
+testSimpleEdgeWeights <- function() {
+    mat <- simpleAdjMat()
+    g <- new("graphAM", mat)
+    checkEquals(nodes(g), names(edgeWeights(g)))
+    expect <- c(c=1:1, d=1:1)
+    checkEquals(expect, edgeWeights(g)$a)
+}
     
     
 testAddNode <- function() {

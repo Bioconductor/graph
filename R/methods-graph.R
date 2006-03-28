@@ -155,16 +155,16 @@ setMethod("edgeWeights", signature(object="graph", index="character"),
           function(object, index) {
               ew <- tryCatch(edgeData(object, from=index, attr="weight"),
                              error=function(e) {
-                                 edgeDataDefaults(object, "weight") <- 1
+                                 edgeDataDefaults(object, "weight") <- 1:1
                                  edgeData(object, from=index, attr="weight")
                              })
               gEdges <- edges(object)[index]
               edgeCounts <- sapply(gEdges, length)
               nn <- rep(index, edgeCounts)
-              names(ew) <- unlist(gEdges)
+              names(ew) <- unlist(gEdges, use.names=FALSE)
               ans = split(unlist(ew), nn)
               ans <- c(ans, lapply(gEdges[edgeCounts == 0], as.numeric))
-              ans
+              ans[index] ## split does sorting, we want orig order
           })
 
 
