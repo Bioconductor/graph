@@ -317,3 +317,13 @@ testInEdges <- function() {
     expected <- list(a=character(0), b="d", c=c("a", "b", "d"), d="a")
     checkEquals(expected, inEdges(g1))
 }
+
+
+testNoEdges <- function() {
+    m <- matrix(0, nrow=3, ncol=3)
+    g <- new("graphAM", m)
+    checkEquals(0, numEdges(g))
+    checkEquals(3, length(edges(g)))
+    checkEquals(nodes(g), names(edges(g)))
+    checkEquals(0, sum(sapply(edges(g), length)))
+}

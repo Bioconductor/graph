@@ -71,6 +71,10 @@ testCreateGraphNoEdges <- function() {
     g <- new("graphNEL", nodes=c("a", "b"), edgeL=list())
     checkEquals(0, numEdges(g))
     checkEquals(2, numNodes(g))
+    
+    checkEquals(2, length(edges(g)))
+    checkEquals(nodes(g), names(edges(g)))
+    checkEquals(0, sum(sapply(edges(g), length)))
 }
 
 

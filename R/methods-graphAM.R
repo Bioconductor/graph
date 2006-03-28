@@ -81,13 +81,15 @@ setMethod("initialize", signature("graphAM"),
 
 
 getEdgeList <- function(adjMat, nodeNames) {
-    eList <- apply(adjMat, 1, function(aRow) {
+    numNodes <- length(nodeNames)
+    eList <- vector(mode="list", length=numNodes)
+    for (i in seq(length=numNodes)) {
+        aRow <- adjMat[i, ]
         result <- names(base::which(aRow != 0))
         if (is.null(result))
-          character(0)
-        else
-          result
-    })
+          result <- character(0)
+        eList[[i]] <- result
+    }
     names(eList) <- nodeNames
     eList
 }
