@@ -385,6 +385,7 @@ setMethod("removeEdge",
               wh <- match(c(from, to), gN)
               if( any(is.na(wh)) )
                 stop(paste(wh[is.na[wh]], "is not a node"))
+              from <- unique(from)
               nE <- edges(graph, from)
               whD <- lapply(nE, function(x) match(to, x))
               nEd <- edgeKiller(graph@edgeL, from, whD)

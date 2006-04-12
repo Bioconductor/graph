@@ -184,3 +184,12 @@ testSubGraphNoEdgesDirected <- function() {
     checkEquals(1, numNodes(g2))
  }
 
+
+testRemoveEdge <- function() {
+    g1 <- simpleDirectedGraphNEL()
+    f <- c("a", "a")
+    t <- c("c", "d")
+    g2 <- removeEdge(from=f, to=t, g1)
+    checkEquals(3, numEdges(g2))
+    checkTrue(!length(edges(g2)[["a"]]))
+}
