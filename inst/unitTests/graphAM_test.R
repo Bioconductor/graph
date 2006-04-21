@@ -312,6 +312,18 @@ testDirectedAsGraphNEL <- function() {
 }
 
 
+testDirectedAsGraphAM <- function() {
+    g1 <- simpleDirectedGraph()
+    gNel <- as(g1, "graphNEL")
+    g2 <- as(gNel, "graphAM")
+    checkEquals(edges(g1), edges(g2))
+    checkEquals(nodes(g1), nodes(g2))
+    checkEquals(edgemode(g1), edgemode(g2))
+    checkEquals(edgeDataDefaults(g1), edgeDataDefaults(g2))
+    checkEquals(nodeDataDefaults(g1), nodeDataDefaults(g2))
+}
+
+
 testInEdges <- function() {
     g1 <- simpleDirectedGraph()
     expected <- list(a=character(0), b="d", c=c("a", "b", "d"), d="a")

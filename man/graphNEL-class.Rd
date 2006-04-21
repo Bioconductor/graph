@@ -14,6 +14,7 @@
 \alias{adj,graphNEL-method}
 \alias{clearNode,character,graphNEL-method}
 \alias{coerce,graphNEL,generalGraph-method}
+\alias{coerce,graphNEL,graphAM-method}
 \alias{combineNodes,character,graphNEL,character-method}
 \alias{edgeL,graphNEL-method}
 \alias{edges,graphNEL,missing-method}
@@ -86,6 +87,9 @@ Class \code{"graph"}, directly.
 	value="character")}: A method for replacing the nodes in a graph
       object. It checks to be sure the values are the right length and
       unique. }
+    \item{coerce}{\code{signature(from = "graphNEL", to = "graphAM")}:
+      Called via \code{as}, the method converts to an adjacency matrix
+      representation.  See \code{\link{graphAM-class}}. }
   }
 }
 

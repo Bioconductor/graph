@@ -298,3 +298,23 @@ setAs(from="graphAM", to="graphNEL",
           gnel@nodeData <- from@nodeData
           gnel
       })
+
+
+setAs(from="graphNEL", to="graphAM",
+      function(from, to) {
+          theNodes <- nodes(from)
+          numNodes <- length(theNodes)
+          mat <- matrix(0, nrow=numNodes, ncol=numNodes)
+          rownames(mat) <- colnames(mat) <- theNodes
+          theEdges <- edges(from)
+          for (n in theNodes) {
+              e <- theEdges[[n]]
+              if (length(e)) 
+                mat[n, e] <- 1
+          }
+          gam <- new("graphAM", mat, edgemode=edgemode(from))
+          ## copy edge and node attributes
+          gam@edgeData <- from@edgeData
+          gam@nodeData <- from@nodeData
+          gam
+      })
