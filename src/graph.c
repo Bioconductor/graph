@@ -271,7 +271,7 @@ SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr)
 
 static SEXP graph_list_lookup(SEXP x, SEXP subs, SEXP defaultVal)
 {
-    SEXP ans, idx, names, el;
+    SEXP ans, idx, names;
     int ns, i, j;
     ns = length(subs);
     names = GET_NAMES(x);
@@ -344,7 +344,7 @@ static SEXP graph_addItemToList(SEXP list, SEXP item, SEXP name)
 
 SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
 {
-    SEXP idx, names, el, tmpItem, newsubs, ans, ansnames, val;
+    SEXP idx, names, tmpItem, newsubs, ans, ansnames, val;
     int ns, i, j, nnew, nextempty, origlen, numVals, tmpIdx;
 
     ns = length(subs);
@@ -413,7 +413,7 @@ SEXP graph_is_adjacent(SEXP fromEdges, SEXP to)
         frEdges = VECTOR_ELT(fromEdges, i);
         idx = match(toEdge, frEdges, 0);
         for (j = 0; j < length(idx); j++)
-            if (found = (INTEGER(idx)[j] > 0))
+            if ((found = (INTEGER(idx)[j] > 0)))
                 break;
         LOGICAL(ans)[i] = found;
         UNPROTECT(1);
