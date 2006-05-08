@@ -4,7 +4,7 @@ Version: 1.11.0
 Author: R. Gentleman, Elizabeth Whalen, W. Huber, S. Falcon
 Description: A package that implements some simple graph handling
         capabilities.
-Maintainer: R. Gentleman <rgentlem@fhcrc.org>
+Maintainer: Seth Falcon <sfalcon@fhcrc.org>
 License: LGPL
 Depends: R (>= 2.1.0), Ruuid
 Imports: Ruuid, cluster
