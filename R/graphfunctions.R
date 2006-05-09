@@ -208,27 +208,25 @@ ugraph <- function(graph)
 eWV <- function (g, eM, sep = ifelse(edgemode(g) == "directed", "->",
     "--"), useNNames = FALSE)
 {
-#
 # returns vector of weights.  default has names equal to node
 # indices, but useNNames can be set to put node names as names
 # of corresponding weights
 #
-    edL <- g@edgeL
-    eW <- lapply(edL, function(x) {
-        ans = x$weights
-        ed = length(x$edges)
-        if (is.null(ans) && ed > 0)
-            ans = rep(1, ed)
-        if (length(ans) > 0)
-            names(ans) = x$edges
-        ans
-    })
-    a1 <- apply(eM, 2, function(x) eW[[x[1]]][as.character(x[2])])
-    if (useNNames)
-        names(a1) <- paste(nodes(g)[eM[1, ]], nodes(g)[eM[2,
-            ]], sep = sep)
-    else names(a1) <- paste(eM[1, ], eM[2, ], sep = sep)
-    return(a1)
+    n <- nodes(g)
+    from <- n[eM["from", ]]
+    to <- n[eM["to", ]]
+    eW <- tryCatch(edgeData(g, from=from, to=to, attr="weight"),
+                   error=function(e) {
+                       edgeDataDefaults(g, "weight") <- 1:1
+                       edgeData(g, from=from, to=to, attr="weight")
+                   })
+    eW <- unlist(eW)
+    if (!useNNames)
+      nms <- paste(eM["from", ], eM["to", ], sep=sep)
+    else
+      nms <- paste(from, to, sep=sep)
+    names(eW) <- nms
+    eW
 }
 
 

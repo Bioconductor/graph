@@ -193,3 +193,13 @@ testRemoveEdge <- function() {
     checkEquals(3, numEdges(g2))
     checkTrue(!length(edges(g2)[["a"]]))
 }
+
+
+test_eWV <- function() {
+    V <- LETTERS[1:4]
+    gR <- new("graphNEL", nodes=V)
+    gX <- addEdge("A", "C", gR, 0.2) 
+
+    ans <- eWV(gX, edgeMatrix(gX), useNNames = TRUE) 
+    checkEquals(c("A--C"=0.2), ans)
+}
