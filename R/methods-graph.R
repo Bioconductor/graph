@@ -966,6 +966,9 @@ setMethod("edgeData", signature(self="graph", from="missing", to="missing",
               attrDataItem(self@edgeData, x=edgeKeys)
           })
 
+## still needed for Rgraphviz' plot() [well, as long as edgeL() is still there]
+setMethod("edgeL", "graph",
+	  function(graph, index) callGeneric(as(graph, "graphNEL")))
 
 clearEdgeData <- function(self, from, to) {
     ##FIXME: make me a method

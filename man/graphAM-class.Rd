@@ -5,6 +5,7 @@
 \alias{addNode,character,graphAM,missing-method}
 \alias{clearNode,character,graphAM-method}
 \alias{coerce,graphAM,graphNEL-method}
+\alias{coerce,graphAM,matrix-method}
 \alias{edges,graphAM,missing-method}
 \alias{edges,graphAM,character-method}
 \alias{initialize,graphAM-method}
@@ -25,7 +26,7 @@
   A graph class where node and edge information is represented as an
   adjacency matrix.  The adjacency matrix is square and element
   \code{adjMat[i, j]} is non-zero if there is an edge from node i to
-  node j.  
+  node j.
 }
 
 \section{Objects from the Class}{
@@ -51,6 +52,7 @@ Class \code{"graph"}, directly.
     \item{addNode}{\code{signature(object = "graphAM", nodes = "character")}: ... }
     \item{clearNode}{\code{signature(node = "character", object = "graphAM")}: ... }
     \item{coerce}{\code{signature(from = "graphAM", to = "graphNEL")}: ... }
+    \item{coerce}{\code{signature(from = "graphAM", to = "matrix")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "missing")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "character")}: ... }
     \item{initialize}{\code{signature(.Object = "graphAM")}: ... }
@@ -71,13 +73,14 @@ Class \code{"graph"}, directly.
 \seealso{
   \code{\link{graph-class}}, \code{\link{graphNEL-class}}
 }
-
 \examples{
-    mat <- matrix(c(0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0),
-                  byrow=TRUE, ncol=4)
-    rownames(mat) <- letters[1:4]
-    colnames(mat) <- letters[1:4]
-    g1 <- new("graphAM", adjMat=mat)
+mat <- rbind(c(0, 0, 1, 1),
+             c(0, 0, 1, 1),
+             c(1, 1, 0, 1),
+             c(1, 1, 1, 0))
+rownames(mat) <- colnames(mat) <- letters[1:4]
+g1 <- new("graphAM", adjMat=mat)
+stopifnot(identical(mat, as(g1, "matrix")))
 }
 
 \keyword{classes}

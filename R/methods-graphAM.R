@@ -3,7 +3,7 @@
 isValidAdjMat <- function(adjMat, mode="undirected") {
     ## Determine if adjacency matrix adjMat is valid Element adjMat[i, j] == 1
     ## if the graph contains an edge FROM node i TO node j.  If mode is
-    ## "undirected", then adjMat should be symmetrix.    
+    ## "undirected", then adjMat should be symmetrix.
     if (! nrow(adjMat) == ncol(adjMat))
       stop("adjacency matrix must be square")
     if (mode == "undirected")
@@ -176,7 +176,7 @@ getIndices <- function(nodes, from, to) {
       stop("Unknown node", sQuote(to), "specified in to")
     list(from=i, to=j)
 }
-    
+
 
 
 setMethod("addNode",
@@ -204,8 +204,8 @@ setMethod("addEdge",
                 graph@adjMat[idx$to, idx$from] <- 1
               graph
           })
-              
-              
+
+
 setMethod("clearNode",
           signature(node="character", object="graphAM"),
           function(node, object) {
@@ -232,7 +232,7 @@ setMethod("removeNode",
               object@adjMat <- object@adjMat[-idx, -idx]
 
               ## TODO: clear edge attributes
-              
+
               object
           })
 
@@ -287,6 +287,13 @@ setMethod("inEdges", signature(node="character", object="graphAM"),
           })
 
 
+setAs(from="graphAM", to="matrix",
+      function(from, to) {
+	  m <- from@adjMat
+	  rownames(m) <- colnames(m)
+	  m
+      })
+
 setAs(from="graphAM", to="graphNEL",
       function(from, to) {
           n <- nodes(from)
@@ -309,7 +316,7 @@ setAs(from="graphNEL", to="graphAM",
           theEdges <- edges(from)
           for (n in theNodes) {
               e <- theEdges[[n]]
-              if (length(e)) 
+              if (length(e))
                 mat[n, e] <- 1
           }
           gam <- new("graphAM", mat, edgemode=edgemode(from))
