@@ -28,7 +28,7 @@ void R_init_graph(DllInfo *info) {
 }
 
 
-SEXP 
+SEXP
 R_scalarString(const char *v)
 {
   SEXP ans = allocVector(STRSXP, 1);
@@ -45,7 +45,7 @@ SEXP intersectStrings(SEXP x, SEXP y) {
     int curEntry=0;
 
     PROTECT(matchRes = Rf_match(y, x, 0));
-    
+
     for (i = 0; i < length(matchRes); i++) {
 	if (INTEGER(matchRes)[i] == 0)
 	    numZero++;
@@ -56,7 +56,7 @@ SEXP intersectStrings(SEXP x, SEXP y) {
 
     for (i = 0; i < length(matchRes); i++) {
 	if (INTEGER(matchRes)[i] != 0) {
-	    SET_STRING_ELT(matched, curEntry++, 
+	    SET_STRING_ELT(matched, curEntry++,
 			   STRING_ELT(y, INTEGER(matchRes)[i]-1));
 	}
     }
@@ -82,7 +82,7 @@ SEXP intersectStrings(SEXP x, SEXP y) {
 }
 
 
-SEXP graphIntersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE, 
+SEXP graphIntersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE,
 		       SEXP edgeMode) {
     /* edgeMode == 0 implies "undirected" */
     SEXP bN, newXE, newYE;
@@ -93,11 +93,11 @@ SEXP graphIntersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE,
     klass = MAKE_CLASS("graphNEL");
     PROTECT(outGraph = NEW_OBJECT(klass));
     if (INTEGER(edgeMode)[0])
-	SET_SLOT(outGraph, Rf_install("edgemode"),  
+	SET_SLOT(outGraph, Rf_install("edgemode"),
 		 R_scalarString("directed"));
     else
 	SET_SLOT(outGraph, Rf_install("edgemode"),
-		 R_scalarString("undirected"));    
+		 R_scalarString("undirected"));
     PROTECT(bN = intersectStrings(xN, yN));
     if (length(bN) == 0) {
 	SET_SLOT(outGraph, Rf_install("nodes"), allocVector(STRSXP, 0));
@@ -151,7 +151,7 @@ SEXP checkEdgeList(SEXP eL, SEXP bN) {
     SEXP newEL, curVec, curMatches, newVec, eleNames;
     int i, j, k, size, curEle;
 
-    
+
     PROTECT(newEL = allocVector(VECSXP, length(bN)));
     PROTECT(eleNames = getAttrib(eL, R_NamesSymbol));
     for (i = 0; i < length(bN); i++) {
@@ -172,7 +172,7 @@ SEXP checkEdgeList(SEXP eL, SEXP bN) {
 	    curEle = 0;
 	    for (j = 0; j < length(curMatches); j++) {
 		if (INTEGER(curMatches)[j] != 0) {
-		    SET_STRING_ELT(newVec, curEle++, 
+		    SET_STRING_ELT(newVec, curEle++,
 				   STRING_ELT(curVec,
 					      INTEGER(curMatches)[j]-1));
 		}
@@ -208,7 +208,7 @@ static SEXP graph_getListElement(SEXP list, char *str, SEXP defaultVal)
     SEXP elmt = defaultVal;
     SEXP names = getAttrib(list, R_NamesSymbol);
     int i;
-     
+
     for (i = 0; i < length(list); i++)
         if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
             elmt = VECTOR_ELT(list, i);
@@ -222,14 +222,14 @@ static int graph_getListIndex(SEXP list, SEXP name)
     SEXP names = GET_NAMES(list);
     int i;
     char* str = CHAR(STRING_ELT(name, 0));
-     
+
     for (i = 0; i < length(list); i++)
         if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0)
             return i;
     return -1;
 }
 
-static SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist, 
+static SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist,
                                  SEXP defaultVal)
 {
     SEXP ans, idx, names, el;
@@ -244,7 +244,7 @@ static SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist,
         if (j < 0)
             SET_VECTOR_ELT(ans, i, defaultVal);
         else {
-            el = graph_getListElement(VECTOR_ELT(x, j-1), CHAR(sublist), 
+            el = graph_getListElement(VECTOR_ELT(x, j-1), CHAR(sublist),
                                       defaultVal);
             SET_VECTOR_ELT(ans, i, el);
         }
@@ -269,6 +269,7 @@ SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr)
     return graph_sublist_lookup(data, keys, attr, defaultVal);
 }
 
+#ifdef __NOT_USED__
 static SEXP graph_list_lookup(SEXP x, SEXP subs, SEXP defaultVal)
 {
     SEXP ans, idx, names;
@@ -289,37 +290,40 @@ static SEXP graph_list_lookup(SEXP x, SEXP subs, SEXP defaultVal)
     UNPROTECT(2);
     return ans;
 }
+#endif
 
 static SEXP graph_makeItem(SEXP s, int i)
 {
     if (s == R_NilValue)
-        return s;
-    SEXP item;
-    switch (TYPEOF(s)) {
-    case STRSXP:
-    case EXPRSXP:
-    case VECSXP:
-        item = duplicate(VECTOR_ELT(s, i));
-        break;
-    case LGLSXP:
-        item = ScalarLogical(LOGICAL(s)[i]);
-        break;
-    case INTSXP:
-        item = ScalarInteger(INTEGER(s)[i]);
-	break;
-    case REALSXP:
-        item = ScalarReal(REAL(s)[i]);
-	break;
-    case CPLXSXP:
-        item = ScalarComplex(COMPLEX(s)[i]);
-	break;
-    case RAWSXP:
-        item = ScalarRaw(RAW(s)[i]);
-	break;
-    default:
-        error("unknown type");
+	return s;
+    else {
+	SEXP item = R_NilValue;/* -Wall */
+	switch (TYPEOF(s)) {
+	case STRSXP:
+	case EXPRSXP:
+	case VECSXP:
+	    item = duplicate(VECTOR_ELT(s, i));
+	    break;
+	case LGLSXP:
+	    item = ScalarLogical(LOGICAL(s)[i]);
+	    break;
+	case INTSXP:
+	    item = ScalarInteger(INTEGER(s)[i]);
+	    break;
+	case REALSXP:
+	    item = ScalarReal(REAL(s)[i]);
+	    break;
+	case CPLXSXP:
+	    item = ScalarComplex(COMPLEX(s)[i]);
+	    break;
+	case RAWSXP:
+	    item = ScalarRaw(RAW(s)[i]);
+	    break;
+	default:
+	    error("unknown type");
+	}
+	return item;
     }
-    return item;
 }
 
 static SEXP graph_addItemToList(SEXP list, SEXP item, SEXP name)
@@ -381,9 +385,9 @@ SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
         else
             PROTECT(val = duplicate(values));
         j = INTEGER(idx)[i];
-        if (j < 0) { 
+        if (j < 0) {
             tmpItem = graph_addItemToList(R_NilValue, val, sublist);
-            SET_VECTOR_ELT(ans, nextempty, tmpItem); 
+            SET_VECTOR_ELT(ans, nextempty, tmpItem);
             nextempty++;
         } else {
             tmpItem = VECTOR_ELT(ans, j-1);
