@@ -42,6 +42,10 @@
 \section{Slots}{
   \describe{
     \item{\code{nodes}:}{Object of class \code{"vector"}.}
+%%% FIXME: The following is now really *WRONG* as slot description.
+%%% However, it's still valid and *important* for object creation, see
+%%% above, so move it there, once you update the slot descriptions here!
+
     \item{\code{edgeL}:}{Object of class \code{"list"}. The \code{edgeL}
       must be the same length as \code{nodes}. The elements of this
       vector correspond to the same element in \code{nodes}. The
@@ -119,24 +123,22 @@ Class \code{"graph"}, directly.
    Note that the reason for using indices to represent the \code{to} end
    of a node is so that we can easily support permutation of the node
    labels as a way to generate randomizations of the graph.
-
-  }
+ }
 \author{R. Gentleman}
 
-\seealso{\code{\link{distGraph-class}},
-  \code{\link{clusterGraph-class}} } 
+\seealso{\code{\link{graphAM-class}}, \code{\link{distGraph-class}},
+  \code{\link{clusterGraph-class}}
+}
 
 \examples{
    set.seed(123)
    V <- LETTERS[1:4]
    edL <- vector("list", length=4)
    names(edL) <- V
-   toE <- LETTERS[4:1]
-   for(i in 1:4) 
+   for(i in 1:4)
       edL[[i]] <- list(edges=5-i, weights=runif(1))
    gR <- new("graphNEL", nodes=V, edgeL=edL)
    edges(gR)
    edgeWeights(gR)
-
 }
 \keyword{classes}

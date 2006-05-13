@@ -225,14 +225,17 @@ A virtual Class: No objects may be created from it.
 \references{ Graph Theory and its Applications, J. Gross and J. Yellen. }
 \author{R. Gentleman and E. Whalen. }
 
-\seealso{\code{\link{graphNEL-class}}, \code{\link{distGraph-class}} }
+\seealso{\code{\link{graphNEL-class}}, \code{\link{graphAM-class}},
+  \code{\link{distGraph-class}}.
+}
 
 \examples{
   set.seed(123)
-  g1 <- randomGraph(letters[1:10], 1:4, p=.3)
+  g1 <- randomGraph(letters[1:10], 1:4, p= 0.3)
+  numEdges(g1)
+  edgeNames(g1)
   edges(g1)
-  edges(g1, "a")
-
-  ## edgeNames(g1)
+  edges(g1, c("a","d")) # those incident to 'a' or 'd'
 }
+\keyword{graphs}
 \keyword{classes}

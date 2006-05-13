@@ -3,11 +3,11 @@
 \title{ Random Graph }
 \description{
  This function generates a random graph according to a model that
- involves a latent variable. The construction is to randomly assign
+ involves a latent variable.  The construction is to randomly assign
  members of the set \code{M} to the nodes, \code{V}. An edge is assigned
  between two elements of \code{V} when they both have the same element
  of \code{M} assigned to them. An object of class \code{graphNEL} is
- returned. 
+ returned.
 }
 \usage{
 randomGraph(V, M, p, weights=TRUE)
@@ -39,12 +39,15 @@ An object of class \code{\link{graphNEL-class}} is returned.
 }
 \author{R. Gentleman }
 
-\seealso{\code{\link{randomEGraph}}}
+\seealso{\code{\link{randomEGraph}}, \code{\link{randomNodeGraph}}
+}
 
 \examples{
-   set.seed(123)
-   V <- letters[1:10]
-   M <- 1:4
-   g1 <- randomGraph(V, M, .2)
+ set.seed(123)
+ V <- letters[1:10]
+ M <- 1:4
+ g1 <- randomGraph(V, M, 0.2)
+ numEdges(g1) # 16, in this case
+ edgeNames(g1)# "<from> ~ <to>"  since undirected
 }
-\keyword{ manip}
+\keyword{graphs}
