@@ -15,10 +15,10 @@ setClass("graphNEL",
 
 
 ## Adjacency Matrix representation
-         
+
 setClass("graphAM", contains="graph",
          representation(adjMat="matrix"),
-         validity=function(object) validGraphIM(object))
+         validity=function(object) validGraph(object))
 
 
 setClass("graphH",
