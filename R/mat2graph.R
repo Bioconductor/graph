@@ -31,7 +31,7 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
   .ftM2other(ft, W, V, edgemode, "graphNEL")
 
 .ftM2other <- function(ft, W, V, edgemode, targetclass) {
-   ## ft: nx2 matrix. 
+   ## ft: nx2 matrix.
    if(!(is.matrix(ft) && ncol(ft)==2))
      stop("'ft' must be an nx2 matrix.")
    numE <- nrow(ft)
@@ -48,7 +48,7 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
      ft <- rbind(ft, ft[,2:1])
      W  <- c(W,W)
    }
-   
+
    ## deal with V
    if(is.null(V)) V <- names(table(ft))
    ift <- cbind(match(ft[,1], V), match(ft[,2], V))
@@ -67,42 +67,52 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
       mat
     },
     graphNEL = {
-      toN <- split(ift[,2], ft[,1]) ## 1st column=from, 2nd column=to 
+      toN <- split(ift[,2], ft[,1]) ## 1st column=from, 2nd column=to
       eW  <- split(W, ft[,1])
       edgeL <- lapply(V, function(nm) list(edges=toN[[nm]], weights=eW[[nm]]))
       names(edgeL) <- V
       new("graphNEL", nodes=V, edgeL=edgeL, edgemode=edgemode)
     },
     stop(paste("Unknown targetclass '", targetclass, "'", sep=""))
-  ) ## end switch        
+  ) ## end switch
 }
 
 
-setAs("matrix", "graphNEL", function(from) {
+setAs("matrix", "graphAM", function(from) {
     if(is.null(rownames(from))) stop("from must have row names")
     if(is.null(colnames(from))) stop("from must have column names")
     if(!identical(rownames(from),colnames(from)))
-        stop("Row and column names of from must be the same.")
-    mode <- "directed"
-    if (all(from == t(from)))
-      mode <- "undirected"
-    g <- new("graphAM", from, edgemode=mode, values=list(weight=1))
-    as(g, "graphNEL")
+	stop("Row and column names of 'from' must be identical.")
+    if(!is.numeric(from)) {
+	if(is.logical(from)) storage.mode(from) <- "integer"
+	else stop("matrix 'from' must be numeric or logical")
+    }
+    new("graphAM", from,
+	edgemode = if (all(from == t(from))) "undirected" else "directed")
+	## values = list(weight=1)
 })
 
+setAs("matrix", "graphNEL",
+      function(from) as(as(from, "graphAM"), "graphNEL"))
 
-setAs("graphNEL","matrix",function(from) {
-  nr = nc = numNodes(from)
-  e1 = from@edgeL
-  m <- matrix(unlist(lapply(e1,function(x) {
-    y <- rep(0,nc)
-    y[x$edges] = if(is.null(x$weights)) rep(1,length(x$edges)) else x$weights
-    y
-  })),nr=nr,nc=nc,byrow=TRUE,dimnames=list(from@nodes,from@nodes))
-  #Update missing reflexive edges when the graph is undirected
-  if(edgemode(from) == "undirected")
-    m + (m == 0)*t(m)
-  else
-    m
-})
+setAs(from="graphNEL", to="matrix", function(from) NEL2mat(from))
+## NEL2mat() is in ./methods-graphAM.R
+
+## setAs("graphNEL", "matrix", function(from) {
+##     nr <- nc <- numNodes(from)
+##     e1 <- from@edgeL ## does *not* contain weights anymore
+##     has.wt <- sapply(ed <- edgeData(from))
+
+##     m <- matrix(unlist(lapply(e1,function(x) {
+## 	y <- rep(0:0,nc)
+## 	y[x$edges] <- if(is.null(x$weights)) rep(1,length(x$edges)) else x$weights
+## 	y
+##     })),nr=nr,nc=nc,byrow=TRUE,dimnames=list(from@nodes,from@nodes))
+##     ## Update missing reflexive edges when the graph is undirected
+##     if(edgemode(from) == "undirected")
+## 	m + (m == 0)*t(m)
+##     else
+## 	m
+## })
+
 

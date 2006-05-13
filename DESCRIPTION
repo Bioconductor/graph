@@ -1,6 +1,6 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.11.1
+Version: 1.11.2
 Author: R. Gentleman, Elizabeth Whalen, W. Huber, S. Falcon
 Description: A package that implements some simple graph handling
         capabilities.
@@ -10,7 +10,7 @@ Depends: R (>= 2.1.0), Ruuid
 Imports: Ruuid, cluster
 Suggests: SparseM (>= 0.36), XML
 biocViews: GraphsAndNetworks
-Collate: AllClasses.R AllGenerics.R contents.R buildDepGraph.R property.R 
+Collate: AllClasses.R AllGenerics.R contents.R buildDepGraph.R property.R
          methods-graph.R graphNEL.R class.R clustergraph.R NELhandler.R
          edgefunctions.R graphfunctions.R GXLformals.R gxlReader.R
          random.R write.tlp.R mat2graph.R zzz.R graphH.R

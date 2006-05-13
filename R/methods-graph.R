@@ -1,11 +1,5 @@
-setMethod("isDirected", signature("graph"),
-          function(object) {
-              if (object@edgemode == "directed")
-                TRUE
-              else
-                FALSE
-          })
-
+setMethod("isDirected", "graph",
+	  function(object) object@edgemode == "directed")
 
 setMethod("edgemode", "graph", function(object) object@edgemode)
 
@@ -43,7 +37,7 @@ setMethod("isAdjacent",signature(object="graph", from="character",
                                  to="character"),
           function(object, from, to) {
               if (length(from) != length(to))
-                stop("from and to must have the same length")
+                stop("'from' and 'to' must have the same length")
               fromEdges <- edges(object)[from]
               .Call("graph_is_adjacent", fromEdges, to,
                     PACKAGE="graph")
@@ -969,6 +963,26 @@ setMethod("edgeData", signature(self="graph", from="missing", to="missing",
 ## still needed for Rgraphviz' plot() [well, as long as edgeL() is still there]
 setMethod("edgeL", "graph",
 	  function(graph, index) callGeneric(as(graph, "graphNEL")))
+
+## This is a placeholder; if it's missing, i.e., currently,
+## and 'Rgraphviz' is not loaded, users get bad error messages.
+## Unfortunately, it doesn't work -- to MM, this seems like a bug in R
+if(FALSE)
+setMethod("plot", "graph",
+	  function(x, y, ...) {
+	      if(require("Rgraphviz")) {
+		  ## Remove 'myself' :
+		  removeMethod("plot", "graph",
+                               where = as.environment("package:graph"))
+		  message("now that the 'Rgraphviz' package is loaded, try again...")
+	      }
+	      else stop("'Rgraphviz' package is required for plot(<graph>)")
+	      ## else, try again *after* loading 'Rgraphviz':
+	      ## gives infinite recursion:	 callGeneric()
+	      ## gives infinite recursion:	 plot(x,y, ...)
+	      ## dispatches to S3 plot.default:	 callNextMethod()
+	  })
+
 
 clearEdgeData <- function(self, from, to) {
     ##FIXME: make me a method

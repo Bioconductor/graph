@@ -6,6 +6,7 @@
 \alias{clearNode,character,graphAM-method}
 \alias{coerce,graphAM,graphNEL-method}
 \alias{coerce,graphAM,matrix-method}
+\alias{coerce,matrix,graphAM-method}
 \alias{edges,graphAM,missing-method}
 \alias{edges,graphAM,character-method}
 \alias{initialize,graphAM-method}
@@ -35,7 +36,7 @@ Objects can be created by calls of the form \code{new("graphAM", adjMat, edgemod
 \section{Slots}{
   \describe{
     \item{\code{adjMat}:}{An adjacency \code{"matrix"} describing the
-    graph structure.  The \code{colnames} of the matrix will be used as
+    graph structure.  The \code{\link{colnames}} of the matrix will be used as
     node names for the graph if present.}
     \item{\code{edgemode}:}{A \code{"character"} vector specifying
       whether the graph is "directed" or "undirected".}
@@ -53,6 +54,7 @@ Class \code{"graph"}, directly.
     \item{clearNode}{\code{signature(node = "character", object = "graphAM")}: ... }
     \item{coerce}{\code{signature(from = "graphAM", to = "graphNEL")}: ... }
     \item{coerce}{\code{signature(from = "graphAM", to = "matrix")}: ... }
+    \item{coerce}{\code{signature(from = "matrix", to = "graphAM")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "missing")}: ... }
     \item{edges}{\code{signature(object = "graphAM", which = "character")}: ... }
     \item{initialize}{\code{signature(.Object = "graphAM")}: ... }
@@ -80,7 +82,16 @@ mat <- rbind(c(0, 0, 1, 1),
              c(1, 1, 1, 0))
 rownames(mat) <- colnames(mat) <- letters[1:4]
 g1 <- new("graphAM", adjMat=mat)
-stopifnot(identical(mat, as(g1, "matrix")))
-}
+stopifnot(identical(mat, as(g1, "matrix")), validObject(g1))
 
+## now with weights:
+mat[1,3] <- mat[3,1] <- 10
+gw <- new("graphAM", adjMat=mat)
+
+## consistency check :
+stopifnot(identical(mat, as(gw, "matrix")), validObject(gw),
+## FIXME  identical(gw, as(as(gw, "graphNEL"), "graphAM")),
+          TRUE)
+}
+\keyword{graphs}
 \keyword{classes}

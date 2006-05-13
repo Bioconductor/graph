@@ -72,15 +72,17 @@ setMethod("initialize", signature("graphAM"),
           })
 
 
-getEdgeList <- function(adjMat, nodeNames) {
+getEdgeList <- function(adjMat, nodeNames, weights = FALSE) {
     numNodes <- length(nodeNames)
-    eList <- vector(mode="list", length=numNodes)
+    eList <- vector("list", length=numNodes)
     for (i in seq(length=numNodes)) {
-        aRow <- adjMat[i, ]
-        result <- names(base::which(aRow != 0))
-        if (is.null(result))
-          result <- character(0)
-        eList[[i]] <- result
+	aRow <- adjMat[i, ]
+	non0 <- base::which(aRow != 0)
+	if (is.null(el <- names(non0))) el <- character(0)
+	eList[[i]] <-
+	    if(!weights || all(aRow[non0] == 1))
+		el
+	    else list(edges = el, weights= aRow[non0])
     }
     names(eList) <- nodeNames
     eList
@@ -102,7 +104,7 @@ setMethod("edges", signature("graphAM", "character"),
 
 setMethod("nodes", signature("graphAM"),
           function(object) {
-              ## initialize gaurantees colnames
+              ## initialize guarantees colnames
               colnames(object@adjMat)
           })
 
@@ -293,35 +295,46 @@ setAs(from="graphAM", to="matrix",
 	  rownames(m) <- colnames(m)
 	  m
       })
+## ^^ the reverse is in ./mat2graph.R
 
 setAs(from="graphAM", to="graphNEL",
       function(from, to) {
-          n <- nodes(from)
-          edgeList <- lapply(edges(from), function(e) list(edges=match(e, n)))
-          gnel <- new("graphNEL", nodes=n, edgeL=edgeList,
-                      edgemode=edgemode(from))
-          ## copy edge and node attributes
-          gnel@edgeData <- from@edgeData
-          gnel@nodeData <- from@nodeData
-          gnel
+	  n <- nodes(from)
+	  ## Note: The edgeList must contain edge weights if there are!
+	  edgeList <- getEdgeList(from@adjMat, n, weights = TRUE)
+	  gnel <- new("graphNEL", nodes = n, edgeL = edgeList,
+		      edgemode = edgemode(from))
+	  ## copy edge and node attributes:
+	  gnel@edgeData <- from@edgeData
+	  gnel@nodeData <- from@nodeData
+	  gnel
       })
 
 
+## This is also used in mat2graph.R :
+NEL2mat <- function(g) {
+    theNodes <- nodes(g)
+    numNodes <- length(theNodes)
+    mat <- matrix(0:0, nrow=numNodes, ncol=numNodes)
+    rownames(mat) <- colnames(mat) <- theNodes
+    theEdges <- edges(g)
+    wts <- edgeWeights(g)
+    use.wts <- any(unlist(wts) != 1)
+    for (n in theNodes) {
+	e <- theEdges[[n]]
+	if (length(e))
+	    mat[n, e] <- if(use.wts) wts[[n]] else 1:1
+    }
+    mat
+}
+
 setAs(from="graphNEL", to="graphAM",
       function(from, to) {
-          theNodes <- nodes(from)
-          numNodes <- length(theNodes)
-          mat <- matrix(0, nrow=numNodes, ncol=numNodes)
-          rownames(mat) <- colnames(mat) <- theNodes
-          theEdges <- edges(from)
-          for (n in theNodes) {
-              e <- theEdges[[n]]
-              if (length(e))
-                mat[n, e] <- 1
-          }
-          gam <- new("graphAM", mat, edgemode=edgemode(from))
-          ## copy edge and node attributes
-          gam@edgeData <- from@edgeData
-          gam@nodeData <- from@nodeData
-          gam
+	  mat <- NEL2mat(from)
+	  gam <- new("graphAM", mat, edgemode=edgemode(from))
+	  ## copy edge and node attributes
+	  ## FIXME?  The edgeData *weights* could be dropped
+	  gam@edgeData <- from@edgeData
+	  gam@nodeData <- from@nodeData
+	  gam
       })
