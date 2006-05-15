@@ -1,4 +1,8 @@
 validGraph<-function(object, quietly=FALSE) {
+    ## FIXME: we are doing if/else branching here on
+    ## specific subclasses of graph.  We should make this a generic
+    ## so we can organize checking.  Also, graphAM is not 
+    ## currently being checked in any way.
     bad = FALSE
     if (is(object, "graphNEL")) {
         objEdges<-edges(object)

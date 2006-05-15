@@ -272,7 +272,7 @@ testRemoveEdge <- function() {
 }
 
 
-testGraphIMCloning <- function() {
+testGraphAMCloning <- function() {
     mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     origNodes <- nodes(g1)
@@ -338,4 +338,24 @@ testNoEdges <- function() {
     checkEquals(3, length(edges(g)))
     checkEquals(nodes(g), names(edges(g)))
     checkEquals(0, sum(sapply(edges(g), length)))
+}
+
+
+testAsMatrix <- function() {
+    mat <- rbind(c(0, 0, 12, 1),
+                 c(0, 0, 1, 1),
+                 c(12, 1, 0, 1),
+                 c(1, 1, 1, 0))
+    rownames(mat) <- colnames(mat) <- letters[1:4]
+    ## If no values arg, then matrix just converted to 0/1
+    g1 <- new("graphAM", adjMat=mat, edgemode="undirected")
+    mat1 <- mat
+    mat1[mat1 != 0] <- 1:1
+    checkEquals(mat1, as(g1, "matrix"))
+
+    ## With values arg, matrix values stored as edge attribute
+    ## which gets restored for as(<.>, "matrix")
+    g2 <- new("graphAM", adjMat=mat, edgemode="undirected",
+              values=list(weight=1))
+    checkEquals(mat, as(g2, "matrix"))
 }

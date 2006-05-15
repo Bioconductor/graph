@@ -92,27 +92,13 @@ setAs("matrix", "graphAM", function(from) {
 	## values = list(weight=1)
 })
 
+
 setAs("matrix", "graphNEL",
       function(from) as(as(from, "graphAM"), "graphNEL"))
 
-setAs(from="graphNEL", to="matrix", function(from) NEL2mat(from))
-## NEL2mat() is in ./methods-graphAM.R
 
-## setAs("graphNEL", "matrix", function(from) {
-##     nr <- nc <- numNodes(from)
-##     e1 <- from@edgeL ## does *not* contain weights anymore
-##     has.wt <- sapply(ed <- edgeData(from))
-
-##     m <- matrix(unlist(lapply(e1,function(x) {
-## 	y <- rep(0:0,nc)
-## 	y[x$edges] <- if(is.null(x$weights)) rep(1,length(x$edges)) else x$weights
-## 	y
-##     })),nr=nr,nc=nc,byrow=TRUE,dimnames=list(from@nodes,from@nodes))
-##     ## Update missing reflexive edges when the graph is undirected
-##     if(edgemode(from) == "undirected")
-## 	m + (m == 0)*t(m)
-##     else
-## 	m
-## })
+setAs("graphNEL", "matrix", function(from) {
+    as(as(from, "graphAM"), "matrix")
+})
 
 

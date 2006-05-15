@@ -39,6 +39,7 @@ isValidNodeList <- function(nList, nNames) {
 
 
 initEdgeSet <- function(self, values) {
+    ## Put matrix elements into @edgeData using attr name from 'values'.
     if (!is.list(values) || length(values) != 1 || is.null(names(values)))
       stop("values must be a named list with one element")
     self@edgeData <- new("attrData", defaults=values)
@@ -68,21 +69,25 @@ setMethod("initialize", signature("graphAM"),
               else
                 .Object@edgeData <- new("attrData")
               .Object@nodeData <- new("attrData")
+              ## Matrix values have been stored in @edgeData,
+              ## so now we normalize to 0/1
+              adjMat <- .Object@adjMat
+              adjMat[adjMat != 0] <- 1:1
+              .Object@adjMat <- adjMat
+
               .Object
           })
 
 
-getEdgeList <- function(adjMat, nodeNames, weights = FALSE) {
+getEdgeList <- function(adjMat, nodeNames) {
     numNodes <- length(nodeNames)
-    eList <- vector("list", length=numNodes)
+    eList <- vector(mode="list", length=numNodes)
     for (i in seq(length=numNodes)) {
-	aRow <- adjMat[i, ]
-	non0 <- base::which(aRow != 0)
-	if (is.null(el <- names(non0))) el <- character(0)
-	eList[[i]] <-
-	    if(!weights || all(aRow[non0] == 1))
-		el
-	    else list(edges = el, weights= aRow[non0])
+        aRow <- adjMat[i, ]
+        result <- names(base::which(aRow != 0))
+        if (is.null(result))
+          result <- character(0)
+	eList[[i]] <- result
     }
     names(eList) <- nodeNames
     eList
@@ -291,7 +296,13 @@ setMethod("inEdges", signature(node="character", object="graphAM"),
 
 setAs(from="graphAM", to="matrix",
       function(from, to) {
-	  m <- from@adjMat
+          if ("weight" %in% names(edgeDataDefaults(from))) {
+              tm <- t(from@adjMat)
+              tm[tm != 0] <- unlist(edgeData(from, attr="weight"))
+              m <- t(tm)
+          } else {
+              m <- from@adjMat
+          }
 	  rownames(m) <- colnames(m)
 	  m
       })
@@ -299,11 +310,8 @@ setAs(from="graphAM", to="matrix",
 
 setAs(from="graphAM", to="graphNEL",
       function(from, to) {
-	  n <- nodes(from)
-	  ## Note: The edgeList must contain edge weights if there are!
-	  edgeList <- getEdgeList(from@adjMat, n, weights = TRUE)
-	  gnel <- new("graphNEL", nodes = n, edgeL = edgeList,
-		      edgemode = edgemode(from))
+	  gnel <- new("graphNEL", nodes=nodes(from), edgeL=edges(from),
+		      edgemode=edgemode(from))
 	  ## copy edge and node attributes:
 	  gnel@edgeData <- from@edgeData
 	  gnel@nodeData <- from@nodeData
@@ -330,11 +338,19 @@ NEL2mat <- function(g) {
 
 setAs(from="graphNEL", to="graphAM",
       function(from, to) {
-	  mat <- NEL2mat(from)
-	  gam <- new("graphAM", mat, edgemode=edgemode(from))
-	  ## copy edge and node attributes
-	  ## FIXME?  The edgeData *weights* could be dropped
-	  gam@edgeData <- from@edgeData
-	  gam@nodeData <- from@nodeData
-	  gam
+          theNodes <- nodes(from)
+          numNodes <- length(theNodes)
+          mat <- matrix(0, nrow=numNodes, ncol=numNodes)
+          rownames(mat) <- colnames(mat) <- theNodes
+          theEdges <- edges(from)
+          for (n in theNodes) {
+              e <- theEdges[[n]]
+              if (length(e))
+                mat[n, e] <- 1
+          }
+          gam <- new("graphAM", mat, edgemode=edgemode(from))
+          ## copy edge and node attributes
+          gam@edgeData <- from@edgeData
+          gam@nodeData <- from@nodeData
+          gam                          
       })
