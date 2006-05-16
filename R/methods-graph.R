@@ -522,8 +522,11 @@ setMethod("show", signature("graph"),
 
 
 ##take a sparse matrix - csr and put it into a graph
-sparseM2Graph <- function(sM, nodeNames) {
+sparseM2Graph <- function(sM, nodeNames, edgemode=c("directed", "undirected"))
+{
+    ## FIXME: this needs to become a method
     require("SparseM") || stop("need SparseM for this operation")
+    edgemode <- match.arg(edgemode)
     nN <- dim(sM)[1]
     if( nN != dim(sM)[2] )
         stop("only square matrices can be transformed, now")
@@ -542,9 +545,11 @@ sparseM2Graph <- function(sM, nodeNames) {
         ##need this because otherwise partial matching is done
         if( i %in% names(eL) )
             edL[[i]] <- list(edges=eL[[i]], weights=eW[[i]])
+        else
+          edL[[i]] <- list(edges=numeric(0))
     }
     names(edL) <- nodeNames
-    new("graphNEL", nodes=nodeNames, edgeL=edL)
+    new("graphNEL", nodes=nodeNames, edgeL=edL, edgemode=edgemode)
 }
 
 ##translate a graph to a SparseMatrix:
@@ -552,6 +557,7 @@ sparseM2Graph <- function(sM, nodeNames) {
 ##ja - the column indices
 ##ia the row offsets (
 graph2SparseM <- function(g, useweights=FALSE) {
+    ## FIXME: this needs to become a method
     require("SparseM") || stop("need SparseM for this operation")
     if (! is(g, "graphNEL"))
        stop("coercion only works for graphNEL class")
@@ -560,8 +566,8 @@ graph2SparseM <- function(g, useweights=FALSE) {
     e2 = lapply(e1, function(x) x$edges)
 
     eL = listLen(e2)
-    if( useweights )
-        ra = unlist(lapply(e1, function(x) x$weights))
+    if (useweights && ("weight" %in% names(edgeDataDefaults(g))))
+      ra <- unlist(edgeData(g, attr="weight"))
     else
         ra = rep(1, sum(eL))
     ja = as.integer(unlist(e2))

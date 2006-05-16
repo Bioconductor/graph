@@ -9,7 +9,7 @@
 }
 \usage{
 graph2SparseM(g, useweights=FALSE)
-sparseM2Graph(sM, nodeNames) 
+sparseM2Graph(sM, nodeNames, edgemode=c("directed", "undirected")) 
 
 }
 \arguments{
@@ -18,6 +18,9 @@ sparseM2Graph(sM, nodeNames)
     weights in the graph as values in the sparse matrix.}
   \item{sM}{A sparse matrix.}
   \item{nodeNames}{A \code{character} vector of the node names.}
+  \item{edgemode}{Specifies whether the graph to be created should have
+    directed (default) or undirected edges.  If undirected, the input
+    matrix \code{sM} must be symmetric.}
 }
 \details{
   A very simple coercion from one representation to another.
@@ -28,22 +31,28 @@ sparseM2Graph(sM, nodeNames)
   
 }
 \value{
-  \code{graph2SparseM} takes as input an instance of the \code{graph}
-  class and returns a sparse matrix while \code{sparseM2Graph} takes a
-  sparse matrix as input and returns an in instance of the graph class.
+  \code{graph2SparseM} takes as input an instance of a subclass of the
+  \code{graph} class and returns a sparse matrix.
+
+  \code{sparseM2Graph} takes a sparse matrix as input and returns an
+  instance of the \code{graphNEL} class.  By default, the
+  \code{graphNEL} returned will have directed edges.
 }
 
 \author{R. Gentleman }
 
-\seealso{\code{\link{graph-class}} And for other conversions,
-\code{\link{aM2bpG}} and \code{\link{ftM2adjM}} }
+\seealso{
+  \code{\link{graph-class}},
+  \code{\link{graphNEL-class}}, and for
+  other conversions, \code{\link{aM2bpG}} and \code{\link{ftM2adjM}}
+}
 
 \examples{
   set.seed(123)
   g1 <- randomGraph(letters[1:10], 1:4, p=.3)
-  s1 <- graph2SparseM(g1)
-
-  sparseM2Graph(s1, letters[1:10])
-
+  s1 <- graph2SparseM(g1, useweights=TRUE)
+  g2 <- sparseM2Graph(s1, letters[1:10], edgemode="undirected")
+  ## consistency check
+  stopifnot(all.equal(g1, g2))
 }
 \keyword{manip}
