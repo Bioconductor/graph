@@ -287,10 +287,12 @@ setMethod("inEdges", signature(node="character", object="graphAM"),
               if (any(unknownNodes))
                 stop("Unknown nodes:\n", paste(unknownNodes, collapse=", "))
               ## cols of adjMat tells us in edges
-              ans <- apply(object@adjMat[, node], 2, function(col) {
-                  allNodes[as.logical(col)]
-                  })
-              return(ans)
+              adjMat <- object@adjMat
+              ans <- list()
+              for (n in node) {
+                  ans[[n]] <- allNodes[as.logical(adjMat[, n])]
+              }
+              ans
           })
 
 

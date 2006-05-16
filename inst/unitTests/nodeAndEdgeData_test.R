@@ -178,6 +178,27 @@ testEdgeDataGetting <- function() {
 }
 
 
+testEdgeDataToOnlyUndir <- function() {
+    mat <- simpleInciMat()
+    mat[1, 3] <- mat[3, 1] <- 100
+    mat[1, 4] <- mat[4, 1] <- 200
+    g1 <- new("graphAM", adjMat=mat, values=list(weight=1))
+    got <- edgeData(g1, to=c("a", "b"), attr="weight")
+    expect <- c("c|a", "d|a", "c|b", "d|b")
+    checkEquals(expect, names(got))
+}
+
+
+testEdgeDataToOnlyDir <- function() {
+    g1 <- simpleDirectedGraph()
+    edgeDataDefaults(g1, attr="weight") <- 1
+    edgeData(g1, from=c("a", "b"), to=c("c", "c"), attr="weight") <- c(10, 20)
+    got <- edgeData(g1, to=c("a", "b"), attr="weight")
+    expect <- c("d|b")
+    checkEquals(expect, names(got))
+}
+
+
 testEdgeDataSettingDirected <- function() {
     g1 <- simpleDirectedGraph()
     myAttributes <- list(size=1, dim=c(3, 3), name="fred")
