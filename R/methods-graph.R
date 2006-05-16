@@ -147,11 +147,18 @@ setMethod("isAdjacent",signature(object="graph", from="character",
 
 setMethod("edgeWeights", signature(object="graph", index="character"),
           function(object, index) {
-              ew <- tryCatch(edgeData(object, from=index, attr="weight"),
-                             error=function(e) {
-                                 edgeDataDefaults(object, "weight") <- 1:1
-                                 edgeData(object, from=index, attr="weight")
-                             })
+              if (!"weight" %in% names(edgeDataDefaults(object))) {
+                  ## No existing 'weight' edge attr, default to 1
+                  edgeDataDefaults(object, "weight") <- 1:1
+              }
+              default <- edgeDataDefaults(object, "weight")
+              if (!is.vector(default))
+                stop("edgeWeights can only be used if the 'weight' ",
+                     "edge attributes are vectors.")
+              ew <- edgeData(object, from=index, attr="weight")
+              if (!length(ew))
+                return(lapply(edges(object), function(x)
+                              vector(mode=mode(default), length=0)))
               gEdges <- edges(object)[index]
               edgeCounts <- sapply(gEdges, length)
               nn <- rep(index, edgeCounts)
@@ -174,18 +181,6 @@ setMethod("edgeWeights", signature(object="graph", index="missing"),
               index <- nodes(object)
               edgeWeights(object, index)
           })
-##               ew <- tryCatch(edgeData(object, attr="weight"),
-##                              error=function(e) {
-##                                  edgeDataDefaults(object, "weight") <- 1
-##                                  edgeData(object, attr="weight")
-##                              })
-##               edgeCounts <- sapply(edges(object), length)
-##               nn <- rep(nodes(object), edgeCounts)
-##               names(ew) <- unlist(edges(object))
-##               ans = split(unlist(ew), nn)
-##               ans <- c(ans, lapply(edges(g)[edgeCounts == 0], as.numeric))
-##               ans
-##           })
 
 
 setMethod("DFS", c("graph", "character", "ANY"), function(object, node,
@@ -583,32 +578,6 @@ setMethod("edgeNames",
   signature="graph",
   definition=function(object, recipEdges=c("combined", "distinct")) {
     recipEdges <- match.arg(recipEdges)
-
-#     to <- edges(object)
-#     from <- names(to)
-#     edgeNames <- as.vector(unlist(mapply(function(x,y) {
-#         if (length(x) > 0)
-#             paste(y,x,sep="~")
-#         else
-#             NULL}, to, from)))
-#     if (recipEdges == "combined") {
-#         revNames <-  unlist(mapply(function(x,y) {
-#             if (length(x) > 0)
-#                 paste(x,y,sep="~")
-#             else
-#                 NULL}, to, from))
-#         handled <- character()
-#         remove <- numeric()
-#         for (i in 1:length(edgeNames)) {
-#             if (! revNames[i] %in% handled)
-#                 handled <- c(handled, edgeNames[i])
-#             else
-#                 remove <- c(remove, i)
-#         }
-#         if (length(remove) > 0)
-#             edgeNames <- edgeNames[-remove]
-#     }
-#     edgeNames
 
     ## convert names to integers ("standard node labeling")
     to   <- lapply(edges(object), match, nodes(object))
@@ -1009,4 +978,4 @@ clearNodeData <- function(self, n) {
     self
 }
 
-## ---------------------------------------------------------------------
+

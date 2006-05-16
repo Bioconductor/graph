@@ -203,3 +203,13 @@ test_eWV <- function() {
     ans <- eWV(gX, edgeMatrix(gX), useNNames = TRUE) 
     checkEquals(c("A--C"=0.2), ans)
 }
+
+
+testEdgeWeightsNoEdges <- function() {
+    g <- new("graphNEL", nodes=letters[1:6])
+    expect <- lapply(edges(g), as.numeric)
+    checkEquals(expect, edgeWeights(g))
+}
+
+
+
