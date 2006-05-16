@@ -848,11 +848,10 @@ setMethod("edgeData", signature(self="graph", from="character", to="missing",
               graph:::.verifyNodes(from, nodes(self))
               gEdges <- edges(self)[from]
               lens <- sapply(gEdges, length)
-              if (any(lens == 0))
-                warning("No edges from nodes: ",
-                        paste(from[lens == 0], collapse=", "))
               fEdges <- rep(from, lens)
-              tEdges <- unlist(edges(self)[from])
+              if (!length(fEdges))
+                return(list())
+              tEdges <- unlist(gEdges)
               edgeKeys <- graph:::.getEdgeKeys(self, fEdges, tEdges)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
@@ -862,7 +861,10 @@ setMethod("edgeData", signature(self="graph", from="missing", to="character",
                                 attr="character"),
           function(self, from, to, attr) {
               eDat <- edges(self)
-              from <- names(eDat)[sapply(eDat, function(x) to[1] %in% x)]
+              inE <- inEdges(to, self)
+              to <- rep(to, sapply(inE, length))
+              from <- unlist(inE)
+              ## from <- names(eDat)[sapply(eDat, function(x) to %in% x)]
               edgeKeys <- graph:::.getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
