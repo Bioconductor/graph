@@ -120,7 +120,7 @@ testCaptureWeightsWithEdgeLDirected <- function() {
 testAddNode <- function() {
     g1 <- simpleGraphNEL()
     newNodes <- c("r", "s", "a", "b")
-    myCheckException(addNode(newNodes, g1))
+    checkException(addNode(newNodes, g1), silent=TRUE)
 
     newNodes <- c("r", "s")
     expect <- c(nodes(g1), newNodes)

@@ -58,8 +58,9 @@ testNodeDataDefaults <- function() {
     nodeDataDefaults(g1, attr="size") <- 400
     checkEquals(400, nodeDataDefaults(g1, attr="size"))
 
-    myCheckException(nodeDataDefaults(g1, attr="NOSUCHATTRIBUTE"))
-    myCheckException(nodeDataDefaults(g1) <- list(1, 3, 4)) ## must have names
+    checkException(nodeDataDefaults(g1, attr="NOSUCHATTRIBUTE"), silent=TRUE)
+    checkException(nodeDataDefaults(g1) <- list(1, 3, 4),
+                   silent=TRUE) ## must have names
 }
 
 
@@ -80,8 +81,9 @@ testEdgeDataDefaults <- function() {
     edgeDataDefaults(g1, attr="size") <- 400
     checkEquals(400, edgeDataDefaults(g1, attr="size"))
 
-    myCheckException(edgeDataDefaults(g1, attr="NOSUCHATTRIBUTE"))
-    myCheckException(edgeDataDefaults(g1) <- list(1, 3, 4)) ## must have names
+    checkException(edgeDataDefaults(g1, attr="NOSUCHATTRIBUTE"), silent=TRUE)
+    checkException(edgeDataDefaults(g1) <- list(1, 3, 4),
+                   silent=TRUE) ## must have names
 }
 
 
@@ -117,10 +119,10 @@ testNodeDataSetting <- function() {
     nodeDataDefaults(g1) <- myAttributes
 
     ## unknown node is error
-    myCheckException(nodeData(g1, n="UNKNOWN_NODE", attr="size") <- 5)
+    checkException(nodeData(g1, n="UNKNOWN_NODE", attr="size") <- 5, silent=TRUE)
 
     ## unknown attr is error
-    myCheckException(nodeData(g1, n="a", attr="UNKNOWN") <- 5)
+    checkException(nodeData(g1, n="a", attr="UNKNOWN") <- 5, silent=TRUE)
 
     nodeData(g1, n="a", attr="size") <- 5
     checkEquals(5, nodeData(g1, n="a", attr="size")[[1]])
@@ -286,8 +288,8 @@ testEdgeDataSettingFromOnly <- function() {
 
 
 testNormalizeEdges <- function() {
-    myCheckException(graph:::.normalizeEdges(c("b", "d"), c("a", "b", "c")))
-    myCheckException(graph:::.normalizeEdges(c("a", "b", "c"), c("a", "e")))
+    checkException(graph:::.normalizeEdges(c("b", "d"), c("a", "b", "c")), silent=TRUE)
+    checkException(graph:::.normalizeEdges(c("a", "b", "c"), c("a", "e")), silent=TRUE)
 
     f <- letters[1:10]
     t <- letters[11:20]

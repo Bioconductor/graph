@@ -41,13 +41,13 @@ simpleDirectedGraph <- function() {
 
 testInvalidNonSquare <- function() {
     mat <- cbind(c(0, 0, 1), c(1, 1, 1))
-    myCheckException(new("graphAM", adjMat=mat))
+    checkException(new("graphAM", adjMat=mat), silent=TRUE)
 }
 
 
 testInvalidNegativeValues <- function() {
     mat <- matrix(c(0, 1, -4, -1), ncol=2)
-    myCheckException(new("graphAM", adjMat=mat))
+    checkException(new("graphAM", adjMat=mat), silent=TRUE)
 }
 
 
@@ -56,8 +56,8 @@ testInvalidNonSymmetric <- function() {
                     0, 0, 1,
                     0, 0, 0), ncol=3, byrow=TRUE)
     colnames(mat) <- letters[1:3]
-    myCheckException(new("graphAM", adjMat=mat))
-    myCheckException(new("graphAM", adjMat=mat, edgemode="undirected"))
+    checkException(new("graphAM", adjMat=mat), silent=TRUE)
+    checkException(new("graphAM", adjMat=mat, edgemode="undirected"), silent=TRUE)
     g1 <- new("graphAM", adjMat=mat, edgemode="directed")
 }
 
@@ -78,12 +78,12 @@ testValuesToAttr <- function() {
     checkEquals(2, edgeData(g1, "a", "d", attr="weight")[[1]])
     checkEquals(1, edgeData(g1, "a", "c", attr="weight")[[1]])
 
-    myCheckException(new("graphAM", adjMat=mat, edgemode="directed",
-                         values=list(weight=1, not=2)))
-    myCheckException(new("graphAM", adjMat=mat, edgemode="directed",
-                         values=list("must", "name")))
-    myCheckException(new("graphAM", adjMat=mat, edgemode="directed",
-                         values="weight"))
+    checkException(new("graphAM", adjMat=mat, edgemode="directed",
+                         values=list(weight=1, not=2)), silent=TRUE)
+    checkException(new("graphAM", adjMat=mat, edgemode="directed",
+                         values=list("must", "name")), silent=TRUE)
+    checkException(new("graphAM", adjMat=mat, edgemode="directed",
+                         values="weight"), silent=TRUE)
 
     g1 <- new("graphAM", adjMat=mat, edgemode="directed",
               values=list(type=4))
@@ -175,8 +175,8 @@ testIsAdjacent <- function() {
     checkEquals(TRUE, isAdjacent(g1, "c", "a"))
     checkEquals(FALSE, isAdjacent(g1, "a", "b"))
     checkEquals(FALSE, isAdjacent(g1, "b", "a"))
-    myCheckException(isAdjacent(g1, "z", "a"))
-    myCheckException(isAdjacent(g1, "a", "z"))
+    checkException(isAdjacent(g1, "z", "a"), silent=TRUE)
+    checkException(isAdjacent(g1, "a", "z"), silent=TRUE)
 }
 
 
@@ -214,7 +214,7 @@ testAddNode <- function() {
     g1 <- new("graphAM", adjMat=mat)
 
     newNodes <- c("r", "s", "a", "b")
-    myCheckException(addNode(newNodes, g1))
+    checkException(addNode(newNodes, g1), silent=TRUE)
 
     newNodes <- c("r", "s")
     expect <- c(nodes(g1), newNodes)
@@ -247,7 +247,7 @@ testClearNode <- function() {
     g1 <- clearNode("a", g1)
     checkEquals(FALSE, isAdjacent(g1, "a", "c"))
     checkEquals(FALSE, isAdjacent(g1, "a", "d"))
-    myCheckException(edgeData(g1, "a", "c", attr="weight"))
+    checkException(edgeData(g1, "a", "c", attr="weight"), silent=TRUE)
 }
 
 

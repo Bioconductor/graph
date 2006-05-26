@@ -18,9 +18,9 @@ testDefaultAttributesGetting <- function() {
     checkEquals(basicProps$friends, attrDefaults(aset, attr="friends"))
 
     ## It is an error to ask for an undefined attr
-    myCheckException(attrDefaults(aset, attr="NOSUCHATTRIBUTE"))
+    checkException(attrDefaults(aset, attr="NOSUCHATTRIBUTE"), silent=TRUE)
     ## You can only ask for one attr at a time
-    myCheckException(attrDefaults(aset, attr=c("weight", "friends")))
+    checkException(attrDefaults(aset, attr=c("weight", "friends")), silent=TRUE)
 }
 
 
@@ -64,8 +64,8 @@ testItemGettingAndSettingSimple <- function() {
     checkEquals(basicProps, attrDataItem(aset, x=c("k1", "newone"))[[2]])
 
     ## error on unknown attrs
-    myCheckException(attrDataItem(aset, "k1", "UNKNOWN"))
-    myCheckException(attrDataItem(aset, "k1", "UNKNOWN") <- "BAD")
+    checkException(attrDataItem(aset, "k1", "UNKNOWN"), silent=TRUE)
+    checkException(attrDataItem(aset, "k1", "UNKNOWN") <- "BAD", silent=TRUE)
 }
 
 
