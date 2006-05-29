@@ -187,40 +187,6 @@ setMethod("edges", c("graphNEL", "character"),
               lapply(object@edgeL[which], function(x) gNodes[x$edges])})
 
 
-## setMethod("edgeWeights", "graphNEL", function(object, index) {
-##     gN = nodes(object)
-##     browser()
-##     if( !missing(index) ) {
-##         if(is.numeric(index) ) {
-##             if( any(index <= 0) )
-##               stop("only positive indices allowed")
-##             if( any(index > length(gN)) )
-##               stop("index too large")
-##         }
-##         if(is.character(index) ) {
-##             wh = match(index, gN)
-##             if( any(is.na(wh)) )
-##               stop("node name is incorrect")
-##         }
-##     }
-##     if( missing(index) )
-##       tlist <- object@edgeL
-##     else
-##       tlist <- object@edgeL[index]
-##     wts <- lapply(tlist, function(x) {
-##         wts <- x$weights
-##         if(is.null(wts)) {
-##             wts <- rep(1, length(x$edges))
-##             names(wts) <- gN[x$edges]
-##         }
-##         ## Always make sure that the weight vector
-##         ## has names attached
-##         if (is.null(names(wts)))
-##           names(wts) <- gN[x$edges]
-##         wts})
-##     wts})
-
-
 setMethod("adj", "graphNEL", function(object, index) {
     initI <- as.character(index)
     nd <- nodes(object)

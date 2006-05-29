@@ -155,8 +155,9 @@
        names(eL) <- which
        eL})
 
+ ## FIXME: update for new attribute storage
  setMethod("edgeWeights", "distGraph",
-           function(object, index) {
+           function(object, index, attr, default, type.checker) {
                edg <- edges(object)
                if( !missing(index) )
                    edg <- edg[index]
@@ -228,7 +229,9 @@
 ##eg, if a distance matrix was supplied we could use that to define
 ##edge weights -- as that seems appropriate
 
- setMethod("edgeWeights", "clusterGraph", function(object, index) {
+ ## FIXME: update for new attr storage
+ setMethod("edgeWeights", "clusterGraph",
+           function(object, index, attr, default, type.checker) {
      edg <- edges(object)
      if( !missing(index) )
          edg <- edg[index]

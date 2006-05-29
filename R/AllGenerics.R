@@ -23,7 +23,14 @@ setGeneric("nodes<-", function(object, value) standardGeneric("nodes<-"))
 setGeneric("edges", function(object, which) standardGeneric("edges"))
 
 
-setGeneric("edgeWeights", function(object, index)
+## The funny arg=1, is to allow default values in the methods.
+## We don't want to dispatch on those args, but we want them
+## named as part of the interface, hence the trick of putting them
+## after the (...).  Note that this means partial matching for those
+## args will not work, must specify full name.
+setGeneric("edgeWeights", function(object, index, ...,
+                                   attr="weight", default=1,
+                                   type.checker=is.numeric)
            standardGeneric("edgeWeights"))
 ## ---------------------------------------------------------------------
 

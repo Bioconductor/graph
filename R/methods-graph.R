@@ -146,16 +146,20 @@ setMethod("isAdjacent",signature(object="graph", from="character",
 
 
 setMethod("edgeWeights", signature(object="graph", index="character"),
-          function(object, index) {
-              if (!"weight" %in% names(edgeDataDefaults(object))) {
-                  ## No existing 'weight' edge attr, default to 1
-                  edgeDataDefaults(object, "weight") <- 1:1
+          function(object, index, attr, default, type.checker)
+          {
+              ## Check extra args
+              if (!is.character(attr) || length(attr) != 1)
+                stop(sQuote("attr"),
+                     " must be a character vector of length one.")
+              if (!is.null(type.checker) && !is.function(type.checker))
+                stop(sQuote("type.checker"), " must be a function or NULL.")
+              
+              if (! attr %in% names(edgeDataDefaults(object))) {
+                  ## No existing 'weight' edge attr, uses default
+                  edgeDataDefaults(object, attr) <- default
               }
-              default <- edgeDataDefaults(object, "weight")
-              if (!is.vector(default))
-                stop("edgeWeights can only be used if the 'weight' ",
-                     "edge attributes are vectors.")
-              ew <- edgeData(object, from=index, attr="weight")
+              ew <- edgeData(object, from=index, attr=attr)
               if (!length(ew))
                 return(lapply(edges(object), function(x)
                               vector(mode=mode(default), length=0)))
@@ -163,6 +167,32 @@ setMethod("edgeWeights", signature(object="graph", index="character"),
               edgeCounts <- sapply(gEdges, length)
               nn <- rep(index, edgeCounts)
               names(ew) <- unlist(gEdges, use.names=FALSE)
+              ew <- unlist(ew)
+              if (!is.null(type.checker) && !isTRUE(type.checker(ew)))
+                stop("invalid type of edge weight.\n",
+                     "type.checker(ew) not TRUE\n",
+                     "typeof(ew): ", typeof(ew))
+
+##               for (el in ew) {
+##                   ## XXX: if el is an S4 instance, it will match "list"
+##                   if (!isTRUE(type.checker(el)))
+##                     stop("invalid type of edge weight.\n",
+##                          "type.checker(el) not TRUE\n",
+##                          "typeof(el): ", typeof(el))
+##               }
+
+##               if (!is.null(type.checker)) {
+##                   dMode <- storage.mode(default)
+##                   tryCatch(storage.mode(ew) <- dMode,
+##                            warning=function(w) {
+##                                wMsg <- conditionMessage(w)
+##                                msg <- paste("unable to type.checker edge weight to",
+##                                             dMode, "\n", wMsg)
+##                                if (grep("NA", msg))
+##                                  stop(msg)
+##                                else
+##                                  warning(wMsg)
+##                            })
               ans = split(unlist(ew), nn)
               ans <- c(ans, lapply(gEdges[edgeCounts == 0], as.numeric))
               ans[index] ## split does sorting, we want orig order
@@ -170,16 +200,20 @@ setMethod("edgeWeights", signature(object="graph", index="character"),
 
 
 setMethod("edgeWeights", signature(object="graph", index="numeric"),
-          function(object, index) {
+          function(object, index, attr, default, type.checker)
+          {
               index <- nodes(object)[index]
-              edgeWeights(object, index)
+              edgeWeights(object, index, attr=attr, default=default,
+                          type.checker=type.checker)
           })
 
 
 setMethod("edgeWeights", signature(object="graph", index="missing"),
-          function(object, index) {
+          function(object, index, attr, default, type.checker)
+          {
               index <- nodes(object)
-              edgeWeights(object, index)
+              edgeWeights(object, index, attr=attr, default=default,
+                          type.checker=type.checker)
           })
 
 
