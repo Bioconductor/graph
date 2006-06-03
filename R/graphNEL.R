@@ -304,12 +304,12 @@ setMethod("addNode", signature(node="character", object="graphNEL",
 setMethod("removeNode", c("character", "graphNEL"),
           function(node, object) {
               ##first clear the node -- does the checking too
-              nG <- clearNode(node, object)
-              nN <- nodes(nG)
+              object <- clearNode(node, object)
+              nN <- nodes(object)
               wh <- match(node, nN)
               gN <- nN[-wh]
-              nE <- nG@edgeL[-wh]
-              ##now renumber the nodes as stored in the edgelist
+              nE <- object@edgeL[-wh]
+              ## Now renumber the nodes as stored in the edgelist
               nE2 <- lapply(nE, function(el) {
                   oldN <- nN[el$edges]
                   el$edges <- match(oldN, gN)
@@ -328,9 +328,8 @@ setMethod("clearNode", c("character", "graphNEL"), function(node, object) {
       stop(paste(whN[is.na(whN)], "is not a node in the graph"))
     ## clear node attributes
     object <- clearNodeData(object, node)
-    gE <- .dropEdges(whN, object@edgeL)
-    gE[[whN]] = list(edges=numeric(0))
-    object@edgeL <- gE
+    object <- .dropEdges(object, whN)
+    object@edgeL[whN] <- list(list(edges=numeric(0)))
     object
 })
 
@@ -525,4 +524,36 @@ setMethod("inEdges", c("character", "graphNEL"),
                   rval[[i]] <- gN[whOnes]
               }
               rval})
+
+
+.dropEdges <- function(self, x) {
+    ## Remove all edges in graphNEL self to node with
+    ## index x.  Also remove all edges from node with index x.
+    ## Return the modified graphNEL.
+    ## Removing edges also removes the associated attributes.
+    oldEdgeL <- self@edgeL
+    newEdgeL <- vector(mode="list", length=length(oldEdgeL))
+    names(newEdgeL) <- names(oldEdgeL)
+    nds <- nodes(self)
+    for (i in seq(along=nds)) {
+        toList <- oldEdgeL[[i]]$edges
+        if (i %in% x) {
+            self <- clearEdgeData(self, from=nds[i], to=nds[toList])
+            toList <- list(edges=numeric(0))
+        } else {
+            bad <- match(x, toList)
+            bad <- bad[!is.na(bad)]
+            if (length(bad)) {
+                self <- clearEdgeData(self, from=nds[i], to=nds[toList[bad]])
+                toList <- list(edges=toList[-bad])
+            } else {
+                toList <- list(edges=toList)
+            }
+        }
+        newEdgeL[[nds[i]]] <- (toList)
+    }
+    self@edgeL <- newEdgeL
+    self
+}
+
 

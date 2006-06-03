@@ -212,4 +212,26 @@ testEdgeWeightsNoEdges <- function() {
 }
 
 
+testRemoveNode1 <- function() {
+    ## using the example from the removeNode help page
+    V <- LETTERS[1:4]
+    edL2 <- vector("list", length=4)
+    names(edL2) <- V
+    for(i in 1:4)
+      edL2[[i]] <- list(edges=c(2,1,2,1)[i],
+                        weights=sqrt(i))
+    gR2 <- new("graphNEL", nodes=V, edgeL=edL2, edgemode="directed")
 
+    gX <- removeNode("C", gR2)
+    checkEquals(c("A", "B", "D"), nodes(gX))
+
+    gY <- removeNode(c("A","D"), gX)
+    checkEquals("B", nodes(gY))
+
+    gZ <- removeNode(c("A","C","D"), gR2)
+    checkEquals("B", nodes(gZ))
+
+    ## XXX: using direct slot access to verify that edge attributes
+    ##      have been completely removed.
+    checkTrue(length(gZ@edgeData@data) == 0)
+}

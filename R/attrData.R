@@ -118,6 +118,7 @@ setReplaceMethod("removeAttrDataItem",
                  function(self, x, value) {
                      idx <- match(x, names(self@data))
                      idx <- idx[!is.na(idx)]
-                     self@data <- self@data[-idx]
+                     if (length(idx))
+                       self@data <- self@data[-idx]
                      self
                  })

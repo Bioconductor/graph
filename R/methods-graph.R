@@ -520,19 +520,6 @@ setMethod("show", signature("graph"),
           })
 
 
-.dropEdges <- function(x, z) {
-    ans =  lapply(z,function(ww) {
-        bad <- match(x, ww$edges)
-        bad <- bad[!is.na(bad)]
-        if(length(bad) > 0 )
-            ans = list(edges=ww$edges[-bad])
-        else
-            ans = ww
-    })
-    ans
-}
-
-
 .edgeWeight <- function(from, to, graph)
 {
     gN <- nodes(graph)
@@ -997,18 +984,15 @@ setMethod("plot", "graph",
 
 clearEdgeData <- function(self, from, to) {
     ##FIXME: make me a method
-    attrNames <- names(edgeDataDefaults(self))
-    for (attr in attrNames)
-      edgeData(self, from, to, attr=attr) <- NULL
+    edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+    removeAttrDataItem(self@edgeData, x=edgeKeys) <- NULL
     self
 }
 
 
 clearNodeData <- function(self, n) {
     ##FIXME: make me a method
-    attrNames <- names(nodeDataDefaults(self))
-    for (attr in attrNames)
-      nodeData(self, n, attr=attr) <- NULL
+    removeAttrDataItem(self@nodeData, x=n) <- NULL
     self
 }
 
