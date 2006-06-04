@@ -538,7 +538,9 @@ setMethod("inEdges", c("character", "graphNEL"),
     for (i in seq(along=nds)) {
         toList <- oldEdgeL[[i]]$edges
         if (i %in% x) {
-            self <- clearEdgeData(self, from=nds[i], to=nds[toList])
+            to <- nds[toList]
+            if (length(to))
+              self <- clearEdgeData(self, from=nds[i], to=to)
             toList <- list(edges=numeric(0))
         } else {
             bad <- match(x, toList)

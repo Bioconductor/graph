@@ -235,3 +235,13 @@ testRemoveNode1 <- function() {
     ##      have been completely removed.
     checkTrue(length(gZ@edgeData@data) == 0)
 }
+
+
+testRemoveNode2 <- function() {
+    g <- simpleDirectedGraphNEL()
+    nds <- nodes(g)
+    for (n in nds) {
+        g2 <- removeNode(n, g)
+        checkEquals(nds[nds != n], nodes(g2))
+    }
+}
