@@ -62,6 +62,14 @@ testInvalidNonSymmetric <- function() {
 }
 
 
+testInvalidBadNodeNames <- function() {
+    mat <- simpleAdjMat()
+    n <- paste(letters[1:4], 1:4, sep=graph:::EDGE_KEY_SEP)
+    colnames(mat) <- rownames(mat) <- n
+    checkException(new("graphAM", adjMat=mat), silent=TRUE)
+}
+
+
 testValuesToAttr <- function() {
     mat <- matrix(c(0, 0, 1, 2,
                     0, 0, 3, 0,
@@ -220,6 +228,9 @@ testAddNode <- function() {
     expect <- c(nodes(g1), newNodes)
     g1 <- addNode(newNodes, g1)
     checkEquals(expect, nodes(g1))
+
+    badNodeName <- paste("foo", graph:::EDGE_KEY_SEP, "bar", sep="")
+    checkException(addNode(badNodeName, g1), silent=TRUE)
 }
 
 

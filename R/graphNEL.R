@@ -131,6 +131,8 @@ graphNEL_init_edges <- function(nodes, edges) {
 setMethod("initialize", "graphNEL",
           ## FIXME: what about edge weights?
           function(.Object, nodes=character(0), edgeL, edgemode) {
+              if (length(nodes))
+                checkValidNodeName(nodes)
               if( missing(edgemode) )
                 edgemode <- "undirected"
               doWeights <- FALSE
@@ -242,6 +244,7 @@ setMethod("addNode", signature(node="character", object="graphNEL",
               already <- match(node, gN)
               if( any(!is.na(already)) )
                 stop(paste(gN[already], collapse=", "), " is already a node")
+              checkValidNodeName(node)
               ## add them on the end so we don't renumber
               gN = c(gN, node)
               edgeL <-  object@edgeL

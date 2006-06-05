@@ -71,6 +71,8 @@
  setMethod("initialize", "distGraph", function(.Object, Dist) {
        if( is.null( attr(Dist, "Labels") ) )
 	   attr(Dist, "Labels") = as.character(1:attr(Dist, "Size"))
+       else
+         checkValidNodeName(attr(Dist, "Labels"))
        .Object@Dist = Dist
        .Object
  })

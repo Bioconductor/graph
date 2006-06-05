@@ -1,3 +1,15 @@
+## String used as the separator to name edges in a graph.
+EDGE_KEY_SEP <- "|"
+
+checkValidNodeName <- function(node) {
+    bad <- grep(EDGE_KEY_SEP, node, fixed=TRUE)
+    if (length(bad))
+      stop("The following node names are invalid, they contain the ",
+           "edge separator ", sQuote(EDGE_KEY_SEP), "\n",
+           paste(node[bad], collapse=", "))
+    TRUE
+}
+
 setMethod("isDirected", "graph",
 	  function(object) object@edgemode == "directed")
 
@@ -806,7 +818,7 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
     if (any(!adjList)) {
         badFr <- from[!adjList]
         badTo <- to[!adjList]
-        res <- paste(badFr, badTo, sep="|", collapse=", ")
+        res <- paste(badFr, badTo, sep=EDGE_KEY_SEP, collapse=", ")
         stop("Edges not found: ", res)
     }
     TRUE
@@ -814,7 +826,6 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
 
 
 .makeEdgeKeys <- function(from, to) {
-    EDGE_KEY_SEP <- "|"
     stopifnot(length(from) == length(to))
     paste(from, to, sep=EDGE_KEY_SEP)
 }

@@ -22,7 +22,13 @@ simpleDirectedGraphNEL <- function() {
      edL[["d"]] <- list(edges=c(2, 3), weights=c(.42, .43))
      gR <- new("graphNEL", nodes=V, edgeL=edL, edgemode="directed")
      gR
- }
+}
+
+
+testCreateBadNodeNames <- function() {
+    badNodeName <- paste("foo", graph:::EDGE_KEY_SEP, "bar", sep="")
+    checkException(new("graphNEL", nodes=badNodeName), silent=TRUE)
+}
 
 
 testIsAdjacent <- function() {
@@ -164,6 +170,13 @@ testAddNodeWithEdgesAndWeights <- function() {
     expectEdges[["s"]] <- c("r", "b")
     expectEdges[["t"]] <- character(0)
     checkEquals(expectEdges, edges(g2))
+}
+
+
+testAddNodeBadNodeName <- function() {
+    g1 <- simpleGraphNEL()
+    badNodeName <- paste("foo", graph:::EDGE_KEY_SEP, "bar", sep="")
+    checkException(addNode(badNodeName, g1), silent=TRUE)
 }
 
 

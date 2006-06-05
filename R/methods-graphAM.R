@@ -19,6 +19,7 @@ isValidAdjMat <- function(adjMat, mode="undirected") {
         nNames <- dimnames(adjMat)[[nonNullIndices[1]]]
         if (any(duplicated(nNames)))
           stop("node names must be distinct")
+        checkValidNodeName(nNames)
         if (length(nonNullIndices) == 2) {
             ## verify rownames match colnames
             if (any(rownames(adjMat) != colnames(adjMat)))
@@ -193,6 +194,7 @@ setMethod("addNode",
               if(any(already))
                 stop(paste(sQuote(node[already]), collapse=", "),
                            " are already nodes in the graph")
+              checkValidNodeName(node)
               object@adjMat <- extendAdjMat(object@adjMat, node)
               object
           })
