@@ -150,9 +150,6 @@ setGeneric("DFS", function(object, node, checkConn=FALSE) standardGeneric("DFS")
 setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))
 
 
-setGeneric("intersection3", function(x, y) standardGeneric("intersection3"))
-
-
 setGeneric("intersection2", function(x, y) standardGeneric("intersection2"))
 
 

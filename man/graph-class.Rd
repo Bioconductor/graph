@@ -41,14 +41,10 @@
 \alias{edgeWeights,graph,numeric-method}
 \alias{edgeWeights,graph,missing-method}
 
-%% wh 16.1.05: I think intersection2 and intersection3 can go once we have an
-%% implementation that everybody is happy with
 \alias{intersection}
 \alias{intersection,graph,graph-method}
 \alias{intersection2}
 \alias{intersection2,graph,graph-method}
-\alias{intersection3}
-\alias{intersection3,graph,graph-method}
 
 \alias{isAdjacent,graph,character,character-method}
 
