@@ -198,7 +198,23 @@ testSubGraphNoEdgesDirected <- function() {
  }
 
 
-testRemoveEdge <- function() {
+testRemoveEdgeUndirected <- function() {
+    g <- simpleGraphNEL()
+    g1 <- removeEdge("a", c("c", "d"), g)
+    checkEquals(3, numEdges(g1))
+    eD <- edges(g1)
+    checkEquals(character(0), eD$a)
+    checkEquals(c("c", "d"), eD$b)
+
+    g2 <- removeEdge(c("c", "d"), "a", g)
+    checkEquals(3, numEdges(g2))
+    eD <- edges(g2)
+    checkEquals(character(0), eD$a)
+    checkEquals(c("c", "d"), eD$b)
+}
+
+
+testRemoveEdgeDirected <- function() {
     g1 <- simpleDirectedGraphNEL()
     f <- c("a", "a")
     t <- c("c", "d")
@@ -206,6 +222,28 @@ testRemoveEdge <- function() {
     checkEquals(3, numEdges(g2))
     checkTrue(!length(edges(g2)[["a"]]))
 }
+
+
+## This test seems to trigger a bug in set.seed use in RUnit,
+## for now, commenting it out.
+## testRemoveEdgeLarge <- function() {
+##     ## This test is from Denise Scholtens
+##     set.seed(678)
+##     N <- 500
+##     numEdges <- 2500
+##     nodes <- paste("n", 1:500, sep="")
+##     g <- randomEGraph(nodes, edges=numEdges)
+##     g@edgemode <- "directed"  ## XXX: there should be a better way
+##     checkEquals(numEdges*2, numEdges(g))
+##     cat(runif(4), "\n")
+##     from <- c("n1","n2","n2","n3","n5","n7","n7","n8","n8","n8","n9","n9",
+##               "n9")
+##     to <- c("n255","n383","n261","n381","n234","n225","n315","n38","n296",
+##             "n78","n310","n19","n422")
+
+##     g1 <- removeEdge(from, to, g)
+##     checkEquals(numEdges*2 - length(from), numEdges(g1))
+##}
 
 
 test_eWV <- function() {
