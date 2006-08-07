@@ -368,7 +368,7 @@ SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values)
     PROTECT(ansnames = allocVector(STRSXP, length(ans)));
     for (i = 0; i < origlen; i++) {
         SET_VECTOR_ELT(ans, i, duplicate(VECTOR_ELT(x, i)));
-        SET_VECTOR_ELT(ansnames, i, duplicate(VECTOR_ELT(names, i)));
+        SET_STRING_ELT(ansnames, i, duplicate(STRING_ELT(names, i)));
     }
     j = origlen;
     for (i = 0; i < nnew; i++)
