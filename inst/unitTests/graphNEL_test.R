@@ -1,3 +1,5 @@
+.setUp <- function() RNGkind("default", "default")
+
 simpleGraphNEL <- function() {
      V <- letters[1:4]
      edL <- vector("list", length=4)
@@ -224,26 +226,24 @@ testRemoveEdgeDirected <- function() {
 }
 
 
-## This test seems to trigger a bug in set.seed use in RUnit,
-## for now, commenting it out.
-## testRemoveEdgeLarge <- function() {
-##     ## This test is from Denise Scholtens
-##     set.seed(678)
-##     N <- 500
-##     numEdges <- 2500
-##     nodes <- paste("n", 1:500, sep="")
-##     g <- randomEGraph(nodes, edges=numEdges)
-##     g@edgemode <- "directed"  ## XXX: there should be a better way
-##     checkEquals(numEdges*2, numEdges(g))
-##     cat(runif(4), "\n")
-##     from <- c("n1","n2","n2","n3","n5","n7","n7","n8","n8","n8","n9","n9",
-##               "n9")
-##     to <- c("n255","n383","n261","n381","n234","n225","n315","n38","n296",
-##             "n78","n310","n19","n422")
-
-##     g1 <- removeEdge(from, to, g)
-##     checkEquals(numEdges*2 - length(from), numEdges(g1))
-##}
+testRemoveEdgeLarge <- function() {
+    ## This test is from Denise Scholtens
+    set.seed(678)
+    N <- 500
+    numEdges <- 2500
+    nodes <- paste("n", 1:500, sep="")
+    g <- randomEGraph(nodes, edges=numEdges)
+    g@edgemode <- "directed"  ## XXX: there should be a better way
+    checkEquals(numEdges*2, numEdges(g))
+    cat(runif(4), "\n")
+     from <- c("n1","n2","n2","n3","n5","n7","n7","n8","n8","n8","n9","n9",
+               "n9")
+    to <- c("n255","n383","n261","n381","n234","n225","n315","n38","n296",
+            "n78","n310","n19","n422")
+    
+    g1 <- removeEdge(from, to, g)
+    checkEquals(numEdges*2 - length(from), numEdges(g1))
+}
 
 
 test_eWV <- function() {
