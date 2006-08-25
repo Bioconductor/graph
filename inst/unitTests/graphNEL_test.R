@@ -1,4 +1,4 @@
-##.setUp <- function() RNGkind("default", "default")
+.setUp <- function() RNGkind("default", "default")
 
 simpleGraphNEL <- function() {
      V <- letters[1:4]

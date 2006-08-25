@@ -90,9 +90,9 @@
    " nodes \n", sep="")})
 
  
-  setMethod("threshold", "distGraph", function(object, k) {
+  setMethod("threshold", "distGraph", function(object, k, value=0) {
         nd <- object@Dist
-        nd[nd > k ] <- 0
+        nd[nd > k ] <- value 
         new("distGraph", Dist=nd)
      })
 
