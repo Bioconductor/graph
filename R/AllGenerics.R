@@ -222,7 +222,7 @@ setGeneric("hash", function(key, value, htable)
 setGeneric("Dist", function(object) standardGeneric("Dist"))
 
 
-setGeneric("threshold", function(object, k) standardGeneric("threshold"))
+setGeneric("threshold", function(object, k, value=0) standardGeneric("threshold"))
 
 
 setGeneric("contents", function(object, all.names) standardGeneric("contents"))
