@@ -40,10 +40,8 @@ Class \code{"graph"}, directly.
       nodes in the graph. }
     \item{numNodes}{\code{signature(object = "distGraph")}: return the
       number of nodes. }
-    \item{threshold}{\code{signature(object = "distGraph", k, value)}: set all
-      distances that are larger than the supplied threshold, \code{k}, to the 
-      supplied value. The default is value is zero (and so is appropriate for
-      similarities, rather than distances). }
+    \item{threshold}{\code{signature(object = "distGraph")}: remove all
+      distances that are larger than the supplied threshold. }
     \item{initialize}{\code{signature(object = "distGraph")}:
         initialize a \code{distGraph} instance. }
   }
