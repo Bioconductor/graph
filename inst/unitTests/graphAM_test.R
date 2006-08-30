@@ -67,6 +67,12 @@ testInvalidBadNodeNames <- function() {
     n <- paste(letters[1:4], 1:4, sep=graph:::EDGE_KEY_SEP)
     colnames(mat) <- rownames(mat) <- n
     checkException(new("graphAM", adjMat=mat), silent=TRUE)
+
+    colnames(mat) <- rownames(mat) <- c("a", "b", NA, "c")
+    checkException(new("graphAM", adjMat=mat), silent=TRUE)
+
+    colnames(mat) <- rownames(mat) <- c("a", "f", "", "d")
+    checkException(new("graphAM", adjMat=mat), silent=TRUE)
 }
 
 

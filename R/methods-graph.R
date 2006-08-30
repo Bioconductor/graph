@@ -2,6 +2,12 @@
 EDGE_KEY_SEP <- "|"
 
 checkValidNodeName <- function(node) {
+    ## Node names must have nchar(n) > 0, not be NA,
+    ## and not contain the EDGE_KEY_SEP character.
+    if (any(nchar(node) == 0))
+      stop("invalid node names: empty string not allowed")
+    if (any(is.na(node)))
+      stop("invalid node names: missing value NA not allowed")
     bad <- grep(EDGE_KEY_SEP, node, fixed=TRUE)
     if (length(bad))
       stop("The following node names are invalid, they contain the ",

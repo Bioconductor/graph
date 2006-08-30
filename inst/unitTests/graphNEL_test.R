@@ -30,6 +30,8 @@ simpleDirectedGraphNEL <- function() {
 testCreateBadNodeNames <- function() {
     badNodeName <- paste("foo", graph:::EDGE_KEY_SEP, "bar", sep="")
     checkException(new("graphNEL", nodes=badNodeName), silent=TRUE)
+    checkException(new("graphNEL", nodes=c(NA, "b")), silent=TRUE)
+    checkException(new("graphNEL", nodes=c("a", "")), silent=TRUE)
 }
 
 
