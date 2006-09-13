@@ -180,44 +180,7 @@ setGeneric("edgeNames", function(object, ...) standardGeneric("edgeNames"))
 setGeneric("isAdjacent", function(object, from, to, ...)
            standardGeneric("isAdjacent"))
 
-
-## Generics for graph components
-
-
-## setGeneric("edgeID", function(object)
-##            standardGeneric("edgeID"))
-
-## setGeneric("eNode", function(object)
-##            standardGeneric("eNode"))
-
-## setGeneric("bNode", function(object)
-##            standardGeneric("bNode"))
-
-## setGeneric("toEdges", function(object) standardGeneric("toEdges"))
-
-## setGeneric("toEdges<-",
-##            function(object, value) standardGeneric("toEdges<-"))
-
-## setGeneric("fromEdges",
-##            function(object) standardGeneric("fromEdges"))
-
-## setGeneric("fromEdges<-",
-##            function(object, value) standardGeneric("fromEdges<-"))
-
-## setGeneric("label", function(object) standardGeneric("label"))
-
-## setGeneric("edgeOrder", function(object) standardGeneric("edgeOrder"))
-
-## setGeneric("nodeID", function(object) standardGeneric("nodeID"))
-
-## setGeneric("nodeType", function(object) standardGeneric("nodeType"))
-
-
 ## Misc
-
-## setGeneric("hash", function(key, value, htable)
-##            standardGeneric("hash"))
-
 
 setGeneric("Dist", function(object) standardGeneric("Dist"))
 
@@ -230,9 +193,6 @@ setGeneric("contents", function(object, all.names) standardGeneric("contents"))
 
 setGeneric("edgeMatrix", function(object, duplicates=FALSE)
            standardGeneric("edgeMatrix"))
-
-
-## setGeneric("idstring", function(x) standardGeneric("idstring"))
 
 
 setGeneric("edgeL", function(graph, index) standardGeneric("edgeL"))
@@ -252,19 +212,6 @@ setGeneric("toGXL", function(object, ...) standardGeneric("toGXL"))
 
 setGeneric("property", function(x, prop) standardGeneric("property"))
 
-
-## setGeneric("property<-", function(x, prop, value)
-##            standardGeneric("property<-"))
-
-
-
-## setGeneric("asGraphProperty", function(x, hasWeight)
-##            standardGeneric("asGraphProperty"))
-
-
-##setGeneric("grList",function(object)standardGeneric("grList"))
-##setGeneric("between",function(object)standardGeneric("between"))
-##setGeneric("adjMat",function(cg,ordvec)standardGeneric("adjMat"))
 
 setGeneric("toDotR", function(G, outDotFile, renderList, optList)
            standardGeneric("toDotR"))
