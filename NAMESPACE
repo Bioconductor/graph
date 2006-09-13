@@ -2,30 +2,24 @@ useDynLib(graph)
 
 import(methods, cluster)
 
-importFrom(Ruuid, getuuid)
-importClassesFrom(Ruuid, Ruuid, uuidt)
-importMethodsFrom(Ruuid, uuid)
+exportClasses(distGraph,
+  clusterGraph, graph, graphNEL, file, connection,
+  graphAM, attrData, simpleEdge) 
 
-exportClasses(gNode, gEdge, simpleEdge, hashtable, generalGraph, distGraph,
-  clusterGraph, graphH, graph, graphNEL, file, connection,
-  propertyHolder, graphAM, attrData) 
-
-exportMethods(DFS, Dist, acc, addEdge, addNode, adj, asGraphProperty,
-      bNode, clearNode, clusteringCoefficient, combineNodes, complement,
-      connComp, degree, dumpGXL, eNode, edgeID, edgeL, edgeMatrix, edgeNames,
-      edgeOrder, edgeWeights, edgemode, "edgemode<-", edges, fromEdges,
-      "fromEdges<-", "toEdges<-", "nodes<-", fromGXL, getNodes, hash, idstring,
-      inEdges, initialize, intersection, intersection2,
-      isAdjacent, isConnected, isDirected, join, label, nodeID, nodeType, nodes,
-      numNodes, numEdges, property, "property<-", removeEdge,
-      removeNode, show, subGraph, threshold, toEdges, toGXL, union, validateGXL,
-      coerce, toDotR, attrDefaults, "attrDefaults<-", edgeDataDefaults,
-      "edgeDataDefaults<-", nodeDataDefaults, "nodeDataDefaults<-", edgeData,
-      "edgeData<-", nodeData, "nodeData<-", attrDataItem, "attrDataItem<-",
+exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
+      clearNode, clusteringCoefficient, combineNodes, complement, connComp,
+      degree, dumpGXL, edgeL, edgeMatrix, edgeNames, edgeWeights, edgemode,
+      "edgemode<-", edges, "nodes<-", fromGXL, inEdges, initialize,
+      intersection, intersection2, isAdjacent, isConnected, isDirected, join,
+      nodes, numNodes, numEdges, removeEdge, removeNode, show, subGraph,
+      threshold, toGXL, union, validateGXL, coerce, toDotR, attrDefaults,
+      "attrDefaults<-", edgeDataDefaults, "edgeDataDefaults<-",
+      nodeDataDefaults, "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
+      "nodeData<-", attrDataItem, "attrDataItem<-",
               "removeAttrDataItem<-")
 
 
-export(boundary, buildRepDepGraph, hashtable, calcProb, calcSumProb,
+export(boundary, buildRepDepGraph, calcProb, calcSumProb,
        duplicatedEdges, graph2SparseM, listEdges,
        randomEGraph, randomGraph, randomNodeGraph, ugraph,
        validGraph, eWV, pathWeights, .dropEdges, 

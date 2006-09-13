@@ -58,6 +58,7 @@
 
 \alias{nodeDataDefaults<-,graph,missing,list-method}
 \alias{nodeDataDefaults<-,graph,character-method}
+\alias{nodeDataDefaults<-,graph,character,ANY-method}
 \alias{nodeDataDefaults,graph,missing-method}
 \alias{nodeDataDefaults,graph,character-method}
 \alias{nodeData<-,graph,character,character-method}

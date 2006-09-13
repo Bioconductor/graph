@@ -28,8 +28,6 @@ No methods defined with class "simpleEdge" in the signature.
   concepts of beginning node or ending node and these should not be
   interpreted as such. }
 
-\seealso{
- See also\code{\link{gEdge-class}}}
 \examples{
   new("simpleEdge", bNode="A", eNode="D")
 }
