@@ -3,13 +3,17 @@
        stop("Unable to load ", sQuote("methods"), " package")
     .initGContents()
 
- if((.Platform$OS.type == "windows") && ("Biobase" %in% installed.packages()[,"Package"])
-    && (interactive()) && (.Platform$GUI ==  "Rgui")){
-     if (require("Biobase"))
-         addVigs2WinMenu("graph")
- }
 
 }
+
+.onAttach <- function(libname, pkgname) {
+ if ((.Platform$OS.type == "windows") && interactive()
+     && (.Platform$GUI ==  "Rgui")) {
+     if (suppressWarnings(require("Biobase")))
+         addVigs2WinMenu("graph")
+ }
+}
+
 
 .onUnload <- function( libpath ) {
   library.dynam.unload( "graph", libpath )
