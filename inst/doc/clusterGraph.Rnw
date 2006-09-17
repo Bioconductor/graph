@@ -3,7 +3,7 @@
 % clusterGraph.tex file will get overwritten.
 %
 %\VignetteIndexEntry{clusterGraph and distGraph}
-%\VignetteDepends{graph, cluster, stats}
+%\VignetteDepends{graph, stats}
 %\VignetteKeywords{Graph, clustering, machine learning}
 %\VignettePackage{graph}
 \documentclass{article}
