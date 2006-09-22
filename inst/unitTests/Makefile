@@ -1,14 +1,19 @@
 TOP=../../..
 RUNIT_DIR=$(shell pwd)
+INST_PATH=$(shell dirname ${RUNIT_DIR})
+PKG_PATH=$(shell dirname ${INST_PATH})
 
-all: test
+all: install test
 
-testonly:
-	R --slave < runalltests.R
+install:
+	cd ${TOP}; \
+	R CMD INSTALL --clean ${PKG_PATH} && \
+	cd ${RUNIT_DIR}
 
 test:
-	cd ${TOP}; \
-	R CMD INSTALL graph && \
-	cd ${RUNIT_DIR}
 	R --slave < runalltests.R
 
+%.R: FORCE
+	./runfile.sh $@
+
+FORCE:
