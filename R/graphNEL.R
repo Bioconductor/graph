@@ -352,32 +352,27 @@ edgeKiller <- function(edgeL, from, whichKill) {
 setMethod("removeEdge",
           signature(from="character", to="character", graph="graphNEL"),
           function(from, to, graph) {
-              graph <- clearEdgeData(graph, from, to)
               gN <- nodes(graph)
               wh <- match(c(from, to), gN)
               if( any(is.na(wh)) )
                 stop(paste(wh[is.na[wh]], "is not a node"))
               if (length(to) == 1)
                 to <- rep(to, length(from))
+              if (length(from) == 1)
+                from <- rep(from, length(to))
+              if (!isDirected(graph)) { 
+                  fromOrig <- from
+                  from <- c(fromOrig, to)
+                  to <- c(to, fromOrig)
+                  remove(fromOrig)
+              }
+              graph <- clearEdgeData(graph, from, to)
               remEL <- split(to, from)
               fromU <- names(remEL)
               nE <- edges(graph, fromU)
               whD <- mapply(function(x, y) match(x, y), remEL, nE,
                             SIMPLIFY=FALSE)
               graph@edgeL <- edgeKiller(graph@edgeL, fromU, whD)
-              ## if undirected we need to remove the other one
-              if (!isDirected(graph)) {
-                  if (length(from) == 1)
-                    from <- rep(from, length(to))
-                  remEL <- split(from, to)
-                  toU <- names(remEL)
-                  nE <- edges(graph, toU)
-                  whD <- mapply(function(x, y) match(x, y), remEL, nE,
-                                SIMPLIFY=FALSE)
-                  ## XXX: assume graph is valid, if we got this far,
-                  ##      no NA's in whD
-                  graph@edgeL <- edgeKiller(graph@edgeL, toU, whD)
-              }
               graph
           })
 
