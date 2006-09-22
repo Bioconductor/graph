@@ -247,6 +247,36 @@ testRemoveEdgeLarge <- function() {
     checkEquals(numEdges*2 - length(from), numEdges(g1))
 }
 
+testRemoveEdgeLarge2 <- function() {
+    ## This test is from a bug discovered by Dan Bebber
+    From <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 
+              2, 5, 5, 8, 8, 8, 8, 8, 11, 11, 12, 12, 12, 14, 14, 16, 16, 20,
+              20, 23, 23, 24, 24, 25, 25, 29, 29, 32, 32, 32, 32, 38, 38, 41,
+              41, 41, 43, 43, 54, 54, 59, 59, 60, 68, 68, 69, 72, 82, 83, 88,
+              88, 88, 88, 89, 89, 90, 90, 96, 97, 98, 98, 98)
+    
+    To <- c(2, 5, 8, 11, 12, 14, 16, 20, 23, 37, 38, 54, 57, 68, 72, 81,
+            86, 87, 97, 88, 100, 32, 102, 38, 41, 49, 51, 53, 58, 59, 60,
+            63, 67, 71, 72, 75, 76, 84, 85, 24, 29, 25, 28, 26, 27, 30, 31,
+            33, 34, 35, 36, 40, 41, 42, 43, 47, 44, 45, 55, 56, 60, 62, 61,
+            70, 71, 71, 73, 84, 84, 89, 90, 93, 94, 97, 141, 95, 141, 141,
+            98, 99, 141, 158)
+
+    FT <- matrix(c(From, To), ncol=2) #create a 'from-to' matrix
+    
+    g <- ftM2graphNEL(FT, edgemode="undirected")
+
+    gr <- removeEdge(from=as.character(From[1:2]),
+                     to=as.character(To[1:2]), g)
+
+    checkEquals(numEdges(g) - 2, numEdges(gr))
+
+    gr <- removeEdge(from=as.character(From[1:20]),
+                     to=as.character(To[1:20]), g)
+    checkEquals(numEdges(g) - 20, numEdges(gr))
+}
+
+
 
 test_eWV <- function() {
     V <- LETTERS[1:4]

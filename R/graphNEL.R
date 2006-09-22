@@ -364,7 +364,7 @@ setMethod("removeEdge",
               nE <- edges(graph, fromU)
               whD <- mapply(function(x, y) match(x, y), remEL, nE,
                             SIMPLIFY=FALSE)
-              nEd <- edgeKiller(graph@edgeL, fromU, whD)
+              graph@edgeL <- edgeKiller(graph@edgeL, fromU, whD)
               ## if undirected we need to remove the other one
               if (!isDirected(graph)) {
                   if (length(from) == 1)
@@ -376,9 +376,8 @@ setMethod("removeEdge",
                                 SIMPLIFY=FALSE)
                   ## XXX: assume graph is valid, if we got this far,
                   ##      no NA's in whD
-                  nEd <- edgeKiller(nEd, toU, whD)
+                  graph@edgeL <- edgeKiller(graph@edgeL, toU, whD)
               }
-              graph@edgeL <- nEd
               graph
           })
 
