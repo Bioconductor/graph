@@ -16,6 +16,7 @@
 
 \alias{edgeDataDefaults<-,graph,missing,list-method}
 \alias{edgeDataDefaults<-,graph,character-method}
+\alias{edgeDataDefaults<-,graph,character,ANY-method}
 \alias{edgeDataDefaults,graph,missing-method}
 \alias{edgeDataDefaults,graph,character-method}
 \alias{edgeData<-,graph,character,character,character-method}

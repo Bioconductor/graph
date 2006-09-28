@@ -14,7 +14,9 @@
 \alias{show,distGraph-method}
 \alias{threshold,distGraph-method}
 \alias{edgeWeights,distGraph-method}
+\alias{edgeWeights,distGraph,ANY-method}
 \alias{initialize,distGraph-method}
+
 \title{Class "distGraph"}
 \description{ A class definition for graphs that are based on distances.}
 \section{Objects from the Class}{
@@ -46,6 +48,10 @@ Class \code{"graph"}, directly.
       similarities, rather than distances). }
     \item{initialize}{\code{signature(object = "distGraph")}:
         initialize a \code{distGraph} instance. }
+
+    \item{edgeWeights}{Return a list of edge weights in a list format
+      similar to the \code{edges} method.}
+
   }
 }
 \references{Shamir's paper and Butte et al}

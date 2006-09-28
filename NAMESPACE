@@ -25,7 +25,7 @@ export(boundary, buildRepDepGraph, calcProb, calcSumProb,
        validGraph, eWV, pathWeights, .dropEdges, 
        aveNumEdges, sparseM2Graph, gxlTreeNEL,
        ftM2adjM, ftM2graphNEL, .ftM2other, int2ftM, 
-       ftM2int, aM2bpG, mostEdges, numNoEdges) 
+       ftM2int, aM2bpG, mostEdges, numNoEdges, reverseEdgeDirections) 
 
 
 S3method(write,tlp)

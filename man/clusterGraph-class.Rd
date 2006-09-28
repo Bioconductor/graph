@@ -7,6 +7,7 @@
 \alias{edges,clusterGraph,missing-method}
 \alias{edges,clusterGraph,character-method}
 \alias{edgeWeights,clusterGraph-method}
+\alias{edgeWeights,clusterGraph,ANY-method}
 \alias{nodes,clusterGraph-method}
 \alias{nodes<-,clusterGraph,character-method}
 \alias{numNodes,clusterGraph-method}
@@ -41,6 +42,9 @@ Class \code{"graph"}, directly.
           replace the node names with the new labels given in \code{value}.}
     \item{numNodes}{\code{signature(object = "clusterGraph")}: return
       the number of nodes. }
+    \item{edgeWeights}{Return a list of edge weights in a list format
+      similar to the \code{edges} method.}
+
   }
 }
 \author{R. Gentleman}
