@@ -3,7 +3,7 @@ require("graph")
 
 
 TEST_DATA_DIR <- "data"
-runitPat <- ".*_test\.[rR]$"
+runitPat <- ".*_test\\.[rR]$"
 runitDirs <- c(".")
 suite <- defineTestSuite(name="graph Test Suite",
                          dirs=runitDirs,
