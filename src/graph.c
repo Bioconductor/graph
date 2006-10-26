@@ -300,6 +300,8 @@ static SEXP graph_makeItem(SEXP s, int i)
 	SEXP item = R_NilValue;/* -Wall */
 	switch (TYPEOF(s)) {
 	case STRSXP:
+            item = ScalarString(STRING_ELT(s, i));
+            break;
 	case EXPRSXP:
 	case VECSXP:
 	    item = duplicate(VECTOR_ELT(s, i));
