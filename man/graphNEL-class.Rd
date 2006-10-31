@@ -76,7 +76,7 @@ Class \code{"graph"}, directly.
       obtaining the nodes. }
     \item{numNodes}{\code{signature(object = "graphNEL")}:A method for
       determining how many nodes are in the graph. }
-    \item{subGraph}{\code{signature(subgraph="character", graph =
+    \item{subGraph}{\code{signature(snodes="character", graph =
 	"graphNEL")}:A method for
       obtaining the induced subgraph based on the set of supplied nodes
       and the supplied graph.}
