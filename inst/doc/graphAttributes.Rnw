@@ -25,6 +25,11 @@
 \newcommand{\classdef}[1]{%
   {\em #1}
 }
+\newcommand{\myincfig}[3]{\begin{figure}[htbp]
+  \begin{center}
+      \includegraphics[width=#2]{#1}
+      \caption{\label{#1}#3}
+  \end{center} \end{figure}}
 
 
 \begin{document}
@@ -40,9 +45,9 @@ arbitrary node and edge attributes to graph objects.
 
 First, we create a graph to use as an example.  We will work with a
 \Rclass{graphAM-class} instance, however, any subclass of
-\Rclass{graph-class} would work.
+\Rclass{graph-class} would work. See Figure~\ref{foo}.
 
-<<exampleGraph>>=
+<<exampleGraph1, results=hide>>=
 library("graph")
 mat <- matrix(c(0, 0, 1, 1, 
                 0, 0, 1, 1, 
@@ -51,18 +56,20 @@ mat <- matrix(c(0, 0, 1, 1,
               byrow=TRUE, ncol=4)
 rownames(mat) <- letters[1:4]
 colnames(mat) <- letters[1:4]
+@ 
+<<exampleGraph2, print=TRUE>>=
 g1 <- new("graphAM", adjMat=mat)
-g1
 @ 
 
-<<pic, fig=TRUE, echo=FALSE>>=
+<<foo, fig=TRUE, prefix=FALSE, echo=FALSE, results=hide, include=FALSE, width=6, height=6>>=
 if (require("Rgraphviz")) {
-    plot(as(g1, "graphNEL"))
+    gn = as(g1, "graphNEL")
+    plot(gn, nodeAttrs=makeNodeAttrs(gn, shape="circle", fillcolor="orange"))
 } else {
   plot(1, 1, main="Rgraphviz required for this plot")
 }
 @ 
-
+\myincfig{foo}{0.33\textwidth}{The graph \Robject{g1}.}
 \section{Edge Attributes}
 
 \subsection{Default edge attributes}
@@ -70,8 +77,8 @@ if (require("Rgraphviz")) {
 All edges in a graph support the same set of attributes.  The set of
 supported attributes can be defined and accessed using the
 \Rmethod{edgeDataDefaults} method.  
-
 A new graph instance will not have any edge attributes defined.
+%
 <<edgeDataDefaults1>>=
 edgeDataDefaults(g1)
 @ 
@@ -93,7 +100,7 @@ specifying the attribute name in the call to \Rmethod{edgeDataDefaults}.
 edgeDataDefaults(g1, "weight")
 @ 
 
-\subsection{Getting and setting edge attributes}
+\subsection{Getting edge attributes}
 
 Edge attributes are set and accessed using the \Rmethod{edgeData}
 method.  Only attributes defined using \Rmethod{edgeDataDefaults} can
@@ -108,6 +115,8 @@ allAttrsAllEdges <- edgeData(g1)
 weightAttrAllEdges <- edgeData(g1, attr="weight")
 @ 
 
+\subsection{Setting edge attributes}
+
 Attributes are set using the replacement form of \Rmethod{edgeData}.
 This method allows the user to update the attribute for single edge,
 set the attributes for a collection of edges to a single value, and to
@@ -121,7 +130,7 @@ edgeData(g1, from="a", attr="weight")
 edgeData(g1, from="a", attr="code")
 @ 
 
-Here we set the attributes for many edges to a single value.
+We can set the attributes for multiple edges to a single value.
 
 <<edgeData3>>=
 f <- c("a", "b")
@@ -135,6 +144,16 @@ a single call to \Rmethod{edgeData}.
 
 <<edgeData4>>=
 edgeData(g1, from=f, to=t, attr="weight") <- c(11, 22)
+edgeData(g1, from=f, to=t, attr="weight")
+@ 
+
+Finally, we can set the an attribute to a vector of values by packing 
+it into a list:
+%
+<<edgeData5>>=
+edgeData(g1, from="a", to="d", attr="code") <- list(1:10)
+edgeData(g1, from=f, to=t, attr="weight") <- mapply(c, f, t, "e", SIMPLIFY=FALSE) 
+edgeData(g1, from="a", to="d", attr="code")
 edgeData(g1, from=f, to=t, attr="weight")
 @ 
 
@@ -177,9 +196,9 @@ nodeData(g1, n=c("a", "b"), attr="weight")
 @ 
 
 <<other, hide=TRUE, echo=FALSE>>=
-## We need to reconsile this
-g2 <- as(g1, "graphNEL")
-edgeWeights(g2)
+## We need to reconcile this
+#g2 <- as(g1, "graphNEL")
+#edgeWeights(g2)
 
 @ 
 
