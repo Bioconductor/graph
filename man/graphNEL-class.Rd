@@ -63,7 +63,7 @@ Class \code{"graph"}, directly.
   \describe{
     \item{adj}{\code{signature(object = "graphNEL")}: A method for
       finding nodes adjacent to the suplied node.}
-    \item{edgeL}{\code{signature(graph = "graphNEL")}: A mehtod for
+    \item{edgeL}{\code{signature(graph = "graphNEL")}: A method for
       obtaining the edge list.}
     \item{edgeWeights}{\code{signature(object = "graphNEL")}: A method
       for obtaining the edge weights. }

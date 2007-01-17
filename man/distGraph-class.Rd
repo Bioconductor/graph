@@ -9,6 +9,7 @@
 \alias{Dist,distGraph-method}
 \alias{edges,distGraph,missing-method}
 \alias{edges,distGraph,character-method}
+\alias{edgeL,distGraph-method}
 \alias{nodes,distGraph-method}
 \alias{numNodes,distGraph-method}
 \alias{show,distGraph-method}
@@ -52,6 +53,8 @@ Class \code{"graph"}, directly.
     \item{edgeWeights}{Return a list of edge weights in a list format
       similar to the \code{edges} method.}
 
+    \item{edgeL}{\code{signature(graph = "distGraph")}: A method for
+      obtaining the edge list.}
   }
 }
 \references{Shamir's paper and Butte et al}

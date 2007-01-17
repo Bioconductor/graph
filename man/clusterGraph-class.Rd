@@ -6,6 +6,7 @@
 \alias{connComp,clusterGraph-method}
 \alias{edges,clusterGraph,missing-method}
 \alias{edges,clusterGraph,character-method}
+\alias{edgeL,clusterGraph-method}
 \alias{edgeWeights,clusterGraph-method}
 \alias{edgeWeights,clusterGraph,ANY-method}
 \alias{nodes,clusterGraph-method}
@@ -44,7 +45,8 @@ Class \code{"graph"}, directly.
       the number of nodes. }
     \item{edgeWeights}{Return a list of edge weights in a list format
       similar to the \code{edges} method.}
-
+    \item{edgeL}{\code{signature(graph = "clusterGraph")}: A method for
+      obtaining the edge list.}
   }
 }
 \author{R. Gentleman}

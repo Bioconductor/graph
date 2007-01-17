@@ -182,6 +182,20 @@
                 new("distGraph", Dist=as.dist(nD))
             })
 
+setMethod("edgeL", "distGraph", function(graph, index) {
+    edges <- edges(graph)
+    edgeL <- mapply(function(x, y, nodes) {
+        out <- list(edges=match(x, nodes), weights=y)
+    }, edges, edgeWeights(graph), MoreArgs=list(nodes=nodes(graph)),
+                    SIMPLIFY=FALSE)
+    names(edgeL) <- names(edges)
+
+    if (! missing(index))
+        edgeL <- edgeL[[index]]
+
+    edgeL
+})
+
 ####################################
 ##clusterGraph code here
 ####################################
@@ -225,6 +239,27 @@
            edges[[cc[i]]] <- cc[-i]
      }
      edges[which]})
+
+setMethod("edgeL", "clusterGraph", function(graph, index) {
+    clusters <- connComp(graph)
+    nodes <- nodes(graph)
+    edgeL <- list()
+
+    cur <- 1
+    for (i in seq(along=clusters)) {
+        curClust <- clusters[[i]]
+        for (j in seq(along = curClust)) {
+            edgeL[[cur]] <- list(edges=match(curClust[-j], nodes))
+            cur <- cur + 1
+        }
+    }
+    names(edgeL) <- nodes
+
+    if (! missing(index))
+        edgeL <- edgeL[[index]]
+
+    edgeL
+})
 
 
 ##FIXME: this should be done from distances, but for now...)
