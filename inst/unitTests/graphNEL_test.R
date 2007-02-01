@@ -328,3 +328,20 @@ testRemoveNode2 <- function() {
         checkEquals(nds[nds != n], nodes(g2))
     }
 }
+
+
+test_ugraph <- function() {
+    g <- simpleDirectedGraphNEL()
+    ug <- ugraph(g)
+    eg <- simpleGraphNEL()
+    checkTrue(isDirected(g))
+    checkTrue(!isDirected(ug))
+    checkEquals(nodes(g), nodes(ug))
+    checkEquals(nodes(eg), nodes(ug))
+    ## verify edges
+    eGot <- edges(ug)[nodes(g)]
+    eExp <- edges(eg)[nodes(g)]
+    for (n in nodes(g)) {
+        checkTrue(setequal(eExp[[n]], eGot[[n]]))
+    }
+}
