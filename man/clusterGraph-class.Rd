@@ -3,6 +3,7 @@
 \alias{clusterGraph-class}
 \alias{clusterGraph-class}
 \alias{adj,clusterGraph-method}
+\alias{coerce,clusterGraph,matrix-method}
 \alias{connComp,clusterGraph-method}
 \alias{edges,clusterGraph,missing-method}
 \alias{edges,clusterGraph,character-method}
@@ -47,6 +48,11 @@ Class \code{"graph"}, directly.
       similar to the \code{edges} method.}
     \item{edgeL}{\code{signature(graph = "clusterGraph")}: A method for
       obtaining the edge list.}
+
+    \item{coerce}{\code{signature(from = "clusterGraph", to =
+    "matrix")}: Convert the \code{clusterGraph} to an adjacency
+    matrix.  Currently, weights are ignored.  The conversion assumes
+    no self-loops.}
   }
 }
 \author{R. Gentleman}
