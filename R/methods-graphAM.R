@@ -61,19 +61,21 @@ setMethod("initialize", signature("graphAM"),
               nNames <- graph:::isValidAdjMat(adjMat, edgemode)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(adjMat), sep="")
+              edgemode(.Object) <- edgemode
+              .Object@nodeData <- new("attrData")
               colnames(adjMat) <- nNames
               rownames(adjMat) <- NULL
               .Object@adjMat <- adjMat
-              edgemode(.Object) <- edgemode
+
               if (!missing(values))
                 .Object <- graph:::initEdgeSet(.Object, values)
               else
                 .Object@edgeData <- new("attrData")
-              .Object@nodeData <- new("attrData")
+
               ## Matrix values have been stored in @edgeData,
               ## so now we normalize to 0/1
               adjMat <- .Object@adjMat
-              adjMat[adjMat != 0] <- 1:1
+              adjMat[adjMat != 0] <- 1L
               .Object@adjMat <- adjMat
 
               .Object
@@ -344,8 +346,8 @@ setAs(from="graphNEL", to="graphAM",
       function(from, to) {
           theNodes <- nodes(from)
           numNodes <- length(theNodes)
-          mat <- matrix(0, nrow=numNodes, ncol=numNodes)
-          rownames(mat) <- colnames(mat) <- theNodes
+          mat <- matrix(0, nrow=numNodes, ncol=numNodes,
+                        dimnames=list(theNodes, theNodes))
           theEdges <- edges(from)
           for (n in theNodes) {
               e <- theEdges[[n]]
