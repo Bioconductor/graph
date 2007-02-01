@@ -44,8 +44,9 @@ duplicatedEdges <- function(graph) {
 }
 
 ##ugraph: take a directed graph and return the underlying undirected graph
-ugraph <- function(graph)
+ugraphOld <- function(graph)
 {
+    .Deprecated("ugraph")
     if( edgemode(graph) == "undirected")
         return(graph)
     if( !is(graph, "graphNEL") )
@@ -78,6 +79,30 @@ ugraph <- function(graph)
     graph@edgeL <- eL
     return(graph)
 }
+
+setMethod("ugraph", "graph",
+          function(graph) {
+              if (!isDirected(graph))
+                return(graph)
+              eMat <- edgeMatrix(graph)
+              ## add recip edges
+              eMat <- cbind(eMat, eMat[c(2, 1), ])
+              ## put into graphNEL edgeL format
+              eL <- lapply(split(as.vector(eMat[2, ]), as.vector(eMat[1, ])),
+                           function(x) list(edges=unique(x)))
+              theNodes <- nodes(graph)
+              ## some nodes may be missing
+              names(eL) <- theNodes[as.integer(names(eL))]
+              ## add empty edge list for nodes with no edges
+              noEdgeNodes <- theNodes[!(theNodes %in% names(eL))]
+              noEdges <- lapply(noEdgeNodes,
+                                function(x) list(edges=numeric(0)))
+              names(noEdges) <- noEdgeNodes
+              ## FIXME: should we skip standard initialize for speed?
+              ## need to copy over at least the nodeData...
+              new("graphNEL", nodes=theNodes, edgeL=c(eL, noEdges),
+                  edgemode="undirected")
+          })
 
 
  setMethod("edgeMatrix", c("graphNEL", "ANY"),

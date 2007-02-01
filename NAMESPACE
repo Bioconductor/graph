@@ -16,16 +16,16 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       "attrDefaults<-", edgeDataDefaults, "edgeDataDefaults<-",
       nodeDataDefaults, "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
       "nodeData<-", attrDataItem, "attrDataItem<-",
-              "removeAttrDataItem<-")
+              "removeAttrDataItem<-", ugraph)
 
 
 export(boundary, buildRepDepGraph, calcProb, calcSumProb,
        duplicatedEdges, graph2SparseM, listEdges,
-       randomEGraph, randomGraph, randomNodeGraph, ugraph,
+       randomEGraph, randomGraph, randomNodeGraph,
        validGraph, eWV, pathWeights, .dropEdges, 
        aveNumEdges, sparseM2Graph, gxlTreeNEL,
        ftM2adjM, ftM2graphNEL, .ftM2other, int2ftM, 
-       ftM2int, aM2bpG, mostEdges, numNoEdges, reverseEdgeDirections) 
+       ftM2int, aM2bpG, mostEdges, numNoEdges, reverseEdgeDirections, ugraphOld) 
 
 
 S3method(write,tlp)

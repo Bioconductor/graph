@@ -1,5 +1,8 @@
 \name{ugraph}
+
 \alias{ugraph}
+\alias{ugraph,graph-method}
+
 \title{Underlying Graph}
 \description{
  For a \emph{directed} graph the underlying graph is the graph that is
@@ -10,7 +13,7 @@
 ugraph(graph)
 }
 \arguments{
-  \item{graph}{An instance of \code{graphNEL}. }
+  \item{graph}{a \code{graph} object. }
 }
 
 \details{

@@ -161,6 +161,7 @@ setGeneric("join", function(x, y) standardGeneric("join"))
 
 setGeneric("union", function(x, y) standardGeneric("union"))
 
+setGeneric("ugraph", function(graph) standardGeneric("ugraph"))
 
 setGeneric("complement", function(x) standardGeneric("complement"))
 
