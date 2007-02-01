@@ -177,6 +177,24 @@ setMethod("ugraph", "graph",
            })
 
 
+setMethod("edgeMatrix", "graphAM",
+          function(object, duplicates=FALSE) {
+              to <- apply(object@adjMat, 1, function(x) which(x != 0))
+              from <- rep(1:numNodes(object), listLen(to))
+              to <- unlist(to, use.names=FALSE)
+              ans <- rbind(from=from, to=to)
+              ## we duplicate edges in undirected graphs
+              ## so here we remove them
+              if (!isDirected(object)  && !duplicates) {
+                  swap <- from > to
+                  ans[1, swap] <- to[swap]
+                  ans[2, swap] <- from[swap]
+                  t1 <- paste(ans[1, ], ans[2, ], sep="+")
+                  ans <- ans[ , !duplicated(t1), drop=FALSE]
+              }
+              ans
+          })
+
 
 ##it seems to me that we might want the edge weights for
 ##a given edgeMatrix and that that would be much better done

@@ -376,3 +376,26 @@ testAsMatrix <- function() {
               values=list(weight=1))
     checkEquals(mat, as(g2, "matrix"))
 }
+
+
+test_edgeMatrix <- function() {
+    ugam <- new("graphAM", adjMat=simpleAdjMat(), edgemode="undirected")
+    gam <- simpleDirectedGraph()
+
+    expect <- c("1+3", "1+4", "2+3", "2+4", "3+4")
+    got <- edgeMatrix(ugam)
+    checkTrue(setequal(expect, paste(got[1, ], got[2, ], sep="+")))
+    checkEquals(list(c("from", "to"), NULL), dimnames(got))
+
+    expect <- c("1+3", "1+4", "2+3", "4+2", "4+3")
+    got <- edgeMatrix(gam)
+    checkTrue(setequal(expect, paste(got[1, ], got[2, ], sep="+")))
+    ## duplicates should have no effect on directed graph
+    got <- edgeMatrix(gam, duplicates=TRUE)
+    checkTrue(setequal(expect, paste(got[1, ], got[2, ], sep="+")))
+
+    expect <- c("1+3", "1+4", "2+3", "2+4", "3+4",
+                "3+1", "4+1", "3+2", "4+2", "4+3")
+    got <- edgeMatrix(ugam, duplicates=TRUE)
+    checkTrue(setequal(expect, paste(got[1, ], got[2, ], sep="+")))
+}

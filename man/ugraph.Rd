@@ -23,6 +23,9 @@ ugraph(graph)
    If \code{graph} is a multi-graph (has multiple edges) an error is
    thrown as it is unclear how to compute the underlying graph in that
    context.
+
+   The method will work for any \code{graph} subclass for which an
+   \code{edgeMatrix} method exists.
  }
  
 
@@ -33,7 +36,10 @@ ugraph(graph)
 \references{Graph Theory and its Applications, J. Gross and J. Yellen. }
 \author{R. Gentleman }
 
-\seealso{\code{\link{connComp}}}
+\seealso{
+  \code{\link{connComp}}
+  \code{\link{edgeMatrix}}
+}
 
 \examples{
 V <- letters[1:4]

@@ -3,6 +3,7 @@
 \alias{eWV}
 \alias{pathWeights}
 \alias{edgeMatrix,graphNEL-method}
+\alias{edgeMatrix,graphAM-method}
 \alias{edgeMatrix,clusterGraph-method}
 \alias{edgeMatrix,distGraph-method}
 \title{Compute an Edge Matrix or weight vector for a Graph  }
