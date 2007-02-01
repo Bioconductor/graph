@@ -354,9 +354,13 @@ setAs(from="graphNEL", to="graphAM",
               if (length(e))
                 mat[n, e] <- 1
           }
-          gam <- new("graphAM", mat, edgemode=edgemode(from))
+          ## XXX: it would be safer to pass mat here, but since we cannot
+          ##      yet pass in the edgeData and nodeData, we benefit greatly
+          ##      by avoiding the copying of large matrices.
+          gam <- new("graphAM", matrix(0), edgemode=edgemode(from))
           ## copy edge and node attributes
           gam@edgeData <- from@edgeData
           gam@nodeData <- from@nodeData
-          gam                          
+          gam@adjMat <- mat
+          gam
       })
