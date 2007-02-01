@@ -358,6 +358,9 @@ setAs(from="graphNEL", to="graphAM",
           ##      yet pass in the edgeData and nodeData, we benefit greatly
           ##      by avoiding the copying of large matrices.
           gam <- new("graphAM", matrix(0), edgemode=edgemode(from))
+          ## one of the things that initialize will do is remove row
+          ## names, so that only one copy of node names are stored
+          rownames(mat) <- NULL
           ## copy edge and node attributes
           gam@edgeData <- from@edgeData
           gam@nodeData <- from@nodeData
