@@ -80,7 +80,6 @@ ugraph <- function(graph)
 }
 
 
- 
  setMethod("edgeMatrix", c("graphNEL", "ANY"),
            function(object, duplicates=FALSE) {
                    ## Return a 2 row numeric matrix (from, to, weight)
@@ -91,7 +90,7 @@ ugraph <- function(graph)
                eds<-lapply(ed, function(x) x$edges)
                elem <- listLen(eds)
                from <- rep(1:nN, elem)
-               to <- unlist(eds)
+               to <- unlist(eds, use.names=FALSE)
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
                ##so here we remove them
