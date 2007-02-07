@@ -50,8 +50,10 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
    }
 
    ## deal with V
-   if(is.null(V)) V <- names(table(ft))
-   ift <- cbind(match(ft[,1], V), match(ft[,2], V))
+   cft <- as.character(ft)
+   if(is.null(V))
+     V <- unique(cft)
+   ift <- array(match(cft, V), dim=dim(ft))
    if(any(is.na(ift)))
      stop("Node names in 'ft' must be contained in 'V'.")
    numN <- length(V)
@@ -62,15 +64,27 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
 
    switch(targetclass,
     adjM = {
-      mat <-matrix(0, ncol=numN, nrow=numN, dimnames=list(V,V))
+      mat <- matrix(0, ncol=numN, nrow=numN, dimnames=list(V,V))
       mat[ind] <- W
       mat
     },
     graphNEL = {
-      toN <- split(ift[,2], ft[,1]) ## 1st column=from, 2nd column=to
-      eW  <- split(W, ft[,1])
-      edgeL <- lapply(V, function(nm) list(edges=toN[[nm]], weights=eW[[nm]]))
+      ## ift[,2] are the indices of the to-nodes in V
+      ## ft[,1] are the names of the from-nodes
+      ## toN is a named list, whose names are the levels of ft[,1] and whose elements are the indices of to-nodes in V
+      ##   names(toN) is a subset of V, but not identical: the nodes with no outgoing edges are not in names(toN)
+      ## Beware of partial matching! (This lead to a bug in earlier versions of this function, where edges were
+      ##   invented if there were nodes with no outgoing edges whose name partially matched the name of other 
+      ##   nodes with outgoing edges.
+      toN <- split(ift[,2], ft[,1]) 
+      eW  <- split(W,       ft[,1])
+      edgeL <- lapply(V, function(x) list(edges=NULL, weights=NULL))
       names(edgeL) <- V
+      
+      mt = match(names(toN), V)
+      for(k in seq(along=mt))
+        edgeL[[mt[k]]] <- list(edges=toN[[k]], weights=eW[[k]])
+      
       new("graphNEL", nodes=V, edgeL=edgeL, edgemode=edgemode)
     },
     stop(paste("Unknown targetclass '", targetclass, "'", sep=""))
