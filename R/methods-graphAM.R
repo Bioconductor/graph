@@ -75,7 +75,7 @@ setMethod("initialize", signature("graphAM"),
               ## Matrix values have been stored in @edgeData,
               ## so now we normalize to 0/1
               adjMat <- .Object@adjMat
-              adjMat[adjMat != 0] <- 1L
+              adjMat[adjMat != 0] <- 1
               .Object@adjMat <- adjMat
 
               .Object

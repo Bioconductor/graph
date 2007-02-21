@@ -335,12 +335,12 @@ setAs(from="clusterGraph", to="matrix",
       function(from, to) {
           theNodes <- nodes(from)       # will be grouped by cluster!
           numNodes <- length(theNodes)
-          m <- matrix(0L, nrow=numNodes, ncol=numNodes,
+          m <- matrix(0, nrow=numNodes, ncol=numNodes,
                       dimnames=list(theNodes, theNodes))
           for (clust in from@clusters) {
               idx <- match(clust, theNodes)
-              m[idx, idx] <- 1L
+              m[idx, idx] <- 1
           }
-          diag(m) <- 0L                 # eliminate self-loops
+          diag(m) <- 0                 # eliminate self-loops
           m
       })
