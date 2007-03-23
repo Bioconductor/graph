@@ -1,9 +1,6 @@
 .onLoad <- function(libname, pkgname) {
     if (!require("methods"))
-       stop("Unable to load ", sQuote("methods"), " package")
-    .initGContents()
-
-
+       stop("Unable to load 'methods' package")
 }
 
 
@@ -14,5 +11,5 @@
 
 
 .onUnload <- function( libpath ) {
-  library.dynam.unload( "graph", libpath )
+  library.dynam.unload("graph", libpath )
 }
