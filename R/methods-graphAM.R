@@ -15,7 +15,8 @@ isValidAdjMat <- function(adjMat, mode="undirected") {
         nNames <- NULL
     } else {
         ## take first non-null dimname
-        nonNullIndices <- which(!is.null(dimnames(adjMat)))
+        nonNullIndices <- which(sapply(dimnames(adjMat),
+                                       function(x) !is.null(x)))
         nNames <- dimnames(adjMat)[[nonNullIndices[1]]]
         if (any(duplicated(nNames)))
           stop("node names must be distinct")
