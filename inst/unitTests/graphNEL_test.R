@@ -345,3 +345,32 @@ test_ugraph <- function() {
         checkTrue(setequal(eExp[[n]], eGot[[n]]))
     }
 }
+
+
+test_rename_nodes_edgeWeights <- function() {
+    g <- simpleGraphNEL()
+    ew <- edgeWeights(g)
+    ew <- lapply(ew, function(x) {
+        names(x) <- toupper(names(x))
+        x
+    })
+    names(ew) <- toupper(names(ew))
+    nodes(g) <- LETTERS[1:4]
+    checkEquals(ew, edgeWeights(g))
+}
+
+
+test_rename_nodes_nodeData <- function() {
+    g <- simpleGraphNEL()
+    nodeDataDefaults(g) <- list(type=NA)
+    nodeData(g, n="a", attr="type") <- "the first one"
+    nodeData(g, n="d", attr="type") <- "the last one"
+    ndDef <- nodeDataDefaults(g)
+    nd <- nodeData(g, attr="type")
+    names(nd) <- toupper(names(nd))
+
+    nodes(g) <- toupper(nodes(g))
+
+    checkEquals(nd, nodeData(g, attr="type"))
+}
+    
