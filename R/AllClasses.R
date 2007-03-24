@@ -40,14 +40,6 @@ setClass("clusterGraph",
 
 ## Misc classes
 
-
-
-setClass("file")
-
-
-setClass("connection")
-
-
 setClass("simpleEdge",
          representation(edgeType="character",
                         weight="numeric",

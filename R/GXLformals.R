@@ -1,9 +1,13 @@
 #
 # GXL support
 #
-## need methods on connections
-setIs("file","connection")
-##setOldClass("connection")
+
+
+setOldClass(c("file", "connection"))
+setOldClass(c("gzfile", "connection"))
+setOldClass(c("bzfile", "connection"))
+setOldClass(c("url", "connection"))
+
 ## fromGXL returns the graphNEL object only, and it may
 ##  need to return more properties (7 mar 03)
 

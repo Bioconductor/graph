@@ -13,6 +13,9 @@
 \alias{validateGXL}
 \alias{connection-class}
 \alias{file-class}
+\alias{gzfile-class}
+\alias{bzfile-class}
+\alias{url-class}
 \alias{dumpGXL,connection-method}
 \alias{fromGXL,connection-method}
 \alias{validateGXL,connection-method}

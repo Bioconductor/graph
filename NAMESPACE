@@ -3,7 +3,7 @@ useDynLib(graph)
 import(methods, cluster)
 
 exportClasses(distGraph,
-  clusterGraph, graph, graphNEL, file, connection,
+  clusterGraph, graph, graphNEL, file, connection, gzfile, bzfile, url,
   graphAM, attrData, simpleEdge) 
 
 exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
