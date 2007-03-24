@@ -69,6 +69,9 @@
 \alias{nodeData,graph,missing,character-method}
 \alias{nodeData,graph,missing,missing-method}
 
+\alias{nodes,graph-method}
+\alias{nodes<-,graph,character-method}
+
 \alias{numEdges}
 \alias{numEdges,graph-method}
 
@@ -95,6 +98,9 @@ A virtual Class: No objects may be created from it.
 
 \section{Methods}{
   \describe{
+    \item{nodes}{return a character vector containing the names of the
+    nodes of the graph}
+    \item{nodes<-}{rename the nodes of the graph}
     \item{show}{\code{signature(object = "graph")}:A print method for
       the graph.}
     \item{acc}{\code{signature(object = "graph")}: find all nodes
