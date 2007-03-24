@@ -120,3 +120,24 @@ testItemRemovalSimple <- function() {
     removeAttrDataItem(aset, x="k1") <- NULL
     checkEquals(1, attrDataItem(aset, x="k1", attr="weight")[[1]])
 }
+
+
+testNames <- function() {
+    aset <- new("attrData", defaults=basicProps)
+
+    attrDataItem(aset, x=letters, attr="weight") <- 1:26
+    checkEquals(letters, names(aset))
+
+    names(aset) <- LETTERS
+    checkEquals(LETTERS, names(aset))
+
+    ## must have right length
+    checkException(names(aset) <- letters[1:4], silent=TRUE)
+    ## can't have NA
+    bad <- letters
+    bad[11] <- NA
+    checkException(names(aset) <- bad, silent=TRUE)
+    ## can't have duplicates
+    bad[11] <- "b"
+    checkException(names(aset) <- bad, silent=TRUE)
+}

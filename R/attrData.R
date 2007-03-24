@@ -122,3 +122,22 @@ setReplaceMethod("removeAttrDataItem",
                        self@data <- self@data[-idx]
                      self
                  })
+
+
+setMethod("names", "attrData",
+          function(x) {
+              names(x@data)
+          })
+
+
+setReplaceMethod("names", signature(x="attrData", value="character"),
+                 function(x, value) {
+                     if (length(x@data) != length(value))
+                       stop("'value' argument length doesn't match data")
+                     if (any(duplicated(value)))
+                       stop("'value' argument must specify unique names")
+                     if (any(is.na(value)))
+                       stop("'value' argument cannot contain NAs")
+                     names(x@data) <- value
+                     x
+                 })
