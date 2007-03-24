@@ -19,6 +19,9 @@ setGeneric("nodes", function(object, ...) standardGeneric("nodes"))
 
 setGeneric("nodes<-", function(object, value) standardGeneric("nodes<-"))
 
+## internal use only so that nodes<- can be a template method
+setGeneric("renameNodes", function(g, value) standardGeneric("renameNodes"))
+
 
 setGeneric("edges", function(object, which) standardGeneric("edges"))
 

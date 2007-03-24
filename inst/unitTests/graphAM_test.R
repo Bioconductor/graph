@@ -36,7 +36,7 @@ simpleDirectedGraph <- function() {
     mat
     new("graphAM", adjMat=mat, edgemode="directed")
 }
-    
+
 
 
 testInvalidNonSquare <- function() {
@@ -84,7 +84,6 @@ testValuesToAttr <- function() {
                   byrow=TRUE, ncol=4)
     rownames(mat) <- letters[1:4]
     colnames(mat) <- letters[1:4]
-    mat
     g1 <- new("graphAM", adjMat=mat, edgemode="directed",
               values=list(weight=1))
     checkEquals(4, edgeData(g1, "d", "b", attr="weight")[[1]])
@@ -109,7 +108,7 @@ testValuesToAttr <- function() {
 
 
 testEdges <- function() {
-    mat <- simpleAdjMat() 
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     got <- edges(g1)
     expect <- list(a=c("c", "d"), b=c("c", "d"), c=c("a", "b", "d"),
@@ -131,14 +130,14 @@ testEdgesDirected <- function() {
 
 
 testEdgesSubset <- function() {
-    mat <- simpleAdjMat() 
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     got <- edges(g1)
     expect <- list(a=c("c", "d"), d=c("a", "b", "c"))
     got <- edges(g1, c("a", "d"))
     checkEquals(expect, got)
 }
-    
+
 
 testNodeNames <- function() {
     mat <- simpleAdjMat()
@@ -159,14 +158,14 @@ testNodeNamesReplace <- function() {
 
 
 testNumNodes <- function() {
-    mat <- simpleAdjMat() 
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     checkEquals(nrow(mat), numNodes(g1))
 }
 
 
 testNumEdges <- function() {
-    mat <- simpleAdjMat() 
+    mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
     checkEquals(5, numEdges(g1))
 
@@ -207,12 +206,12 @@ testIsAdjacentVectorized <- function() {
 
 
 ## testSubgraph <- function() {
-##     mat <- simpleAdjMat() 
+##     mat <- simpleAdjMat()
 ##     g1 <- new("graphAM", adjMat=mat)
 ##     g2 <- subgraph(c("a", "b", "c"), ffff)
 
 ##                }
-    
+
 
 testSimpleEdgeWeights <- function() {
     mat <- simpleAdjMat()
@@ -221,8 +220,8 @@ testSimpleEdgeWeights <- function() {
     expect <- c(c=1:1, d=1:1)
     checkEquals(expect, edgeWeights(g)$a)
 }
-    
-    
+
+
 testAddNode <- function() {
     mat <- simpleAdjMat()
     g1 <- new("graphAM", adjMat=mat)
@@ -257,7 +256,7 @@ testClearNode <- function() {
     g1 <- new("graphAM", adjMat=mat)
     edgeDataDefaults(g1, attr="weight") <- 1
     edgeData(g1, "a", "c", attr="weight") <- 400
-    
+
     checkEquals(TRUE, isAdjacent(g1, "a", "c"))
     checkEquals(TRUE, isAdjacent(g1, "a", "d"))
     checkEquals(400, edgeData(g1, "a", "c", attr="weight")[[1]])
@@ -399,3 +398,41 @@ test_edgeMatrix <- function() {
     got <- edgeMatrix(ugam, duplicates=TRUE)
     checkTrue(setequal(expect, paste(got[1, ], got[2, ], sep="+")))
 }
+
+
+test_rename_nodes_edgeWeights <- function() {
+    mat <- matrix(c(0, 0, 1, 2,
+                    0, 0, 3, 0,
+                    0, 0, 0, 0,
+                    0, 4, 5, 0),
+                  byrow=TRUE, ncol=4)
+    rownames(mat) <- letters[1:4]
+    colnames(mat) <- letters[1:4]
+    g <- new("graphAM", adjMat=mat, edgemode="directed",
+              values=list(weight=1))
+    ew <- edgeWeights(g)
+    ew <- lapply(ew, function(x) {
+        if (length(x))
+          names(x) <- toupper(names(x))
+        x
+    })
+    names(ew) <- toupper(names(ew))
+    nodes(g) <- LETTERS[1:4]
+    checkEquals(LETTERS[1:4], nodes(g))
+    checkEquals(ew, edgeWeights(g))
+}
+
+
+test_rename_nodes_nodeData <- function() {
+    g <- simpleDirectedGraph()
+    nodeDataDefaults(g) <- list(type=NA)
+    nodeData(g, n="a", attr="type") <- "the first one"
+    nodeData(g, n="d", attr="type") <- "the last one"
+    ndDef <- nodeDataDefaults(g)
+    nd <- nodeData(g, attr="type")
+    names(nd) <- toupper(names(nd))
+
+    nodes(g) <- toupper(nodes(g))
+    checkEquals(nd, nodeData(g, attr="type"))
+}
+

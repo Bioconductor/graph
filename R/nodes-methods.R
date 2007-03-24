@@ -1,12 +1,11 @@
 ### helpers
 
 .node_rename_check <- function(g, new_nodes) {
+    checkValidNodeName(new_nodes)
     if (length(new_nodes) != numNodes(g))
       stop("need as many names as there are nodes", call.=FALSE)
     if (any(duplicated(new_nodes)))
       stop("node names must be unique", call.=FALSE)
-    if (any(is.na(new_nodes)))
-      stop("node names cannot be NA", call.=FALSE)
 }
 
 .rename_node_attributes <- function(g, new_nodes) {
@@ -33,22 +32,33 @@
 
 ### graph
 
-## FIXME: add methods at this level to reuse attribute handling
-
+## A template method for node<- on graph objects
+##
+## Subclasses should define a renameNodes method only.
+## This way, validation of node names and handling
+## of node and edge attributes can be shared.
+##
+setReplaceMethod("nodes", c("graph", "character"),
+                 function(object, value) {
+                     .node_rename_check(object, value)
+                     whEdges <- .get_edgeData_indicies(object)
+                     object <- .rename_node_attributes(object, value)
+                     ## the template method for different
+                     ## graph representations
+                     object <- renameNodes(object, value)
+                     ##
+                     .rename_edge_attributes(object, whEdges)
+                 })
 
 ### graphNEL
 
 setMethod("nodes", "graphNEL", function(object) object@nodes)
 
-setReplaceMethod("nodes", c("graphNEL", "character"),
-                 function(object, value) {
-                     .node_rename_check(object, value)
-                     whEdges <- .get_edgeData_indicies(object)
-                     object <- .rename_node_attributes(object, value)
-                     object@nodes <- value
-                     names(object@edgeL) <- value
-                     .rename_edge_attributes(object, whEdges)
-                 })
+setMethod("renameNodes", "graphNEL", function(g, value) {
+    g@nodes <- value
+    names(g@edgeL) <- value
+    g
+})
 
 ### graphAM
 
@@ -58,29 +68,25 @@ setMethod("nodes", signature("graphAM"),
               colnames(object@adjMat)
           })
 
-setReplaceMethod("nodes", signature("graphAM", "character"),
-                 function(object, value) {
-                     .node_rename_check(object, value)
-                     colnames(object@adjMat) <- value
-                     object
-                 })
+setMethod("renameNodes", "graphAM", function(g, value) {
+    colnames(g@adjMat) <- value
+    g
+})
 
 ### clusterGraph
 
 setMethod("nodes", "clusterGraph", function(object)
           as.character(unlist(object@clusters)))
 
-setReplaceMethod("nodes", c("clusterGraph", "character"),
-                 function(object, value) {
-                     .node_rename_check(object, value)
-                     clens = sapply(object@clusters, length)
-                     nc = length(clens)
-                     ni = rep(1:nc, clens)
-                     newc = split(value, ni)
-                     names(newc) = names(object@clusters)
-                     object@clusters = newc
-                     object
-                 })
+setMethod("renameNodes", "clusterGraph", function(g, value) {
+    clens = sapply(g@clusters, length)
+    nc = length(clens)
+    ni = rep(1:nc, clens)
+    newc = split(value, ni)
+    names(newc) = names(g@clusters)
+    g@clusters = newc
+    g
+})
 
 ### distGraph
 

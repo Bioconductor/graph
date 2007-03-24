@@ -2,6 +2,8 @@
 EDGE_KEY_SEP <- "|"
 
 checkValidNodeName <- function(node) {
+    if (!is.character(node))
+      stop("node names must be character, got: ", sQuote(class(node)))
     ## Node names must have nchar(n) > 0, not be NA,
     ## and not contain the EDGE_KEY_SEP character.
     if (any(nchar(node) == 0))

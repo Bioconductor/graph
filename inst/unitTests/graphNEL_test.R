@@ -356,6 +356,7 @@ test_rename_nodes_edgeWeights <- function() {
     })
     names(ew) <- toupper(names(ew))
     nodes(g) <- LETTERS[1:4]
+    checkEquals(LETTERS[1:4], nodes(g))
     checkEquals(ew, edgeWeights(g))
 }
 
