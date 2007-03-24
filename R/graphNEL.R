@@ -162,20 +162,6 @@ setMethod("initialize", "graphNEL",
           })
 
 
-setMethod("nodes", "graphNEL", function(object) object@nodes)
-
-
-setReplaceMethod("nodes", c("graphNEL", "character"),
-                 function(object, value) {
-                     if(length(value) != length(object@nodes))
-                       stop("need as many names as there are nodes")
-                     if(any(duplicated(value)))
-                       stop("node names must be unique")
-                     object@nodes <- value
-                     names(object@edgeL) <- value
-                     object})
-
-
 ##the graphNEL representation stores edges as indexes into the
 ##node label vector
 setMethod("edges", c("graphNEL", "missing"), function(object, which) {

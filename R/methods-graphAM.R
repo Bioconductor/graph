@@ -110,24 +110,6 @@ setMethod("edges", signature("graphAM", "character"),
           })
 
 
-setMethod("nodes", signature("graphAM"),
-          function(object) {
-              ## initialize guarantees colnames
-              colnames(object@adjMat)
-          })
-
-
-setReplaceMethod("nodes", signature("graphAM", "character"),
-                 function(object, value) {
-                     if(length(value) != ncol(object@adjMat))
-                       stop("need as many names as there are nodes")
-                     if(any(duplicated(value)))
-                       stop("node names must be unique")
-                     colnames(object@adjMat) <- value
-                     object
-                 })
-
-
 setMethod("numNodes", signature("graphAM"),
           function(object) length(nodes(object)))
 

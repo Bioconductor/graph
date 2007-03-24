@@ -15,6 +15,6 @@ Collate: AllClasses.R AllGenerics.R buildDepGraph.R
          edgefunctions.R graphfunctions.R GXLformals.R gxlReader.R
          random.R write.tlp.R mat2graph.R zzz.R 
          standardLabeling.R TODOT.R methods-graphAM.R attrData.R
-         reverseEdgeDirections.R
+         reverseEdgeDirections.R nodes-methods.R
 SaveImage: yes
 
