@@ -18,6 +18,19 @@
     g
 }
 
+.get_edgeData_indicies <- function(g) {
+    ee <- .getAllEdges(g)
+    kk <- .makeEdgeKeys(ee$from, ee$to)
+    match(names(g@edgeData), kk)
+}
+
+.rename_edge_attributes <- function(g, whEdges) {
+    ee <- .getAllEdges(g)
+    kk <- .makeEdgeKeys(ee$from, ee$to)
+    names(g@edgeData) <- kk[whEdges]
+    g
+}
+
 ### graph
 
 ## FIXME: add methods at this level to reuse attribute handling
@@ -30,9 +43,11 @@ setMethod("nodes", "graphNEL", function(object) object@nodes)
 setReplaceMethod("nodes", c("graphNEL", "character"),
                  function(object, value) {
                      .node_rename_check(object, value)
+                     whEdges <- .get_edgeData_indicies(object)
+                     object <- .rename_node_attributes(object, value)
                      object@nodes <- value
                      names(object@edgeL) <- value
-                     .rename_node_attributes(object, value)
+                     .rename_edge_attributes(object, whEdges)
                  })
 
 ### graphAM
