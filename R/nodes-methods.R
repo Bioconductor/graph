@@ -1,12 +1,21 @@
 ### helpers
 
 .node_rename_check <- function(g, new_nodes) {
-    if (length(value) != length(nodes(g)))
+    if (length(new_nodes) != numNodes(g))
       stop("need as many names as there are nodes", call.=FALSE)
     if (any(duplicated(new_nodes)))
       stop("node names must be unique", call.=FALSE)
     if (any(is.na(new_nodes)))
       stop("node names cannot be NA", call.=FALSE)
+}
+
+.rename_node_attributes <- function(g, new_nodes) {
+    ## FIXME: should be done in place?
+    ## FIXME: we are doing the verification twice :-(
+    old <- nodes(g)
+    idx <- match(names(g@nodeData), old, 0)
+    names(g@nodeData) <- new_nodes[idx]
+    g
 }
 
 ### graph
@@ -20,13 +29,11 @@ setMethod("nodes", "graphNEL", function(object) object@nodes)
 
 setReplaceMethod("nodes", c("graphNEL", "character"),
                  function(object, value) {
-                     if(length(value) != length(object@nodes))
-                       stop("need as many names as there are nodes")
-                     if(any(duplicated(value)))
-                       stop("node names must be unique")
+                     .node_rename_check(object, value)
                      object@nodes <- value
                      names(object@edgeL) <- value
-                     object})
+                     .rename_node_attributes(object, value)
+                 })
 
 ### graphAM
 
@@ -38,10 +45,7 @@ setMethod("nodes", signature("graphAM"),
 
 setReplaceMethod("nodes", signature("graphAM", "character"),
                  function(object, value) {
-                     if(length(value) != ncol(object@adjMat))
-                       stop("need as many names as there are nodes")
-                     if(any(duplicated(value)))
-                       stop("node names must be unique")
+                     .node_rename_check(object, value)
                      colnames(object@adjMat) <- value
                      object
                  })
@@ -53,17 +57,15 @@ setMethod("nodes", "clusterGraph", function(object)
 
 setReplaceMethod("nodes", c("clusterGraph", "character"),
                  function(object, value) {
+                     .node_rename_check(object, value)
                      clens = sapply(object@clusters, length)
-                     if(length(value) != sum(clens))
-                       stop("need as many names as there are nodes")
-                     if(any(duplicated(value)))
-                       stop("node names must be unique")
                      nc = length(clens)
                      ni = rep(1:nc, clens)
                      newc = split(value, ni)
                      names(newc) = names(object@clusters)
                      object@clusters = newc
-                     object})
+                     object
+                 })
 
 ### distGraph
 
