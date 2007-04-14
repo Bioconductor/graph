@@ -214,8 +214,14 @@ setMethod("subGraph", signature(snodes="character", graph="graphNEL"),
                          edgemode=edgemode(graph))
               ## FIXME: need to clean the attributes, right now we are passing
               ##        too much.
-              ans@edgeData <- graph@edgeData
-              ans@nodeData <- graph@nodeData
+              nodeIdx <- match(snodes, names(graph@nodeData), 0)
+              ans@nodeData@data <- graph@nodeData@data[nodeIdx]
+              ee <- .getAllEdges(ans)
+              if (length(ee$from) && length(ee$to)) {
+                  kk <- .makeEdgeKeys(ee$from, ee$to)
+                  whkk <- match(kk, names(graph@edgeData), 0)
+                  ans@edgeData@data <- graph@edgeData@data[whkk]
+              }
               ans
           })
 

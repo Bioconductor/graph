@@ -202,6 +202,23 @@ testSubGraphNoEdgesDirected <- function() {
  }
 
 
+testSubGraphAttributes <- function() {
+    g1 <- simpleDirectedGraphNEL()
+    nodeDataDefaults(g1) <- list(w=NA, n="")
+    nodeData(g1, n=c("a", "b"), attr="w") <- c(1, 2)
+    nodeData(g1, n=c("a", "b"), attr="n") <- c("A", "B")
+    edgeDataDefaults(g1) <- list(x=NA)
+    edgeData(g1, from="a", to="d", attr="x") <- 6
+    edgeData(g1, from="a", to="c", attr="x") <- 7
+
+    g2 <- subGraph(c("a", "d"), g1)
+    checkEquals("a", names(g2@nodeData))
+
+    g3 <- subGraph(c("a", "b", "c"), g1)
+    checkEquals(c("a|c", "b|c"), names(g3@edgeData))
+}
+    
+
 testRemoveEdgeUndirected <- function() {
     g <- simpleGraphNEL()
     g1 <- removeEdge("a", c("c", "d"), g)

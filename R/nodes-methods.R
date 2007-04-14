@@ -19,14 +19,20 @@
 
 .get_edgeData_indicies <- function(g) {
     ee <- .getAllEdges(g)
-    kk <- .makeEdgeKeys(ee$from, ee$to)
-    match(names(g@edgeData), kk)
+    if (length(ee$from) && length(ee$to)) {
+        kk <- .makeEdgeKeys(ee$from, ee$to)
+        match(names(g@edgeData), kk)
+    } else {
+        integer(0)
+    }
 }
 
 .rename_edge_attributes <- function(g, whEdges) {
     ee <- .getAllEdges(g)
-    kk <- .makeEdgeKeys(ee$from, ee$to)
-    names(g@edgeData) <- kk[whEdges]
+    if (length(ee$from) && length(ee$to)) {
+        kk <- .makeEdgeKeys(ee$from, ee$to)
+        names(g@edgeData) <- kk[whEdges]
+    }
     g
 }
 
@@ -47,7 +53,11 @@ setReplaceMethod("nodes", c("graph", "character"),
                      ## graph representations
                      object <- renameNodes(object, value)
                      ##
-                     .rename_edge_attributes(object, whEdges)
+
+                     if (length(whEdges))
+                       .rename_edge_attributes(object, whEdges)
+                     else
+                       object
                  })
 
 ### graphNEL
