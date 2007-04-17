@@ -37,22 +37,31 @@
   large number of nodes and relatively few edges.}
 \section{Objects from the Class}{
   Objects can be created by calls of the form
-  \code{new("graphNEL",...)}.
+  \code{new("graphNEL", nodes, edgeL, edgemode)}.
+
+  \describe{
+  \item{nodes}{A character vector of node labels.}
+  \item{edgeL}{A named list either in the format returned by the
+    \code{edges} method or a list of lists where each inner list has
+    an element named \code{edges} and optionally an element named
+    \code{weights}.  If \code{weights} is present, it must be the same
+    length as the \code{edges} element.}
+  \item{edgemode}{Either "directed" or "undirected".}
+
+  }
 }
 \section{Slots}{
   \describe{
     \item{\code{nodes}:}{Object of class \code{"vector"}.}
-%%% FIXME: The following is now really *WRONG* as slot description.
-%%% However, it's still valid and *important* for object creation, see
-%%% above, so move it there, once you update the slot descriptions here!
 
     \item{\code{edgeL}:}{Object of class \code{"list"}. The \code{edgeL}
       must be the same length as \code{nodes}. The elements of this
       vector correspond to the same element in \code{nodes}. The
       elements are themselves lists. If the node has any edges then this
-      list will have an element named \code{edges}. If edge weights are
-      used then there must be an element named \code{weights} and it
-      must be the same length as the \code{edges} element.
+      list will have an element named \code{edges}.  This will
+      eventually change.  Since edge weights are now stored in the
+      edge attributes construct, we do not need the extra level of
+      list.
     }
   }
 }
@@ -100,8 +109,10 @@ Class \code{"graph"}, directly.
 \details{
    The \code{graphNEL} class provides a very general structure for
    representing graphs. It will be reasonably efficient for lists with
-   relatively more nodes than edges. The class is currently able to
-   handle multi-edges and edges of any type.
+   relatively more nodes than edges.  Although this representation can
+   support multi-edges, such support is not implemented and instances
+   of \code{graphNEL} are assumed to be simple graphs with at most one
+   edge between any pair of nodes.
 
    The \code{edgeL} is a named \code{list} of the same length as the
    node vector. The names are the names of the nodes. Each element of
@@ -116,9 +127,8 @@ Class \code{"graph"}, directly.
    etc). They are responsible for any special handling that
    these might require.
 
-   Multi-edges are represented by multiple entries. For an
-   \code{undirected} instance all edges are reciprocated (there is an
-   edge from A to B and from B to A).
+   For an \code{undirected} instance all edges are reciprocated (there
+   is an edge from A to B and from B to A).
 
    Note that the reason for using indices to represent the \code{to} end
    of a node is so that we can easily support permutation of the node
