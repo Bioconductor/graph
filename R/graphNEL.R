@@ -387,8 +387,10 @@ setMethod("addEdge", signature=signature(from="character", to="character",
               if (any(preEdges)) {
                   preFr <- from[preEdges]
                   preTo <- to[preEdges]
-                  warning("edge from ", sQuote(from), " to ", sQuote(to),
-                          " already exists, but will be replaced")
+                  preEdges <- paste(preFr, preTo, sep=EDGE_KEY_SEP)
+                  warning("The following edges already exist and ",
+                          "will be replaced:\n",
+                          paste(preEdges, collapse=", "))
               }
               gN <- nodes(graph)
               whF <- match(from, gN)
