@@ -56,8 +56,17 @@ setReplaceMethod("edgemode", c("graph", "character"),
 setMethod("isAdjacent",signature(object="graph", from="character",
                                  to="character"),
           function(object, from, to) {
-              if (length(from) != length(to))
-                stop("'from' and 'to' must have the same length")
+              eSpec <- graph:::.normalizeEdges(from, to)
+              from <- eSpec$from
+              to <- eSpec$to
+              fromIdx <- match(from, nodes(object), nomatch=0)
+              toIdx <- match(to, nodes(object), nomatch=0)
+              if (any(fromIdx == 0))
+                stop("Unknown nodes in from: ",
+                     paste(from[fromIdx == 0], collapse=", "))
+              if (any(toIdx == 0))
+                stop("Unknown nodes in to: ",
+                     paste(to[toIdx == 0], collapse=", "))
               fromEdges <- edges(object)[from]
               .Call("graph_is_adjacent", fromEdges, to,
                     PACKAGE="graph")

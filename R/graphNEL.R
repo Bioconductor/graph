@@ -383,6 +383,13 @@ setMethod("addEdge", signature=signature(from="character", to="character",
 setMethod("addEdge", signature=signature(from="character", to="character",
                        graph="graphNEL", weights="missing"),
           function(from, to, graph) {
+              preEdges <- isAdjacent(graph, from, to)
+              if (any(preEdges)) {
+                  preFr <- from[preEdges]
+                  preTo <- to[preEdges]
+                  warning("edge from ", sQuote(from), " to ", sQuote(to),
+                          " already exists, but will be replaced")
+              }
               gN <- nodes(graph)
               whF <- match(from, gN)
               if( any(is.na(whF)) )

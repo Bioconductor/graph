@@ -30,7 +30,7 @@ stopifnot(isAdjacent(g, "a", "b"))
 stopifnot(!isAdjacent(g, "b", "a"))
 
 grev <- reverseEdgeDirections(g)
-stopifnot(!isAdjacent(grev, "a", "ab"))
+stopifnot(!isAdjacent(grev, "a", "b"))
 stopifnot(isAdjacent(grev, "b", "a"))
 
 }
