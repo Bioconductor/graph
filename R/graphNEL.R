@@ -41,8 +41,8 @@ validGraph<-function(object, quietly=FALSE) {
         if(object@edgemode == "undirected" && length(objEdges)>0 ) {
             fr <- rep(names(objEdges), sapply(objEdges, length))
             to <- unlist(objEdges)
-            frto <- paste(fr, to, sep="|")
-            tofr <- paste(to, fr, sep="|")
+            frto <- paste(fr, to, sep=EDGE_KEY_SEP)
+            tofr <- paste(to, fr, sep=EDGE_KEY_SEP)
             badEdges <- setdiff(tofr, frto)
             if (length(badEdges) > 0) {
                 if (!quietly) {
