@@ -247,7 +247,7 @@ setMethod("edgeWeights", signature(object="graph", index="missing"),
 
 
 setMethod("DFS", c("graph", "character", "ANY"), function(object, node,
-    checkConn=FALSE) {
+    checkConn=TRUE) {
     nNames <- nodes(object)
     marked <- rep(NA, length(nNames))
     names(marked) <- nNames

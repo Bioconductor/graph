@@ -147,7 +147,7 @@ setGeneric("edgeData<-", function(self, from, to, attr, value)
 
 ## Basic operations
 
-setGeneric("DFS", function(object, node, checkConn=FALSE) standardGeneric("DFS"))
+setGeneric("DFS", function(object, node, checkConn=TRUE) standardGeneric("DFS"))
 
 
 setGeneric("subGraph", function(snodes, graph) standardGeneric("subGraph"))

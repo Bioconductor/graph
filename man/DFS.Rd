@@ -11,7 +11,7 @@
   visited.
 }
 \usage{
-DFS(object, node, checkConn=FALSE)
+DFS(object, node, checkConn=TRUE)
 }
 \arguments{
   \item{object}{An instance of the \code{graph} class. }
@@ -23,8 +23,8 @@ DFS(object, node, checkConn=FALSE)
   This function implements algorithm 4.2.1 of Gross and Yellen. Specific
   details are given there.
 
-  It requires that the graph be connected. This can be checked, but is
-  expensive and is only done when requested.
+  It requires that the graph be connected. By default, this is checked,
+  but since the checking can be expensive it is optional.
 
   A faster and mostly likely better implementation of depth first
   searching is given by \code{\link[RBGL]{dfs}} in the \pkg{RBGL}
