@@ -16,5 +16,5 @@ Collate: AllClasses.R AllGenerics.R buildDepGraph.R
          random.R write.tlp.R mat2graph.R zzz.R 
          standardLabeling.R TODOT.R methods-graphAM.R attrData.R
          reverseEdgeDirections.R nodes-methods.R
-SaveImage: yes
+LazyLoad: yes
 
