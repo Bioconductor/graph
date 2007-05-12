@@ -16,7 +16,7 @@ write.tlp(graph, filename)
   The Tulip format is used by the program Tulip.
 }
 \references{http://www.tulip-software.org/}
-\author{ Laurent Gautier <laurent@cbs.dtu.dk>}
-}
+\author{Laurent Gautier <laurent@cbs.dtu.dk>}
+
 \keyword{ manip }
 

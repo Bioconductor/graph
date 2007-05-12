@@ -13,7 +13,7 @@ validGraph(object, quietly=FALSE)
   \item{quietly}{ \code{TRUE} or \code{FALSE} indicating whether 
   output should be printed.}
 }
-}
+
 
 \value{
  If the graph object is valid, \code{TRUE} is returned otherwise

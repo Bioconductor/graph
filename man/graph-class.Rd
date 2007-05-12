@@ -193,7 +193,6 @@ A virtual Class: No objects may be created from it.
 
     }
   }
-}
 
 \details{
   \code{degree} returns either a named vector (names correspond to the
