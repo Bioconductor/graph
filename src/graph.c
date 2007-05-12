@@ -61,7 +61,7 @@ SEXP intersectStrings(SEXP x, SEXP y) {
 	}
     }
 
-    PROTECT(dup = Rf_duplicated(matched));
+    PROTECT(dup = Rf_duplicated(matched, FALSE));
     n = length(matched);
 
     k = 0;
