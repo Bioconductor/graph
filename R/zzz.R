@@ -5,8 +5,8 @@
 
 
 .onAttach <- function(libname, pkgname) {
-    if (.Platform$OS.type == "windows")
-      suppressWarnings(require("Biobase")) && addVigs2WinMenu("graph")
+    if ("Biobase" %in% loadedNamespaces())
+      Biobase::addVigs2WinMenu("graph")
 }
 
 
