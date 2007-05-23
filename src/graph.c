@@ -3,6 +3,7 @@
 #include <Rmath.h>
 #include <R_ext/RConverters.h>
 #include <R_ext/Rdynload.h>
+#include <Rversion.h>
 
 SEXP R_scalarString(const char *);
 SEXP intersectStrings(SEXP, SEXP);
@@ -12,6 +13,13 @@ SEXP listLen(SEXP);
 SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr);
 SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values);
 SEXP graph_is_adjacent(SEXP fromEdges, SEXP to);
+
+
+#if defined(R_VERSION) && R_VERSION >= R_Version(2, 6, 0)
+# define graph_duplicated(x) Rf_duplicated(x, FALSE)
+#else
+# define graph_duplicated(x) Rf_duplicated(x)
+#endif
 
 static const R_CallMethodDef R_CallDef[] = {
     {"intersectStrings", (DL_FUNC)&intersectStrings, 2},
@@ -61,7 +69,7 @@ SEXP intersectStrings(SEXP x, SEXP y) {
 	}
     }
 
-    PROTECT(dup = Rf_duplicated(matched, FALSE));
+    PROTECT(dup = graph_duplicated(matched));
     n = length(matched);
 
     k = 0;
