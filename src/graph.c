@@ -211,7 +211,7 @@ SEXP listLen(SEXP x)
   return(ans);
 }
 
-static SEXP graph_getListElement(SEXP list, char *str, SEXP defaultVal)
+static SEXP graph_getListElement(SEXP list, const char *str, SEXP defaultVal)
 {
     SEXP elmt = defaultVal;
     SEXP names = getAttrib(list, R_NamesSymbol);
@@ -229,7 +229,7 @@ static int graph_getListIndex(SEXP list, SEXP name)
 {
     SEXP names = GET_NAMES(list);
     int i;
-    char* str = CHAR(STRING_ELT(name, 0));
+    const char* str = CHAR(STRING_ELT(name, 0));
 
     for (i = 0; i < length(list); i++)
         if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0)
@@ -265,7 +265,7 @@ static SEXP graph_sublist_lookup(SEXP x, SEXP subs, SEXP sublist,
 SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr)
 {
     SEXP data, defaults, defaultVal;
-    char* attribute;
+    const char* attribute;
 
     data = GET_SLOT(attrObj, install("data"));
     defaults = GET_SLOT(attrObj, install("defaults"));
