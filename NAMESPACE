@@ -1,6 +1,7 @@
 useDynLib(graph)
 
 import(methods, cluster)
+importFrom(tools, package.dependencies)
 
 exportClasses(distGraph,
   clusterGraph, graph, graphNEL, file, connection, gzfile, bzfile, url,

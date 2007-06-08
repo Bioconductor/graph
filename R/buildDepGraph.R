@@ -1,6 +1,7 @@
 pkgInstOrder <- function(pkg, repGraph) {
-    require("RBGL", quietly=TRUE) || stop("RBGL needed for pkgInstOrder")
+    .Deprecated("getInstallOrder", package="pkgDepTools")
 
+    require("RBGL", quietly=TRUE) || stop("RBGL needed for pkgInstOrder")
 
     if (missing(pkg))
         stop("No package argument provided")
@@ -37,6 +38,8 @@ pkgInstOrder <- function(pkg, repGraph) {
 
 buildRepDepGraph <- function(repository, depLevel=c("Depends",
                                          "Suggests")) {
+    .Deprecated("makeDepGraph", package="pkgDepTools")
+
     depLevel <- match.arg(depLevel)
 
     if (missing(repository))
