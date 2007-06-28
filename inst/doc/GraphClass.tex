@@ -1,9 +1,42 @@
+%
+% NOTE -- ONLY EDIT GraphClass.Rnw!!!
+% GraphClass.tex file will get overwritten.
+%
+%\VignetteIndexEntry{Graph Design}
+%\VignetteDepends{graph}
+%\VignetteKeywords{Graph}
+%\VignettePackage{graph}
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+
+\newcommand{\classdef}[1]{%
+  {\em #1}
+}
+
+\begin{document}
+
 \section{Discussion}
 
 The purpose of this document is to describe an implementation of a
 class structure for graphs (we define classes for both nodes and
 edges) and consider some different problems that can arise.
-This structure is based on GXL (reference: Holt and Winter).
 
 There are many different ways to represent a graph and to deal with
 the edges and nodes within that graph.
@@ -12,36 +45,59 @@ a graph. These would essentially define the interface -- those
 components that any one would need to implement to have access to
 certain algorithms.
 
-At the same time, we would like to define and implement a particular
-class structure for graphs. This is somewhat orthogonal to the desire
-to determine what the interface might be.
+The \Rpackage{graph} currently supports a number of different basic
+graph classes designed to support different representations of a
+graph. But some of the design decisions there are in need of review.
 
-The class structure for nodes is:
-\begin{description}
-\item[id] An identifier (these must be unique), positive integers may
-  be appropriate.
-\item[type] A character vector describing the type of node.
-\item[edgeOrder] The order that nodes should be drawn? Not sure about
-  this particular one. It will be a vector of edge {\em id}'s.
-\item[label] A label for the node. This is a character string.
-\end{description}
+At its most basic level a graph is a pair of sets, $G=(V,E)$ where $V$
+is the set of nodes and $E$ is the set of edges, which are determined
+by relationships that exist between the nodes.  If we let $n = |V|$,
+be the number of nodes then, excluding self-loops there are at most
+$n$ choose 2 edges in $G$.
 
-The class structure for edges is:
-\begin{description}
-\item[id] An identifier (these must be unique); positive integers may
-  be appropriate.
-\item[type] A character vector describing the type of the edge.
-\item[begin] The node {\em id} where the edge begins.
-\item[end] The node {\em id} where the edge ends.
-\end{description}
+Our initial implementation made the \textit{edgemode} a property of
+the graph, but now that we are considering multigraphs, it seems that
+this might be better done as a property of the edges.
 
-Both nodes and edges need to support attributes. These may be simply
-name value pairs (this is the mechanism used by GXL).
+\subsection{The graph class}
 
-It seems that relying on integers to index both nodes and edges
-(separately) seems likely to help save on space and 
+The \Rclass{graph} class is designed to hold simple graphs. There can
+be at most one edge (relationship) between any two nodes, but this
+edge can have multiple attributes.  The \Rclass{graph} class also
+supports self-loops.  Nodes can have arbitrary attributes associated
+with them.  For both nodes and edges if one edge or node has a
+particular type of attribute then all nodes and edges must have that
+attribute. 
 
-\section{Some Details}
+\textit{This raises the question of whether we should use the
+  \Rclass{AnnotatedDataFrame} class from Biobase here as a way to
+    implement general node and edge attributes.}
+
+There are currently implementations for the \Rclass{graphNEL} class,
+where nodes are a vector and edges are a list, each element of the
+list correspondes to one node and the values are nodes corresponding
+to the out-edges from that node.  If the graph is directed then all
+edges essentially appear twice.
+
+The \Rclass{graphAM} class, which stores the edge information in an
+adjacency matrix.  The matrix must be square and the row names must
+match the column names.  If the graph is undirected then the matrix
+must also be symmetric.
+
+There are two specialized classes, \Rclass{distGraph} which takes a
+distance matrix directly and has special thresholding capabilities. It
+is not clear whether this should be a specialization of the
+\Rclass{graphAM} class or not.
+
+The second specialized class is a \Rclass{clusterGraph} which can be
+used to represent the output of a clustering algorithm as a graph.
+Samples represent nodes and all samples in the same cluster have
+edges, while samples in distinct clusters do not.  Instances of this
+class must have their edgemode as \texttt{undirected}, if the edgemode
+is reset then coercion to some other mode of graph is needed.
+
+
+\subsection{Some Details}
 
 Once both nodes and edges are instances of classes they will be quite
 large. In order to reduce the storage requirements (especially for
@@ -56,61 +112,51 @@ In some cases it may be better to keep the actual node and edge data
 stored in hash tables and keep other integer vectors available for
 accessing the necessary components.
 
-\section{Some Types of Graphs}
+\section{Multi-graphs}
 
-A brief digression on types of graphs:
+There are no clear and widely used definitions for multi-graphs, so
+here we will make clear a definition that we believe will be useful
+for biological computations.  We define a multi-graph to consist of
+two components, one a set of nodes and the second a list of edge
+sets. Each edge set corresponds to a potentially different set of
+relationships between the nodes (which are common to all edge
+sets). We denote this by $G=(V, E_L)$, where $V$ is the set of nodes
+and $E_L = (E_1, \ldots, E_L)$ is a collection of $L$ edge sets. Each
+with a potentially distinct set of relationships. The edge sets are
+essentially identical to the edge sets for a graph, and hence can have
+arbitrary attributes associated with them, the edges can be either
+\textit{directed} or \textit{undirected} and self-loops are allowed.
+
+It is not clear whether there should be distinct types of
+multigraphs as there are graphs.  It will surely be more flexible to
+support a list of edge sets, and to allow these to have different
+structures. 
+
+Current definition extends the \Rclass{graph} class (mainly to reuse
+code that deals with arbitrary node and edge attributes - but note
+that this may be problematic for nodes) and introduces the following
+slots:
 \begin{description}
-\item[digraph] A directed graph. All edges have direction (they go
-  from one node to another but do not connect the nodes in the
-  opposite direction).
-\item[tree] A tree is an undirected acyclic graph (there are many
-  other characterizations).
+\item[nodes] A vector of node identifiers.
+\item[edgeL] A list of instances of the \Rclass{edgeSet} class.
 \end{description}
 
-Some special data derived graph types:
-\begin{description}
-\item[cluster graph] A cluster graph is constructed when the nodes of
-  the graph are clustered (partitioned). All nodes within a component
-  of the partition are completely connected. There are no edges
-  between components.
-\end{description}
+The \Rclass{edgeSet} class is a virtual class with several different
+extensions of it. These include a \Rclass{edgeSetNEL} and an
+\Rclass{edgeSetAM}, others will be added once the interface
+stabilizes. 
 
 
-\section{Some operations on graphs}
 
-Given two graphs $G_1$ and $G_2$ defined on the same set of nodes
-we can ask about the intersection of these two graphs. This would be a
-graph $G_3 = \{V, E^* \}$, where an edge is in $E^*$ if and only if it
-is in both $E_1$ and $E_2$.
+\section{Bipartite Graphs}
 
-It will also be interesting to find the edges that are in $G_1$ say
-that are not in $G_2$.
-
-For a variety of the inferential problems it will be important to be
-able to apply permutations to the graphs. It seems that often these
-will require the graph structure itself to remain fixed and nodes
-are simply relabled.
-
-Other random constructs involve selecting edges between nodes in some
-random fashion.
-
-For trees (and especially for dendrograms) we might like to generate 
-orders of the leaves that are consistent with the tree structure.
-Possibly we could try to 
-
-\subsection{Operations on Nodes}
-
-We will want to find the inNodes and the outNodes. These provide us
-with the in degree and out degree of the node.
-
-For dendrograms (and a variety of other trees) we will want to be able
-to find the edgeOrder and to change it.
-
-The GXL description has edgeOrder. This seems like it could be useful
-for drawing trees (and dendrograms) but it is only the outNodes that
-need to be ordered.
+A bipartite graph graph is a graph where the nodes can be divided into
+two sets, say $V_1$ and $V_2$,  such that all edges are between
+members of $V_1$ and members of $V_2$ and there are no edges between
+any two elements of $V_1$, nor of $V_2$.
 
 
+\end{document}
 
 
 

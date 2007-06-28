@@ -1,6 +1,6 @@
 %
-% NOTE -- ONLY EDIT howtogenefilter.Rnw!!!
-% Biobase.tex file will get overwritten.
+% NOTE -- ONLY EDIT graph.Rnw!!!
+% graph.tex file will get overwritten.
 %
 %\VignetteIndexEntry{Graph}
 %\VignetteDepends{graph}
