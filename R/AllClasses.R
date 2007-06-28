@@ -48,3 +48,23 @@ setClass("simpleEdge",
                         eNode="character"),   ##end   - if directed
          prototype=list(edgeType="unknown",
            directed=FALSE, bNode="", eNode="", weight=1))
+
+
+
+##multigraphs - not clear if we should extend graph here, or have a
+##whole new set of classes
+
+##looks like redefining edgeSets is going to help us out here.
+
+setClass("edgeSet", representation="VIRTUAL")
+
+setClass("edgeSetNEL", contains="edgeSet",
+         representation(edgemode="character", edgeL="list"))
+
+setClass("edgeSetAM", contains="edgeSet",
+         representation(edgemode="character", adjMat="matrix"))
+
+setClass("multiGraph", contains="graph",
+         representation(nodes="vector", edgeL="list"))
+
+

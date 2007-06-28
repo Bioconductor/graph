@@ -195,6 +195,13 @@ setMethod("edgeL", "distGraph", function(graph, index) {
 ##clusterGraph code here
 ####################################
 
+# setMethod("initialize", "clusterGraph", function(.Object, clusters) {
+#       if( is.factor(clusters) )
+#           clusters = split(names(clusters), clusters)
+#       .Object@clusters = clusters 
+#       .Object
+# })
+
 
  setMethod("edges", c("clusterGraph", "missing"), function(object, which) {
      edges<-list()
