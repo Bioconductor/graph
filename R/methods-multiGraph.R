@@ -15,6 +15,18 @@ setMethod(numNodes, signature(object="multiGraph"),
           function(object) length(nodes(object)))
 
 
+setMethod("edges", signature("multiGraph", "missing"),
+          function(object) {
+              nV = nodes(object)
+              lapply(object@edgeL, function(x) edges(x, nV, nV))
+          })
+
+setMethod("edges", signature("multiGraph", "character"),
+          function(object, which) {
+              nV = nodes(object)
+              lapply(object@edgeL, function(x) edges(x, which, nV))
+          })
+
 #####edgeSet methods here for now as well
 
 ##this is a bit dangerous as these are not really the nodes of the
@@ -37,15 +49,16 @@ setMethod("show", signature("edgeSet"),
 setMethod(nodes, signature(object="edgeSetAM"),
           function(object)  rownames(object@adjMat))
 
-setMethod("edges", signature("edgeSetAM", "missing"),
-          function(object) {
-              getEdgeList(object@adjMat, nodes(object))
-          })
+#setMethod("edges", signature("edgeSetAM", "missing"),
+#          function(object) {
+#              getEdgeList(object@adjMat, nodes(object))
+#          })
 
 setMethod("edges", signature("edgeSetAM", "character"),
-          function(object, which) {
+          function(object, which, nodes) {
+              stopifnot( is.character(nodes) )
               idx <- base::which(colnames(object@adjMat) %in% which)
-              getEdgeList(object@adjMat[idx, ], nodes(object)[idx])
+              getEdgeList(object@adjMat[idx, ], nodes[idx])
           })
 
 setMethod("numEdges", signature(object="edgeSetAM"),
@@ -62,13 +75,13 @@ setMethod("numEdges", signature(object="edgeSetAM"),
 ##edgeSetNEL methods here
 ##and here we are a bit scuppered by the way we represent the edge
 ##lists - we need to have the node set around
-setMethod("edges", c("edgeSetNEL", "missing"), function(object, which) {
-    gNodes <- object@nodes
-    lapply(object@edgeL, function(x) gNodes[x$edges])})
 
+#setMethod("edges", c("edgeSetNEL", "missing"), function(object, which) {
+#    gNodes <- object@nodes
+#    lapply(object@edgeL, function(x) gNodes[x$edges])})
 
-setMethod("edges", c("edgeSetNEL", "character"),
-          function(object, which) {
-              gNodes <- nodes(object)
-              lapply(object@edgeL[which], function(x) gNodes[x$edges])})
+setMethod("edges", signature("edgeSetAM", "character"),
+          function(object, which, nodes) {
+              stopifnot( is.character(nodes) )
+              lapply(object@edgeL[which], function(x) nodes[x$edges])})
 

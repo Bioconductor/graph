@@ -23,7 +23,7 @@ setGeneric("nodes<-", function(object, value) standardGeneric("nodes<-"))
 setGeneric("renameNodes", function(g, value) standardGeneric("renameNodes"))
 
 
-setGeneric("edges", function(object, which) standardGeneric("edges"))
+setGeneric("edges", function(object, which, ...) standardGeneric("edges"))
 
 
 ## The funny arg=1, is to allow default values in the methods.
