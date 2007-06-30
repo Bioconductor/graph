@@ -8,6 +8,11 @@ setMethod("show", signature("multiGraph"),
               cat("Number of edge lists =", length(object@edgeL), "\n")
           })
 
+setMethod("isDirected", "multiGraph",
+	  function(object)
+          sapply(object@edgeL, isDirected))
+
+
 setMethod(nodes, signature(object="multiGraph"),
           function(object)  object@nodes)
 
@@ -27,7 +32,33 @@ setMethod("edges", signature("multiGraph", "character"),
               lapply(object@edgeL, function(x) edges(x, which, nV))
           })
 
-#####edgeSet methods here for now as well
+numEHelper = function(gEdges, directed) {
+    if (length(gEdges) == 0)
+        return(length(gEdges))
+    numEdges <- length(unlist(gEdges, use.names=FALSE))
+    if (directed) {
+        numSelfLoops <- sum(mapply(function(e, n) sum(n == e),
+                                   gEdges, names(gEdges)))
+        numEdges <- numSelfLoops + (numEdges - numSelfLoops) / 2
+    }
+    numEdges
+}
+    
+setMethod("numEdges", signature(object="multiGraph"),
+          function(object) {
+              gEdges <- edges(object)
+              dir <- isDirected(object)
+              ans <- rep(NA, length(dir))
+              for(i in 1:length(dir))
+                  ans[i] = numEHelper(gEdges[[i]], dir[i])
+              ans
+          })
+
+##we need a validity checking method: ensure that nodes are the same
+##in all edgeSets - which is hard as the edgeSets don't always seem to
+##know
+
+#####edgeSet methods here
 
 ##this is a bit dangerous as these are not really the nodes of the
 ##graph - we don't enforce having all nodes in the adj matrix
@@ -84,4 +115,6 @@ setMethod("edges", signature("edgeSetNEL", "character"),
           function(object, which, nodes) {
               stopifnot( is.character(nodes) )
               lapply(object@edgeL[which], function(x) nodes[x$edges])})
+
+
 

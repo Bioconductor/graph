@@ -112,6 +112,21 @@ In some cases it may be better to keep the actual node and edge data
 stored in hash tables and keep other integer vectors available for
 accessing the necessary components.
 
+\subsubsection{Representation of Edges}
+\label{sec:edgerep}
+
+We have taken the approach of allowing the representation of the edge
+sets to not contain every node.  When the graphs are sparse this can
+be a fairly large savings in space, but it means that one cannot
+determine the nodes in a graph from the edges in the graph.
+
+Also, for the \Rclass{graphNEL} class we do not store the names of the
+nodes in the NEL, but rather indexes into a the node vector.  This is
+important for allowing us to perform permutations on the nodes of a
+graph, but causes a number of problems when subsetting graphs, and
+means that knowledge of the edges does not provide knowledge of the
+nodes. 
+
 \section{Multi-graphs}
 
 There are no clear and widely used definitions for multi-graphs, so
@@ -138,7 +153,7 @@ that this may be problematic for nodes) and introduces the following
 slots:
 \begin{description}
 \item[nodes] A vector of node identifiers.
-\item[edgeL] A list of instances of the \Rclass{edgeSet} class.
+\item[edgeL] A possibly named list of instances of the \Rclass{edgeSet} class.
 \end{description}
 
 The \Rclass{edgeSet} class is a virtual class with several different
@@ -146,7 +161,20 @@ extensions of it. These include a \Rclass{edgeSetNEL} and an
 \Rclass{edgeSetAM}, others will be added once the interface
 stabilizes. 
 
+\subsection{Methods}
 
+In some ways it would be most natural to have \Robject{edges} methods
+for the \Rclass{edgeSet} class the issues raised in
+Section~\ref{sec:edgerep} seem to preclude this and it only seems to
+make sense to have \Robject{node} and \Robject{edges} methods for the
+\Rclass{multiGraph} class.
+
+\subsection{Use Cases}
+
+An important motivator for the \Rclass{multiGraph} class is the
+representation of data from protein interaction experiments.  Our goal
+is to represent these data in terms of what interactions were tested,
+and of those which ones are either positive or negative.
 
 \section{Bipartite Graphs}
 

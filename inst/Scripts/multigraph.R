@@ -23,5 +23,7 @@
 
   edges(mg1)
 
+  isDirected(mg1)
 
+  numEdges(mg1)
 
