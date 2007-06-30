@@ -10,7 +10,7 @@
   e1 = new("edgeSetNEL", edgemode="undirected",
     edgeL = edL)
 
-  x = matrix(rnorm(12), nrow=4, dimnames=c(V, ""))
+  x = matrix(rnorm(12), nrow=4, dimnames=list(V, NULL))
   d1 = as.matrix(dist(x))
  
   e2 = new("edgeSetAM", edgemode="undirected", 
@@ -18,6 +18,10 @@
 
 
   mg1 = new("multiGraph", nodes = V, edgeL = list(e1, e2))
+
+  mg1
+
+  edges(mg1)
 
 
 

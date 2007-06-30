@@ -80,7 +80,7 @@ setMethod("numEdges", signature(object="edgeSetAM"),
 #    gNodes <- object@nodes
 #    lapply(object@edgeL, function(x) gNodes[x$edges])})
 
-setMethod("edges", signature("edgeSetAM", "character"),
+setMethod("edges", signature("edgeSetNEL", "character"),
           function(object, which, nodes) {
               stopifnot( is.character(nodes) )
               lapply(object@edgeL[which], function(x) nodes[x$edges])})
