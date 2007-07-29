@@ -62,6 +62,7 @@ setMethod("numEdges", signature(object="multiGraph"),
 
 ##this is a bit dangerous as these are not really the nodes of the
 ##graph - we don't enforce having all nodes in the adj matrix
+
 setMethod("isDirected", "edgeSet",
 	  function(object) object@edgemode == "directed")
 

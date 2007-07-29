@@ -567,4 +567,23 @@ setMethod("inEdges", c("character", "graphNEL"),
     self
 }
 
+##a leaf is an element of the graph with in edges and no out
+## edges - the edgeL list in a directed graphNEL list the out
+##edges
 
+inOutCounts <- function(object) {
+   if(!(edgemode(object)) == "directed") stop("only for directed graphs")
+   numOut=sapply(object@edgeL, function(x) length(x$edges))
+   inEdges = nodes(object)[unlist(sapply(object@edgeL, function(x)
+                x$edges))]
+   numIn = table(inEdges)
+   return(list(numOut = numOut, numIn = numIn))
+ }
+
+leaves <- function(object) {
+    io = inOutCounts(object)
+    noIn = setdiff(nodes(object), names(io$numIn))
+    pL = io$numOut[noIn]
+    return(names(pL)[pL==0])
+}
+ 
