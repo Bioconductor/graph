@@ -587,3 +587,12 @@ leaves <- function(object) {
     return(names(pL)[pL==0])
 }
  
+ inE <- function(object) {
+   if(!(edgemode(object)) == "directed") stop("only for directed graphs")
+   inEdges = nodes(object)[unlist(sapply(object@edgeL, function(x)
+                x$edges))]
+   numE = sapply(object@edgeL, function(x) length(x$edges))
+   froms = rep(names(object@edgeL), numE)
+   split(froms, inEdges)
+ }
+
