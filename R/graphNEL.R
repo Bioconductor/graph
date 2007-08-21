@@ -322,7 +322,8 @@ setMethod("clearNode", c("character", "graphNEL"), function(node, object) {
     gN <- nodes(object)
     whN <- match(node, gN)
     if(any(is.na(whN)) )
-      stop(paste(whN[is.na(whN)], "is not a node in the graph"))
+      stop("the following are not nodes in the graph:\n",
+           paste(gN[is.na(whN)], collapse=", "))
     ## clear node attributes
     object <- clearNodeData(object, node)
     object <- .dropEdges(object, whN)
