@@ -5,6 +5,7 @@ setClass("attrData", representation(data="list",
 setClass("graph", representation(edgemode="character",
                                  edgeData="attrData",
                                  nodeData="attrData",
+                                 graphData="list",
                                  "VIRTUAL"))
 
 ## Node Edge List representation

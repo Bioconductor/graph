@@ -109,8 +109,14 @@ setGeneric("removeAttrDataItem<-", function(self, x, value)
 
 
 ## ---------------------------------------------------------------------
-## node and edge attribute generics
+## graph, node, edge attribute generics
 ## ---------------------------------------------------------------------
+setGeneric("graphData", function(self, attr)
+           standardGeneric("graphData"))
+
+setGeneric("graphData<-", function(self, attr, value)
+           standardGeneric("graphData<-"))
+
 setGeneric("edgeDataDefaults", function(self, attr)
            standardGeneric("edgeDataDefaults"))
 
