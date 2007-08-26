@@ -93,17 +93,33 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
 
 
 setAs("matrix", "graphAM", function(from) {
-    if(is.null(rownames(from))) stop("from must have row names")
-    if(is.null(colnames(from))) stop("from must have column names")
-    if(!identical(rownames(from),colnames(from)))
-	stop("Row and column names of 'from' must be identical.")
-    if(!is.numeric(from)) {
-	if(is.logical(from)) storage.mode(from) <- "integer"
-	else stop("matrix 'from' must be numeric or logical")
+  if(!identical(ncol(from), nrow(from)))
+    stop("'ncol(from)' and 'nrow(from)' must be the same.")
+    
+  if(is.null(rownames(from))) {
+    rownames(from) = if(is.null(colnames(from))) {
+      paste(seq_len(nrow(from)))
+    } else {
+      colnames(from)
     }
-    new("graphAM", from,
-	edgemode = if (all(from == t(from))) "undirected" else "directed")
-	## values = list(weight=1)
+  }
+  
+  if(is.null(colnames(from))) {
+    colnames(from) = if(is.null(rownames(from))) {
+      paste(seq_len(ncol(from)))
+    } else {
+      rownames(from)
+    }
+  }
+
+  if(!identical(rownames(from),colnames(from)))
+    stop("'rownames(from)' and 'colnames(from)' must be identical.")
+  
+  if(!is.numeric(from)) 
+    storage.mode(from) = "integer"
+
+  new("graphAM", from,
+      edgemode = if (all(from == t(from))) "undirected" else "directed")
 })
 
 
