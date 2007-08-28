@@ -57,7 +57,9 @@ setClass("simpleEdge",
 
 ##looks like redefining edgeSets is going to help us out here.
 
-setClass("edgeSet", representation="VIRTUAL")
+setClass("edgeSet", contains="VIRTUAL",
+         representation=representation(
+           edgeData="attrData"))
 
 setClass("edgeSetNEL", contains="edgeSet",
          representation(edgemode="character", edgeL="list"))
@@ -65,7 +67,9 @@ setClass("edgeSetNEL", contains="edgeSet",
 setClass("edgeSetAM", contains="edgeSet",
          representation(edgemode="character", adjMat="matrix"))
 
-setClass("multiGraph", contains="graph",
-         representation(nodes="vector", edgeL="list"))
+setClass("multiGraph",
+         representation(nodes="vector", edgeL="list",
+                        nodeData="attrData",
+                        graphData="list"))
 
 
