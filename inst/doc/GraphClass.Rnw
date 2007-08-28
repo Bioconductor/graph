@@ -239,6 +239,14 @@ extensions. These include a \Rclass{edgeSetNEL} and an
 \Rclass{edgeSetAM}, others will be added once the interface
 stabilizes.
 
+Edge attributes are in the edgeData slot in the edgeSet class.  This
+implies that edgeSets in a multiGraph can have completely unrelated
+edge attributes.  Another approach would be to maintain a list
+conforming to the edgeSet list containing edge attributes that would
+enforce the same attributes to be defined for all edges in the
+multiGraph.
+
+
 \subsection{Methods}
 
 In some ways it would be most natural to have \Robject{edges} methods
