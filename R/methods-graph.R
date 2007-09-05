@@ -76,41 +76,26 @@ setMethod("isAdjacent",signature(object="graph", from="character",
   ##handle directed graphs by a list inDegree and outDegree
   setMethod("degree", signature(object="graph", Nodes="missing"),
       function(object)  {
-          ns <- nodes(object)
-          nl <- edges(object)
-          deg <- sapply(nl, length)
-          names(deg) <- ns
-          if( object@edgemode == "undirected" )
-              return(deg)
-          else if( object@edgemode == "directed" ) {
-              b1<- unlist(nl)
-              b2<- table(b1)
-              inDegree <- rep(0, length(ns))
-              names(inDegree) <- ns
-              inDegree[names(b2)]<-b2
-              return(list(inDegree=inDegree, outDegree=deg))
-          }
-          stop(paste("edgemode", object@edgemode, "is not valid"))
+          degree(object, Nodes=nodes(object))
      })
 
   setMethod("degree", "graph",  function(object, Nodes) {
        nl <- edges(object)
        nls <- nl[Nodes]
 
-       deg <- sapply(nls, length)
+       deg <- listLen(nls)
        names(deg) <- Nodes
-       if( object@edgemode == "undirected" )
+       if (!isDirected(object))
            return(deg)
-       else if( object@edgemode == "directed" ) {
+       else {
            b1 <- unlist(nl)
-           b2 <- table(b1)[Nodes]
-           inDegree <- rep(0, length(nls))
-           names(inDegree) <- Nodes
-           inDegree[names(b2)] <- b2
+           b2 <- table(b1)
+           nonZeroNodes <- Nodes[Nodes %in% names(b2)]
+           inDegree <- structure(integer(length(Nodes)), names=Nodes)
+           inDegree[nonZeroNodes] <- as.integer(b2[nonZeroNodes])
            return(list(inDegree=inDegree, outDegree=deg))
        }
-       stop(paste("edgemode", object@edgemode, "is not valid"))
-     })
+  })
 
 
 
