@@ -183,6 +183,9 @@ setGeneric("isConnected", function(object, ...) standardGeneric("isConnected"))
 
 setGeneric("inEdges", function(node, object) standardGeneric("inEdges"))
 
+setGeneric("leaves", signature="object", # don't dispatch on degree.dir
+           function(object, degree.dir) standardGeneric("leaves"))
+
 
 setGeneric("edgeNames", function(object, ...) standardGeneric("edgeNames"))
 

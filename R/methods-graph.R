@@ -97,7 +97,22 @@ setMethod("isAdjacent",signature(object="graph", from="character",
        }
   })
 
-
+setMethod("leaves", "graph",
+          function(object, degree.dir) {
+              deg <- degree(object)
+              leaf_degree <- 1L
+              if (isDirected(object)) {
+                  if (missing(degree.dir))
+                    stop("'degree.dir' must be specified for a directed graph")
+                  degree.dir <- switch(match.arg(degree.dir, c("in", "out")),
+                                       "in"="inDegree",
+                                       "out"="outDegree")
+                  deg <- deg[[degree.dir]]
+                  leaf_degree <- 0L
+              }
+              wh <- deg == leaf_degree
+              names(deg)[wh]
+          })
 
 ##  setMethod("acc", "graph", function(object, index) {
 ##       visit <- function(ind) {

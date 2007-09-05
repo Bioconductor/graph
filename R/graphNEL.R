@@ -581,13 +581,6 @@ inOutCounts <- function(object) {
    return(list(numOut = numOut, numIn = numIn))
  }
 
-leaves <- function(object) {
-    io = inOutCounts(object)
-    noIn = setdiff(nodes(object), names(io$numIn))
-    pL = io$numOut[noIn]
-    return(names(pL)[pL==0])
-}
- 
 ##FIXME: this is a replacement for the inEdges function -
 ##it needs to be tested and made to handle a list of
 ##nodes to find in edges - but that can easily be done
