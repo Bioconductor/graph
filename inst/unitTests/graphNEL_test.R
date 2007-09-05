@@ -61,6 +61,7 @@ testInEdges <- function() {
     expectedInEdges <- list(a=character(0), b="d", c=c("a", "b", "d"),
                             d="a")
     checkEquals(expectedInEdges, inEdges(g))
+    checkEquals(expectedInEdges, inEdges(object=g))
     n <- c("a", "d")
     checkEquals(expectedInEdges[n], inEdges(n, g))
 }

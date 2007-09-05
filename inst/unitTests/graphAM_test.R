@@ -343,7 +343,9 @@ testDirectedAsGraphAM <- function() {
 testInEdges <- function() {
     g1 <- simpleDirectedGraph()
     expected <- list(a=character(0), b="d", c=c("a", "b", "d"), d="a")
-    checkEquals(expected, inEdges(g1))
+    checkEquals(expected, inEdges(g1), msg="gramAM")
+    checkEquals(expected, inEdges(object=g1), msg="gramAM")
+    checkEquals(expected, inEdges(node=g1), msg="gramAM")
 }
 
 
