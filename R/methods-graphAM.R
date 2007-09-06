@@ -254,14 +254,14 @@ setMethod("removeEdge",
 ## This signature looks strange, but to get in edges for all nodes
 ## it makes sense to be able to write inEdges(g)
 setMethod("inEdges", signature(node="graphAM", object="missing"),
-          function(object, node) {
+          function(node, object) {
               allNodes <- nodes(node)
               return(inEdges(allNodes, node))
           })
 
 ## But we still want inEdges(object=g) to work
 setMethod("inEdges", signature(node="missing", object="graphAM"),
-          function(object, node) {
+          function(node, object) {
               allNodes <- nodes(object)
               return(inEdges(allNodes, object))
           })
