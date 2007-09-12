@@ -15,7 +15,7 @@ setMethod("fromGXL", signature(con="connection"),
           function(con) {
               require("XML") || stop("XML package needed")
               contents <- paste(readLines(con), collapse="")
-              xmlEventParse(contents, graphNELhandler(),
+              xmlEventParse(contents, graph_handler(),
                             asText=TRUE,
                             saxVersion=2)$asGraphNEL()
           })
