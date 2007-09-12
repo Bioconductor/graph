@@ -13,8 +13,8 @@ setOldClass(c("url", "connection"))
 
 setMethod("fromGXL", signature(con="connection"),
           function(con) {
-              require("XML") || stop("XML package needed")
               contents <- paste(readLines(con), collapse="")
+              xmlEventParse <- getExportedValue("XML", "xmlEventParse")
               xmlEventParse(contents, graph_handler(),
                             asText=TRUE,
                             saxVersion=2)$asGraphNEL()
@@ -25,14 +25,14 @@ setMethod("fromGXL", signature(con="connection"),
 
      setMethod("dumpGXL", "connection", function(con)
        {
-       require("XML") || stop("XML package needed")
+       xmlEventParse <- getExportedValue("XML", "xmlEventParse")
        xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$dump()
        })
 ## validate against the dtd
 
      setMethod("validateGXL", "connection", function(con)
        {
-       require("XML") || stop("XML package needed")
+       xmlTreeParse <- getExportedValue("XML", "xmlTreeParse")
 # maybe need a try here, xmlTreeParse dumps the whole stream when it hits an error
        tmp <- xmlTreeParse(paste(readLines(con),collapse=""),asText=TRUE,
               validate=TRUE)

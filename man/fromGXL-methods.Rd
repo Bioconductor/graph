@@ -83,7 +83,10 @@ gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
 #
 #an <- as.numeric
 #if (an(libxmlVersion()$major)>=2 && an(libxmlVersion()$minor)>=4)
-  cat(saveXML(toGXL(gR)$value()))
+## since toGXL returns an XML object, we need to attach the XML
+## package.
+library("XML")
+cat(saveXML(toGXL(gR)$value()))
 wtd <- file(system.file("GXL/kmstEx.gxl", package="graph"))
 wtdg <- fromGXL(wtd)
 close(wtd)
