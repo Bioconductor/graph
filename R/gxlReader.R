@@ -101,20 +101,6 @@ graphNELhandler <- function ()
                 edgeData(g, from=curEdge$from, to=curEdge$to, curAttr) <<- x
             }
         }
-        
-##         if (inNode && inAttr && nchar(x) > 0) {
-##             if (!(curAttr %in% nodeDataDefaults(g)))
-##               nodeDataDefaults(g, curAttr) <<- NA
-##             if (inInt) x <- as.integer(x)
-##             if (inFloat) x <- as.double(x)
-##             nodeData(g, curNode, curAttr) <<- x
-##         } else if (inEdge && inAttr && nchar(x) > 0) {
-##             if (!(curAttr %in% edgeDataDefaults(g)))
-##               edgeDataDefaults(g, curAttr) <<- NA
-##             if (inInt) x <- as.integer(x)
-##             if (inFloat) x <- as.double(x)
-##             edgeData(g, from=curEdge$from, to=curEdge$to, curAttr) <<- x
-##         }
     }
     endElement <- function(x, ...) {
         if (x == "attr") 
