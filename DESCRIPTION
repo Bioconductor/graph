@@ -4,7 +4,7 @@ Version: 1.15.17
 Author: R. Gentleman, Elizabeth Whalen, W. Huber, S. Falcon
 Description: A package that implements some simple graph handling
         capabilities.
-Maintainer: Seth Falcon <sfalcon@fhcrc.org>
+Maintainer: Robert Gentleman <rgentlem@fhcrc.org>
 License: The Artistic License, Version 2.0
 Depends: R (>= 2.6.0), methods
 Imports: tools, cluster, methods
