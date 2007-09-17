@@ -13,10 +13,10 @@ setMethod("isDirected", "multiGraph",
           sapply(object@edgeL, isDirected))
 
 
-setMethod(nodes, signature(object="multiGraph"),
+setMethod("nodes", signature(object="multiGraph"),
           function(object)  object@nodes)
 
-setMethod(numNodes, signature(object="multiGraph"),
+setMethod("numNodes", signature(object="multiGraph"),
           function(object) length(nodes(object)))
 
 
@@ -78,7 +78,7 @@ setMethod("show", signature("edgeSet"),
 
 ###edgeSetAM methods
 
-setMethod(nodes, signature(object="edgeSetAM"),
+setMethod("nodes", signature(object="edgeSetAM"),
           function(object)  rownames(object@adjMat))
 
 #setMethod("edges", signature("edgeSetAM", "missing"),
