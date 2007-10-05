@@ -2,6 +2,13 @@
 setClass("attrData", representation(data="list",
                                     defaults="list"))
 
+## (FH Oct 4.) The edgemode slot is deprecated, the information will
+## go into the egemode item of the graphData list. For now we keep it
+## around for compatability reasons but the methods have been changed to deal
+## with the new case. Also changed the prototypes of distGraph and
+## clusterGraph accordingly
+
+
 setClass("graph", representation(edgemode="character",
                                  edgeData="attrData",
                                  nodeData="attrData",
@@ -27,13 +34,12 @@ setOldClass("dist")
 
 setClass("distGraph",
          representation(Dist="dist"),
-         prototype=list(edgemode="undirected"),
+         prototype=list(graphData=list(edgemode="undirected")),
          contains="graph")
-
 
 setClass("clusterGraph",
          representation(clusters="list"), contains="graph",
-         prototype=list(edgemode="undirected"))
+         prototype=list(graphData=list(edgemode="undirected")))
 
 
 

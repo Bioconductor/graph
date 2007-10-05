@@ -38,7 +38,7 @@ validGraph<-function(object, quietly=FALSE) {
         ##paste to->from and from->to if any are not duplicated then
         ##the edge is not reciprocal. Note we are not going to handle
         ##multiedges well.
-        if(object@edgemode == "undirected" && length(objEdges)>0 ) {
+        if(edgemode(object) == "undirected" && length(objEdges)>0 ) {
             fr <- rep(names(objEdges), sapply(objEdges, length))
             to <- unlist(objEdges)
             frto <- paste(fr, to, sep=EDGE_KEY_SEP)
@@ -154,7 +154,7 @@ setMethod("initialize", "graphNEL",
               }
               .Object@nodes <- nodes
               .Object@edgeL <- edgeL
-              .Object@edgemode <- edgemode
+              .Object@graphData$edgemode <- edgemode
               validObject(.Object)
               if (doWeights)
                 .Object <- graphNEL_init_edgeL_weights(.Object)

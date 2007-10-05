@@ -311,7 +311,7 @@ setMethod("edgeL", "clusterGraph", function(graph, index) {
      numNull<-numNoEdges(object)
      numNodes<- numNodes(object)
      numEdge<-numEdges(object)
-     cat("A graph with ", object@edgemode, " edges\n")
+     cat("A graph with ", edgemode(object), " edges\n")
      cat("Number of Nodes = ",numNodes,"\n",sep="")
      cat("Number of Edges = ",numEdge,"\n",sep="")
    })

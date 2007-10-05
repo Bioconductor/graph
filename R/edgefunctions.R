@@ -146,7 +146,7 @@ listEdges <- function(object, dropNULL=TRUE)
             newN <-new("simpleEdge",
                     bNode=Node, eNode=toN,
                     weight=if( is.null(ELi$weights[j])) 1 else ELi$weights[j] ,
-                    directed = object@edgemode=="directed",
+                    directed = edgemode(object)=="directed",
                     edgeType=if(is.null(ELi$type[j])) "" else
                        ELi$type[j])
             if( is.null(eList[[btwn]]) )

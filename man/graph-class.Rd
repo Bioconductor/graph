@@ -84,6 +84,9 @@
 \alias{union}
 \alias{union,graph,graph-method}
 
+\alias{updateGraph}
+\alias{updateGraph,graph-method}
+
 \title{Class "graph" }
 \description{A virtual class that all graph classes should extend. }
 \section{Objects from the Class}{
@@ -193,7 +196,9 @@ A virtual Class: No objects may be created from it.
       vector of the edge names for this graph, using the format
       \code{tail\~head}, where \code{head} is the name of the tail node
       and \code{head} is the name of the head node.}
-
+    
+    \item{updateGraph}{\code{signature(object = "graph")}: Updates old
+      instances of graph objects.}
     }
   }
 

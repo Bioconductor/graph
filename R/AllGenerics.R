@@ -230,3 +230,6 @@ setGeneric("toDotR", function(G, outDotFile, renderList, optList)
            standardGeneric("toDotR"))
 
 
+## Updating a graph object
+setGeneric("updateGraph", function(object)
+           standardGeneric("updateGraph"))

@@ -30,8 +30,6 @@ validGraph(object, quietly=FALSE)
   
   testGraph<-new("graphNEL")
   testGraph@nodes<-c("node1","node2","node3")
-  testGraph@edgeL<-list(node1=c("node2"),node2=c("node1","node3"),
-                        node3=c("node2"))
   validGraph(testGraph)
 
 }

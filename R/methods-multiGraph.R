@@ -64,14 +64,14 @@ setMethod("numEdges", signature(object="multiGraph"),
 ##graph - we don't enforce having all nodes in the adj matrix
 
 setMethod("isDirected", "edgeSet",
-	  function(object) object@edgemode == "directed")
+	  function(object) edgemode(object) == "directed")
 
-setMethod("edgemode", "edgeSet", function(object) object@edgemode)
+setMethod("edgemode", "edgeSet", function(object) edgemode(object))
 
 setMethod("show", signature("edgeSet"),
           function(object) {
               numEdge<-numEdges(object)
-              cat("A", class(object), "with", object@edgemode, "edges\n")
+              cat("A", class(object), "with", edgemode(object), "edges\n")
               cat("Number of Edges =", numEdge, "\n")
           })
 
