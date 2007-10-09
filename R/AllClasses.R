@@ -12,6 +12,8 @@ setClass("attrData", representation(data="list",
 setClass("graph", representation(edgemode="character",
                                  edgeData="attrData",
                                  nodeData="attrData",
+                                 nodeInfo="list",
+                                 edgeInfo="list",
                                  graphData="list",
                                  "VIRTUAL"))
 
