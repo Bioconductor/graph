@@ -28,9 +28,9 @@ export(boundary, buildRepDepGraph, calcProb, calcSumProb,
        ftM2adjM, ftM2graphNEL, .ftM2other, int2ftM, 
        ftM2int, aM2bpG, mostEdges, numNoEdges, reverseEdgeDirections, ugraphOld) 
 
-export(graph.par,
-       nodeRenderInfo, egdeRenderInfo, parRenderInfo,
-       "nodeRenderInfo<-", "egdeRenderInfo<-", "parRenderInfo<-")
+export(graph.par, graph.par.get,
+       nodeRenderInfo, edgeRenderInfo, parRenderInfo,
+       "nodeRenderInfo<-", "edgeRenderInfo<-", "parRenderInfo<-")
 
 S3method(write,tlp)
 

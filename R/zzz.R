@@ -3,11 +3,8 @@
 ## specific to the graph package
 
 .GraphEnv <- new.env(parent = emptyenv())
-
-assign("par",
-       list(col = "red", lwd = 1, lty = 1),
-       env = .GraphEnv)
-
+.GraphEnv$par <- list()
+graph.par(.default.graph.pars())
 
 
 .onLoad <- function(libname, pkgname) {
@@ -18,3 +15,6 @@ assign("par",
 .onUnload <- function( libpath ) {
   library.dynam.unload("graph", libpath )
 }
+
+
+
