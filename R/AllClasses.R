@@ -9,11 +9,24 @@ setClass("attrData", representation(data="list",
 ## clusterGraph accordingly
 
 
+
+## class to hold information regarding rendering of a graph.  Doesn't
+## make sense except as a slot in a graph (the names have to match)
+
+setClass("renderInfo", 
+         representation(nodes="list", # information on nodes
+                        edges="list", # information on edges
+                        pars="list")) # list passed on to graph.par before rendering
+
+
 setClass("graph", representation(edgemode="character",
                                  edgeData="attrData",
                                  nodeData="attrData",
-                                 nodeInfo="list",
-                                 edgeInfo="list",
+
+                                 renderInfo="renderInfo",
+                                 ## nodeInfo="list",
+                                 ## edgeInfo="list",
+
                                  graphData="list",
                                  "VIRTUAL"))
 

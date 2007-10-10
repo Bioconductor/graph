@@ -25,3 +25,88 @@ graph.par <- function(...)
     .GraphEnv$par <- modifyList(old, new[nm])
     invisible(retVal)
 }
+
+graph.par.get <- function(name) .GraphEnv$par[[name]]
+
+.default.graph.pars <-
+    list(nodes =
+         list(col = "black", fill = "transparent",
+              textCol = "black", cex = 1,
+              lty = 1, lwd = 1),
+         edges =
+         list(col = "black", lty = 1, lwd = 1,
+              textCol = "black", cex = 1))
+
+
+
+
+.renderInfoPrototype <- new("renderInfo")
+
+## FIXME: make these generic?
+
+
+nodeRenderInfo <- function(g, name)
+{
+    g@renderInfo$nodes[[name]]
+}
+egdeRenderInfo <- function(g, name)
+{
+    g@renderInfo$edges[[name]]
+}
+parRenderInfo <- function(g, name)
+{
+    g@renderInfo$pars[[name]]
+}
+
+
+## changes renderInfo settings of a graph g
+setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
+{
+    ## FIXME: what's supposed to happen if graph is not already laid out?
+    if (!is.list(value) || is.null(names(value)) || any(!nzchar(names(value))))
+        stop("'value' must be a list of named parameters")
+    for (i in names(value))
+    {
+        if (is.null(g@renderInfo[[what]][[i]]))
+        {
+            ## i doesn't exist.  Need to create appropriate placeholder
+            g@renderInfo[[what]][[i]] <- vector(mode = mode(value[[i]]), length = n)
+            names(g@renderInfo[[what]][[i]]) <- validNames
+        }
+        ## Now replace relevant parts
+        if (length(value[[i]] == 1) && is.null(names(value[[i]])))
+        {
+            ## change everything
+            g@renderInfo[[what]][[i]][ ] <- value[[i]]
+        }
+        else
+        {
+            ## change only named values
+            ## FIXME: check for all(names(value[[i]]) %in% nms) ?
+            g@renderInfo[[what]][[i]][names(value[[i]])] <- value[[i]]
+        }
+    }
+    g
+}
+
+"nodeRenderInfo<-" <- function(g, value)
+{
+    setRenderInfo(g, what = "nodes", value = value, validNames = nodes(g))
+}
+"edgeRenderInfo<-" <- function(g, value)
+{
+    setRenderInfo(g, what = "edges", value = value, validNames = edgeNames(g))
+}
+
+"parRenderInfo<-" <- function(g, value)
+{
+    ## value may be a list with components nodes, edges (like graph.pars())
+    if (!is.list(value) || !names(value) %in% c("nodes", "edges"))
+        stop("'value' must be a list, with possible components named 'nodes' and 'edges'")
+    if (any(unlist(lapply(value, function(x) sapply(x, length))) != 1))
+        stop("all components of 'value$nodes' and 'value$edges' must have length 1")
+    g@renderInfo[["pars"]] <- modifyList(g@renderInfo[["pars"]], value)
+    g
+}
+
+
