@@ -31,7 +31,9 @@ setMethod("edgemode", "graph", function(object){
     .Deprecated(msg=EDGEMODE_DEPR_MSG)
     em
   }else{
-    object@graphData$edgemode
+      if (is.null(object@graphData$edgemode))
+          warning("Your 'graph' object is invalid.  Try using updateGraph()")
+      object@graphData$edgemode
   }})
 
 
@@ -55,7 +57,7 @@ setReplaceMethod("edgemode", c("graph", "character"),
 ## Update an old graph instance
 setMethod("updateGraph", "graph", function(object){
   if(length(object@graphData$edgemode))
-    stop("This graph object seems to be up to date\n")
+      message("This graph object seems to be up to date")
   object@graphData$edgemode <- object@edgemode
   object@edgemode <- as.character(NULL)
   object})
