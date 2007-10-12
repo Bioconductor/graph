@@ -1,5 +1,6 @@
 \name{graph.par}
 \alias{graph.par}
+\alias{graph.par.get}
 \title{Graphical parameters and other settings }
 \description{
   Functions providing an interface to persistent graphical parameters
@@ -8,17 +9,21 @@
   
 \usage{
 graph.par(...)
+graph.par.get(name)
 }
 
 \arguments{
   \item{\dots}{ either character strings naming parameters whose values
     are to be retrieved, or named arguments giving values that are to be
     set. }
+  \item{name}{ character string, giving a valid parameter name. }
 }
 
 \details{
   \code{graph.par} works sort of like \code{\link{par}}, but the details
   are yet to be decided.
+
+  \code{graph.par.get(name)} is equivalent to \code{graph.par(name)[[1]]}
 }
 
 \value{
