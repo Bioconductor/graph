@@ -47,15 +47,32 @@ graph.par.get <- function(name) .GraphEnv$par[[name]]
 
 nodeRenderInfo <- function(g, name)
 {
-    g@renderInfo@nodes[[name]]
+    if(missing(name))
+        g@renderInfo@nodes
+    else{
+        tmp <- g@renderInfo@nodes[name]
+        if(length(tmp)==1)
+            tmp <- tmp[[1]]
+        tmp
+    }
 }
 edgeRenderInfo <- function(g, name)
 {
-    g@renderInfo@edges[[name]]
+    if(missing(name))
+        g@renderInfo@edges
+    else{ 
+        tmp <- g@renderInfo@edges[name]
+        if(length(tmp)==1)
+            tmp <- tmp[[1]]
+        tmp
+    }
 }
 parRenderInfo <- function(g, name)
 {
-    g@renderInfo@pars[[name]]
+    if(missing(name))
+        g@renderInfo@pars
+    else
+        g@renderInfo@pars[[name]]
 }
 
 
@@ -88,7 +105,8 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
         {
             ## change only named values
             ## FIXME: check for all(names(value[[i]]) %in% nms) ?
-            slot(g@renderInfo, what)[[i]][names(value[[i]])] <- value[[i]]
+            repNames <- intersect(names(value[[i]]), validNames)
+            slot(g@renderInfo, what)[[i]][repNames] <- value[[i]][repNames]
         }
     }
     g
