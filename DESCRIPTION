@@ -1,6 +1,6 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.17.8
+Version: 1.17.9
 Author: R. Gentleman, Elizabeth Whalen, W. Huber, S. Falcon
 Description: A package that implements some simple graph handling
         capabilities.
@@ -15,6 +15,6 @@ Collate: AllClasses.R AllGenerics.R buildDepGraph.R
          edgefunctions.R graphfunctions.R GXLformals.R gxlReader.R
          random.R write.tlp.R mat2graph.R settings.R zzz.R 
          standardLabeling.R TODOT.R methods-graphAM.R attrData.R
-         reverseEdgeDirections.R nodes-methods.R methods-multiGraph.R 
+         reverseEdgeDirections.R nodes-methods.R methods-multiGraph.R
 LazyLoad: yes
 

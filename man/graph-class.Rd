@@ -87,6 +87,7 @@
 \alias{updateGraph}
 \alias{updateGraph,graph-method}
 
+
 \title{Class "graph" }
 \description{A virtual class that all graph classes should extend. }
 \section{Objects from the Class}{
@@ -199,7 +200,9 @@ A virtual Class: No objects may be created from it.
     
     \item{updateGraph}{\code{signature(object = "graph")}: Updates old
       instances of graph objects.}
-    }
+  }
+
+  
   }
 
 \details{

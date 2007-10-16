@@ -7,6 +7,8 @@
 \alias{nodeRenderInfo<-}
 \alias{parRenderInfo}
 \alias{parRenderInfo<-}
+\alias{graphRenderInfo}
+\alias{graphRenderInfo<-}
 
 \title{Class "renderInfo"}
 \description{A container class to manage graph rendering attributes.
@@ -32,13 +34,15 @@
 \section{Methods}{
   The following are functions rather than methods and build the API to
   control the graphical output of a graph when it is plotted using
-  \code{\link{[Rgraphviz]renderGraph}}. Please see
+  \code{\link[Rgraphviz]{renderGraph}}. Please see
   \code{\link{graphRendering}} for more details.
   \describe{
     \item{nodeRenderInfo, nodeRenderInfo<-}{getter and setter for
       items of slot \code{nodes}}
     \item{edgeRenderInfo, edgeRenderInfo<-}{getter and setter for
-      items of slot \code{edges}}  
+      items of slot \code{edges}}
+    \item{graphRenderInfo, graphRenderInfo<-}{getter and setter for
+      items of slot \code{graph}}
     \item{parRenderInfo, parRenderInfo<-}{getter and setter for
       items of slot \code{pars}}
     The getters all take two arguments: \code{g} is a graph object and
@@ -56,6 +60,7 @@
     \code{parRenderInfo<-}{will only take a list with items \code{nodes}
       and \code{edged}. The content of these list items can be arbitrary
       named vectors.}
+    \code{parRenderInfo<-}{takes an arbitrary list}
   }
 }
 \author{Deepayan Sarkar, Florian Hahne}
@@ -72,5 +77,5 @@ edgeRenderInfo(g, "lwd")
 edgeRenderInfo(g, c("lwd", "col"))
 parRenderInfo(g)
 }
-}
+
 \keyword{classes}

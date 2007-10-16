@@ -35,7 +35,10 @@ graph.par.get <- function(name) .GraphEnv$par[[name]]
               lty = 1, lwd = 1),
          edges =
          list(col = "black", lty = 1, lwd = 1,
-              textCol = "black", cex = 1))
+              textCol = "black", cex = 1),
+         graph =
+         list(laidout=FALSE, main=NULL, sub=NULL, cex.main=1.2, cex.sub=1,
+              col.main="black", col.sub="black"))
 
 
 
@@ -67,6 +70,19 @@ edgeRenderInfo <- function(g, name)
         tmp
     }
 }
+
+graphRenderInfo <- function(g, name)
+{
+    if(missing(name))
+        g@renderInfo@graph
+    else{
+        tmp <- g@renderInfo@graph[name]
+        if(length(tmp)==1)
+            tmp <- tmp[[1]]
+        tmp
+    }
+}
+
 parRenderInfo <- function(g, name)
 {
     if(missing(name))
@@ -122,13 +138,22 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
     setRenderInfo(g, what = "edges", value = value, validNames = edgeNames(g))
 }
 
+"graphRenderInfo<-" <- function(g, value)
+{
+    ## value may be a arbitrary list
+    if (!is.list(value))
+        stop("'value' must be a list")
+    g@renderInfo@graph <- modifyList(g@renderInfo@graph, value)
+    g
+}
+
 "parRenderInfo<-" <- function(g, value)
 {
     ## value may be a list with components nodes, edges (like graph.pars())
-    if (!is.list(value) || !names(value) %in% c("nodes", "edges"))
-        stop("'value' must be a list, with possible components named 'nodes' and 'edges'")
+    if (!is.list(value) || !names(value) %in% c("nodes", "edges", "graph"))
+        stop("'value' must be a list, with possible components named 'nodes', 'edges' and 'graph'")
     if (any(unlist(lapply(value, function(x) sapply(x, length))) > 1))
-        stop("all components of 'value$nodes' and 'value$edges' must have length 1")
+        stop("all components of 'value$nodes', 'value$edges' and 'value$graph' must have length 1")
     g@renderInfo@pars <- modifyList(g@renderInfo@pars, value)
     g
 }

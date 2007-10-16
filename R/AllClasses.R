@@ -16,6 +16,7 @@ setClass("attrData", representation(data="list",
 setClass("renderInfo", 
          representation(nodes="list", # information on nodes
                         edges="list", # information on edges
+                        graph="list",
                         pars="list")) # list passed on to graph.par before rendering
 
 
