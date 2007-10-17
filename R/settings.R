@@ -31,11 +31,12 @@ graph.par.get <- function(name) .GraphEnv$par[[name]]
 .default.graph.pars <- function()
     list(nodes =
          list(col = "black", fill = "transparent",
-              textCol = "black", cex = 1,
+              textCol = "black", fontsize=14,
               lty = 1, lwd = 1),
          edges =
          list(col = "black", lty = 1, lwd = 1,
-              textCol = "black", cex = 1),
+              textCol = "black", cex = 1,
+              fontsize=14),
          graph =
          list(laidout=FALSE, main=NULL, sub=NULL, cex.main=1.2, cex.sub=1,
               col.main="black", col.sub="black"))
