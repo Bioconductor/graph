@@ -38,7 +38,8 @@ graph.par.get <- function(name) .GraphEnv$par[[name]]
               textCol = "black", cex = 1,
               fontsize=14),
          graph =
-         list(laidout=FALSE, main=NULL, sub=NULL, cex.main=1.2, cex.sub=1,
+         list(laidout=FALSE, recipEdges="combined", main=NULL, sub=NULL,
+              cex.main=1.2, cex.sub=1,
               col.main="black", col.sub="black"))
 
 
@@ -136,7 +137,9 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
 
 "edgeRenderInfo<-" <- function(g, value)
 {
-    setRenderInfo(g, what = "edges", value = value, validNames = edgeNames(g))
+    setRenderInfo(g, what = "edges", value = value,
+                  validNames=edgeNames(g,
+                  recipEdges=graphRenderInfo(g, "recipEdges")))
 }
 
 "graphRenderInfo<-" <- function(g, value)
