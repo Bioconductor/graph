@@ -28,18 +28,20 @@ graph.par <- function(...)
 
 graph.par.get <- function(name) .GraphEnv$par[[name]]
 
+## need NULL or empty string for everything that should not be set to
+## allow for resetting (like labels and title)
 .default.graph.pars <- function()
     list(nodes =
          list(col = "black", fill = "transparent",
               textCol = "black", fontsize=14,
-              lty = 1, lwd = 1),
+              lty = 1, lwd = 1, label=NULL),
          edges =
          list(col = "black", lty = 1, lwd = 1,
               textCol = "black", cex = 1,
               fontsize=14),
          graph =
-         list(laidout=FALSE, recipEdges="combined", main=NULL, sub=NULL,
-              cex.main=1.2, cex.sub=1,
+         list(laidout=FALSE, recipEdges="combined", main="", sub="",
+              cex.main=1.2, cex.sub=1, label=NULL,
               col.main="black", col.sub="black"))
 
 
