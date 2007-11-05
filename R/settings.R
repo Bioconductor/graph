@@ -134,14 +134,15 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
 
 "nodeRenderInfo<-" <- function(g, value)
 {
-    setRenderInfo(g, what = "nodes", value = value, validNames = nodes(g))
+    suppressWarnings(setRenderInfo(g, what = "nodes", value = value,
+                                   validNames = nodes(g)))
 }
 
 "edgeRenderInfo<-" <- function(g, value)
 {
-    setRenderInfo(g, what = "edges", value = value,
+    suppressWarnings(setRenderInfo(g, what = "edges", value = value,
                   validNames=edgeNames(g,
-                  recipEdges=graphRenderInfo(g, "recipEdges")))
+                  recipEdges=graphRenderInfo(g, "recipEdges"))))
 }
 
 "graphRenderInfo<-" <- function(g, value)
@@ -149,7 +150,8 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
     ## value may be a arbitrary list
     if (!is.list(value))
         stop("'value' must be a list")
-    g@renderInfo@graph <- modifyList(g@renderInfo@graph, value)
+    g@renderInfo@graph <- suppressWarnings(modifyList(g@renderInfo@graph,
+                                                      value))
     g
 }
 
@@ -157,10 +159,12 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
 {
     ## value may be a list with components nodes, edges (like graph.pars())
     if (!is.list(value) || !names(value) %in% c("nodes", "edges", "graph"))
-        stop("'value' must be a list, with possible components named 'nodes', 'edges' and 'graph'")
+        stop("'value' must be a list, with possible components named ",
+             "'nodes', 'edges' and 'graph'")
     if (any(unlist(lapply(value, function(x) sapply(x, length))) > 1))
-        stop("all components of 'value$nodes', 'value$edges' and 'value$graph' must have length 1")
-    g@renderInfo@pars <- modifyList(g@renderInfo@pars, value)
+        stop("all components of 'value$nodes', 'value$edges' and ",
+             "'value$graph' must have length 1")
+    g@renderInfo@pars <- suppressWarnings(modifyList(g@renderInfo@pars, value))
     g
 }
 
