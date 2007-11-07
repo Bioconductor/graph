@@ -62,7 +62,7 @@ setMethod("initialize", signature("graphAM"),
               nNames <- graph:::isValidAdjMat(adjMat, edgemode)
               if (is.null(nNames))
                 nNames <- paste("n", 1:ncol(adjMat), sep="")
-              edgemode(.Object) <- edgemode
+              .Object@graphData$edgemode <- edgemode
               .Object@nodeData <- new("attrData")
               colnames(adjMat) <- nNames
               rownames(adjMat) <- NULL
