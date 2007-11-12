@@ -138,8 +138,26 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
                                    validNames = nodes(g)))
 }
 
+
+## swap tail and head in edge names
+swapNames <- function(names){
+    ns <- strsplit(names, "~")
+    sapply(ns, function(x) paste(x[2], x[1], sep="~"))
+}
+    
+
 "edgeRenderInfo<-" <- function(g, value)
 {
+    ## edge tail and head order doesn't matter for undirected graphs
+    ## so we simply duplicate the settings and swap tails end heads
+    ## in the duplicate's names
+    if(!isDirected(g)){
+        newvalue <- lapply(value, function(x){
+            y <- rep(x,2)
+            names(y) <- c(names(x), swapNames(names(x)))
+            y
+        })
+    }               
     suppressWarnings(setRenderInfo(g, what = "edges", value = value,
                   validNames=edgeNames(g,
                   recipEdges=graphRenderInfo(g, "recipEdges"))))

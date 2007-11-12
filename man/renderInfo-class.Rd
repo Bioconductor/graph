@@ -54,12 +54,14 @@
     \code{edgeRenderInfo<-} can take
     \item{named list of named vectors}{where the names have to match the node
     or edge names. Items in the vector that don't match a valid edge or
-    node name will be silently ignored.}
-    \item{named list of length}{which will set all the attribute for all
+    node name will be silently ignored. For undirected edges the order
+    of head nodes and tail nodes in edge names is ignored,
+    i.e. \code{a~b} is equivalent to code{b~a}}
+    \item{named list of skalars}{which will set all the attribute for all
       edges or nodes in the graph}
-    \code{parRenderInfo<-}{will only take a list with items \code{nodes}
-      and \code{edged}. The content of these list items can be arbitrary
-      named vectors.}
+    \code{parRenderInfo<-}{will only take a list with items
+    \code{nodes}, \code{edges} and \code{graph}. The content of these
+    list items can be arbitrary named vectors.}
     \code{parRenderInfo<-}{takes an arbitrary list}
   }
 }
