@@ -99,9 +99,10 @@ setMethod("updateGraph", "graph", function(object)
           availSlotNames <- names(availSlots)
           definedSlotNames <- slotNames(object)
 
-          if(graph:::isUpToDate(object))
+          if(graph:::isUpToDate(object)){
               message("This graph object seems to be up to date")
-          else{
+              newObject <- object
+          }else{
               commonSlots <- intersect(definedSlotNames, availSlotNames)
               newObject <- new(class(object))
               for(s in commonSlots)
