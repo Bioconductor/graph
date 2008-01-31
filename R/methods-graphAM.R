@@ -284,7 +284,7 @@ setMethod("inEdges", signature(node="character", object="graphAM"),
 
 
 setAs(from="graphAM", to="matrix",
-      function(from, to) {
+      function(from) {
           if ("weight" %in% names(edgeDataDefaults(from))) {
               tm <- t(from@adjMat)
               tm[tm != 0] <- unlist(edgeData(from, attr="weight"))
@@ -298,7 +298,7 @@ setAs(from="graphAM", to="matrix",
 ## ^^ the reverse is in ./mat2graph.R
 
 setAs(from="graphAM", to="graphNEL",
-      function(from, to) {
+      function(from) {
 	  gnel <- new("graphNEL", nodes=nodes(from), edgeL=edges(from),
 		      edgemode=edgemode(from))
 	  ## copy edge and node attributes:
@@ -326,7 +326,7 @@ NEL2mat <- function(g) {
 }
 
 setAs(from="graphNEL", to="graphAM",
-      function(from, to) {
+      function(from) {
           theNodes <- nodes(from)
           numNodes <- length(theNodes)
           mat <- matrix(0, nrow=numNodes, ncol=numNodes,
