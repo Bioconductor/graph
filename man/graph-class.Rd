@@ -169,7 +169,10 @@ A virtual Class: No objects may be created from it.
 
     \item{join}{\code{signature(x = "graph", y = "graph")}: returns the
       joining of two graphs.  Nodes which are shared by both graphs will
-      have their edges merged.}
+      have their edges merged.  Note that edgeWeights for the resulting
+      graph are all set to 1.  Users wishing to preserve weights in
+      a join operation must
+      perform addEdge operations on the resulting graph to restore weights.}
 
     \item{nodes<-}{A generic function that allows different
       implementations of the \code{graph} class to reset the node
