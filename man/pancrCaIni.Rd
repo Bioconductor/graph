@@ -25,7 +25,7 @@ data(pancrCaIni)
 if (require(Rgraphviz)) {
    nat = rep(FALSE, length(nodes(pancrCaIni)))
    names(nat) = nodes(pancrCaIni)
-   plot(MAPKsig, nodeAttrs=list(fixedsize=nat))
+   plot(pancrCaIni, nodeAttrs=list(fixedsize=nat))
    }
 }
 \keyword{models}
