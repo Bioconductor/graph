@@ -34,7 +34,9 @@ graph.par.get <- function(name) .GraphEnv$par[[name]]
     list(nodes =
          list(col = "black", fill = "transparent",
               textCol = "black", fontsize=14,
-              lty = 1, lwd = 1, label=NULL),
+              lty = 1, lwd = 1, label=NULL,
+              fixedsize=FALSE, shape="circle",
+              iwidth=0.75, iheight=0.5),
          edges =
          list(col = "black", lty = 1, lwd = 1,
               textCol = "black", cex = 1,
