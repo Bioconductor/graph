@@ -417,6 +417,7 @@ SEXP graph_is_adjacent(SEXP fromEdges, SEXP to)
     lenTo = length(to);
     PROTECT(ans = allocVector(LGLSXP, lenTo));
     for (i = 0; i < lenTo; i++) {
+	found = 0;
         PROTECT(toEdge = ScalarString(STRING_ELT(to, i)));
         frEdges = VECTOR_ELT(fromEdges, i);
         idx = match(toEdge, frEdges, 0);
