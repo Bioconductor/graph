@@ -82,7 +82,7 @@ testCreateGraphNoEdges <- function() {
     g <- new("graphNEL", nodes=c("a", "b"), edgeL=list())
     checkEquals(0, numEdges(g))
     checkEquals(2, numNodes(g))
-    
+
     checkEquals(2, length(edges(g)))
     checkEquals(nodes(g), names(edges(g)))
     checkEquals(0, sum(sapply(edges(g), length)))
@@ -218,7 +218,7 @@ testSubGraphAttributes <- function() {
     g3 <- subGraph(c("a", "b", "c"), g1)
     checkEquals(c("a|c", "b|c"), names(g3@edgeData))
 }
-    
+
 
 testRemoveEdgeUndirected <- function() {
     g <- simpleGraphNEL()
@@ -260,19 +260,19 @@ testRemoveEdgeLarge <- function() {
                "n9")
     to <- c("n255","n383","n261","n381","n234","n225","n315","n38","n296",
             "n78","n310","n19","n422")
-    
+
     g1 <- removeEdge(from, to, g)
     checkEquals(numEdges*2 - length(from), numEdges(g1))
 }
 
 testRemoveEdgeLarge2 <- function() {
     ## This test is from a bug discovered by Dan Bebber
-    From <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 
+    From <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
               2, 5, 5, 8, 8, 8, 8, 8, 11, 11, 12, 12, 12, 14, 14, 16, 16, 20,
               20, 23, 23, 24, 24, 25, 25, 29, 29, 32, 32, 32, 32, 38, 38, 41,
               41, 41, 43, 43, 54, 54, 59, 59, 60, 68, 68, 69, 72, 82, 83, 88,
               88, 88, 88, 89, 89, 90, 90, 96, 97, 98, 98, 98)
-    
+
     To <- c(2, 5, 8, 11, 12, 14, 16, 20, 23, 37, 38, 54, 57, 68, 72, 81,
             86, 87, 97, 88, 100, 32, 102, 38, 41, 49, 51, 53, 58, 59, 60,
             63, 67, 71, 72, 75, 76, 84, 85, 24, 29, 25, 28, 26, 27, 30, 31,
@@ -281,7 +281,7 @@ testRemoveEdgeLarge2 <- function() {
             98, 99, 141, 158)
 
     FT <- matrix(c(From, To), ncol=2) #create a 'from-to' matrix
-    
+
     g <- ftM2graphNEL(FT, edgemode="undirected")
 
     gr <- removeEdge(from=as.character(From[1:2]),
@@ -299,9 +299,9 @@ testRemoveEdgeLarge2 <- function() {
 test_eWV <- function() {
     V <- LETTERS[1:4]
     gR <- new("graphNEL", nodes=V)
-    gX <- addEdge("A", "C", gR, 0.2) 
+    gX <- addEdge("A", "C", gR, 0.2)
 
-    ans <- eWV(gX, edgeMatrix(gX), useNNames = TRUE) 
+    ans <- eWV(gX, edgeMatrix(gX), useNNames = TRUE)
     checkEquals(c("A--C"=0.2), ans)
 }
 
@@ -409,3 +409,17 @@ test_subgraph_attrs <- function() {
     checkEquals("zoo", nodeData(gg, "a", attr="tag")[[1]])
     checkEquals("yes", edgeData(gg, "a", "b", attr="tag")[[1]])
 }
+
+test_ftM2_with_self_edges <- function() {
+
+    ft <- cbind(c(1:5,1,5),c(1:5,3,2))
+    W <- c(1:5,7,9)
+    ## this failed till 2008-06-26:
+    gr <- ftM2graphNEL(ft, W, edgemode="undirected")
+    m <- as(gr, "matrix")
+    g2 <- as(m, "graphNEL")
+    m2 <- as(g2, "matrix")
+    checkEquals(m2, sign(m))
+    checkEquals(which(m2 != 0), c(1,3,7,10,11,13,19,22,25))
+}
+

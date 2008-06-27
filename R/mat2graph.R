@@ -44,9 +44,11 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
    ## deal with edgemode
    if(!edgemode %in% c("undirected", "directed"))
      stop("'edgemode' most be either 'directed' or 'undirected'")
-   if(edgemode=="undirected") {
-     ft <- rbind(ft, ft[,2:1])
-     W  <- c(W,W)
+   if(edgemode == "undirected") {
+     ## reflect each pair -- but *not* the self-edges!
+     differ <- ft[,1] != ft[,2]
+     ft <- rbind(ft, ft[differ, 2:1])
+     W  <-     c( W,  W[differ])
    }
 
    ## deal with V
