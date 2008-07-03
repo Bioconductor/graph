@@ -1,6 +1,8 @@
 ## String used as the separator to name edges in a graph.
 EDGE_KEY_SEP <- "|"
-EDGEMODE_DEPR_MSG <- "The edgemode slot is deprecated. Use 'updateGraph' to update this graph object."
+EDGEMODE_DEPR_MSG <- "The edgemode slot is deprecated.\nUse 'updateGraph' to update this graph object."
+EDGEMODE_DEFUNCT_MSG <- "The edgemode slot no longer exists.\nUse 'updateGraph' to update this graph object."
+
 
 checkValidNodeName <- function(node) {
     if (!is.character(node))
@@ -20,7 +22,11 @@ checkValidNodeName <- function(node) {
 }
 
 setMethod("isDirected", "graph",
-	  function(object) edgemode(object) == "directed")
+	  function(object){
+            isUpToDate(object, error=TRUE)
+            edgemode(object) == "directed"
+          })
+          
 
 
 ## Get the "real" slots of an object (slotNames gets the slots from
@@ -45,17 +51,22 @@ getObjectSlots <- function(object) {
 
 
 ## (FH 11/7/07) If the graph object is not up to data give a
-## deprecated warning, else try the edgemode item of the graphData list
+## deprecated warning and try to find something useful,
+## else use the edgemode item of the graphData list
 setMethod("edgemode", "graph", function(object)
       {
-          if(!isUpToDate(object)){
-              .Deprecated(msg=EDGEMODE_DEPR_MSG)
-              if (is.null(object@edgemode))
-                  stop("This 'graph' object is corrupted")
-              object@edgemode
-          }
-          else
-              object@graphData$edgemode
+        if(!isUpToDate(object)){
+          .Deprecated(msg=EDGEMODE_DEPR_MSG)
+          ## first check in graphData then in edgemode slot
+          em <- object@graphData$edgemode
+          if (is.null(em) && hasEdgemode(object))
+            em <- object@edgemode
+          if(is.null(em))
+            stop("This 'graph' object is corrupted")
+        }
+        else
+          em <- object@graphData$edgemode
+        return(em)
       })
 
 
@@ -68,7 +79,7 @@ setReplaceMethod("edgemode", c("graph", "character"),
                      if(!(value %in% c("directed", "undirected")) )
                        stop(paste("supplied mode is", value,
                                   "it must be either directed or undirected"))
-                     if(!graph:::isUpToDate(object)){
+                     if(hasEdgemode(object)){
                          warning("The edgemode slot is deprecated. ",
                                  "This graph object has been updated to ",
                                  "a new version.\n", call.=FALSE)
@@ -79,16 +90,27 @@ setReplaceMethod("edgemode", c("graph", "character"),
                  })
 
 
-
 ## Check if graph object is up to date
-isUpToDate <- function(object){
-    if(!is(object, "graph"))
-        stop("Object must inherit from class 'graph'")
-    availSlots <- getObjectSlots(object)
-    availSlotNames <- names(availSlots)
-    definedSlotNames <- slotNames(object)
-    return(setequal(availSlotNames, definedSlotNames) &&
-             length(object@graphData$edgemode))
+isUpToDate <- function(object, error=FALSE)
+{
+  if(!is(object, "graph"))
+    stop("Object must inherit from class 'graph'")
+  availSlots <- getObjectSlots(object)
+  availSlotNames <- names(availSlots)
+  definedSlotNames <- slotNames(object)
+  valid <- setequal(availSlotNames, definedSlotNames) &&
+                    length(object@graphData$edgemode)
+  if(error)
+    .Deprecated(msg=EDGEMODE_DEFUNCT_MSG)
+  return(valid)
+}
+
+hasEdgemode <- function(object)
+{
+   if(!is(object, "graph"))
+     stop("Object must inherit from class 'graph'")
+   sn <- names(getObjectSlots(object))
+   return("edgemode" %in% sn)
 }
 
 
@@ -98,24 +120,20 @@ setMethod("updateGraph", "graph", function(object)
           availSlots <- getObjectSlots(object)
           availSlotNames <- names(availSlots)
           definedSlotNames <- slotNames(object)
-
           if(graph:::isUpToDate(object)){
               message("This graph object seems to be up to date")
               newObject <- object
           }else{
               commonSlots <- intersect(definedSlotNames, availSlotNames)
+              missingSlots <- setdiff(definedSlotNames, availSlotNames)
+              if("graphData" %in% missingSlots &&
+                 !"edgemode" %in% availSlotNames)
+                stop("Object is corrupted, don't know how to update.")
               newObject <- new(class(object))
               for(s in commonSlots)
                   slot(newObject, s) <- availSlots[[s]]
-              ## now the stuff that needs manual intervention
-              missingSlots <- setdiff(definedSlotNames, availSlotNames)
-              if("graphData" %in% missingSlots)
-                  if("edgemode" %in% availSlotNames){
-                      newObject@graphData$edgemode <- availSlots$edgemode
-                      newObject@edgemode <- as.character(NULL)
-                  }else
-                      stop("Object is corrupted, don't know how to update.")
-          }
+              edgemode(newObject) <- suppressWarnings(edgemode(object))
+        }
           return(newObject)
       })
               

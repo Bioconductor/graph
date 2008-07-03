@@ -3,10 +3,7 @@ setClass("attrData", representation(data="list",
                                     defaults="list"))
 
 ## (FH Oct 4.) The edgemode slot is deprecated, the information will
-## go into the egemode item of the graphData list. For now we keep it
-## around for compatability reasons but the methods have been changed to deal
-## with the new case. Also changed the prototypes of distGraph and
-## clusterGraph accordingly
+## go into the egemode item of the graphData list.
 
 
 
@@ -20,7 +17,7 @@ setClass("renderInfo",
                         pars="list")) # list passed on to graph.par before rendering
 
 
-setClass("graph", representation(edgemode="character",
+setClass("graph", representation(## edgemode="character",
                                  edgeData="attrData",
                                  nodeData="attrData",
 

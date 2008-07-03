@@ -95,11 +95,11 @@ A virtual Class: No objects may be created from it.
 }
 \section{Slots}{
   \describe{
-    \item{\code{edgemode}:}{Indicates whether edges are
-      \code{"directed"} or \code{"undirected"}}
     \item{\code{edgeData}:}{An \code{attrData} instance for edge attributes.}
     \item{\code{nodeData}:}{An \code{attrData} instance for node attributes.}
-    \item{\code{graphData}:}{A \code{list} for graph-level attributes}
+    \item{\code{graphData}:}{A \code{list} for graph-level
+      attributes. Only mandatory list item is \code{edgemode} which
+      indicates whether edges are \code{"directed"} or \code{"undirected"}}
   }
 }
 
