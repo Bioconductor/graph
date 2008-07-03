@@ -23,7 +23,6 @@ checkValidNodeName <- function(node) {
 
 setMethod("isDirected", "graph",
 	  function(object){
-            isUpToDate(object, error=TRUE)
             edgemode(object) == "directed"
           })
           
@@ -56,7 +55,6 @@ getObjectSlots <- function(object) {
 setMethod("edgemode", "graph", function(object)
       {
         if(!isUpToDate(object)){
-          .Deprecated(msg=EDGEMODE_DEPR_MSG)
           ## first check in graphData then in edgemode slot
           em <- object@graphData$edgemode
           if (is.null(em) && hasEdgemode(object))
@@ -100,7 +98,7 @@ isUpToDate <- function(object, error=FALSE)
   definedSlotNames <- slotNames(object)
   valid <- setequal(availSlotNames, definedSlotNames) &&
                     length(object@graphData$edgemode)
-  if(error)
+  if(error && !valid)
     .Deprecated(msg=EDGEMODE_DEFUNCT_MSG)
   return(valid)
 }
@@ -601,6 +599,7 @@ setMethod("numNodes", "graph", function(object) length(nodes(object)))
 
 setMethod("show", signature("graph"),
           function(object) {
+              isUpToDate(object, error=TRUE)
               numNodes<- numNodes(object)
               numEdge<-numEdges(object)
               cat("A", class(object), "graph with", edgemode(object), "edges\n")
