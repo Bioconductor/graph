@@ -120,8 +120,7 @@ setAs("matrix", "graphAM", function(from) {
   if(!is.numeric(from)) 
     storage.mode(from) = "integer"
 
-  new("graphAM", from,
-      edgemode = if (all(from == t(from))) "undirected" else "directed")
+  tmp <- new("graphAM", from, edgemode=if (all(from == t(from))) "undirected" else "directed")
 })
 
 
