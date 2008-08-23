@@ -54,17 +54,21 @@ getObjectSlots <- function(object) {
 ## else use the edgemode item of the graphData list
 setMethod("edgemode", "graph", function(object)
       {
-        if(!isUpToDate(object)){
-          ## first check in graphData then in edgemode slot
+          if(!isUpToDate(object)){
+              ## first check in graphData then in edgemode slot
+              if(!"graphData" %in% getObjectSlots(objects)){
+                  .Deprecated(msg=EDGEMODE_DEFUNCT_MSG)
+                  em <- object@edgemode
+              }else{
+                  em <- object@graphData$edgemode
+                  if (is.null(em) && hasEdgemode(object))
+                      em <- object@edgemode
+                  if(is.null(em))
+                      stop("This 'graph' object is corrupted")
+              }
+          }else
           em <- object@graphData$edgemode
-          if (is.null(em) && hasEdgemode(object))
-            em <- object@edgemode
-          if(is.null(em))
-            stop("This 'graph' object is corrupted")
-        }
-        else
-          em <- object@graphData$edgemode
-        return(em)
+          return(em)
       })
 
 
