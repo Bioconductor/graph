@@ -56,7 +56,7 @@ setMethod("edgemode", "graph", function(object)
       {
           if(!isUpToDate(object)){
               ## first check in graphData then in edgemode slot
-              if(!"graphData" %in% getObjectSlots(objects)){
+              if(!"graphData" %in% names(getObjectSlots(object))){
                   .Deprecated(msg=EDGEMODE_DEFUNCT_MSG)
                   em <- object@edgemode
               }else{
