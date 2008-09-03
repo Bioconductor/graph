@@ -32,7 +32,7 @@ setMethod("isDirected", "graph",
 ## class graph and update if necessary. This is not recursive, so lists of
 ## graphs or graphs within slots of objects will not be updated.
 updateFolder <- function(path="."){
-    files <- dir(path)
+    files <- dir(path, pattern="\\.rda$")
     library(graph)
     for(f in files){
         env <- new.env()
@@ -47,7 +47,7 @@ updateFolder <- function(path="."){
             }
         }
         if(needSave)
-            save(objects, file=file.path(path,f), envir=env)
+            save(list=objects, file=file.path(path,f), envir=env)
     } 
 }
 
