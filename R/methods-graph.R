@@ -28,6 +28,32 @@ setMethod("isDirected", "graph",
           
 
 
+## Look through all serialized object within a folder, check if they are of
+## class graph and update if necessary. This is not recursive, so lists of
+## graphs or graphs within slots of objects will not be updated.
+updateFolder <- function(path="."){
+    files <- dir(path)
+    library(graph)
+    for(f in files){
+        env <- new.env()
+        load(f, envir=env)
+        objects <- ls(env)
+        needSave <- FALSE
+        for(i in objects){
+            if(is(get(i, env), "graph") && !graph:::isUpToDate(get(i, env))){
+                assign(i, updateGraph(get(i, env)), envir=env)
+                cat("Updated graph object", i, "\n")
+                needSave <- TRUE
+            }
+        }
+        if(needSave)
+            save(objects, file=file.path(path,f), envir=env)
+    } 
+}
+
+
+
+
 ## Get the "real" slots of an object (slotNames gets the slots from
 ## the object definition)
 getObjectSlots <- function(object) {
