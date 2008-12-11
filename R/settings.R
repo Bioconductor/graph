@@ -1,6 +1,4 @@
-
-
-
+## change or return the current defaults for a graph's rendering information
 graph.par <- function(...)
 {
     new <- list(...)
@@ -26,7 +24,11 @@ graph.par <- function(...)
     invisible(retVal)
 }
 
+
+## get a particular graph rendering parameter set. Valid sets are "nodes",
+## "edges" and "graph"
 graph.par.get <- function(name) .GraphEnv$par[[name]]
+
 
 ## need NULL or empty string for everything that should not be set to
 ## allow for resetting (like labels and title)
@@ -47,13 +49,12 @@ graph.par.get <- function(name) .GraphEnv$par[[name]]
               col.main="black", col.sub="black"))
 
 
-
-
+## create a renderInfo object
 .renderInfoPrototype <- new("renderInfo")
 
+
 ## FIXME: make these generic?
-
-
+## return node-specific rendering parameters 
 nodeRenderInfo <- function(g, name)
 {
     if(missing(name))
@@ -65,6 +66,9 @@ nodeRenderInfo <- function(g, name)
         tmp
     }
 }
+
+
+## return edge-specific rendering parameters 
 edgeRenderInfo <- function(g, name)
 {
     if(missing(name))
@@ -77,6 +81,8 @@ edgeRenderInfo <- function(g, name)
     }
 }
 
+
+## return graph-specific rendering parameters 
 graphRenderInfo <- function(g, name)
 {
     if(missing(name))
@@ -89,6 +95,7 @@ graphRenderInfo <- function(g, name)
     }
 }
 
+## return content of the pars slot
 parRenderInfo <- function(g, name)
 {
     if(missing(name))
@@ -121,7 +128,12 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
         if (length(value[[i]]) == 1 && is.null(names(value[[i]])))
         {
             ## change everything
-            slot(g@renderInfo, what)[[i]][ ] <- value[[i]]
+            if(is.function(value[[i]])){
+                for(j in seq_along(slot(g@renderInfo, what)[[i]]))
+                    slot(g@renderInfo, what)[[i]][[j]] <- value[[i]]
+            }else{
+                slot(g@renderInfo, what)[[i]][ ] <- value[[i]]
+            }
         }
         else
         {
@@ -134,6 +146,8 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
     g
 }
 
+
+## setter for node render parameters
 "nodeRenderInfo<-" <- function(g, value)
 {
     suppressWarnings(setRenderInfo(g, what = "nodes", value = value,
@@ -148,8 +162,9 @@ swapNames <- function(names){
         sapply(ns, function(x) paste(x[2], x[1], sep="~"))
     }
 }
-    
 
+
+## setter for edge render parameters
 "edgeRenderInfo<-" <- function(g, value)
 {
     ## edge tail and head order doesn't matter for undirected graphs
@@ -167,6 +182,8 @@ swapNames <- function(names){
                   recipEdges=graphRenderInfo(g, "recipEdges"))))
 }
 
+
+## setter for graph render parameters
 "graphRenderInfo<-" <- function(g, value)
 {
     ## value may be a arbitrary list
@@ -177,6 +194,8 @@ swapNames <- function(names){
     g
 }
 
+
+## setter for the pars slot
 "parRenderInfo<-" <- function(g, value)
 {
     ## value may be a list with components nodes, edges (like graph.pars())
