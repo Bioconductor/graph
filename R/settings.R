@@ -172,8 +172,11 @@ swapNames <- function(names){
     ## in the duplicate's names
     if(!isDirected(g)){
         value <- lapply(value, function(x){
-            y <- rep(x,2)
-            names(y) <- c(names(x), swapNames(names(x)))
+            y <- x
+            if(length(x)>1 && !is.null(names(x))){
+                y <- rep(x,2)
+                names(y) <- c(names(x), swapNames(names(x)))
+            }
             y
         })
     }               
