@@ -114,33 +114,43 @@ setRenderInfo <- function(g, what, value, validNames, n = length(validNames))
         stop("'value' must be a list of named parameters")
     for (i in names(value))
     {
+        thisVal <- value[[i]]
         if (is.null(slot(g@renderInfo, what)[[i]]))
         {
             ## i doesn't exist.  Need to create appropriate placeholder
+            m <- if(is.null(thisVal)) "character" else mode(thisVal)
             slot(g@renderInfo, what)[[i]] <-
-                vector(mode = mode(value[[i]]), length = n)
+                vector(mode=m, length = n)
             ## initialize to NA (seems to work for lists too, but may
             ## need methods for non-trivial objects)
             is.na(slot(g@renderInfo, what)[[i]]) <- TRUE
             names(slot(g@renderInfo, what)[[i]]) <- validNames
         }
         ## Now replace relevant parts
-        if (length(value[[i]]) == 1 && is.null(names(value[[i]])))
+        if (length(thisVal) <= 1 && is.null(names(thisVal)))
         {
-            ## change everything
-            if(is.function(value[[i]])){
-                for(j in seq_along(slot(g@renderInfo, what)[[i]]))
-                    slot(g@renderInfo, what)[[i]][[j]] <- value[[i]]
+            ## change everything or revert to default if value is NULL
+            repl <-
+                if(is.null(thisVal)) graph.par()[[what]][[i]] else thisVal
+            if(is.null(repl)){
+                slot(g@renderInfo, what)[[i]] <- repl
             }else{
-                slot(g@renderInfo, what)[[i]][ ] <- value[[i]]
+                for(j in seq_along(slot(g@renderInfo, what)[[i]]))
+                    slot(g@renderInfo, what)[[i]][[j]] <- repl
             }
         }
         else
         {
             ## change only named values
-            ## FIXME: check for all(names(value[[i]]) %in% nms) ?
-            repNames <- intersect(names(value[[i]]), validNames)
-            slot(g@renderInfo, what)[[i]][repNames] <- value[[i]][repNames]
+            ## FIXME: check for all(names(thisVal) %in% nms) ?
+            repNames <- intersect(names(thisVal), validNames)
+            null <- sapply(thisVal, is.null)
+            if(any(!null))
+                slot(g@renderInfo, what)[[i]][repNames][!null] <-
+                    thisVal[intersect(repNames, names(which(!null)))]
+            if(any(null))
+                 slot(g@renderInfo, what)[[i]][intersect(repNames, names(which(null)))] <-
+                     graph.par()[[what]][[i]]
         }
     }
     g

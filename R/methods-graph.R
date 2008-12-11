@@ -114,6 +114,7 @@ setReplaceMethod("edgemode", c("graph", "character"),
                          object <- updateGraph(object)
                      }
                      object@graphData$edgemode <- value
+                     edgeRenderInfo(object) <- list(arrowhead=NULL, arrowtail=NULL)
                      object
                  })
 
