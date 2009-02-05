@@ -50,9 +50,9 @@
   \code{\link{graphRendering}} for more details.
   
   \describe{
-
+ 
     \item{parRenderInfo, parRenderInfo<-}{getter and setter for
-      items of slot \code{pars}. }
+      items of slot \code{pars}}
     
     \item{nodeRenderInfo, nodeRenderInfo<-}{getter and setter for
       items of slot \code{nodes}}
@@ -72,6 +72,8 @@
   
   The setters are a bit more complex: \code{nodeRenderInfo<-} and
   \code{edgeRenderInfo<-} can take
+
+  \describe{
   \item{named list of named vectors}{where the names have to match the node
     or edge names. Items in the vector that don't match a valid edge or
     node name will be silently ignored. For undirected edges the order
@@ -83,9 +85,11 @@
     \code{nodes}, \code{edges} and \code{graph}. The content of these
     list items can be arbitrary named vectors.}
   \code{parRenderInfo<-}{takes an arbitrary list}
-  
+  }
+
   Available rendering parameters for nodes are:
   
+  \describe{
   \item{col:}{ the color of the line drawn as node border. Defaults to
     \code{black}.}
   
@@ -116,10 +120,11 @@
     will be clipped to the node size. This mainly exists to for
     consistency with the base graphic parameters and to override the
     clipping of fontsize to nodesize.}
-  
+  }
   
   Available rendering parameters for edges are:
   
+  \describe{
   \item{col:}{ the color of the edge line. Defaults to \code{black}.}
   
   \item{lty:}{ the type of the edge line. Defaults to
@@ -136,7 +141,7 @@
   
   \item{cex:}{ Expansion factor to further control the fontsize. This
     mainly exists to be consistent with the base graphic parameters.}
-  
+  }
 }
 
 \author{Deepayan Sarkar, Florian Hahne}
