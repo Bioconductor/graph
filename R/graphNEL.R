@@ -495,7 +495,8 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
                       oW <- oW[-oEd]
                   }
                   if(is.null(oW)) oW=rep(1, length(oE))
-                  g2 <- addEdge(oE, newName, g2, oW)
+                  if(length(oE))  
+                      g2 <- addEdge(oE, newName, g2, oW)
               }
               g2
           })
