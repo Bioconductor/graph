@@ -325,7 +325,7 @@ setMethod("edgeWeights", signature(object="graph", index="character"),
               ew <- edgeData(object, from=index, attr=attr)
               if (!length(ew))
                 return(lapply(edges(object), function(x)
-                              vector(mode=mode(default), length=0)))
+                              vector(mode=mode(default), length=0))[index])
               gEdges <- edges(object)[index]
               edgeCounts <- sapply(gEdges, length)
               nn <- rep(index, edgeCounts)
