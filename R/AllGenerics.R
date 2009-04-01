@@ -69,7 +69,7 @@ setGeneric("removeNode", function(node, object) standardGeneric("removeNode"))
 setGeneric("clearNode", function(node, object) standardGeneric("clearNode"))
 
 
-setGeneric("combineNodes", function(nodes, graph, newName)
+setGeneric("combineNodes", function(nodes, graph, newName, ...)
            standardGeneric("combineNodes"))
 
 

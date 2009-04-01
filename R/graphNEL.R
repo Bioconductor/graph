@@ -439,7 +439,7 @@ setMethod("addEdge", signature=signature(from="character", to="character",
 
 ## Collapse a set of nodes and the corresponding edges
 setMethod("combineNodes", c("character", "graphNEL", "character"),
-          function(nodes, graph, newName) {
+          function(nodes, graph, newName, collapseFunction=sum) {
               if( length(newName) > 1 )
                 stop("must have a single name")
               gN <- nodes(graph)
@@ -452,7 +452,10 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
                   warning("nothing to collapse")
                   return(graph)
               }
-              
+
+              ##function to collapse weights for combined edges
+              collapseFunction <- match.fun(collapseFunction)
+                  
               ##if undirected then we know everything
               inE <- if( edgemode(graph) == "directed" ) inEdges(nodes, graph) else NULL
               g2 <- removeNode(nodes, graph)
@@ -460,7 +463,7 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
               oE <- gN[unlist(lapply(outE[nodes], "[[", "edges"), use.names=FALSE)]
               oW <- unlist(edgeWeights(graph, nodes), use.names=FALSE)
               if (is.null(oW)) oW <- rep(1, length(oE))
-              toW <- tapply(oW, oE, sum)[setdiff(unique(oE), nodes)]
+              toW <- tapply(oW, oE, collapseFunction)[setdiff(unique(oE), nodes)]
               
               ##there might be no edges to add
               if(length(toW))
@@ -471,7 +474,8 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
               {
                   inE <- lapply(inE, setdiff, nodes)
                   inEl <- unique(unlist(inE), use.names=FALSE)
-                  oW <- as.numeric(sapply(edgeWeights(graph, inEl), sum))
+                  oW <- as.numeric(sapply(edgeWeights(graph, inEl), function(x)
+                                          collapseFunction(x[intersect(names(x), nodes)])))
                   if(length(inEl))
                       g2 <- addEdge(inEl, newName, g2, oW)
               }

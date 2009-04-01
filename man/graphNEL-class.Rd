@@ -15,7 +15,6 @@
 \alias{clearNode,character,graphNEL-method}
 \alias{coerce,graphNEL,generalGraph-method}
 \alias{coerce,graphNEL,graphAM-method}
-\alias{combineNodes,character,graphNEL,character-method}
 \alias{edgeL,graphNEL-method}
 \alias{edges,graphNEL,missing-method}
 \alias{edges,graphNEL,character-method}
