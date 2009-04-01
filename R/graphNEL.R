@@ -436,6 +436,8 @@ setMethod("addEdge", signature=signature(from="character", to="character",
           })
  
 
+
+## Collapse a set of nodes and the corresponding edges
 setMethod("combineNodes", c("character", "graphNEL", "character"),
           function(nodes, graph, newName) {
               if( length(newName) > 1 )
@@ -450,62 +452,28 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
                   warning("nothing to collapse")
                   return(graph)
               }
+              
               ##if undirected then we know everything
-              if( edgemode(graph) == "directed" )
-                inE <- inEdges(nodes, graph)
-              else
-                inE <- NULL
+              inE <- if( edgemode(graph) == "directed" ) inEdges(nodes, graph) else NULL
               g2 <- removeNode(nodes, graph)
               g2 <- addNode(newName, g2)
-              nC <- length(nodes)
-              oE <- gN[unlist(sapply(outE[nodes], "[[", "edges"), use.names=FALSE)]
-              oW <- unlist(sapply(outE[nodes], "[[", "weights"), use.names=FALSE)
-##               ##seemed very inefficient
-##               oE <- NULL; oW <- NULL;
-##               for(i in 1:nC) {
-##                   oE <- c(oE, outE[[nodes[i]]]$edges)
-##                   oW <- c(oW, outE[[nodes[i]]]$weights)
-##               }
-              ## oE <- gN[oE]
-
+              oE <- gN[unlist(lapply(outE[nodes], "[[", "edges"), use.names=FALSE)]
+              oW <- unlist(edgeWeights(graph, nodes), use.names=FALSE)
               if (is.null(oW)) oW <- rep(1, length(oE))
               toW <- tapply(oW, oE, sum)[setdiff(unique(oE), nodes)]
-            
               
-##               oEd <- match(nodes, oE)
-##               oEd <- oEd[!is.na(oEd)]
-##               if( length(oEd) > 0 ) {
-##                   oE <- oE[-oEd]
-##                   oW <- oW[-oEd]
-##               }
-
               ##there might be no edges to add
-              if( length(oE) > 0 ) {
-                  ## if (is.null(oW) )
-##                       oW = rep(1, length(oE))
+              if(length(toW))
                   g2 <- addEdge(newName, names(toW), g2, as.numeric(toW))
-              }
-
-              browser()
-              ##if directed we need to fix up the in edges
-              if( !is.null(inE) ) {
-                  nC <- length(inE)
-                  oE <- NULL; oW <- NULL
-                  nmE <- names(inE)
-                  for(i in 1:nC) {
-                      oE <- c(oE, inE[[i]])
-                      for( j in inE[[i]] )
-                        oW <- c(oW, .edgeWeight(j, nmE[i], graph))
-                  }
-                  oEd = match(nodes, oE)
-                  oEd = oEd[!is.na(oEd)]
-                  if(length(oEd) > 0 ) {
-                      oE <- oE[-oEd]
-                      oW <- oW[-oEd]
-                  }
-                  if(is.null(oW)) oW=rep(1, length(oE))
-                  if(length(oE))  
-                      g2 <- addEdge(oE, newName, g2, oW)
+              
+              ##if directed we need to fix up the incoming edges
+              if( !is.null(inE) )
+              {
+                  inE <- lapply(inE, setdiff, nodes)
+                  inEl <- unique(unlist(inE), use.names=FALSE)
+                  oW <- as.numeric(sapply(edgeWeights(graph, inEl), sum))
+                  if(length(inEl))
+                      g2 <- addEdge(inEl, newName, g2, oW)
               }
               g2
           })
