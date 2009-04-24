@@ -203,7 +203,7 @@ setMethod("isAdjacent",signature(object="graph", from="character",
                      paste(to[toIdx == 0], collapse=", "))
               fromEdges <- edges(object)[from]
               .Call("graph_is_adjacent", fromEdges, to,
-                    PACKAGE="graph")
+                    PACKAGE="BioC_graph")
           })
 
 
@@ -424,7 +424,7 @@ setMethod("intersection2", c("graph", "graph"), function(x,y) {
            edgeM <- 1
 
         .Call("graphIntersection", nodes(x), nodes(y),
-              edges(x), edges(y), edgeM, PACKAGE="graph")
+              edges(x), edges(y), edgeM, PACKAGE="BioC_graph")
 
 })
 

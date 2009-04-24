@@ -1,13 +1,13 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.23.0
+Version: 1.23.1
 Author: R. Gentleman, Elizabeth Whalen, W. Huber, S. Falcon
 Description: A package that implements some simple graph handling
         capabilities.
 Maintainer: Robert Gentleman <rgentlem@fhcrc.org>
 License: The Artistic License, Version 2.0
 Depends: R (>= 2.6.0), methods
-Imports: tools, cluster, methods
+Imports: methods, stats, tools, utils
 Suggests: SparseM (>= 0.36), XML, RBGL
 biocViews: GraphsAndNetworks
 Collate: AllClasses.R AllGenerics.R buildDepGraph.R 
@@ -17,4 +17,3 @@ Collate: AllClasses.R AllGenerics.R buildDepGraph.R
          standardLabeling.R TODOT.R methods-graphAM.R attrData.R
          reverseEdgeDirections.R nodes-methods.R methods-multiGraph.R
 LazyLoad: yes
-

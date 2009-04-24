@@ -94,7 +94,7 @@ setMethod("attrDataItem", signature(self="attrData", x="character",
                                     attr="character"),
           function(self, x, attr) {
               graph:::.verifyAttrName(attr, names(self@defaults))
-              .Call("graph_attrData_lookup", self, x, attr, PACKAGE="graph")
+              .Call("graph_attrData_lookup", self, x, attr, PACKAGE="BioC_graph")
           })
 
 
@@ -108,7 +108,7 @@ setReplaceMethod("attrDataItem",
                             "have the same length as x")
                      self@data <- .Call("graph_sublist_assign",
                                         self@data, x, attr, value,
-                                        PACKAGE="graph")
+                                        PACKAGE="BioC_graph")
                      self
           })
 

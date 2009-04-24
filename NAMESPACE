@@ -1,12 +1,18 @@
-useDynLib(graph)
+useDynLib(BioC_graph)
 
-import(methods, cluster)
+importClassesFrom(methods, ANY, character, list, logical, matrix,
+                  missing, "NULL", numeric, oldClass, vector)
+importMethodsFrom(methods, coerce, initialize, show)
+importFrom(methods, "@<-", as, callGeneric, is, isVirtualClass, new,
+           slot, "slot<-", slotNames, validObject)
+importFrom(stats, as.dist, dhyper, phyper, runif)
 importFrom(tools, package.dependencies)
+importFrom(utils, CRAN.packages, modifyList)
 
 exportClasses(distGraph,
-  clusterGraph, graph, graphNEL, file, connection, gzfile, bzfile, url,
-  graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL, edgeSetAM, multiGraph,
-              renderInfo) 
+      clusterGraph, graph, graphNEL, file, connection, gzfile, bzfile, url,
+      graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL, edgeSetAM, multiGraph,
+      renderInfo) 
 
 exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       clearNode, clusteringCoefficient, combineNodes, complement, connComp,
@@ -18,7 +24,7 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       "attrDefaults<-", edgeDataDefaults, "edgeDataDefaults<-",
       nodeDataDefaults, "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
       "nodeData<-", attrDataItem, "attrDataItem<-",
-              "removeAttrDataItem<-", ugraph, leaves, updateGraph)
+      "removeAttrDataItem<-", ugraph, leaves, updateGraph)
 
 
 export(boundary, buildRepDepGraph, calcProb, calcSumProb,
@@ -35,5 +41,3 @@ export(graph.par, graph.par.get, graphRenderInfo,
        "graphRenderInfo<-")
 
 S3method(write,tlp)
-
-
