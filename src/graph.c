@@ -25,7 +25,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {NULL, NULL, 0},
 };
 
-void R_init_graph(DllInfo *info) {
+void R_init_BioC_graph(DllInfo *info) {
     R_registerRoutines(info, NULL, R_CallDef, NULL, NULL);
 }
 
