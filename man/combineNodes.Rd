@@ -7,13 +7,13 @@
 }
 \usage{
 combineNodes(nodes, graph, newName, \dots)
-\S4method{combineNodes}{character,graphNEL,character}(nodes, graph, newName, collapseFun=sum)
+\S4method{combineNodes}{character,graphNEL,character}(nodes, graph, newName, collapseFunction=sum)
 }
 \arguments{
   \item{nodes}{A set of nodes that are to be collapsed. }
   \item{graph}{The graph containing the nodes }
   \item{newName}{The name for the new, collapsed node. }
-  \item{collapseFun}{Function or character giving the name of a function
+  \item{collapseFunction}{Function or character giving the name of a function
     used to collapse the edge weights after combining nodes. The default
     is to sum up the weights, but mean would be a useful alternative.}
   \item{\dots}{Additional arguments for the generic}

@@ -112,7 +112,7 @@
     points. Defaults to \code{14}. Note that the fontsize will be
     automatically adjusted to make sure that all labels fit their
     respective nodes. You may want to increase the node size by
-    supplying the appropriate layout parameters to \textit{Graphviz}
+    supplying the appropriate layout parameters to \code{Graphviz}
     in order to allow for larger fontsizes.}
   
   \item{cex:}{ Expansion factor to further control the fontsize. As

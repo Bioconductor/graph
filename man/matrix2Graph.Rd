@@ -15,8 +15,8 @@ matrices into graph objects.
 aM2bpG(aM)
 ftM2adjM(ft, W=NULL, V=NULL, edgemode="directed")
 ftM2graphNEL(ft, W=NULL, V=NULL, edgemode="directed")
-\S4method{coerce}{graphNEL,matrix}(g,m)
-\S4method{coerce}{matrix,graphNEL}(m,g)
+\S4method{coerce}{graphNEL,matrix}(from,to="matrix",strict=TRUE)
+\S4method{coerce}{matrix,graphNEL}(from,to="graphNEL",strict=TRUE)
 }
 \arguments{
   \item{ft}{An nx2 matrix containing the \code{from/to}
@@ -26,8 +26,10 @@ ftM2graphNEL(ft, W=NULL, V=NULL, edgemode="directed")
   \item{aM}{An affiliation matrix for a bipartite graph.}
   \item{edgemode}{Character. Specifies if the resulting graph is
     to be directed or undirected.}
-  \item{g}{Object of class graphNEL.}
-  \item{m}{Matrix.}
+  \item{from}{Object to coerce from, either of type \code{matrix} or \code{grpahNEL}}
+  \item{to}{Character giving class to coerce to. Either "matrix" or
+    "graphNEL".}
+  \item{strict}{Strict object checking.}
 }
 \details{
 

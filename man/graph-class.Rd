@@ -99,7 +99,9 @@ A virtual Class: No objects may be created from it.
     \item{\code{nodeData}:}{An \code{attrData} instance for node attributes.}
     \item{\code{graphData}:}{A \code{list} for graph-level
       attributes. Only mandatory list item is \code{edgemode} which
-      indicates whether edges are \code{"directed"} or \code{"undirected"}}
+      indicates whether edges are \code{"directed"} or
+      \code{"undirected"}}
+    \item{\code{renderInfo}:}{A \code{list} of graph rendering information.}
   }
 }
 

@@ -46,8 +46,6 @@ Objects can be created by calls of the form \code{new("graphAM", adjMat, edgemod
     \item{\code{adjMat}:}{An adjacency \code{"matrix"} describing the
     graph structure.  The \code{\link{colnames}} of the matrix will be used as
     node names for the graph if present.}
-    \item{\code{edgemode}:}{A \code{"character"} vector specifying
-      whether the graph is "directed" or "undirected".}
     \item{\code{edgeData}:}{Storage for edge attributes.}
     \item{\code{nodeData}:}{Storage for node attributes.}
   }
