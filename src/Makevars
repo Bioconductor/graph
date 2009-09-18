@@ -1,1 +1,2 @@
-PKG_LIBS=-o BioC_graph.so
+after: $(SHLIB)
+	mv $(SHLIB) BioC_graph$(DYLIB_EXT)
