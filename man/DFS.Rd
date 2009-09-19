@@ -27,7 +27,7 @@ DFS(object, node, checkConn=TRUE)
   but since the checking can be expensive it is optional.
 
   A faster and mostly likely better implementation of depth first
-  searching is given by \code{\link[RBGL]{dfs}} in the \pkg{RBGL}
+  searching is given by \code{\link[RBGL:bfs]{dfs}} in the \pkg{RBGL}
   package.  
 }
 \value{
