@@ -1,2 +1,0 @@
-after: $(SHLIB)
-	mv $(SHLIB) BioC_graph.dll

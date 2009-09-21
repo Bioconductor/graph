@@ -1,2 +1,2 @@
 after: $(SHLIB)
-	mv $(SHLIB) BioC_graph.so
+	mv $(SHLIB) BioC_graph$(SHLIB_EXT)

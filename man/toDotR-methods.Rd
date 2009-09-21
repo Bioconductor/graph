@@ -21,7 +21,7 @@
 
 \description{There are two basic methods of generating
 dot (\url{http://www.graphviz.org}) language serializations
-of R \code{\link[graph]{graph-class}} structures.  First,
+of R \code{\link{graph-class}} structures.  First,
 using the \code{\link[Rgraphviz:toDot-methods]{toDot}} methods of the 
 Rgraphviz package, the native graphviz agraph-associated methods can be
 employed to create the dot serialization.

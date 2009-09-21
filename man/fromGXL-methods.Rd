@@ -29,7 +29,7 @@ function is based on \code{\link[XML]{xmlEventParse}} with handlers defined
 in the function NELhandler.  The dump()
 element of this handler should emit information on
 all children of nodes and edges; the asGraphNEL()
-element will return a \code{\link[graph]{graphNEL}} object with weights
+element will return a \code{\linkS4class{graphNEL}} object with weights
 if child \code{<attr>} with name attribute "weights" is
 present for each edge element.}
 \item{toGXL}{for an
