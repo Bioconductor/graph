@@ -233,7 +233,7 @@ setMethod("removeNode",
 
 getNodeIndex <- function(nodeNames, node) {
     idx <- match(node, nodeNames, nomatch=NA)
-    if (is.na(idx))
+    if (any(is.na(idx)))
       stop("Unknown node", sQuote(node))
     idx
 }
