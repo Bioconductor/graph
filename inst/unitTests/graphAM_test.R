@@ -287,6 +287,22 @@ testRemoveEdge <- function() {
     checkEquals(FALSE, isAdjacent(g1, "a", "c"))
 }
 
+testRemoveEdgeWithWeights <- function() {
+    mat <- simpleAdjMat()
+    mat[mat != 0] <- runif(length(mat[mat != 0]))
+    g <- new("graphAM", adjMat = mat, edgemode = "directed",
+             values = list(weight = 1.0))
+    weights <- unlist(edgeData(g, attr = "weight"))
+    toRemove <- names(weights[weights < 0.5])
+    expect <- numEdges(g) - length(toRemove)
+    fromTo <- do.call(rbind, strsplit(toRemove, "|", fixed = TRUE))
+    g2 <- removeEdge(fromTo[, 1], fromTo[, 2], g)
+    checkEquals(expect, numEdges(g2))
+    apply(fromTo, 1, function(row) {
+        checkEquals(FALSE, isAdjacent(g2, row[1], row[2]))
+    })
+}
+
 
 testGraphAMCloning <- function() {
     mat <- simpleAdjMat()

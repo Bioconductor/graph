@@ -238,15 +238,17 @@ getNodeIndex <- function(nodeNames, node) {
     idx
 }
 
+coordToIndex <- function(x, y, nrow) (y * nrow) - (nrow - x)
 
 setMethod("removeEdge",
           signature(from="character", to="character", graph="graphAM"),
           function(from, to, graph) {
               fromIdx <- getNodeIndex(nodes(graph), from)
               toIdx <- getNodeIndex(nodes(graph), to)
-              graph@adjMat[fromIdx, toIdx] <- 0
+              rowCnt <- nrow(graph@adjMat)
+              graph@adjMat[coordToIndex(fromIdx, toIdx, rowCnt)] <- 0
               if (!isDirected(graph))
-                graph@adjMat[toIdx, fromIdx] <- 0
+                graph@adjMat[coordToIndex(toIdx, fromIdx, rowCnt)] <- 0
               graph
           })
 
