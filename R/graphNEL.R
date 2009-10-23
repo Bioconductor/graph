@@ -1,7 +1,7 @@
 validGraph<-function(object, quietly=FALSE) {
     ## FIXME: we are doing if/else branching here on
     ## specific subclasses of graph.  We should make this a generic
-    ## so we can organize checking.  Also, graphAM is not 
+    ## so we can organize checking.  Also, graphAM is not
     ## currently being checked in any way.
     bad = FALSE
     if (is(object, "graphNEL")) {
@@ -102,7 +102,7 @@ graphNEL_init_edgeL_weights <- function(gnel) {
     }))
     if (!is.numeric(wts))
       stop("weights in edgeL must be numeric")
-    
+
     eSpec <- graph:::.getAllEdges(gnel)
     from <- eSpec$from
     to <- eSpec$to
@@ -144,7 +144,7 @@ setMethod("initialize", "graphNEL",
                   edgeParser <- graphNEL_init_edges
                   firstVal <- edgeL[[1]]
                   if (is.null(firstVal))
-                    stop("invalid arg ", sQuote("edgeL"), "\n", 
+                    stop("invalid arg ", sQuote("edgeL"), "\n",
                          "elements must be character or list, got NULL")
                   if (length(edgeL) > 0 && is.list(edgeL[[1]])) {
                       edgeParser <- graphNEL_init_edges_nested
@@ -355,7 +355,7 @@ setMethod("removeEdge",
                 to <- rep(to, length(from))
               if (length(from) == 1)
                 from <- rep(from, length(to))
-              if (!isDirected(graph)) { 
+              if (!isDirected(graph)) {
                   fromOrig <- from
                   from <- c(fromOrig, to)
                   to <- c(to, fromOrig)
@@ -434,7 +434,7 @@ setMethod("addEdge", signature=signature(from="character", to="character",
               ##FIXME: should we call validObject here?
               graph
           })
- 
+
 
 
 ## Collapse a set of nodes and the corresponding edges
@@ -455,7 +455,7 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
 
               ##function to collapse weights for combined edges
               collapseFunction <- match.fun(collapseFunction)
-                  
+
               ##if undirected then we know everything
               inE <- if( edgemode(graph) == "directed" ) inEdges(nodes, graph) else NULL
               g2 <- removeNode(nodes, graph)
@@ -464,11 +464,11 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
               oW <- unlist(edgeWeights(graph, nodes), use.names=FALSE)
               if (is.null(oW)) oW <- rep(1, length(oE))
               toW <- tapply(oW, oE, collapseFunction)[setdiff(unique(oE), nodes)]
-              
+
               ##there might be no edges to add
               if(length(toW))
                   g2 <- addEdge(newName, names(toW), g2, as.numeric(toW))
-              
+
               ##if directed we need to fix up the incoming edges
               if( !is.null(inE) )
               {
