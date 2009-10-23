@@ -64,8 +64,12 @@ testInEdges <- function() {
     checkEquals(expectedInEdges, inEdges(object=g))
     n <- c("a", "d")
     checkEquals(expectedInEdges[n], inEdges(n, g))
-}
 
+    ## verify unknown node behavior
+    ans <- tryCatch(inEdges("not-a-node", g),
+                    error = function(e) e)
+    checkEquals("not-a-node is not a node", conditionMessage(ans))
+}
 
 testEmptyGraph <- function() {
     g <- new("graphNEL")

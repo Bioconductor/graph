@@ -501,7 +501,7 @@ setMethod("inEdges", c("character", "graphNEL"),
               gN <- nodes(object)
               whN <- match(node, gN)
               if( any(is.na(whN)) )
-                stop(paste(from[is.na[whN]], "is not a node"))
+                stop(paste(node[is.na(whN)], "is not a node"))
               nN <- length(node)
               rval <- vector("list", length=nN)
               names(rval) <- node
