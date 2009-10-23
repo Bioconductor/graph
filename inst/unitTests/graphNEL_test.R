@@ -253,9 +253,8 @@ testRemoveEdgeLarge <- function() {
     numEdges <- 2500
     nodes <- paste("n", 1:500, sep="")
     g <- randomEGraph(nodes, edges=numEdges)
-    g@edgemode <- "directed"  ## XXX: there should be a better way
+    edgemode(g) <- "directed"
     checkEquals(numEdges*2, numEdges(g))
-    cat(runif(4), "\n")
      from <- c("n1","n2","n2","n3","n5","n7","n7","n8","n8","n8","n9","n9",
                "n9")
     to <- c("n255","n383","n261","n381","n234","n225","n315","n38","n296",
@@ -392,7 +391,7 @@ test_rename_nodes_nodeData <- function() {
 
     checkEquals(nd, nodeData(g, attr="type"))
 }
-    
+
 test_subgraph_attrs <- function() {
     x <- new("graphNEL", nodes=c("a", "b"),
              edgeL=list(a="b", b="b"),
