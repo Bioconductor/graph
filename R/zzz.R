@@ -13,7 +13,7 @@ graph.par(.default.graph.pars())
 }
 
 .onUnload <- function( libpath ) {
-  library.dynam.unload("graph", libpath )
+  library.dynam.unload("BioC_graph", libpath )
 }
 
 
