@@ -17,5 +17,5 @@ Collate: AllClasses.R AllGenerics.R bitarray.R buildDepGraph.R
          standardLabeling.R TODOT.R methods-graphAM.R 
          methods-graphAM2.R attrData.R
          reverseEdgeDirections.R nodes-methods.R methods-multiGraph.R
-         test_graph_package.R
+         test_graph_package.R MultiDiGraph.R
 LazyLoad: yes
