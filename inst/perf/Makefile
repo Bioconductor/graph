@@ -1,5 +1,5 @@
 BASE = graphperf
-R = R-devel
+R ?= R-devel
 
 all: $(BASE).pdf
 	@echo "building perf report using $(R)"
