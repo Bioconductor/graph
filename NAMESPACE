@@ -1,4 +1,4 @@
-useDynLib(BioC_graph)
+useDynLib(BioC_graph, graph_bitarray_sum, graph_bitarray_set)
 
 importClassesFrom(methods, ANY, character, list, logical, matrix,
                   missing, "NULL", numeric, oldClass, vector)

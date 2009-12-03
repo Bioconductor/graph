@@ -12,6 +12,8 @@ SEXP listLen(SEXP);
 SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr);
 SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values);
 SEXP graph_is_adjacent(SEXP fromEdges, SEXP to);
+SEXP graph_bitarray_sum(SEXP bits);
+SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val);
 
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
@@ -426,6 +428,48 @@ SEXP graph_is_adjacent(SEXP fromEdges, SEXP to)
                 break;
         LOGICAL(ans)[i] = found;
         UNPROTECT(1);
+    }
+    UNPROTECT(1);
+    return ans;
+}
+
+SEXP graph_bitarray_sum(SEXP bits)
+{
+    /*
+      This approach from
+      http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
+    */
+    unsigned char *bytes = (unsigned char *) RAW(bits);
+    unsigned char v;
+    int c = 0;
+    int len = length(bits);
+    int i;
+    for (i = 0; i < len; i++) {
+        for (v = bytes[i]; v; c++) {
+            v &= v - 1;  /* clear the least significant bit set */
+        }
+    }
+    return ScalarInteger(c);
+}
+
+SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val)
+{
+    SEXP ans = PROTECT(duplicate(bits));
+    int *which = INTEGER(idx);
+    int *values = INTEGER(val); /* expecting logical? */
+    unsigned char *bytes = RAW(ans);
+    int i, nVal = length(val);
+    int byteIndex;
+    unsigned char bitIndex;
+
+    for (i = 0; i < nVal; i++) {
+        byteIndex = (which[i] - 1) / 8;
+        bitIndex = (which[i] - 1) % 8;
+        if (values[i]) {
+            bytes[byteIndex] |= (1 << bitIndex);
+        } else {
+            bytes[byteIndex] &= ~(1 << bitIndex);
+        }
     }
     UNPROTECT(1);
     return ans;

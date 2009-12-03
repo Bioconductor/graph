@@ -1,6 +1,6 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.25.2
+Version: 1.25.3
 Author: R. Gentleman, Elizabeth Whalen, W. Huber, S. Falcon
 Description: A package that implements some simple graph handling
         capabilities.
@@ -10,7 +10,7 @@ Depends: R (>= 2.6.0), methods
 Imports: methods, stats, tools, utils
 Suggests: SparseM (>= 0.36), XML, RBGL, RUnit
 biocViews: GraphsAndNetworks
-Collate: AllClasses.R AllGenerics.R buildDepGraph.R 
+Collate: AllClasses.R AllGenerics.R bitarray.R buildDepGraph.R 
          methods-graph.R graphNEL.R clustergraph.R NELhandler.R
          edgefunctions.R graphfunctions.R GXLformals.R gxlReader.R
          random.R write.tlp.R mat2graph.R settings.R zzz.R 
