@@ -14,7 +14,8 @@ Collate: AllClasses.R AllGenerics.R bitarray.R buildDepGraph.R
          methods-graph.R graphNEL.R clustergraph.R NELhandler.R
          edgefunctions.R graphfunctions.R GXLformals.R gxlReader.R
          random.R write.tlp.R mat2graph.R settings.R zzz.R 
-         standardLabeling.R TODOT.R methods-graphAM.R attrData.R
+         standardLabeling.R TODOT.R methods-graphAM.R 
+         methods-graphAM2.R attrData.R
          reverseEdgeDirections.R nodes-methods.R methods-multiGraph.R
          test_graph_package.R
 LazyLoad: yes

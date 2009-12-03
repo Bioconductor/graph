@@ -10,9 +10,9 @@ importFrom(tools, package.dependencies)
 importFrom(utils, CRAN.packages, modifyList)
 
 exportClasses(distGraph,
-      clusterGraph, graph, graphNEL, file, connection, gzfile, bzfile, url,
-      graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL, edgeSetAM, multiGraph,
-      renderInfo) 
+      clusterGraph, graph, graphNEL, file, connection, gzfile, bzfile,
+      url, graphAM, graphAM2, attrData, simpleEdge, edgeSet, edgeSetNEL,
+      edgeSetAM, multiGraph, renderInfo)
 
 exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       clearNode, clusteringCoefficient, combineNodes, complement, connComp,
@@ -39,5 +39,7 @@ export(graph.par, graph.par.get, graphRenderInfo,
        nodeRenderInfo, edgeRenderInfo, parRenderInfo,
        "nodeRenderInfo<-", "edgeRenderInfo<-", "parRenderInfo<-",
        "graphRenderInfo<-")
+
+export(GraphAM2)
 
 S3method(write,tlp)

@@ -41,6 +41,9 @@ setClass("graphAM", contains="graph",
          representation(adjMat="matrix"),
          validity=function(object) validGraph(object))
 
+setClass("graphAM2", contains="graph",
+         representation(bitVect="raw",
+                        nodes="character"))
 
 setOldClass("dist")
 

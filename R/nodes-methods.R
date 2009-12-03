@@ -70,6 +70,9 @@ setMethod("renameNodes", "graphNEL", function(g, value) {
     g
 })
 
+### graphAM2
+setMethod("nodes", "graphAM2", function(object) object@nodes)
+
 ### graphAM
 
 setMethod("nodes", signature("graphAM"),

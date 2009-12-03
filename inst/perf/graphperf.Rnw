@@ -187,6 +187,52 @@ rownames(df.NEL.new) <- NULL
 df.NEL.new
 @
 
+Here are some notes on the \textit{experimental} \Rclass{graphAM2}
+class that uses a bit array (backed by a raw vector) to store an
+adjacency matrix.
+
+First, we make a more standard from/to matrix:
+<<fromToSetup>>=
+ft1 <- matrix("", nrow = nrow(ftmat1), ncol = ncol(ftmat2))
+ft1[, 1L] <- nodes(g1)[ftmat1[, 1L]]
+ft1[, 2L] <- nodes(g1)[ftmat1[, 2L]]
+
+ft2 <- matrix("", nrow = nrow(ftmat2), ncol = ncol(ftmat2))
+ft2[, 1L] <- nodes(g1)[ftmat2[, 1L]]
+ft2[, 2L] <- nodes(g1)[ftmat2[, 2L]]
+@
+
+
+<<graphAM2Creation, echo=FALSE>>=
+ans <- timeRow(GraphAM2(from = ft1[, 1L], to = ft1[, 2L],
+                        nodes = nodes(g1),
+                        edgemode = "directed"),
+               "GraphAM2")
+df.AM2.new <- ans$row
+gbit1 <- ans$result
+
+ans <- timeRow(GraphAM2(from = ft1[, 1L], to = ft1[, 2L],
+                        nodes = nodes(g1),
+                        edgemode = "undirected"),
+               "GraphAM2")
+df.AM2.new <- rbind(df.AM2.new, ans$row)
+
+ans <- timeRow(GraphAM2(from = ft2[, 1L], to = ft2[, 2L],
+                        nodes = nodes(g2),
+                        edgemode = "directed"),
+               "GraphAM2")
+df.AM2.new <- rbind(df.AM2.new, ans$row)
+gbit2 <- ans$result
+
+ans <- timeRow(GraphAM2(from = ft2[, 1L], to = ft2[, 2L],
+                        nodes = nodes(g2),
+                        edgemode = "undirected"),
+               "GraphAM2")
+df.AM2.new <- rbind(df.AM2.new, ans$row)
+
+rownames(df.AM2.new) <- NULL
+df.AM2.new
+@
 
 \subsection{\Rclass{graphAM} to \Rclass{graphNEL} conversion}
 
@@ -201,6 +247,15 @@ df.AM.to.NEL <- rbind(df.AM.to.NEL, ans$row)
 gnel2 <- ans$result
 rownames(df.AM.to.NEL) <- NULL
 df.AM.to.NEL
+@
+
+\subsection{Size comparison}
+
+<<sizeComp, echo=FALSE>>=
+objType <- sapply(list(g1, gnel1, gbit1), class)
+Size <- sapply(list(g1, gnel1, gbit1), object.size)
+data.frame(class=objType, size=Size)
+
 @
 
 \subsection{intersection and union}
@@ -234,6 +289,14 @@ ans <- timeRow(union(g1, g2), "union AM")
 df.setOps <- rbind(df.setOps, ans$row)
 
 ans <- timeRow(union(gnel1, gnel2), "union NEL")
+df.setOps <- rbind(df.setOps, ans$row)
+
+ans <- timeRow(graph:::edge_set_intersect(gbit1, gbit2),
+               "AM2 I")
+df.setOps <- rbind(df.setOps, ans$row)
+
+ans <- timeRow(graph:::edge_set_union(gbit1, gbit2),
+               "AM2 U")
 df.setOps <- rbind(df.setOps, ans$row)
 
 rownames(df.setOps) <- NULL
