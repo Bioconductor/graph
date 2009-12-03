@@ -38,5 +38,4 @@ leaves(apopGraph, "out")
 
 }
 
-\keyword{ }
 

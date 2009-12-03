@@ -46,9 +46,8 @@
   
   The following are functions rather than methods and build the API to
   control the graphical output of a graph when it is plotted using
-  \code{\link[Rgraphviz]{renderGraph}}. Please see
-  \code{\link{graphRendering}} for more details.
-  
+  \code{\link[Rgraphviz]{renderGraph}}.
+
   \describe{
  
     \item{parRenderInfo, parRenderInfo<-}{getter and setter for
