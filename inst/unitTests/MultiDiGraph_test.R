@@ -28,8 +28,9 @@ randMultiDiGraph <- function(numNodes, numEdges)
 
 sort_esets <- function(esets)
 {
+    ## sorting is based on column major ordering
     lapply(esets, function(ft) {
-        ft <- ft[order(ft$from, ft$to), ]
+        ft <- ft[order(ft$to, ft$from), ]
     })
 }
 
@@ -74,10 +75,10 @@ test_edgeWeights_create <- function()
 
     checkEquals(6L, numNodes(g))
     checkEquals(c(5L, 6L), numEdges(g))
-    checkIdentical(list(esets[[1L]][order(esets[[1L]][,1L],
-                                          esets[[1L]][,2L]), "weights"],
-                        esets[[2L]][order(esets[[2L]][,1L],
-                                          esets[[2L]][,2L]), "weights"]),
+
+    esets <- sort_esets(esets)
+    checkIdentical(list(esets[[1L]][, "weights"],
+                        esets[[2L]][, "weights"]),
                    eweights(g))
 }
 
@@ -117,8 +118,9 @@ test_edgeMatrices <- function()
     checkTrue(typeof(ems[[2L]]) == "integer")
 
     nn <- nodes(g)
-    ft1 <- ft1[order(ft1$from, ft1$to), ]
-    ft2 <- ft2[order(ft2$from, ft2$to), ]
+    esets <- sort_esets(esets)
+    ft1 <- esets[[1L]]
+    ft2 <- esets[[2L]]
 
     gotft1 <- data.frame(from = nn[ems[[1L]][1L, ]],
                          to = nn[ems[[1L]][2L, ]])
@@ -154,9 +156,17 @@ test_extractGraph_large <- function()
     }
 }
 
-test_edgeIntersect <- function()
-{
-}
+## test_edgeIntersect <- function()
+## {
+##     eCounts <- c(e1=5, e2=10, e3=25, e4=75)
+##     g <- randMultiDiGraph(10, eCounts)
+##     g2 <- edgeIntersect(g, weightFun = sum)
+##     checkEquals(1L, length(numEdges(g2)))
+##     checkEquals(5L, numEdges(g2)[[1L]])
+##     checkTrue(all(eweights(g2)[[1L]] == 4L))
+
+##     checkEquals(edgeMatrices(g)[[1L]], edgeMatrices(g2)[[1L]])
+## }
 
 ## write tests for named edge sets
 

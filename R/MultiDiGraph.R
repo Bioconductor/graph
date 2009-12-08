@@ -1,7 +1,19 @@
+## NOTES: refactor to move away from using a bit vector instead, use a
+## data.frame (can be part of existing edgeAttrs) that has an edgeIndex
+## column giving the index in a non-existing array of length numNodes^2.
+## Then operate on that using .indexToCoord and .coordToIndex.  Should
+## be fairly similar to existing track.  Advantage is less data
+## duplication and integration with an arbitrary set of atomic vector
+## edge attributes.
+
 MultiDiGraph <- function(edgeSets, nodes = NULL)
 {
-    ## edgeSets is a list of from/to matrices
+    ## Nodes are stored in sorted order.  The sparse Edge index vector
+    ## is stored in sorted index order.  Since R is column-major, this
+    ## means that when translated to x, y coordinates, the ordering is
+    ## sorted by column and then row.
 
+    ## edgeSets is a list of from/to matrices
     ftSets <- lapply(edgeSets,
                        function(ft) {
                            cbind(from = as.character(ft[[1L]]),
@@ -21,8 +33,6 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
 
     n_edgeSets <- length(edgeSets)
     es_names <- names(edgeSets)
-    bitVectors <- structure(vector("list", n_edgeSets),
-                            names = es_names)
     edgeAttrs <- structure(vector("list", n_edgeSets),
                            names = es_names)
     for (i in seq_len(n_edgeSets)) {
@@ -30,18 +40,15 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
         from_i <- match(ft[, 1L], nodeNames)
         to_i <- match(ft[, 2L], nodeNames)
 
-        bitVect <- makebits(am_size, bitdim = am_dim)
-        bitVectors[[i]] <-
-          setBitCell(bitVect, from_i, to_i, rep(1L, length(from_i)))
-
+        sparseAM <- .coordToIndex(from_i, to_i, n_nodes)
+        edgeIdxOrder <- order(sparseAM)
         edgeAttr <-
-          data.frame(mdg_from_i = from_i, mdg_to_i = to_i,
-                     edgeSets[[i]][-c(1:2)], row.names = NULL)
-        edgeAttrs[[i]] <- edgeAttr[order(edgeAttr[[1L]], edgeAttr[[2L]]), ]
+          data.frame(mdg_edge_index = sparseAM[edgeIdxOrder],
+                     edgeSets[[i]][edgeIdxOrder, -c(1:2)], row.names = NULL)
+        edgeAttrs[[i]] <- edgeAttr
     }
 
-    new("MultiDiGraph", nodes = nodeNames, bitVectors = bitVectors,
-        edgeAttrs = edgeAttrs)
+    new("MultiDiGraph", nodes = nodeNames, edgeAttrs = edgeAttrs)
 }
 
 .mdg_valid_node_names <- function(names)
@@ -57,9 +64,7 @@ setMethod("numNodes", signature = signature(object = "MultiDiGraph"),
 
 setMethod("numEdges", signature = signature(object = "MultiDiGraph"),
           function(object) {
-              sapply(object@bitVectors, function(bitVect) {
-                            .Call(graph_bitarray_sum, bitVect)
-                        })
+              sapply(object@edgeAttrs, function(edgeData) nrow(edgeData))
           })
 
 setMethod("nodes", signature = signature(object = "MultiDiGraph"),
@@ -71,7 +76,7 @@ setMethod("show",  signature = signature(object = "MultiDiGraph"),
           function(object) {
               cat(class(object),
                   sprintf("with %d nodes and %d edge sets\n",
-                          numNodes(object), length(object@bitVectors)))
+                          numNodes(object), length(object@edgeAttrs)))
               edgeCounts <- numEdges(object)
               if (is.null(names(edgeCounts)))
                   names(edgeCounts) <- seq_len(length(edgeCounts))
@@ -84,13 +89,15 @@ setMethod("show",  signature = signature(object = "MultiDiGraph"),
 eweights <- function(object, names.sep = NULL)
 {
     if (is.null(names.sep)) {
-        lapply(object@edgeAttrs, function(attrs) attrs[[3L]])
+        lapply(object@edgeAttrs, function(attrs) attrs[[2L]])
     } else {
         sep <- names.sep[1]
         nn <- nodes(object)
+        n_nodes <- length(object@nodes)
         lapply(object@edgeAttrs, function(attrs) {
-            w <- attrs[[3L]]
-            names(w) <- paste(nn[attrs[[1L]]], nn[attrs[[2L]]], sep = sep)
+            w <- attrs[[2L]]
+            coord <- .indexToCoord(attrs[[1L]], n_nodes)
+            names(w) <- paste(nn[coord[,1L]], nn[coord[,2L]], sep = sep)
             w
         })
     }
@@ -98,8 +105,11 @@ eweights <- function(object, names.sep = NULL)
 
 edgeMatrices <- function(object)
 {
+    n_nodes <- length(object@nodes)
     lapply(object@edgeAttrs, function(attrs) {
-        rbind(from=attrs[[1L]], to=attrs[[2L]])
+        matrix(t(.indexToCoord(attrs[[1L]], n_nodes)),
+               nrow = 2L,
+               dimnames = list(c("from", "to"), NULL))
     })
 }
 
@@ -108,10 +118,10 @@ extractGraph <- function(object, which)
     if (length(which) != 1L)
         stop("'which' must be length one")
     edgeAttr <- object@edgeAttrs[[which]]
-    ftmat <- do.call(cbind, edgeAttr[1:2])
     nodeNames <- nodes(object)
+    ftmat <- .indexToCoord(edgeAttr[[1L]], length(nodeNames))
     ftmat[] <- nodeNames[ftmat]
-    ftM2graphNEL(ftmat, W = edgeAttr[[3L]], V = nodeNames,
+    ftM2graphNEL(ftmat, W = edgeAttr[[2L]], V = nodeNames,
                  edgemode = "directed")
 }
 
@@ -140,3 +150,34 @@ randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N))
          ft = data.frame(from = from, to = to, weight = w,
                          stringsAsFactors = FALSE))
 }
+
+edgeIntersect <- function(object, weightFun = function(x) 1L)
+{
+    nodeNames <- nodes(object)
+    bitVectors <- object@bitVectors
+    ## FIXME: what should happen when the edgeSets are named?
+    ## should the new edgeSet have a name?  Should it be made by
+    ## combining...
+    ans <- bitVectors[1L]
+    v0 <- ans[[1L]]
+    v0_attrs <- attributes(v0)
+    for (v in bitVectors[-1]) {
+        v0 <- v0 & v
+    }
+    attributes(v0) <- v0_attrs
+    ans[[1L]] <- v0
+    object@bitVectors <- ans
+    ## need to fix up @edgeAttrs
+    ## I guess we'd like to be able to go from the bit vector
+    ## to from/to coordinates of either edges or not-edges.
+    edgeAttrs <- object@edgeAttrs
+    ## FIXME: I guess we should actually pick edgeSet with smallest
+    ## number of edges...
+    ft1 <- edgeAttrs[[1L]]
+    haveIdx <- .coordToIndex(ft1[[1L]], ft1[[2L]], numNodes(object))
+    keepInd <- testbit(v0, haveIdx)
+    object@edgeAttrs <- list(ft1[keepInd, ])
+    object
+}
+## TODO: should you be allowed to rename edge sets?
+## or at least name unnamed edge sets?

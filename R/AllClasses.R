@@ -97,5 +97,5 @@ setClass("multiGraph",
 
 setClass("MultiDiGraph",
          representation = representation(nodes = "character",
-         bitVectors = "list", edgeAttrs = "list"),
-         prototype = prototype(nodes = character(0), bitVectors = list()))
+         edgeAttrs = "list"),
+         prototype = prototype(nodes = character(0)))

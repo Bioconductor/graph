@@ -1,5 +1,18 @@
 
-.coordToIndex <- function(x, y, nrow) (y * nrow) - (nrow - x)
+.indexToCoord <- function(i, nrow)
+{
+    ## only for square
+    if (nrow == 1L) return(cbind(1L, 1L))
+    ans <- matrix(0L, nrow = length(i), ncol = 2L)
+    ans[ , 2L] <- ((i - 1L) %/% nrow) + 1L
+    ans[ , 1L] <- ((i - 1L) %% nrow) + 1L
+    ans
+}
+
+.coordToIndex <- function(x, y, nrow) {
+    if (nrow == 1L) return(1L)
+    (y * nrow) - (nrow - x)
+}
 
 .rowIndex <- function(x, n_row, n_col)
     .coordToIndex(rep(x, n_col), seq_len(n_col), n_row)
