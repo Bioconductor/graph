@@ -1,3 +1,5 @@
+set.seed(0x12a9b)
+
 make_basic_MultiDiGraph <- function()
 {
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
@@ -12,6 +14,16 @@ make_basic_MultiDiGraph <- function()
 
     g <- MultiDiGraph(esets)
     list(esets=esets, g=g)
+}
+
+randMultiDiGraph <- function(numNodes, numEdges)
+{
+    ftlist <- lapply(numEdges, function(ne) {
+        graph:::randFromTo(numNodes, ne)
+    })
+    nn <- ftlist[[1L]]$nodes
+    edgeSets <- lapply(ftlist, function(x) x[["ft"]])
+    MultiDiGraph(edgeSets, nodes = nn)
 }
 
 sort_esets <- function(esets)
@@ -128,6 +140,23 @@ test_extractGraph <- function()
     checkEquals(5L, numEdges(g1))
 }
 
+test_extractGraph_large <- function()
+{
+    eCounts <- c(e1=5, e2=10, e3=25, e4=75)
+    eNames <- names(eCounts)
+    g <- randMultiDiGraph(10, eCounts)
+    for (i in seq_len(length(eCounts))) {
+        gnel <- extractGraph(g, i)
+        checkEquals(eCounts[[i]], numEdges(gnel))
+        checkEquals(nodes(g), nodes(gnel))
+        ## also verify extraction by name
+        checkEquals(eCounts[[i]], numEdges(extractGraph(g, eNames[i])))
+    }
+}
+
+test_edgeIntersect <- function()
+{
+}
 
 ## write tests for named edge sets
 

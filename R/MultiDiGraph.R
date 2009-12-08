@@ -114,3 +114,29 @@ extractGraph <- function(object, which)
     ftM2graphNEL(ftmat, W = edgeAttr[[3L]], V = nodeNames,
                  edgemode = "directed")
 }
+
+## Generate a random from/to table
+##
+## Returns a list with two elements:
+##   $node: character vector of node labels
+##   $ft: a data.frame with columns 'from', 'to', and 'weight'
+##
+randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N))
+{
+    numNodes <- as.integer(numNodes)
+    numEdges <- as.integer(numEdges)
+    maxEdges <- numNodes * numNodes
+
+    nodeNames <- paste("n", seq_len(numNodes), sep="")
+
+    diagIdx <- 1L + 0L:(numNodes - 1L) * (numNodes + 1L)
+    idx <- sample(seq_len(maxEdges)[-diagIdx], numEdges)
+    to_i <- ((idx - 1L) %/% numNodes) + 1L
+    from_i <- ((idx - 1L) %% numNodes) + 1L
+    from <- nodeNames[from_i]
+    to <- nodeNames[to_i]
+    w <- weightFun(length(from))
+    list(nodes = nodeNames,
+         ft = data.frame(from = from, to = to, weight = w,
+                         stringsAsFactors = FALSE))
+}
