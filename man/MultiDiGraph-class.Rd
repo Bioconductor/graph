@@ -11,6 +11,7 @@
 \alias{eweights}
 \alias{edgeMatrices}
 \alias{extractGraph}
+\alias{edgeIntersect}
 
 \title{EXPERIMENTAL class "MultiDiGraph"}
 \description{
@@ -28,6 +29,7 @@ MultiDiGraph(edgeSets, nodes = NULL)
 eweights(object, names.sep = NULL)
 edgeMatrices(object)
 extractGraph(object, which)
+edgeIntersect(object, weightFun)
 }
 
 \arguments{
@@ -57,6 +59,13 @@ extractGraph(object, which)
     The string to use as a separator between from and to node labels.
     If \code{NULL} no names will be attached to the returned vector.
   }
+
+  \item{weightFun}{
+    A function that will be used to combine edge weights for multigraph
+    set operations.  The function should take only \dots as an argument
+    and will be called as \code{do.call(weightFun,
+    listOfWeightVectors)}.
+  }
 }
 \section{Constructors}{
   \code{MultiDiGraph}
@@ -70,8 +79,15 @@ extractGraph(object, which)
     \item{eweights}{Return edge weights (actually first edge attribute)}
     \item{edgeMatrices}{Return a list of edge matrices for each edge set}
     \item{extractGraph}{Return a \code{graphNEL} corresponding to the
-    specified edge set.}
-	 }
+      specified edge set.}
+
+    \item{edgeIntersect}{Return a new \code{MultiDiGraph} with a single
+      edge set containing the intersection of the original edge sets.
+      By default the intersection edges will have a weight of one.  Edge
+      weight combining can be customized by specifying a
+      \code{weightFun} function.
+    }
+  }
 }
 
 \author{S. Falcon}

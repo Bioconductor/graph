@@ -1,11 +1,3 @@
-## NOTES: refactor to move away from using a bit vector instead, use a
-## data.frame (can be part of existing edgeAttrs) that has an edgeIndex
-## column giving the index in a non-existing array of length numNodes^2.
-## Then operate on that using .indexToCoord and .coordToIndex.  Should
-## be fairly similar to existing track.  Advantage is less data
-## duplication and integration with an arbitrary set of atomic vector
-## edge attributes.
-
 MultiDiGraph <- function(edgeSets, nodes = NULL)
 {
     ## Nodes are stored in sorted order.  The sparse Edge index vector
@@ -35,6 +27,7 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
     es_names <- names(edgeSets)
     edgeAttrs <- structure(vector("list", n_edgeSets),
                            names = es_names)
+    ## FIXME: should we enforce having a "weight" column?
     for (i in seq_len(n_edgeSets)) {
         ft <- ftSets[[i]]
         from_i <- match(ft[, 1L], nodeNames)
@@ -42,9 +35,12 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
 
         sparseAM <- .coordToIndex(from_i, to_i, n_nodes)
         edgeIdxOrder <- order(sparseAM)
+        esi <- edgeSets[[i]]
+        ea_names <- names(esi)[c(-1L, -2L)]
         edgeAttr <-
           data.frame(mdg_edge_index = sparseAM[edgeIdxOrder],
-                     edgeSets[[i]][edgeIdxOrder, -c(1:2)], row.names = NULL)
+                     esi[edgeIdxOrder, c(-1L, -2L)], row.names = NULL)
+        names(edgeAttr) <- c("mdg_edge_index", ea_names)
         edgeAttrs[[i]] <- edgeAttr
     }
 
@@ -151,32 +147,38 @@ randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N))
                          stringsAsFactors = FALSE))
 }
 
-edgeIntersect <- function(object, weightFun = function(x) 1L)
+oneWeights <- function(...) rep(1L, length(list(...)[[1L]]))
+
+sumWeights <- function(...)
 {
+    rowSums(do.call(cbind, list(...)))
+}
+
+avgWeights <- function(...)
+{
+    rowMeans(do.call(cbind, list(...)))
+}
+
+edgeIntersect <- function(object, weightFun = oneWeights)
+{
+    ## assume we have a weight attr and it is the first column
+    ## after the edgeIndex ([[2]])
+    ## Drop non-weight attrs
     nodeNames <- nodes(object)
-    bitVectors <- object@bitVectors
-    ## FIXME: what should happen when the edgeSets are named?
-    ## should the new edgeSet have a name?  Should it be made by
-    ## combining...
-    ans <- bitVectors[1L]
-    v0 <- ans[[1L]]
-    v0_attrs <- attributes(v0)
-    for (v in bitVectors[-1]) {
-        v0 <- v0 & v
-    }
-    attributes(v0) <- v0_attrs
-    ans[[1L]] <- v0
-    object@bitVectors <- ans
-    ## need to fix up @edgeAttrs
-    ## I guess we'd like to be able to go from the bit vector
-    ## to from/to coordinates of either edges or not-edges.
+    edgeCounts <- numEdges(object)
+    minIdx <- which.min(edgeCounts)
     edgeAttrs <- object@edgeAttrs
-    ## FIXME: I guess we should actually pick edgeSet with smallest
-    ## number of edges...
-    ft1 <- edgeAttrs[[1L]]
-    haveIdx <- .coordToIndex(ft1[[1L]], ft1[[2L]], numNodes(object))
-    keepInd <- testbit(v0, haveIdx)
-    object@edgeAttrs <- list(ft1[keepInd, ])
+    ei1 <- edgeAttrs[[minIdx]][[1L]]
+    for (ea in edgeAttrs[-minIdx]) {
+        ei1 <- intersect(ei1, ea[[1L]])
+    }
+    edgeAttrs2 <- lapply(edgeAttrs, function(edgeAttr) {
+        keep <- edgeAttr[[1L]] %in% ei1
+        edgeAttr[keep, 1:2]
+    })
+    newWeights <- do.call(weightFun, lapply(edgeAttrs2, function(x) x[[2L]]))
+    object@edgeAttrs <- list(data.frame(mdg_edge_index = edgeAttrs2[[1L]][[1L]],
+                                        weight = newWeights))
     object
 }
 ## TODO: should you be allowed to rename edge sets?

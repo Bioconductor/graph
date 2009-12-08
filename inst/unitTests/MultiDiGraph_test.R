@@ -34,6 +34,17 @@ sort_esets <- function(esets)
     })
 }
 
+make_unique_ft <- function(ftdata)
+{
+    ## ftdata is a list with components $nodes and $ft
+    ## $ft is a data.frame with columns 'from', 'to', and 'weight'
+    ft <- ftdata[["ft"]]
+    el <- paste(ft[["from"]], ft[["to"]], sep = "\t")
+    dups <- duplicated(el)
+    ftdata[["ft"]] <- ft[!dups, ]
+    ftdata
+}
+
 test_create_infer_nodes <- function()
 {
     basic <- make_basic_MultiDiGraph()
@@ -156,17 +167,33 @@ test_extractGraph_large <- function()
     }
 }
 
-## test_edgeIntersect <- function()
-## {
-##     eCounts <- c(e1=5, e2=10, e3=25, e4=75)
-##     g <- randMultiDiGraph(10, eCounts)
-##     g2 <- edgeIntersect(g, weightFun = sum)
-##     checkEquals(1L, length(numEdges(g2)))
-##     checkEquals(5L, numEdges(g2)[[1L]])
-##     checkTrue(all(eweights(g2)[[1L]] == 4L))
+test_edgeIntersect <- function()
+{
+    ftdata1 <- graph:::randFromTo(10, 5)
+    ftdata2 <- graph:::randFromTo(10, 50)
+    ftdata3 <- graph:::randFromTo(10, 50)
 
-##     checkEquals(edgeMatrices(g)[[1L]], edgeMatrices(g2)[[1L]])
-## }
+    ftdata2$ft <- rbind(ftdata2$ft, ftdata1$ft)
+    ftdata3$ft <- rbind(ftdata3$ft, ftdata1$ft)
+
+    ftdata2 <- make_unique_ft(ftdata2)
+    ftdata3 <- make_unique_ft(ftdata3)
+
+    edgeSets <- lapply(list(ftdata1, ftdata2, ftdata3),
+                       function(x) x[["ft"]])
+    nn <- ftdata1[["nodes"]]
+    g <- MultiDiGraph(edgeSets, nn)
+
+    wSum <- function(...)
+    {
+        rowSums(do.call(cbind, list(...)))
+    }
+    g2 <- edgeIntersect(g, weightFun = wSum)
+    checkEquals(1L, length(numEdges(g2)))
+    checkEquals(5L, numEdges(g2)[[1L]])
+    checkTrue(all(eweights(g2)[[1L]] == 3L))
+    checkEquals(edgeMatrices(g)[[1L]], edgeMatrices(g2)[[1L]])
+}
 
 ## write tests for named edge sets
 
