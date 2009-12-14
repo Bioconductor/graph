@@ -36,12 +36,11 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
         sparseAM <- .coordToIndex(from_i, to_i, n_nodes)
         edgeIdxOrder <- order(sparseAM)
         esi <- edgeSets[[i]]
-        ea_names <- names(esi)[c(-1L, -2L)]
-        edgeAttr <-
-          data.frame(mdg_edge_index = sparseAM[edgeIdxOrder],
-                     esi[edgeIdxOrder, c(-1L, -2L)], row.names = NULL)
-        names(edgeAttr) <- c("mdg_edge_index", ea_names)
-        edgeAttrs[[i]] <- edgeAttr
+        edgeAttrs[[i]] <-
+            structure(data.frame(mdg_edge_index = sparseAM[edgeIdxOrder],
+                                 esi[edgeIdxOrder, c(-1L, -2L)],
+                                 row.names = NULL),
+                      names = c("mdg_edge_index", names(esi)[-(1:2)]))
     }
 
     new("MultiDiGraph", nodes = nodeNames, edgeAttrs = edgeAttrs)
