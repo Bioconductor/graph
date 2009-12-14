@@ -4,11 +4,11 @@ make_basic_MultiDiGraph <- function()
 {
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
                       to=c("b", "c", "d", "a", "d"),
-                      weights=c(1, 3.1, 5.4, 1, 2.2))
+                      weight=c(1, 3.1, 5.4, 1, 2.2))
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
                       to=c("b", "c", "x", "y", "c", "a"),
-                      weights=c(3.4, 2.6, 1, 1, 1, 7.9))
+                      weight=c(3.4, 2.6, 1, 1, 1, 7.9))
 
     esets <- list(ft1, ft2)
 
@@ -88,8 +88,8 @@ test_edgeWeights_create <- function()
     checkEquals(c(5L, 6L), numEdges(g))
 
     esets <- sort_esets(esets)
-    checkIdentical(list(esets[[1L]][, "weights"],
-                        esets[[2L]][, "weights"]),
+    checkIdentical(list(esets[[1L]][, "weight"],
+                        esets[[2L]][, "weight"]),
                    eweights(g))
 }
 
@@ -111,11 +111,11 @@ test_edgeMatrices <- function()
 {
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
                         to=c("b", "c", "d", "a", "d"),
-                      weights=c(1, 3.1, 5.4, 1, 2.2))
+                      weight=c(1, 3.1, 5.4, 1, 2.2))
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
                         to=c("b", "c", "x", "y", "c", "a"),
-                      weights=c(3.4, 2.6, 1, 1, 1, 7.9))
+                      weight=c(3.4, 2.6, 1, 1, 1, 7.9))
 
     esets <- list(ft1, ft2)
 
