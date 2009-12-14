@@ -199,10 +199,10 @@ test_edgeIntersect <- function()
     checkEquals(edgeMatrices(g)[[1L]], edgeMatrices(g2)[[1L]])
 }
 
-test_fromToMatrices <- function()
+test_fromToList <- function()
 {
     basic <- make_basic_MultiDiGraph(use.factors = FALSE)
-    got <- graph:::fromToMatrices(basic[["g"]])
+    got <- graph:::fromToList(basic[["g"]])
     esets <- sort_esets(basic[["esets"]])
     checkEquals(c("from", "to", "weight"), names(got[[1L]]))
     checkEquals(c("from", "to", "weight"), names(got[[2L]]))
@@ -239,7 +239,7 @@ test_edgeUnion <- function()
                                     ft = do.call(rbind, edgeSets)))[["ft"]]
     uEdgeSet <- uEdgeSet[order(uEdgeSet[[2L]], uEdgeSet[[1L]]), ]
     row.names(uEdgeSet) <- NULL
-    got <- graph:::fromToMatrices(gu)[[1L]]
+    got <- graph:::fromToList(gu)[[1L]]
     checkEquals(uEdgeSet, got)
 
     gu2 <- edgeUnion(g, function(x) rowSums(x, na.rm = TRUE))

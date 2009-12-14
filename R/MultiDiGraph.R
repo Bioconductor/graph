@@ -107,7 +107,7 @@ edgeMatrices <- function(object)
     })
 }
 
-fromToMatrices <- function(object)
+fromToList <- function(object)
 {
     nodeNames <- object@nodes
     n_nodes <- length(nodeNames)
