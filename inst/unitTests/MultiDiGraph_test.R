@@ -239,5 +239,12 @@ test_edgeUnion <- function()
     row.names(uEdgeSet) <- NULL
     got <- graph:::fromToMatrices(gu)[[1L]]
     checkEquals(uEdgeSet, got)
-}
 
+    gu2 <- edgeUnion(g, function(x) rowSums(x, na.rm = TRUE))
+    ew <- eweights(gu2)[[1L]]
+    ## sanity check counts for now, would be good to have
+    ## some more complete tests
+    checkEquals(numEdges(gi)[[1L]], sum(ew == 3L))
+    checkTrue(!any(ew > 3))
+    checkTrue(!any(is.na(ew)))
+}

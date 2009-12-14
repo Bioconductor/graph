@@ -204,15 +204,25 @@ edgeIntersect <- function(object, weightFun = oneWeights)
     object
 }
 
-edgeUnion <- function(object, weightFun = oneWeights)
+edgeUnion <- function(object, weightFun = NULL)
 {
     edgeAttrs <- object@edgeAttrs
-    uAttrs <- unlist(lapply(edgeAttrs, function(x) x[[1]]))
+    uAttrs <- unlist(lapply(edgeAttrs, function(x) x[[1L]]))
     ## to deal with weights properly I guess we will need
     ## to compute the intersection.
     dups <- duplicated(uAttrs)
     uAttrs <- sort(uAttrs[!dups])
-    newWeights <- rep(1L, length(uAttrs))
+    newWeights <- if (is.null(weightFun)) {
+        rep(1L, length(uAttrs))
+    } else {
+        wList <- lapply(edgeAttrs, function(ea) {
+            idx <- match(uAttrs, ea[[1L]])
+            ea[[2L]][idx]
+        })
+        ## would a for loop w/ pre allocated matrix be better here?
+        wMat <- do.call(cbind, wList)
+        weightFun(wMat)
+    }
     object@edgeAttrs <- list(data.frame(mdg_edge_index = uAttrs,
                                         weight = newWeights,
                                         stringsAsFactors = FALSE))
