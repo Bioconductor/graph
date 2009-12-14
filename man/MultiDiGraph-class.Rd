@@ -12,6 +12,7 @@
 \alias{edgeMatrices}
 \alias{extractGraph}
 \alias{edgeIntersect}
+\alias{edgeUnion}
 
 \title{EXPERIMENTAL class "MultiDiGraph"}
 \description{
@@ -29,7 +30,8 @@ MultiDiGraph(edgeSets, nodes = NULL)
 eweights(object, names.sep = NULL)
 edgeMatrices(object)
 extractGraph(object, which)
-edgeIntersect(object, weightFun)
+edgeIntersect(object, weightFun = oneWeights)
+edgeUnion(object, weightFun = NULL)
 }
 
 \arguments{
@@ -90,6 +92,9 @@ edgeIntersect(object, weightFun)
       weight combining can be customized by specifying a
       \code{weightFun} function.
     }
+
+    \item{edgeUnion}{Return a new \code{MultiDiGraph} with a single edge
+      set containing the union of the original edge sets.}
   }
 }
 

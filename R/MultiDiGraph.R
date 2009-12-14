@@ -220,7 +220,6 @@ edgeUnion <- function(object, weightFun = NULL)
             idx <- match(uAttrs, ea[[1L]])
             ea[[2L]][idx]
         })
-        ## would a for loop w/ pre allocated matrix be better here?
         wMat <- do.call(cbind, wList)
         weightFun(wMat)
     }
