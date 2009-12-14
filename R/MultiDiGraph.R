@@ -20,8 +20,7 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
                    collapse=", "))
     }
     n_nodes <- length(nodeNames)
-    am_size <- n_nodes * n_nodes
-    am_dim <- c(n_nodes, n_nodes)
+    if (n_nodes > 2^15) n_nodes <- as.double(n_nodes)
 
     n_edgeSets <- length(edgeSets)
     es_names <- names(edgeSets)
@@ -148,14 +147,16 @@ extractGraph <- function(object, which)
 ##
 randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N))
 {
-    numNodes <- as.integer(numNodes)
-    numEdges <- as.integer(numEdges)
+    if (numNodes > 2^15) numNodes <- as.double(numNodes)
     maxEdges <- numNodes * numNodes
-
-    nodeNames <- paste("n", seq_len(numNodes), sep="")
-
+    nodeNames <- sprintf("%010d", seq_len(numNodes))
+    ## use double to allow for large numNodes
     diagIdx <- 1L + 0L:(numNodes - 1L) * (numNodes + 1L)
-    idx <- sample(seq_len(maxEdges)[-diagIdx], numEdges)
+    numToGen <- max(numEdges * 4, numNodes)
+    idx <- unique(ceiling(runif(numToGen, min = 0, max = maxEdges)))
+    idx <- idx[!(idx %in% diagIdx)]
+    stopifnot(length(idx) >= numEdges)
+    idx <- idx[seq_len(numEdges)]
     to_i <- ((idx - 1L) %/% numNodes) + 1L
     from_i <- ((idx - 1L) %% numNodes) + 1L
     from <- nodeNames[from_i]

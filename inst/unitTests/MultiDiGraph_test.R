@@ -127,8 +127,10 @@ test_edgeMatrices <- function()
     checkEquals(2L, length(ems))
     checkEquals(c(2L, 5L), dim(ems[[1L]]))
     checkEquals(c(2L, 6L), dim(ems[[2L]]))
-    checkTrue(typeof(ems[[1L]]) == "integer")
-    checkTrue(typeof(ems[[2L]]) == "integer")
+    ## we seem to be going the route of double
+    ## to allow support of large graphs
+    ## checkTrue(typeof(ems[[1L]]) == "integer")
+    ## checkTrue(typeof(ems[[2L]]) == "integer")
 
     nn <- nodes(g)
     esets <- sort_esets(esets)
@@ -247,4 +249,19 @@ test_edgeUnion <- function()
     checkEquals(numEdges(gi)[[1L]], sum(ew == 3L))
     checkTrue(!any(ew > 3))
     checkTrue(!any(is.na(ew)))
+}
+
+test_large_node_graph <- function()
+{
+    ## here we test the case of a graph with a large node set, yet very
+    ## sparse edge sets.  The issue is that it is easy to overflow R's
+    ## integer vectors when vector indices have a max size of n^2.
+    esets <- list(data.frame(from="0000049998", to="0000049999", weight=1L))
+    nodeNames <- sprintf("%010d", seq_len(50000L))
+    g <- MultiDiGraph(esets, nodeNames)
+    checkEquals(1L, numEdges(g)[[1L]])
+
+    big <- graph:::randFromTo(50000, 500)
+    g <- MultiDiGraph(list(big$ft), big$nodes)
+    checkEquals(500L, numEdges(g)[[1L]])
 }
