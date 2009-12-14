@@ -116,7 +116,7 @@ fromToMatrices <- function(object)
         coord <- .indexToCoord(attrs[[1L]], n_nodes)
         coord[] <- nodeNames[coord]
         ft <- structure(data.frame(from = coord[ , 1L], to = coord[ , 2L],
-                         attrs[-1L]),
+                         attrs[-1L], stringsAsFactors = FALSE),
                         names = c("from", "to", names(attrs)[-1L]))
         ft
     })
@@ -200,5 +200,21 @@ edgeIntersect <- function(object, weightFun = oneWeights)
                                         weight = newWeights))
     object
 }
+
+edgeUnion <- function(object, weightFun = oneWeights)
+{
+    edgeAttrs <- object@edgeAttrs
+    uAttrs <- unlist(lapply(edgeAttrs, function(x) x[[1]]))
+    ## to deal with weights properly I guess we will need
+    ## to compute the intersection.
+    dups <- duplicated(uAttrs)
+    uAttrs <- sort(uAttrs[!dups])
+    newWeights <- rep(1L, length(uAttrs))
+    object@edgeAttrs <- list(data.frame(mdg_edge_index = uAttrs,
+                                        weight = newWeights,
+                                        stringsAsFactors = FALSE))
+    object
+}
+
 ## TODO: should you be allowed to rename edge sets?
 ## or at least name unnamed edge sets?

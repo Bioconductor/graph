@@ -42,6 +42,7 @@ export(graph.par, graph.par.get, graphRenderInfo,
 
 export(GraphAM2)
 
-export(MultiDiGraph, eweights, edgeMatrices, extractGraph, edgeIntersect)
+export(MultiDiGraph, eweights, edgeMatrices, extractGraph, edgeIntersect,
+       edgeUnion)
 
 S3method(write,tlp)

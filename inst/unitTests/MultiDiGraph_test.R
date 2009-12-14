@@ -1,14 +1,16 @@
 set.seed(0x12a9b)
 
-make_basic_MultiDiGraph <- function()
+make_basic_MultiDiGraph <- function(use.factors = TRUE)
 {
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
                       to=c("b", "c", "d", "a", "d"),
-                      weight=c(1, 3.1, 5.4, 1, 2.2))
+                      weight=c(1, 3.1, 5.4, 1, 2.2),
+                      stringsAsFactors = use.factors)
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
                       to=c("b", "c", "x", "y", "c", "a"),
-                      weight=c(3.4, 2.6, 1, 1, 1, 7.9))
+                      weight=c(3.4, 2.6, 1, 1, 1, 7.9),
+                      stringsAsFactors = use.factors)
 
     esets <- list(ft1, ft2)
 
@@ -197,7 +199,7 @@ test_edgeIntersect <- function()
 
 test_fromToMatrices <- function()
 {
-    basic <- make_basic_MultiDiGraph()
+    basic <- make_basic_MultiDiGraph(use.factors = FALSE)
     got <- graph:::fromToMatrices(basic[["g"]])
     esets <- sort_esets(basic[["esets"]])
     checkEquals(c("from", "to", "weight"), names(got[[1L]]))
@@ -209,9 +211,33 @@ test_fromToMatrices <- function()
     }
 }
 
-## write tests for named edge sets
+test_edgeUnion <- function()
+{
+    ftdata1 <- graph:::randFromTo(10, 5)
+    ftdata2 <- graph:::randFromTo(10, 50)
+    ftdata3 <- graph:::randFromTo(10, 50)
 
-## intersection
-## union
+    ftdata2$ft <- rbind(ftdata2$ft, ftdata1$ft)
+    ftdata3$ft <- rbind(ftdata3$ft, ftdata1$ft)
 
-## refining the bit array stuff
+    ftdata2 <- make_unique_ft(ftdata2)
+    ftdata3 <- make_unique_ft(ftdata3)
+
+    edgeSets <- lapply(list(ftdata1, ftdata2, ftdata3),
+                       function(x) x[["ft"]])
+    nn <- ftdata1[["nodes"]]
+    g <- MultiDiGraph(edgeSets, nn)
+
+    gi <- edgeIntersect(g)
+
+    ## drop edge attrs, default to edge weights 1
+    gu <- edgeUnion(g)
+
+    uEdgeSet <- make_unique_ft(list(nodes = nodes(gu),
+                                    ft = do.call(rbind, edgeSets)))[["ft"]]
+    uEdgeSet <- uEdgeSet[order(uEdgeSet[[2L]], uEdgeSet[[1L]]), ]
+    row.names(uEdgeSet) <- NULL
+    got <- graph:::fromToMatrices(gu)[[1L]]
+    checkEquals(uEdgeSet, got)
+}
+
