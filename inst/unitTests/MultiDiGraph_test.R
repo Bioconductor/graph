@@ -195,6 +195,20 @@ test_edgeIntersect <- function()
     checkEquals(edgeMatrices(g)[[1L]], edgeMatrices(g2)[[1L]])
 }
 
+test_fromToMatrices <- function()
+{
+    basic <- make_basic_MultiDiGraph()
+    got <- graph:::fromToMatrices(basic[["g"]])
+    esets <- sort_esets(basic[["esets"]])
+    checkEquals(c("from", "to", "weight"), names(got[[1L]]))
+    checkEquals(c("from", "to", "weight"), names(got[[2L]]))
+    for (i in 1:2) {
+        for (cn in c("from", "to", "weight")) {
+            checkEquals(esets[[i]][[cn]], got[[i]][[cn]])
+        }
+    }
+}
+
 ## write tests for named edge sets
 
 ## intersection

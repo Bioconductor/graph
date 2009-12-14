@@ -108,6 +108,26 @@ edgeMatrices <- function(object)
     })
 }
 
+fromToMatrices <- function(object)
+{
+    nodeNames <- object@nodes
+    n_nodes <- length(nodeNames)
+    lapply(object@edgeAttrs, function(attrs) {
+        coord <- .indexToCoord(attrs[[1L]], n_nodes)
+        coord[] <- nodeNames[coord]
+        ft <- structure(data.frame(from = coord[ , 1L], to = coord[ , 2L],
+                         attrs[-1L]),
+                        names = c("from", "to", names(attrs)[-1L]))
+        ft
+    })
+}
+
+subsetEdgeSets <- function(object, expr)
+{
+    new("MultiDiGraph", nodes = object@nodes,
+        edgeAttrs = object@edgeAttrs[expr])
+}
+
 extractGraph <- function(object, which)
 {
     if (length(which) != 1L)
