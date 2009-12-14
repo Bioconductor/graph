@@ -166,17 +166,7 @@ randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N))
                          stringsAsFactors = FALSE))
 }
 
-oneWeights <- function(...) rep(1L, length(list(...)[[1L]]))
-
-sumWeights <- function(...)
-{
-    rowSums(do.call(cbind, list(...)))
-}
-
-avgWeights <- function(...)
-{
-    rowMeans(do.call(cbind, list(...)))
-}
+oneWeights <- function(x) rep(1L, nrow(x))
 
 edgeIntersect <- function(object, weightFun = oneWeights)
 {
@@ -195,9 +185,22 @@ edgeIntersect <- function(object, weightFun = oneWeights)
         keep <- edgeAttr[[1L]] %in% ei1
         edgeAttr[keep, 1:2]
     })
-    newWeights <- do.call(weightFun, lapply(edgeAttrs2, function(x) x[[2L]]))
+    n_sets <- length(edgeAttrs2)
+    if (n_sets > 0L) {
+        firstW <- edgeAttrs2[[1L]][[2L]]
+        weightMat <- matrix(vector(typeof(firstW), length(firstW) * n_sets),
+                            ncol = n_sets)
+        for (i in seq_len(n_sets)) {
+            weightMat[ , i] <- edgeAttrs2[[i]][[2L]]
+        }
+        weights <- weightFun(weightMat)
+    } else {
+        weights <- integer(0L)
+    }
+
+    lapply(edgeAttrs2, function(x) x[[2L]])
     object@edgeAttrs <- list(data.frame(mdg_edge_index = edgeAttrs2[[1L]][[1L]],
-                                        weight = newWeights))
+                                        weight = weights))
     object
 }
 

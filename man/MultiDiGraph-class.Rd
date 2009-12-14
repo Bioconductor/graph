@@ -62,9 +62,12 @@ edgeIntersect(object, weightFun)
 
   \item{weightFun}{
     A function that will be used to combine edge weights for multigraph
-    set operations.  The function should take only \dots as an argument
-    and will be called as \code{do.call(weightFun,
-    listOfWeightVectors)}.
+    set operations.  The function should take a single argument, a
+    matrix of edge weights.  Each column corresponds to edge weights
+    from a single edge set (order of edge sets is preserved).  In the
+    case of \code{edgeUnion} the matrix will contain \code{NA} values
+    for edges not in a given edge set.  The return value should be a
+    vector with length equal to the number of rows of its argument.
   }
 }
 \section{Constructors}{

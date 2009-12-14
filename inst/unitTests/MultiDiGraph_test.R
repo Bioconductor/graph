@@ -186,11 +186,11 @@ test_edgeIntersect <- function()
     nn <- ftdata1[["nodes"]]
     g <- MultiDiGraph(edgeSets, nn)
 
-    wSum <- function(...)
+    wSum <- function(x)
     {
-        rowSums(do.call(cbind, list(...)))
+        rowSums(do.call(cbind, x))
     }
-    g2 <- edgeIntersect(g, weightFun = wSum)
+    g2 <- edgeIntersect(g, weightFun = rowSums)
     checkEquals(1L, length(numEdges(g2)))
     checkEquals(5L, numEdges(g2)[[1L]])
     checkTrue(all(eweights(g2)[[1L]] == 3L))
