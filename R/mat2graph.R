@@ -120,7 +120,10 @@ setAs("matrix", "graphAM", function(from) {
   if(!is.numeric(from)) 
     storage.mode(from) = "integer"
 
-  tmp <- new("graphAM", from, edgemode=if (all(from == t(from))) "undirected" else "directed")
+  emode <- if (all(from == t(from))) "undirected" else "directed"
+  defaultWeight <- vector(mode = typeof(from), length = 1L)
+  defaultWeight[1L] <- 1L
+  new("graphAM", from, edgemode=emode, values=list(weight=defaultWeight))
 })
 
 

@@ -394,6 +394,23 @@ testAsMatrix <- function() {
     checkEquals(mat, as(g2, "matrix"))
 }
 
+test_coerce_matrix_to_graphAM <- function()
+{
+    mat <- matrix(c(0, 0, 1, 2,
+                    0, 0, 3, 0,
+                    0, 0, 0, 0,
+                    0, 4, 5, 0),
+                  byrow=TRUE, ncol=4,
+                  dimnames=list(letters[1:4], letters[1:4]))
+
+    g <- as(mat, "graphAM")
+    checkEquals(mat, as(g, "matrix"))
+
+    g2 <- new("graphAM", adjMat=mat, edgemode="directed",
+              values=list("weight"=1))
+    checkEquals(as(g, "matrix"), as(g2, "matrix"))
+}
+
 
 test_edgeMatrix <- function() {
     ugam <- new("graphAM", adjMat=simpleAdjMat(), edgemode="undirected")

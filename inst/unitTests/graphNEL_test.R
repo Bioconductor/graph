@@ -422,7 +422,23 @@ test_ftM2_with_self_edges <- function() {
     m <- as(gr, "matrix")
     g2 <- as(m, "graphNEL")
     m2 <- as(g2, "matrix")
-    checkEquals(m2, sign(m))
+    checkEquals(m2, m)
     checkEquals(which(m2 != 0), c(1,3,7,10,11,13,19,22,25))
 }
 
+test_coerce_matrix_round_trip <- function()
+{
+    V <- LETTERS[1:4]
+    g <- new("graphNEL", nodes=V, edgemode="directed")
+    g <- addEdge(V[1+0],V[1+1],g, 3)
+    g <- addEdge(V[1+0],V[2+1],g, 1.5)
+    g <- addEdge(V[1+0],V[3+1],g, 1.8)
+    g <- addEdge(V[1+1],V[2+1],g, 4.3)
+    g <- addEdge(V[1+2],V[3+1],g, 2.2)
+
+    mat0 <- matrix(c(0, 0, 0, 0, 3, 0, 0, 0, 1.5, 4.3, 0, 0, 1.8, 0, 2.2, 0),
+                   ncol=4, dimnames = list(LETTERS[1:4], LETTERS[1:4]))
+
+    checkEquals(mat0, as(g, "matrix"))
+    checkEquals(mat0, as(as(mat0, "graphNEL"), "matrix"))
+}
