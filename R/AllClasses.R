@@ -95,7 +95,19 @@ setClass("multiGraph",
                         graphData="list"))
 
 
-setClass("MultiDiGraph",
-         representation = representation(nodes = "character",
-         edgeAttrs = "list"),
-         prototype = prototype(nodes = character(0)))
+setClass("MGEdgeSet",
+         representation = representation(
+         bit_vector = "raw",
+         weights = "numeric",
+         edge_attrs = "list"))
+
+setClass("DiEdgeSet", contains = "MGEdgeSet")
+
+setClass("UEdgeSet", contains = "MGEdgeSet")
+
+setClass("MultiGraph",
+         representation = representation(
+         nodes = "character",
+         ## items will be MGEdgeSet objects
+         edge_sets = "list"))
+

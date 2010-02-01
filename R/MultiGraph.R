@@ -1,3 +1,97 @@
+MultiGraph <- function(edgeSets, nodes = NULL, directed = TRUE)
+{
+    nodeNames <- .mg_node_names(edgeSets, nodes)
+    n_nodes <- length(nodeNames)
+    .mg_validate_edgeSet_names(edgeSets)
+    edge_sets <- makeMDEdgeSets(edgeSets, directed, nodeNames)
+    new("MultiGraph", edge_sets = edge_sets, nodes = nodeNames)
+}
+
+makeMDEdgeSets <- function(edgeSets, directed, nodes)
+{
+    directed <- if (length(directed) == 1L)
+        rep(directed, length(edgeSets))
+    else if (length(directed) != length(edgeSets))
+        stop("'directed' must align with 'edgeSets' or have length one",
+             call. = FALSE)
+    else
+        directed
+
+    ans <- vector(mode = "list", length = length(edgeSets))
+    for (i in seq_along(edgeSets)) {
+        ans[[i]] <- .makeMDEdgeSet(edgeSets[[i]], directed[[i]], nodes)
+    }
+    names(ans) <- names(edgeSets)
+    ans
+}
+
+.makeMDEdgeSet <- function(es, is_directed, nodes)
+{
+    if (!all(c("from", "to", "weight") %in% names(es)))
+        stop("data.frame must have columns: from, to, weight",
+             call. = FALSE)
+    n_nodes <- length(nodes)
+    from <- as.character(es[["from"]])
+    to <- as.character(es[["to"]])
+    if (!is_directed) {
+        ## normalize edges so that edges have nodes in lexical order
+        tmp <- .undirectEdges(from, to)
+        from <- tmp[["from"]]
+        to <- tmp[["to"]]
+    }
+    ## map 'from', 'to' from character to integer indicies
+    from_i <- match(from, nodes)
+    to_i <- match(to, nodes)
+    edge_order <- order(to_i, from_i)
+    weights <- es[["weight"]][edge_order]
+    if (!is.numeric(weights))
+        stop("'weight' column must be numeric", call. = FALSE)
+    bitVect <- makebits(n_nodes * n_nodes, bitdim = c(n_nodes, n_nodes))
+    ## TODO: should not have to pass vector of 1s for each edge in
+    ## setBitCell.
+    bitVect <- setBitCell(bitVect, from_i[edge_order], to_i[edge_order],
+                          rep(1L, length(from_i)))
+    klass <- if (is_directed) "DiEdgeSet" else "UEdgeSet"
+    ## FIXME: need to handle extra edge attributes.  These will need to
+    ## come in as a separate argument as a list of attribute lists that
+    ## align with from/to
+    new(klass, bit_vector = bitVect, weights = weights, edge_attrs = list())
+}
+
+.mg_validate_node_names <- function(nodeNames)
+{
+    if (!all(valid <- .mg_valid_node_names(nodeNames))) {
+        stop(length(!valid), "invalid node names: ",
+             paste("'", head(nodeNames[!valid], 10L), "'", sep="",
+                   collapse=", "), call. = FALSE)
+    }
+}
+
+.mg_node_names <- function(edgeSets, nodes)
+{
+    ## XXX: we sort the node names and are thus subject
+    ## to locale variation
+    ftSets <- lapply(edgeSets,
+                     function(ft) {
+                         cbind(from = as.character(ft[["from"]]),
+                               to = as.character(ft[["to"]]))
+                     })
+    nodeNames <-
+        sort(unique(c(unlist(ftSets, use.names = FALSE), nodes)),
+             na.last = FALSE)
+    .mg_validate_node_names(nodeNames)
+    nodeNames
+}
+
+.mg_validate_edgeSet_names <- function(edgeSets)
+{
+    nms <- names(edgeSets)
+    if (is.null(nms))
+        stop("'edgeSets' must be a named list", call. = FALSE)
+    if (!all(nzchar(nms)) || any(is.na(nms)))
+        stop("'edgeSets' has invalid names", call. = FALSE)
+}
+
 MultiDiGraph <- function(edgeSets, nodes = NULL)
 {
     ## Nodes are stored in sorted order.  The sparse Edge index vector
@@ -14,7 +108,7 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
     nodeNames <-
       sort(unique(c(unlist(ftSets, use.names = FALSE), nodes)),
            na.last = FALSE)
-    if (!all(valid <- .mdg_valid_node_names(nodeNames))) {
+    if (!all(valid <- .mg_valid_node_names(nodeNames))) {
         stop("invalid node names: ",
              paste("'", head(nodeNames[!valid], 10L), "'", sep="",
                    collapse=", "))
@@ -45,52 +139,66 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
     new("MultiDiGraph", nodes = nodeNames, edgeAttrs = edgeAttrs)
 }
 
-.mdg_valid_node_names <- function(names)
+.mg_valid_node_names <- function(names)
 {
     !(is.na(names) | (sapply(names, nchar) == 0) |
       (regexpr("\\||\n|\t", names) > 0))
 }
 
-setMethod("numNodes", signature = signature(object = "MultiDiGraph"),
+setMethod("numNodes", signature = signature(object = "MultiGraph"),
           function(object) {
               length(object@nodes)
           })
 
-setMethod("numEdges", signature = signature(object = "MultiDiGraph"),
+setMethod("numEdges", signature = signature(object = "MultiGraph"),
           function(object) {
-              sapply(object@edgeAttrs, function(edgeData) nrow(edgeData))
+              ## TODO: would it make more sense to just
+              ## return the length of @weights?
+              sapply(object@edge_sets, function(es) {
+                  .Call(graph_bitarray_sum, es@bit_vector)
+              })
           })
 
-setMethod("nodes", signature = signature(object = "MultiDiGraph"),
+setMethod("nodes", signature = signature(object = "MultiGraph"),
           function(object, ...) {
               object@nodes
           })
 
-setMethod("show",  signature = signature(object = "MultiDiGraph"),
+setMethod("isDirected", signature = signature(object = "DiEdgeSet"),
+          function(object) TRUE)
+
+setMethod("isDirected", signature = signature(object = "UEdgeSet"),
+          function(object) FALSE)
+
+setMethod("show",  signature = signature(object = "MultiGraph"),
           function(object) {
               cat(class(object),
                   sprintf("with %d nodes and %d edge sets\n",
-                          numNodes(object), length(object@edgeAttrs)))
+                          numNodes(object), length(object@edge_sets)))
               edgeCounts <- numEdges(object)
-              if (is.null(names(edgeCounts)))
-                  names(edgeCounts) <- seq_len(length(edgeCounts))
-              edgeCounts <- head(edgeCounts, 10L)
-              cat(sprintf("edge set %s: %d edges\n",
-                          names(edgeCounts), edgeCounts), sep = "")
+              df <- data.frame(edge_set = names(edgeCounts),
+                               directed = sapply(object@edge_sets, isDirected),
+                               edge_count = edgeCounts,
+                               stringsAsFactors = FALSE,
+                               row.names = NULL)
+              print(head(df, 10L), row.names = FALSE)
               invisible(NULL)
           })
 
 eweights <- function(object, names.sep = NULL)
 {
     if (is.null(names.sep)) {
-        lapply(object@edgeAttrs, function(attrs) attrs[[2L]])
+        lapply(object@edge_sets, function(es) {
+            es@weights
+        })
     } else {
         sep <- names.sep[1]
         nn <- nodes(object)
         n_nodes <- length(object@nodes)
-        lapply(object@edgeAttrs, function(attrs) {
-            w <- attrs[[2L]]
-            coord <- .indexToCoord(attrs[[1L]], n_nodes)
+        lapply(object@edge_sets, function(es) {
+            w <- es@weights
+            edge_indices <- .Call(graph_bitarray_edge_indices, es@bit_vector)
+            coord <- .indexToCoord(edge_indices, n_nodes)
             names(w) <- paste(nn[coord[,1L]], nn[coord[,2L]], sep = sep)
             w
         })
@@ -123,7 +231,7 @@ fromToList <- function(object)
 
 subsetEdgeSets <- function(object, expr)
 {
-    new("MultiDiGraph", nodes = object@nodes,
+    new("MultiGraph", nodes = object@nodes,
         edgeAttrs = object@edgeAttrs[expr])
 }
 

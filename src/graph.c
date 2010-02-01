@@ -14,6 +14,7 @@ SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values);
 SEXP graph_is_adjacent(SEXP fromEdges, SEXP to);
 SEXP graph_bitarray_sum(SEXP bits);
 SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val);
+SEXP graph_bitarray_edge_indices(SEXP bits);
 
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
@@ -450,6 +451,25 @@ SEXP graph_bitarray_sum(SEXP bits)
         }
     }
     return ScalarInteger(c);
+}
+
+SEXP graph_bitarray_edge_indices(SEXP bits)
+{
+    SEXP s_num_edges, ans;
+    int i = 0, j = 0, k = 0, bit_index = 0, len = length(bits), *indices;
+    unsigned char v, *bytes = (unsigned char *) RAW(bits);
+
+    PROTECT(s_num_edges = graph_bitarray_sum(bits));
+    /* FIXME: is edge count an int?  Is that big enough? */
+    PROTECT(ans = allocVector(INTSXP, INTEGER(s_num_edges)[0]));
+    indices = INTEGER(ans);
+    for (i = 0; i < len; i++) {
+        for (v = bytes[i], k = 0; v; v >>= 1, k++) {
+            if (v & 1) indices[j++] = (i * 8) + k + 1; /* R is 1-based */
+        }
+    }
+    UNPROTECT(2);
+    return ans;
 }
 
 SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val)
