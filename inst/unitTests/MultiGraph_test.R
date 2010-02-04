@@ -139,6 +139,12 @@ test_supports_self_loops <- function()
     checkEquals(c(e1 = 2), numEdges(g))
 }
 
+test_isDirected <- function()
+{
+    g <- make_mixed_MultiGraph()$g
+    checkEquals(c(e1=TRUE, e2=TRUE, e3=FALSE), isDirected(g))
+}
+
 ## test_edgeMatrices <- function()
 ## {
 ##     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),

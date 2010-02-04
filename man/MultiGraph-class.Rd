@@ -8,6 +8,7 @@
 \alias{show,MultiGraph-method}
 \alias{MultiGraph}
 \alias{eweights}
+\alias{isDirected,MultiGraph-method}
 % these are not supposed to be publicly available
 % but aliased here to quiet R CMD check
 \alias{isDirected,DiEdgeSet-method}
@@ -35,6 +36,7 @@
 \usage{
 MultiGraph(edgeSets, nodes = NULL, directed = TRUE)
 eweights(object, names.sep = NULL)
+isDirected(object)
 }
 
 \arguments{
@@ -90,6 +92,9 @@ eweights(object, names.sep = NULL)
     \item{numNodes}{\code{signature(object = "MultiGraph")}: ... }
     \item{show}{\code{signature(object = "MultiGraph")}: ... }
     \item{eweights}{Return edge weights (actually first edge attribute)}
+    \item{isDirected}{Return a logical vector named by the edge sets in
+      \code{object} with a \code{TRUE} indicating a directed edge set
+      and \code{FALSE} for undirected.}
   }
 }
 

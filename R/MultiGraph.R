@@ -175,6 +175,9 @@ setMethod("nodes", signature = signature(object = "MultiGraph"),
               object@nodes
           })
 
+setMethod("isDirected", signature = signature(object = "MultiGraph"),
+          function(object) sapply(object@edge_sets, isDirected))
+
 setMethod("isDirected", signature = signature(object = "DiEdgeSet"),
           function(object) TRUE)
 
