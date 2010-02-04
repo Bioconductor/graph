@@ -291,16 +291,15 @@ extractGraph <- function(object, which)
 ##   $node: character vector of node labels
 ##   $ft: a data.frame with columns 'from', 'to', and 'weight'
 ##
-randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N))
+randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N),
+                       directed = TRUE)
 {
     if (numNodes > 2^15) numNodes <- as.double(numNodes)
     maxEdges <- numNodes * numNodes
     nodeNames <- sprintf("%010d", seq_len(numNodes))
     ## use double to allow for large numNodes
-    diagIdx <- 1L + 0L:(numNodes - 1L) * (numNodes + 1L)
     numToGen <- max(numEdges * 4, numNodes)
     idx <- unique(ceiling(runif(numToGen, min = 0, max = maxEdges)))
-    idx <- idx[!(idx %in% diagIdx)]
     stopifnot(length(idx) >= numEdges)
     idx <- idx[seq_len(numEdges)]
     to_i <- ((idx - 1L) %/% numNodes) + 1L
