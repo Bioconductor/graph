@@ -86,6 +86,7 @@ test_bad_nodes_in_create <- function()
 {
     basic <- make_directed_MultiGraph()
     esets <- basic$esets
+    esets[[1]]$to <- as.character(esets[[1]]$to)
     bad_values <- c(NA, "a\n", "", "z|a", "a\t")
     for (v in bad_values) {
         tmp <- esets
@@ -156,6 +157,36 @@ test_ugraph_via_isDirected <- function()
     ug <- ugraph(g)
     want[1:3] <- FALSE
     checkEquals(want, isDirected(ug))
+}
+
+test_ugraph_for_undirected_edge_sets <- function()
+{
+    df1 <- data.frame(from=c("x", "a", "b"),
+                        to=c("a", "b", "x"),
+                      weight=c(1, 2, 3))
+    g <- MultiGraph(list(e1=df1), directed=FALSE)
+    ug <- ugraph(g)
+    checkEquals(nodes(g), nodes(ug))
+    checkEquals(numEdges(g), numEdges(ug))
+    checkEquals(isDirected(g), isDirected(ug))
+    ## verify attributes have been dropped
+    checkEquals(rep(1L, 3), eweights(ug)[[1]])
+}
+
+test_ugraph_for_directed_edge_sets <- function()
+{
+    df1 <- data.frame(from=c("x", "a", "b", "x", "b", "c"),
+                        to=c("a", "x", "x", "b", "a", "x"),
+                      weight=1:6)
+    g <- MultiGraph(list(e1=df1), directed=TRUE)
+    checkEquals(6, numEdges(g)[[1]])
+    ug <- ugraph(g)
+    checkEquals(nodes(g), nodes(ug))
+    checkTrue(!isDirected(ug)[1])
+    checkEquals(4, numEdges(ug)[[1]])
+    checkEquals(rep(1L, 4), eweights(ug)[[1]])
+    checkEquals(c("a=b", "a=x", "b=x", "c=x"),
+                names(eweights(ug, "=")[[1]]))
 }
 
 ## test_edgeMatrices <- function()

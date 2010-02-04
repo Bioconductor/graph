@@ -511,16 +511,21 @@ SEXP graph_bitarray_transpose(SEXP bits)
  */
 SEXP graph_bitarray_undirect(SEXP bits)
 {
-    int i, len = length(bits), nrow = NROW(bits);
+    int i, j, idx, len = length(bits), nrow = NROW(bits);
     SEXP tbits = PROTECT(graph_bitarray_transpose(bits)),
          ans = PROTECT(duplicate(bits));
     unsigned char *bytes = RAW(bits), *tbytes = RAW(tbits), *abytes = RAW(ans);
     for (i = 0; i < len; i++) {
-        /* only capture upper tri */
-        if (INDEX_TO_ROW(i, nrow) < INDEX_TO_COL(i, nrow))
-            abytes[i] = bytes[i] | tbytes[i];
-        else
-            abytes[i] = 0;
+        abytes[i] = bytes[i] | tbytes[i];
+    }
+    /* zero out lower tri */
+    for (i = 0; i < nrow; i++) {
+        for (j = 0; j < nrow; j++) {
+            if (i > j) {
+                idx = COORD_TO_INDEX(i, j, nrow);
+                abytes[idx / 8] &= ~(1 << (idx % 8));
+            }
+        }
     }
     UNPROTECT(2);
     return ans;

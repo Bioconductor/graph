@@ -72,7 +72,7 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
 .mg_validate_node_names <- function(nodeNames)
 {
     if (!all(valid <- .mg_valid_node_names(nodeNames))) {
-        stop(length(!valid), "invalid node names: ",
+        stop(sum(!valid), " invalid node names: ",
              paste("'", head(nodeNames[!valid], 10L), "'", sep="",
                    collapse=", "), call. = FALSE)
     }
@@ -192,15 +192,20 @@ setMethod("ugraph", signature = signature(graph = "MultiGraph"),
 
 ## FIXME: should ugraph on an undirected graph also drop
 ## attributes to keep things consistent?
-setMethod("ugraph", "UEdgeSet", function(graph) graph)
+setMethod("ugraph", "UEdgeSet",
+          function(graph) {
+              new("UEdgeSet", bit_vector = graph@bit_vector,
+                  weights = rep(1L, length(graph@weights)),
+                  edge_attrs = list())
+          })
 
 setMethod("ugraph", "DiEdgeSet",
           function(graph) {
               ## XXX: edge weights => 1, edge attributes dropped
               bit_vector <- .Call(graph_bitarray_undirect, graph@bit_vector)
               new("UEdgeSet", bit_vector = bit_vector,
-                  weights = rep(1L, length(graph@weights),
-                  edge_attrs = list()))
+                  weights = rep(1L, .Call(graph_bitarray_sum, bit_vector)),
+                  edge_attrs = list())
           })
 
 setMethod("show",  signature = signature(object = "MultiGraph"),
