@@ -79,11 +79,33 @@ test_testbit <- function()
 
 rand_bitarray_matrix <- function(nrow, nset)
 {
-    rows <- sample(1:nrow, nset, replace = TRUE)
-    cols <- sample(1:nrow, nset, replace = TRUE)
     bv <- makebits(nrow^2, bitdim=c(nrow, nrow))
     idx <- sample(1:(nrow^2), nset)
     setbitv(bv, idx, rep(1L, length(idx)))
+}
+
+test_bitToMat <- function()
+{
+    make_mat <- function(nrow)
+    {
+        matrix(sample(c(0L, 1L), nrow^2, replace = TRUE), nrow = nrow)
+    }
+
+    do_test <- function(nrow)
+    {
+        m <- make_mat(nrow)
+        bv <- makebits(nrow^2, bitdim=c(nrow, nrow))
+        bv <- setbitv(bv, which(m == 1L), rep(1L, sum(m)))
+        checkEquals(m, bitToMat(bv))
+    }
+
+    sizes <- c(1, 2, 5, 13, 26)
+    reps <- c(2, 3, 25, 25, 25)
+    for (i in seq_along(sizes)) {
+        size <- sizes[i]
+        for (j in seq_len(reps[i]))
+            do_test(size)
+    }
 }
 
 test_bitarray_transpose <- function()
