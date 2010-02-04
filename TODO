@@ -3,16 +3,3 @@ sf 24.01.2006:
 
 wh 28.01.2005: can we have a "==" function for graphs (e.g. graphNEL)?
 
-sf 24.08.2005: 
-    move methods into file named for the generic.
-
-    document all generics and all classes
-
-    document all methods within class doc.
-
-    each graph representation class should have its own validation
-    function.  This way, adding a new representation doesn't require
-    adding another if statement into a monolithic validation routine.
-
-    move methods up into the graph class where possible.
-

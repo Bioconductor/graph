@@ -95,9 +95,6 @@ test_bad_nodes_in_create <- function()
     }
 }
 
-## TODO: test undirected and mixed directed/undirected edge sets for
-## eweights w/ and w/o names
-
 test_edgeWeights_create <- function()
 {
     basic <- make_mixed_MultiGraph()
