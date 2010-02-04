@@ -33,17 +33,18 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
     n_nodes <- length(nodes)
     from <- as.character(es[["from"]])
     to <- as.character(es[["to"]])
+    weights <- es[["weight"]]
     if (!is_directed) {
-        ## normalize edges so that edges have nodes in lexical order
-        tmp <- .undirectEdges(from, to)
+        tmp <- .mg_undirectEdges(from, to, weights)
         from <- tmp[["from"]]
         to <- tmp[["to"]]
+        weights <- tmp[["weight"]]
     }
     ## map 'from', 'to' from character to integer indicies
     from_i <- match(from, nodes)
     to_i <- match(to, nodes)
     edge_order <- order(to_i, from_i)
-    weights <- es[["weight"]][edge_order]
+    weights <- weights[edge_order]
     if (!is.numeric(weights))
         stop("'weight' column must be numeric", call. = FALSE)
     bitVect <- makebits(n_nodes * n_nodes, bitdim = c(n_nodes, n_nodes))
@@ -56,6 +57,16 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
     ## come in as a separate argument as a list of attribute lists that
     ## align with from/to
     new(klass, bit_vector = bitVect, weights = weights, edge_attrs = list())
+}
+
+.mg_undirectEdges <- function(from, to, weight)
+{
+    fromIsFirst <- from < to
+    toIsFirst <- !fromIsFirst
+    tmpFrom <- c(from[fromIsFirst], to[toIsFirst])
+    tmpTo <- c(to[fromIsFirst], from[toIsFirst])
+    tmpW <- c(weight[fromIsFirst], weight[toIsFirst])
+    list(from = tmpFrom, to = tmpTo, weight = tmpW)
 }
 
 .mg_validate_node_names <- function(nodeNames)

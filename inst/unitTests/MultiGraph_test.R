@@ -110,14 +110,14 @@ test_edgeWeights_create <- function()
     got <- eweights(g)
     checkIdentical(list(e1 = esets[[1L]][, "weight"]), got[1])
     checkIdentical(list(e2 = esets[[2L]][, "weight"]), got[2])
-    ## FIXME: this is failing.  undirected case requires more
-    ## attention to sorting detail
-# !!!   checkIdentical(list(e3 = esets[[3L]][, "weight"]), got[3])
+    ## undirected case normalizes edges by sorting, always putting the
+    ## node that sorts first as from.
+    checkIdentical(list(e3 = c(1L, 2L, 3L, 5L, 4L)), got[3])
 }
 
 test_edgeWeights_edge_names <- function()
 {
-    basic <- make_directed_MultiGraph()
+    basic <- make_mixed_MultiGraph()
     esets <- basic$esets
     g <- basic$g
 
@@ -126,11 +126,15 @@ test_edgeWeights_edge_names <- function()
 
     want <- paste(esets[[1]]$from, esets[[1]]$to, sep = "=>")
     checkEquals(want, names(wv[[1]]))
+
+    want <- c("a|b"=1L, "a|c"=2L, "a|x"=3L, "c|x"=5L, "x|y"=4L)
+    checkIdentical(list(e3 = want), eweights(g, "|")[3])
 }
 
 test_supports_self_loops <- function()
 {
-    esets <- list(e1 = data.frame(from = c("a", "a"), to = c("a", "b"), weight = c(1, 2)))
+    esets <- list(e1 = data.frame(from = c("a", "a"), to = c("a", "b"),
+                  weight = c(1, 2)))
     g <- MultiGraph(esets)
     checkEquals(c(e1 = 2), numEdges(g))
 }
