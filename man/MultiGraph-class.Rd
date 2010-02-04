@@ -9,10 +9,13 @@
 \alias{MultiGraph}
 \alias{eweights}
 \alias{isDirected,MultiGraph-method}
+\alias{ugraph,MultiGraph-method}
 % these are not supposed to be publicly available
 % but aliased here to quiet R CMD check
 \alias{isDirected,DiEdgeSet-method}
 \alias{isDirected,UEdgeSet-method}
+\alias{ugraph,DiEdgeSet-method}
+\alias{ugraph,UEdgeSet-method}
 
 \title{EXPERIMENTAL class "MultiGraph"}
 \description{
@@ -36,7 +39,6 @@
 \usage{
 MultiGraph(edgeSets, nodes = NULL, directed = TRUE)
 eweights(object, names.sep = NULL)
-isDirected(object)
 }
 
 \arguments{
@@ -95,6 +97,10 @@ isDirected(object)
     \item{isDirected}{Return a logical vector named by the edge sets in
       \code{object} with a \code{TRUE} indicating a directed edge set
       and \code{FALSE} for undirected.}
+    \item{ugraph}{Return a new \code{MultiGraph} object in which all
+      edge sets have been converted to undirected edge sets.  This
+      operation sets all edge weights to one and drops other edge
+      attributes.}
   }
 }
 
@@ -118,5 +124,9 @@ isDirected(object)
 
     eweights(g)
     eweights(g, names.sep = "=>")
+    isDirected(g)
+    ug <- ugraph(g)
+    isDirected(ug)
+    numEdges(ug)
 }
 \keyword{classes}
