@@ -21,6 +21,8 @@
     .coordToIndex(seq_len(n_row), rep(y, n_row), n_row)
 
 makebits <- function(n, bitdim=NULL) {
+    if (!is.null(bitdim)) bitdim <- as.integer(bitdim)
+    n <- as.integer(n)
     structure(raw(ceiling(n / 8)),
               bitlen = n, bitdim = bitdim)
 }
@@ -131,4 +133,11 @@ bitToInteger <- function(x) {
     len <- attr(x, "bitlen")
     if (is.null(len)) len <- length(x) * 8L
     sapply(seq_len(len), function(i) if (testbit(x, i)) 1L else 0L)
+}
+
+bitToMat <- function(x) {
+    len <- attr(x, "bitlen")
+    bitdim <- attr(x, "bitdim")
+    matrix(sapply(seq_len(len), function(i) if (testbit(x, i)) 1L else 0L),
+           nrow = bitdim[1L], ncol = bitdim[2L])
 }

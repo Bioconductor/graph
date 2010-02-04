@@ -184,6 +184,25 @@ setMethod("isDirected", signature = signature(object = "DiEdgeSet"),
 setMethod("isDirected", signature = signature(object = "UEdgeSet"),
           function(object) FALSE)
 
+setMethod("ugraph", signature = signature(graph = "MultiGraph"),
+          function(graph) {
+              graph@edge_sets <- lapply(graph@edge_sets, ugraph)
+              graph
+          })
+
+## FIXME: should ugraph on an undirected graph also drop
+## attributes to keep things consistent?
+setMethod("ugraph", "UEdgeSet", function(graph) graph)
+
+setMethod("ugraph", "DiEdgeSet",
+          function(graph) {
+              ## XXX: edge weights => 1, edge attributes dropped
+              bit_vector <- .Call(graph_bitarray_undirect, graph@bit_vector)
+              new("UEdgeSet", bit_vector = bit_vector,
+                  weights = rep(1L, length(graph@weights),
+                  edge_attrs = list()))
+          })
+
 setMethod("show",  signature = signature(object = "MultiGraph"),
           function(object) {
               cat(class(object),

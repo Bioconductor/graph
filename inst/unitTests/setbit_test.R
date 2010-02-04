@@ -1,6 +1,8 @@
 .testbit <- graph:::testbit
 setbitv <- graph:::setbitv
 setbit <- graph:::setbit
+bitToMat <- graph:::bitToMat
+makebits <- graph:::makebits
 
 test_setbitv <- function()
 {
@@ -73,4 +75,29 @@ test_testbit <- function()
     checkEquals(c(TRUE, TRUE), .testbit(xx, c(23, 23)))
     checkEquals(c(FALSE, TRUE), .testbit(xx, c(21, 23)))
     checkEquals(c(TRUE, FALSE), .testbit(xx, c(23, 24)))
+}
+
+rand_bitarray_matrix <- function(nrow, nset)
+{
+    rows <- sample(1:nrow, nset, replace = TRUE)
+    cols <- sample(1:nrow, nset, replace = TRUE)
+    bv <- makebits(nrow^2, bitdim=c(nrow, nrow))
+    idx <- sample(1:(nrow^2), nset)
+    setbitv(bv, idx, rep(1L, length(idx)))
+}
+
+test_bitarray_transpose <- function()
+{
+    nreps <- 25L
+    sizes <- as.integer(c(1, 2, 4, 5, 6, 7, 23, 24))
+    for (size in sizes) {
+        for (i in seq_len(nreps)) {
+            v0 <- rand_bitarray_matrix(size, ceiling((size^2) %/% 2))
+            m0 <- bitToMat(v0)
+            want <- t(m0)
+            vt <- .Call(graph:::graph_bitarray_transpose, v0)
+            mt <- bitToMat(vt)
+            checkEquals(want, mt)
+        }
+    }
 }

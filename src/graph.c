@@ -15,6 +15,8 @@ SEXP graph_is_adjacent(SEXP fromEdges, SEXP to);
 SEXP graph_bitarray_sum(SEXP bits);
 SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val);
 SEXP graph_bitarray_edge_indices(SEXP bits);
+SEXP graph_bitarray_transpose(SEXP bits);
+SEXP graph_bitarray_undirect(SEXP bits);
 
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
@@ -456,7 +458,7 @@ SEXP graph_bitarray_sum(SEXP bits)
 SEXP graph_bitarray_edge_indices(SEXP bits)
 {
     SEXP s_num_edges, ans;
-    int i = 0, j = 0, k = 0, bit_index = 0, len = length(bits), *indices;
+    int i = 0, j = 0, k = 0, len = length(bits), *indices;
     unsigned char v, *bytes = (unsigned char *) RAW(bits);
 
     PROTECT(s_num_edges = graph_bitarray_sum(bits));
@@ -467,6 +469,58 @@ SEXP graph_bitarray_edge_indices(SEXP bits)
         for (v = bytes[i], k = 0; v; v >>= 1, k++) {
             if (v & 1) indices[j++] = (i * 8) + k + 1; /* R is 1-based */
         }
+    }
+    UNPROTECT(2);
+    return ans;
+}
+
+#define COORD_TO_INDEX(x, y, nrow) ((((y)+1) * (nrow)) - ((nrow) - ((x)+1)) - 1)
+#define NROW(x) (INTEGER(getAttrib((x), install("bitdim")))[0])
+#define INDEX_TO_ROW(i, n) ((i) % (n))
+#define INDEX_TO_COL(i, n) ((i) / (n))
+
+SEXP graph_bitarray_transpose(SEXP bits)
+{
+    SEXP ans;
+    int nrow, i, j, len = length(bits);
+    unsigned char *bytes = RAW(bits), *ans_bytes;
+    ans = PROTECT(duplicate(bits)); /* dup to capture attributes */
+    ans_bytes = RAW(ans);
+    memset(ans_bytes, 0, len);
+    nrow = NROW(bits);
+    /* FIXME: use a single loop, look at R's array.c */
+    for (i = 0; i < nrow; i++) {
+        for (j = 0; j < nrow; j++) {
+            int idx = COORD_TO_INDEX(i, j, nrow),
+                tidx = COORD_TO_INDEX(j, i, nrow);
+            int byteIndex = idx / 8,
+                bitIndex = idx % 8,
+                tBitIndex = tidx % 8;
+            if (bytes[byteIndex] & (1 << bitIndex))
+                ans_bytes[tidx / 8] |= (1 << tBitIndex);
+            else                /* do we need to set to zero? */
+                ans_bytes[tidx / 8] &= ~(1 << tBitIndex);
+        }
+    }
+    UNPROTECT(1);
+    return ans;
+}
+
+/* Given a bit vector representing directed edges, return a new bit
+   vector with the underlying undirected edges.
+ */
+SEXP graph_bitarray_undirect(SEXP bits)
+{
+    int i, len = length(bits), nrow = NROW(bits);
+    SEXP tbits = PROTECT(graph_bitarray_transpose(bits)),
+         ans = PROTECT(duplicate(bits));
+    unsigned char *bytes = RAW(bits), *tbytes = RAW(tbits), *abytes = RAW(ans);
+    for (i = 0; i < len; i++) {
+        /* only capture upper tri */
+        if (INDEX_TO_ROW(i, nrow) < INDEX_TO_COL(i, nrow))
+            abytes[i] = bytes[i] | tbytes[i];
+        else
+            abytes[i] = 0;
     }
     UNPROTECT(2);
     return ans;

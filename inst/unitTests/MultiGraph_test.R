@@ -145,6 +145,19 @@ test_isDirected <- function()
     checkEquals(c(e1=TRUE, e2=TRUE, e3=FALSE), isDirected(g))
 }
 
+test_ugraph_via_isDirected <- function()
+{
+    g <- make_mixed_MultiGraph()$g
+    ## verify precondition
+    want <- c(TRUE, TRUE, FALSE)
+    names(want) <- paste("e", 1:3, sep="")
+    checkEquals(want, isDirected(g))
+
+    ug <- ugraph(g)
+    want[1:3] <- FALSE
+    checkEquals(want, isDirected(ug))
+}
+
 ## test_edgeMatrices <- function()
 ## {
 ##     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
