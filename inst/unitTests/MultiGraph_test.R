@@ -95,6 +95,23 @@ test_bad_nodes_in_create <- function()
     }
 }
 
+test_dup_edges_is_an_error <- function()
+{
+    ## directed case
+    ft1 <- data.frame(from=c("a", "a", "a"),
+                        to=c("b", "c", "b"),
+                      weight=c(1, 3.1, 5.4))
+    checkException(MultiGraph(list(e1=ft1)))
+
+    ## undirected case
+    ft2 <- data.frame(from=c("a", "a", "b"),
+                        to=c("b", "c", "a"),
+                      weight=c(1, 3.1, 5.4))
+    ## ok if directed
+    junk <- MultiGraph(list(e1=ft2))
+    checkException(MultiGraph(list(e1=ft2), directed = FALSE))
+}
+
 test_edgeWeights_create <- function()
 {
     basic <- make_mixed_MultiGraph()

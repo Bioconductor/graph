@@ -18,14 +18,15 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
         directed
 
     ans <- vector(mode = "list", length = length(edgeSets))
+    nms <- names(edgeSets)
+    names(ans) <- nms
     for (i in seq_along(edgeSets)) {
-        ans[[i]] <- .makeMDEdgeSet(edgeSets[[i]], directed[[i]], nodes)
+        ans[[i]] <- .makeMDEdgeSet(nms[[i]], edgeSets[[i]], directed[[i]], nodes)
     }
-    names(ans) <- names(edgeSets)
     ans
 }
 
-.makeMDEdgeSet <- function(es, is_directed, nodes)
+.makeMDEdgeSet <- function(es_name, es, is_directed, nodes)
 {
     if (!all(c("from", "to", "weight") %in% names(es)))
         stop("data.frame must have columns: from, to, weight",
@@ -52,11 +53,26 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
     ## setBitCell.
     bitVect <- setBitCell(bitVect, from_i[edge_order], to_i[edge_order],
                           rep(1L, length(from_i)))
+    edge_count <- .Call(graph_bitarray_sum, bitVect)
+    if (length(from_i) != edge_count)
+        .report_duplicate_edges(es_name, from, to, is_directed)
     klass <- if (is_directed) "DiEdgeSet" else "UEdgeSet"
     ## FIXME: need to handle extra edge attributes.  These will need to
     ## come in as a separate argument as a list of attribute lists that
     ## align with from/to
-    new(klass, bit_vector = bitVect, weights = weights, edge_attrs = list())
+    new(klass, bit_vector = bitVect, weights = weights,
+        edge_attrs = list())
+}
+
+.report_duplicate_edges <- function(name, from, to, directed)
+{
+    df <- cbind(from, to)
+    sep <- if (directed) "=>" else "="
+    if (any(dups <- duplicated(df))) {
+        dn <- do.call(paste, c(df[dups, ], list(sep=sep)))
+        stop("duplicate edges specified in edge set ", name, ": ",
+             paste(dn, collapse = ", "), call. = FALSE)
+    }
 }
 
 .mg_undirectEdges <- function(from, to, weight)
