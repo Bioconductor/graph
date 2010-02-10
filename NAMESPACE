@@ -44,6 +44,6 @@ export(graph.par, graph.par.get, graphRenderInfo,
 
 export(GraphAM2)
 
-export(MultiGraph, eweights)
+export(MultiGraph, eweights, edgeSetIntersect0)
 
 S3method(write,tlp)

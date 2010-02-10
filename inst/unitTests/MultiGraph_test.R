@@ -4,12 +4,12 @@ set.seed(0x12a9b)
 make_directed_MultiGraph <- function(use.factors = TRUE)
 {
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-                      to=c("b", "c", "d", "a", "d"),
+                        to=c("b", "c", "d", "a", "d"),
                       weight=c(1, 3.1, 5.4, 1, 2.2),
                       stringsAsFactors = use.factors)
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
-                      to=c("b", "c", "x", "y", "c", "a"),
+                        to=c("b", "c", "x", "y", "c", "a"),
                       weight=c(3.4, 2.6, 1, 1, 1, 7.9),
                       stringsAsFactors = use.factors)
 
@@ -53,6 +53,35 @@ randMultiGraph <- function(numNodes, numEdges)
     MultiGraph(edgeSets, nodes = nn)
 }
 
+randFromTo2 <- function(numNodes, numEdges,
+                            weightFun = function(N) rep(1L, N),
+                            directed = TRUE)
+{
+    if (numNodes > 2^15) stop("too many nodes: ", numNodes)
+    maxEdges <- numNodes * numNodes
+    nodeNames <- sprintf("%010d", seq_len(numNodes))
+    x <- c(rep(1L, numEdges), rep(0L, maxEdges - numEdges))
+    idx <- which(sample(x) == 1L)
+    to_i <- ((idx - 1L) %/% numNodes) + 1L
+    from_i <- ((idx - 1L) %% numNodes) + 1L
+    from <- nodeNames[from_i]
+    to <- nodeNames[to_i]
+    w <- weightFun(length(from))
+    if (!directed) {
+        tmp <- graph:::.mg_undirectEdges(from, to, w)
+        from <- tmp$from
+        to <- tmp$to
+        w <- tmp$weight
+        df <- data.frame(from = from, to = to, weight = w,
+                         stringsAsFactors = FALSE)
+        df <- df[!duplicated(df), ]
+    } else {
+        df <- data.frame(from = from, to = to, weight = w,
+                         stringsAsFactors = FALSE)
+    }
+    list(nodes = nodeNames, ft = df)
+}
+
 sort_esets <- function(esets)
 {
     ## sorting is based on column major ordering
@@ -70,6 +99,42 @@ make_unique_ft <- function(ftdata)
     dups <- duplicated(el)
     ftdata[["ft"]] <- ft[!dups, ]
     ftdata
+}
+
+test_no_edge_sets <- function()
+{
+    g1 <- MultiGraph(list(), nodes = letters)
+    g2 <- MultiGraph(list(), nodes = letters, directed = FALSE)
+    for (g in list(g1, g2)) {
+        checkEquals(26L, numNodes(g))
+        checkEquals(letters, nodes(g))
+        checkEquals(list(), numEdges(g))
+        checkEquals(list(), eweights(g))
+        checkEquals(list(), eweights(g, "="))
+        checkEquals(list(), isDirected(g))
+    }
+    tcon = textConnection(NULL, "w")
+    sink(tcon)
+    show(g1)
+    sink()
+    checkEquals("MultiGraph with 26 nodes and 0 edge sets",
+                textConnectionValue(tcon))
+    close(tcon)
+
+    ## from/to data.frames must have rows
+    df1 <- data.frame(from=c("a", "b"),
+                       to=c("b", "c"), weights=c(1, 1))
+    esets <- list(e1 = df1, empty1 = df1[FALSE, ])
+    checkException(MultiGraph(esets))
+    checkException(MultiGraph(esets, directed = FALSE))
+
+    ## MultiGraphs must have nodes
+    checkException(MultiGraph(list()))
+    checkException(MultiGraph(NULL))
+    checkException(MultiGraph(NULL, nodes = letters))
+    z <- character(0)
+    df <- data.frame(from=z, to=z, weight=numeric(0))
+    checkException(MultiGraph(list(e1=df)))
 }
 
 test_create_infer_nodes <- function()
@@ -201,6 +266,101 @@ test_ugraph_for_directed_edge_sets <- function()
     checkEquals(rep(1L, 4), eweights(ug)[[1]])
     checkEquals(c("a=b", "a=x", "b=x", "c=x"),
                 names(eweights(ug, "=")[[1]]))
+}
+
+mg_equals <- function(g1, g2)
+{
+    checkEquals(nodes(g1), nodes(g2))
+    checkEquals(isDirected(g1), isDirected(g2))
+    checkEquals(numEdges(g1), numEdges(g2))
+    checkEquals(eweights(g1, "==>"), eweights(g2, "==>"))
+}
+
+test_edgeSetIntersect0_trivial <- function()
+{
+    ## Verify 0 and 1 edge set cases for directed/undirected
+    df <- data.frame(from="a", to="b", weight=1L)
+    mgs <- list(
+                ## empty edge sets
+                MultiGraph(list(), nodes = letters),
+                MultiGraph(list(), nodes = letters, directed = FALSE),
+                ## single edge set
+                MultiGraph(list(e1=df)),
+                MultiGraph(list(e1=df), directed = FALSE))
+    for (g in mgs) {
+        mg_equals(g, edgeSetIntersect0(g))
+    }
+    ## Verify empty intersection for disjoint graphs
+    df1 <- data.frame(from="a", to="b", weight=1L)
+    df2 <- data.frame(from="x", to="y", weight=1L)
+    g <- MultiGraph(list(e1=df1, e2=df2))
+    gu <- MultiGraph(list(e1=df1, e2=df2), directed = FALSE)
+    want <- MultiGraph(list(), nodes = c("a", "b", "x", "y"))
+    mg_equals(want, edgeSetIntersect0(g))
+    mg_equals(want, edgeSetIntersect0(gu))
+}
+
+test_edgeSetIntersect0_directed_1 <- function()
+{
+    ## non-trivial directed intersect
+    g <- make_directed_MultiGraph()$g
+    gi <- edgeSetIntersect0(g)
+    ## TODO: do we want the minimal node set or not?
+    ## checkEquals(c("a", "b", "c"), nodes(gi))
+    checkEquals(nodes(g), nodes(gi))    # original nodes
+    checkEquals(c(e1_e2=2L), numEdges(gi)[1L])
+    checkEquals("e1_e2", names(numEdges(gi)))
+    w <- c(1L, 1L)
+    names(w) <- c("a=>b", "a=>c")
+    checkEquals(list(e1_e2=w), eweights(gi, "=>"))
+}
+
+test_edgeSetIntersect0_random <- function()
+{
+    make_data <- function(nsets, nn, ne, ns,
+                          type=c("directed", "undirected", "mixed")) {
+        ## nsets: number of edge sets
+        ## nn: number of nodes
+        ## ne: number of edges
+        ## ns: number of shared edges
+        directed <- switch(match.arg(type),
+                           directed=TRUE,
+                           undirected=FALSE,
+                           mixed=sample(c(TRUE, FALSE), nsets, replace=TRUE))
+        grouped <- randFromTo2(nn, (ne * nsets) + ns, directed = all(directed))$ft
+        ## for the undirected case, we will end up with fewer edges so
+        ## need to adjust.
+        ne <- (nrow(grouped) - ns) %/% nsets
+        shared <- grouped[1:ns, ]
+        starts <- seq(ns, nrow(grouped) - ne, by = ne) + 1L
+        esets <- vector("list", nsets)
+        names(esets) <- paste("e", 1:nsets, sep = "")
+        for (i in seq_along(esets)) {
+            z <- grouped[seq(starts[[i]], starts[[i]] + ne - 1L), ]
+            z <- rbind(shared, z)
+            esets[[i]] <- z
+        }
+        list(shared=shared,
+             g=MultiGraph(esets, directed = directed),
+             esets = esets)
+    }
+    do_test <- function(d)
+    {
+        gi <- edgeSetIntersect0(d$g)
+        checkEquals(nrow(d$shared), numEdges(gi)[[1]])
+        all_directed <- all(isDirected(d$g))
+        checkEquals(all_directed, isDirected(gi)[[1]])
+        checkEquals(nodes(d$g), nodes(gi))
+    }
+
+    for (t in c("directed", "undirected", "mixed")) {
+        for (i in 1:10) {
+            do_test(make_data(2, 10, 10, 3, type = t))
+            do_test(make_data(3, 10, 10, 3, type = t))
+            do_test(make_data(3, 10, 10, 1, type = t))
+            do_test(make_data(3, 11, 20, 6, type = t))
+        }
+    }
 }
 
 ## test_edgeMatrices <- function()

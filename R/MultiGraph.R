@@ -1,8 +1,8 @@
 MultiGraph <- function(edgeSets, nodes = NULL, directed = TRUE)
 {
+    .mg_validate_edgeSet(edgeSets)
     nodeNames <- .mg_node_names(edgeSets, nodes)
     n_nodes <- length(nodeNames)
-    .mg_validate_edgeSet_names(edgeSets)
     edge_sets <- makeMDEdgeSets(edgeSets, directed, nodeNames)
     new("MultiGraph", edge_sets = edge_sets, nodes = nodeNames)
 }
@@ -28,8 +28,10 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
 
 .makeMDEdgeSet <- function(es_name, es, is_directed, nodes)
 {
+    if (nrow(es) == 0L)
+        stop("edgeSets data.frames must have at least one row")
     if (!all(c("from", "to", "weight") %in% names(es)))
-        stop("data.frame must have columns: from, to, weight",
+        stop("edgeSets data.frames must have columns: from, to, weight",
              call. = FALSE)
     n_nodes <- length(nodes)
     from <- as.character(es[["from"]])
@@ -103,20 +105,25 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
                          cbind(from = as.character(ft[["from"]]),
                                to = as.character(ft[["to"]]))
                      })
-    nodeNames <-
-        sort(unique(c(unlist(ftSets, use.names = FALSE), nodes)),
-             na.last = FALSE)
+    nodeNames <- unique(c(unlist(ftSets, use.names = FALSE), nodes))
+    if (is.null(nodeNames) || length(nodeNames) == 0L)
+        stop("no nodes specified", call. = FALSE)
+    nodeNames <- sort(nodeNames, na.last = FALSE)
     .mg_validate_node_names(nodeNames)
     nodeNames
 }
 
-.mg_validate_edgeSet_names <- function(edgeSets)
+.mg_validate_edgeSet <- function(edgeSets)
 {
-    nms <- names(edgeSets)
-    if (is.null(nms))
-        stop("'edgeSets' must be a named list", call. = FALSE)
-    if (!all(nzchar(nms)) || any(is.na(nms)))
-        stop("'edgeSets' has invalid names", call. = FALSE)
+    if (!is.list(edgeSets))
+        stop("'edgeSets' must be a named list or empty list", call. = FALSE)
+    if (length(edgeSets) > 0L) {
+        nms <- names(edgeSets)
+        if (is.null(nms))
+            stop("'edgeSets' must be a named list", call. = FALSE)
+        if (!all(nzchar(nms)) || any(is.na(nms)) || any(duplicated(nms)))
+            stop("names(edgeSets) is invalid", call. = FALSE)
+    }
 }
 
 MultiDiGraph <- function(edgeSets, nodes = NULL)
@@ -229,13 +236,15 @@ setMethod("show",  signature = signature(object = "MultiGraph"),
               cat(class(object),
                   sprintf("with %d nodes and %d edge sets\n",
                           numNodes(object), length(object@edge_sets)))
-              edgeCounts <- numEdges(object)
-              df <- data.frame(edge_set = names(edgeCounts),
-                               directed = sapply(object@edge_sets, isDirected),
-                               edge_count = edgeCounts,
-                               stringsAsFactors = FALSE,
-                               row.names = NULL)
-              print(head(df, 10L), row.names = FALSE)
+              if (length(object@edge_sets)) {
+                  edgeCounts <- numEdges(object)
+                  df <- data.frame(edge_set = names(edgeCounts),
+                                   directed = sapply(object@edge_sets, isDirected),
+                                   edge_count = edgeCounts,
+                                   stringsAsFactors = FALSE,
+                                   row.names = NULL)
+                  print(head(df, 10L), row.names = FALSE)
+              }
               invisible(NULL)
           })
 
@@ -330,40 +339,32 @@ randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N),
 
 oneWeights <- function(x) rep(1L, nrow(x))
 
-edgeIntersect <- function(object, weightFun = oneWeights)
+edgeSetIntersect0 <- function(g)
 {
-    ## assume we have a weight attr and it is the first column
-    ## after the edgeIndex ([[2]])
-    ## Drop non-weight attrs
-    nodeNames <- nodes(object)
-    edgeCounts <- numEdges(object)
-    minIdx <- which.min(edgeCounts)
-    edgeAttrs <- object@edgeAttrs
-    ei1 <- edgeAttrs[[minIdx]][[1L]]
-    for (ea in edgeAttrs[-minIdx]) {
-        ei1 <- intersect(ei1, ea[[1L]])
-    }
-    edgeAttrs2 <- lapply(edgeAttrs, function(edgeAttr) {
-        keep <- edgeAttr[[1L]] %in% ei1
-        edgeAttr[keep, 1:2]
-    })
-    n_sets <- length(edgeAttrs2)
-    if (n_sets > 0L) {
-        firstW <- edgeAttrs2[[1L]][[2L]]
-        weightMat <- matrix(vector(typeof(firstW), length(firstW) * n_sets),
-                            ncol = n_sets)
-        for (i in seq_len(n_sets)) {
-            weightMat[ , i] <- edgeAttrs2[[i]][[2L]]
-        }
-        weights <- weightFun(weightMat)
-    } else {
-        weights <- integer(0L)
-    }
+    edge_sets <- g@edge_sets
+    n_sets <- length(edge_sets)
+    if (n_sets < 2L) return(g)
 
-    lapply(edgeAttrs2, function(x) x[[2L]])
-    object@edgeAttrs <- list(data.frame(mdg_edge_index = edgeAttrs2[[1L]][[1L]],
-                                        weight = weights))
-    object
+    all_directed <- all(isDirected(g))
+    if (!all_directed) edge_sets <- lapply(edge_sets, ugraph)
+    klass <- if (all_directed) "DiEdgeSet" else "UEdgeSet"
+
+    bv <- edge_sets[[1L]]@bit_vector
+    keepAttrs <- attributes(bv)
+    for (i in seq.int(2L, n_sets)) {
+        bv <- bv & edge_sets[[i]]@bit_vector
+    }
+    attributes(bv) <- keepAttrs
+    n_edges <- .Call(graph_bitarray_sum, bv)
+    if (n_edges > 0) {
+        new_edge_sets <- list(new(klass, bit_vector = bv,
+                                  weights = rep(1L, n_edges),
+                                  edge_attrs = list()))
+        names(new_edge_sets) <- paste(names(edge_sets), collapse = "_")
+    } else {
+        new_edge_sets <- list()
+    }
+    new("MultiGraph", edge_sets = new_edge_sets, nodes = nodes(g))
 }
 
 edgeUnion <- function(object, weightFun = NULL)

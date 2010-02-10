@@ -8,6 +8,7 @@
 \alias{show,MultiGraph-method}
 \alias{MultiGraph}
 \alias{eweights}
+\alias{edgeSetIntersect0}
 \alias{isDirected,MultiGraph-method}
 \alias{ugraph,MultiGraph-method}
 % these are not supposed to be publicly available
@@ -39,6 +40,7 @@
 \usage{
 MultiGraph(edgeSets, nodes = NULL, directed = TRUE)
 eweights(object, names.sep = NULL)
+edgeSetIntersect0(g)
 }
 
 \arguments{
@@ -71,9 +73,11 @@ eweights(object, names.sep = NULL)
   }
 
   \item{object}{
-
     A \code{MultiGraph} instance
-    
+  }
+
+  \item{g}{
+    A \code{MultiGraph} instance
   }
 
   \item{names.sep}{
@@ -89,18 +93,34 @@ eweights(object, names.sep = NULL)
 }
 \section{Methods}{
   \describe{
-    \item{nodes}{\code{signature(object = "MultiGraph")}: ... }
-    \item{numEdges}{\code{signature(object = "MultiGraph")}: ... }
-    \item{numNodes}{\code{signature(object = "MultiGraph")}: ... }
-    \item{show}{\code{signature(object = "MultiGraph")}: ... }
-    \item{eweights}{Return edge weights (actually first edge attribute)}
+
+    \item{nodes}{Return the nodes of the multigraph.}
+
+    \item{numEdges}{Return an integer vector named by edge set
+      containing edge counts for each edge set.}
+
+    \item{numNodes}{Return the number of nodes in the multigraph.}
+
+    \item{eweights}{Return a list named by edge set; each element is a
+      numeric vector of edge weights for the corresponding edge set.}
+
     \item{isDirected}{Return a logical vector named by the edge sets in
       \code{object} with a \code{TRUE} indicating a directed edge set
       and \code{FALSE} for undirected.}
+
     \item{ugraph}{Return a new \code{MultiGraph} object in which all
       edge sets have been converted to undirected edge sets.  This
       operation sets all edge weights to one and drops other edge
       attributes.}
+
+    \item{edgeSetIntersect0}{Return a new \code{MultiGraph} object
+    representing the intersection of edges across all edge sets within
+    \code{g}.  The return value will have zero edge sets if the edge
+    sets in \code{g} are disjoint.  Otherwise, there will be a single
+    edge set containing the shared edges.  The node set is preserved.
+    Edge weights and edge attributes are dropped.}
+
+    \item{show}{Prints a short summary of a MultiGraph object}
   }
 }
 
@@ -128,5 +148,6 @@ eweights(object, names.sep = NULL)
     ug <- ugraph(g)
     isDirected(ug)
     numEdges(ug)
+    edgeSetIntersect0(g)
 }
 \keyword{classes}
