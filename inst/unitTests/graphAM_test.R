@@ -250,6 +250,28 @@ testAddEdge <- function() {
     checkEquals(TRUE, isAdjacent(g1, "b", "e"))
 }
 
+testAddEdgeMultiple <- function()
+{
+    a <- matrix(0L, nrow=8, ncol=8)
+    dimnames(a) <- list(letters[1:8], letters[1:8])
+    G <- new("graphAM", adjMat=a, edgemode = "directed")
+    GU <- new("graphAM", adjMat=a)
+    ## make sure we don't warn for this call
+    tryCatch({
+        H <- addEdge(from=c("a", "b", "c"), to=c("d", "e", "f"), G)
+        HU <- addEdge(from=c("a", "b", "c"), to=c("d", "e", "f"), GU)
+    }, warning = function(w)
+             stop("unwanted warning message: ", conditionMessage(w)))
+    expect <- a
+    fr <- c("a", "b", "c")
+    to <- c("d", "e", "f")
+    wh <- cbind(match(fr, letters[1:8]), match(to, letters[1:8]))
+    expect[wh] <- 1L
+    checkEquals(expect, as(H, "matrix"))
+    expectU <- expect
+    expectU[wh[ , c(2L, 1L)]] <- 1L
+    checkEquals(expectU, as(HU, "matrix"))
+}
 
 testClearNode <- function() {
     mat <- simpleAdjMat()

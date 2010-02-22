@@ -162,11 +162,11 @@ extendAdjMat <- function(adjMat, nodes) {
 getIndices <- function(nodes, from, to) {
     ## Return indices into the adjMat for nodes from and to.
     i <- match(from, nodes, nomatch=0)
-    if (i == 0)
-      stop("Unknown node", sQuote(from), "specified in from")
+    if (any(bad <- (i == 0)))
+      stop("Unknown node", sQuote(from[bad]), "specified in from")
     j <- match(to, nodes, nomatch=0)
-    if (j == 0)
-      stop("Unknown node", sQuote(to), "specified in to")
+    if (any(bad <- (j == 0)))
+      stop("Unknown node", sQuote(to[bad]), "specified in to")
     list(from=i, to=j)
 }
 
@@ -189,13 +189,15 @@ setMethod("addEdge",
           signature(from="character", to="character", graph="graphAM",
                     weights="missing"),
           function(from, to, graph) {
-              if (isAdjacent(graph, from, to))
-                stop("edge from ", sQuote(from), " to ", sQuote(to),
-                     "already exists")
+              if (any(bad <- isAdjacent(graph, from, to)))
+                  stop("edges specified for addition already exist\n",
+                       paste(sQuote(from[bad]), sQuote(to[bad]), sep="|",
+                        collapse=", "))
               idx <- getIndices(nodes(graph), from, to)
-              graph@adjMat[idx$from, idx$to] <- 1
+              idx <- cbind(idx$from, idx$to)
+              graph@adjMat[idx] <- 1L
               if (! isDirected(graph))
-                graph@adjMat[idx$to, idx$from] <- 1
+                graph@adjMat[idx[ , c(2L, 1L)]] <- 1L
               graph
           })
 
