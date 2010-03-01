@@ -107,9 +107,11 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
                      })
     nodeNames <- unique(c(unlist(ftSets, use.names = FALSE), nodes))
     if (is.null(nodeNames) || length(nodeNames) == 0L)
-        stop("no nodes specified", call. = FALSE)
-    nodeNames <- sort(nodeNames, na.last = FALSE)
-    .mg_validate_node_names(nodeNames)
+        nodeNames <- character(0)
+    else {
+        nodeNames <- sort(nodeNames, na.last = FALSE)
+        .mg_validate_node_names(nodeNames)
+    }
     nodeNames
 }
 

@@ -101,6 +101,19 @@ make_unique_ft <- function(ftdata)
     ftdata
 }
 
+test_basic_accessors <- function()
+{
+    basic <- make_mixed_MultiGraph()
+    esets <- basic$esets
+    g <- basic$g
+
+    checkEquals(6L, numNodes(g))
+    checkEquals(c("a", "b", "c", "d", "x", "y"), nodes(g))
+    checkEquals(c(e1=5L, e2=6L, e3=5L), numEdges(g))
+    checkEquals(structure(c(TRUE, TRUE, FALSE), .Names = c("e1", "e2", "e3")),
+                isDirected(g))
+}
+
 test_no_edge_sets <- function()
 {
     g1 <- MultiGraph(list(), nodes = letters)
@@ -120,21 +133,27 @@ test_no_edge_sets <- function()
     checkEquals("MultiGraph with 26 nodes and 0 edge sets",
                 textConnectionValue(tcon))
     close(tcon)
+}
 
-    ## from/to data.frames must have rows
+test_edgeSets_arg_checking <- function()
+{
+    ## data.frame's in edgeSets list must have rows
     df1 <- data.frame(from=c("a", "b"),
                        to=c("b", "c"), weights=c(1, 1))
     esets <- list(e1 = df1, empty1 = df1[FALSE, ])
     checkException(MultiGraph(esets))
     checkException(MultiGraph(esets, directed = FALSE))
 
-    ## MultiGraphs must have nodes
-    checkException(MultiGraph(list()))
+    ## edgeSets must be named list or empty list
     checkException(MultiGraph(NULL))
-    checkException(MultiGraph(NULL, nodes = letters))
-    z <- character(0)
-    df <- data.frame(from=z, to=z, weight=numeric(0))
-    checkException(MultiGraph(list(e1=df)))
+    checkException(MultiGraph(list(df1)))
+}
+
+test_no_nodes <- function()
+{
+    mg <- MultiGraph(list())
+    checkEquals(0L, length(nodes(mg)))
+    checkEquals(list(), numEdges(mg))
 }
 
 test_create_infer_nodes <- function()
@@ -182,9 +201,6 @@ test_edgeWeights_create <- function()
     basic <- make_mixed_MultiGraph()
     esets <- basic$esets
     g <- basic$g
-
-    checkEquals(6L, numNodes(g))
-    checkEquals(c(e1=5L, e2=6L, e3=5L), numEdges(g))
 
     esets <- sort_esets(esets)
     got <- eweights(g)
