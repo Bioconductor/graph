@@ -48,7 +48,7 @@ Objects can be created from the \code{multiGraph} class, the
   \item{edgeData}{An instance of the \code{attrData} class.}
   \item{edgemode}{A character vector, one of directed, or undirected.}
   \item{edgeL}{A list of the edges (graphNEL)}
-  \item{adjMat}{An adjacency martix (graphAM)}
+  \item{adjMat}{An adjacency matrix (graphAM)}
   }
 }
 
