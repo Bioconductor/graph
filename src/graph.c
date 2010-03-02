@@ -17,7 +17,7 @@ SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val);
 SEXP graph_bitarray_edge_indices(SEXP bits);
 SEXP graph_bitarray_transpose(SEXP bits);
 SEXP graph_bitarray_undirect(SEXP bits);
-
+SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim);
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
 static const R_CallMethodDef R_CallDef[] = {
@@ -27,6 +27,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"graph_attrData_lookup", (DL_FUNC)&graph_attrData_lookup, 3},
     {"graph_sublist_assign", (DL_FUNC)&graph_sublist_assign, 4},
     {"graph_is_adjacent", (DL_FUNC)&graph_is_adjacent, 2},
+	{"graph_bitarray_rowColPos", (DL_FUNC)&graph_bitarray_rowColPos, 2},
     {NULL, NULL, 0},
 };
 
@@ -34,9 +35,7 @@ void R_init_BioC_graph(DllInfo *info) {
     R_registerRoutines(info, NULL, R_CallDef, NULL, NULL);
 }
 
-
-SEXP
-R_scalarString(const char *v)
+SEXP R_scalarString(const char *v)
 {
   SEXP ans = allocVector(STRSXP, 1);
   PROTECT(ans);
@@ -473,6 +472,46 @@ SEXP graph_bitarray_edge_indices(SEXP bits)
     UNPROTECT(2);
     return ans;
 }
+
+
+SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim)
+{
+    SEXP s_num_edges, ans, matDim, dimNames, colNames;
+    int i = 0, j = 0, k = 0, len = length(bits), *indices ;
+	int dim = asInteger(_dim), tmp, setCount;
+    unsigned char v, *bytes = (unsigned char *) RAW(bits);
+
+    PROTECT(s_num_edges = graph_bitarray_sum(bits));
+	setCount = INTEGER(s_num_edges)[0];
+   //PROTECT(ans = allocMatrix(INTSXP, setCount, 2));
+    PROTECT(ans = allocVector(INTSXP, 2*setCount));
+		
+    indices = INTEGER(ans);	
+    for (i = 0; i < len; i++) {
+        for (v = bytes[i], k = 0; v; v >>= 1, k++) {
+            if (v & 1) {
+				tmp  = (i * 8) + k + 1; /* R is 1-based */
+				indices[j] =  (tmp -1 ) % dim +1;
+				indices[j + setCount] =  (tmp -1)/dim +1;
+				j++;
+			}
+        }
+    }
+	PROTECT(matDim = allocVector(INTSXP, 2));
+    INTEGER(matDim)[0] = setCount; INTEGER(matDim)[1] = 2;
+    setAttrib(ans, R_DimSymbol, matDim);
+	
+	PROTECT(dimNames = NEW_LIST(2));
+	PROTECT(colNames = NEW_CHARACTER(2));
+    SET_STRING_ELT(colNames, 0, mkChar("from"));
+    SET_STRING_ELT(colNames, 1, mkChar("to"));
+	SET_VECTOR_ELT(dimNames, 1, colNames);
+    SET_DIMNAMES(ans, dimNames);
+	      
+    UNPROTECT(5);
+    return ans;
+}
+
 
 #define COORD_TO_INDEX(x, y, nrow) ((((y)+1) * (nrow)) - ((nrow) - ((x)+1)) - 1)
 #define NROW(x) (INTEGER(getAttrib((x), install("bitdim")))[0])
