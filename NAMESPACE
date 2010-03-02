@@ -1,6 +1,6 @@
 useDynLib(BioC_graph, graph_bitarray_sum, graph_bitarray_set,
           graph_bitarray_edge_indices, graph_bitarray_undirect,
-          graph_bitarray_transpose)
+          graph_bitarray_transpose,graph_bitarray_rowColPos)
 
 importClassesFrom(methods, ANY, character, list, logical, matrix,
                   missing, "NULL", numeric, oldClass, vector)
