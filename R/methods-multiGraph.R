@@ -117,5 +117,13 @@ setMethod("edges", signature("edgeSetNEL", "character"),
               stopifnot( is.character(nodes) )
               lapply(object@edgeL[which], function(x) nodes[x$edges])})
 
+## Degree of a multigraph
+setMethod("degree", signature(object = "MultiGraph", Nodes = "missing"),
+      function(object){
+          .mgDegree(object)
+})
+	
+	
+
 
 

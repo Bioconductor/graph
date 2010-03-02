@@ -395,3 +395,51 @@ edgeUnion <- function(object, weightFun = NULL)
 
 ## TODO: should you be allowed to rename edge sets?
 ## or at least name unnamed edge sets?
+
+subsetEdgeSets <- function(object, edgeSets) {
+    if (!all(nzchar(edgeSets)) || any(is.na(edgeSets)) || 
+		!(all(edgeSets %in% names(object@edge_sets))))
+            stop("edgeSet specified is invalid")
+	if(any(dups <- duplicated(edgeSets)))
+        stop("duplicate edges specified in edge set ", edgeSets[dups])
+	object@edge_sets<- object@edge_sets[edgeSets]
+	object	
+}
+
+diEdgeSetToDataFrame <- function(edgeSets,nodes) {
+	bitvec <- edgeSets@bit_vector
+	df <- .Call(graph:::graph_bitarray_rowColPos, bitvec, length(nodes))
+	data.frame(from = nodes[df[,"from"]], to = nodes[df[,"to"]],
+			   weight = edgeSets@weights)   
+}
+
+extractFromTo <- function(object) {
+	nodes <- nodes(object)
+	lapply(object@edge_sets,function(x,nodes){
+		diEdgeSetToDataFrame(x,nodes)
+	},nodes)
+}
+
+.mgDegree <- function(object) {
+	nodes <- nodes(object)
+	lapply(object@edge_sets, function(edgeSets, nodes) {
+		bitvec <- edgeSets@bit_vector
+		len <- length(nodes)
+		df <- .Call(graph:::graph_bitarray_rowColPos, bitvec, len)
+	    tbl <- structure(table(df[,"from"]),class=NULL)
+	    from <- to <- structure(rep(0, len),names=1:len)
+		indx <- names(from) %in% names(tbl)
+		from[indx] <- tbl
+		names(from) <- nodes
+		tbl <- structure(table(df[,"to"]),class=NULL)
+	    indx <- names(to) %in% names(tbl)
+		to[indx] <- tbl
+		names(to) <- nodes
+		if (isDirected(edgeSets)) {
+			list(inDegree = to, outDegree = from)
+		} else {
+			degree = from + to
+		}	
+	}, nodes)
+}	
+
