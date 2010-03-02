@@ -10,6 +10,7 @@
 
 \alias{degree}
 \alias{degree,graph,missing-method}
+\alias{degree,MultiGraph,missing-method}
 \alias{degree,graph,ANY-method}
 
 \alias{dfs,graph-method}
@@ -127,8 +128,10 @@ A virtual Class: No objects may be created from it.
     \item{degree}{\code{signature(object = "graph", Nodes = "missing")}:
     find the \code{degree} of a node (number of coincident edges).}
 
-  \item{degree}{\code{signature(object = "graph", Nodes = "ANY")}: as
+	\item{degree}{\code{signature(object = "graph", Nodes = "ANY")}: as
       above.  }
+	\item{degree}{\code{signature(object = "MultiGraph", Nodes = "missing")}:
+    find the \code{degree} of a node (number of coincident edges).}
 
     \item{dfs}{\code{signature(object = "graph")}: execute a depth first
     search on a graph starting with the specified node.}
