@@ -408,38 +408,38 @@ subsetEdgeSets <- function(object, edgeSets) {
 
 diEdgeSetToDataFrame <- function(edgeSets,nodes) {
     bitvec <- edgeSets@bit_vector
-    df <- .Call(graph:::graph_bitarray_rowColPos, bitvec, length(nodes))
-    data.frame(from = nodes[df[,"from"]], to = nodes[df[,"to"]],
+    df <- .Call(graph_bitarray_rowColPos, bitvec, length(nodes))
+    data.frame(from = nodes[df[, "from"]], to = nodes[df[, "to"]],
                weight = edgeSets@weights)
 }
 
 extractFromTo <- function(object) {
-    nodes <- nodes(object)
-    lapply(object@edge_sets,function(x,nodes){
-        diEdgeSetToDataFrame(x,nodes)
-    },nodes)
+    nn <- nodes(object)
+    lapply(object@edge_sets, function(x) diEdgeSetToDataFrame(x, nn))
 }
 
 .mgDegree <- function(object) {
-    nodes <- nodes(object)
-    lapply(object@edge_sets, function(edgeSets, nodes) {
-        bitvec <- edgeSets@bit_vector
-        len <- length(nodes)
-        df <- .Call(graph:::graph_bitarray_rowColPos, bitvec, len)
-        tbl <- structure(table(df[,"from"]),class=NULL)
-        from <- to <- structure(rep(0, len),names=1:len)
-        indx <- names(from) %in% names(tbl)
+    nn <- nodes(object)
+    len <- length(nn)
+    idx_str <- as.character(seq_len(len))
+    lapply(object@edge_sets, function(edgeSet) {
+        bitvec <- edgeSet@bit_vector
+        df <- .Call(graph_bitarray_rowColPos, bitvec, len)
+
+        tbl <- structure(table(df[, "from"]), class=NULL)
+        indx <- idx_str %in% names(tbl)
+        from <- to <- structure(rep(0, len), names=nn)
         from[indx] <- tbl
-        names(from) <- nodes
-        tbl <- structure(table(df[,"to"]),class=NULL)
-        indx <- names(to) %in% names(tbl)
+
+        tbl <- structure(table(df[, "to"]), class=NULL)
+        indx <- idx_str %in% names(tbl)
         to[indx] <- tbl
-        names(to) <- nodes
-        if (isDirected(edgeSets)) {
+
+        if (isDirected(edgeSet)) {
             list(inDegree = to, outDegree = from)
         } else {
             degree = from + to
         }
-    }, nodes)
+    })
 }
 
