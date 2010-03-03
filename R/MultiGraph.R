@@ -262,10 +262,9 @@ eweights <- function(object, names.sep = NULL)
         n_nodes <- length(object@nodes)
         lapply(object@edge_sets, function(es) {
             w <- es@weights
-            edge_indices <- .Call(graph_bitarray_edge_indices, es@bit_vector)
-            coord <- .indexToCoord(edge_indices, n_nodes)
-            names(w) <- paste(nn[coord[,1L]], nn[coord[,2L]], sep = sep)
-            w
+            ft <- .Call(graph_bitarray_rowColPos, es@bit_vector, length(nn))
+            names(w)  <- paste(nn[ft[, "from"]], nn[ft[, "to"]], sep = names.sep)
+            w           
         })
     }
 }
