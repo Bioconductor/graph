@@ -477,37 +477,33 @@ SEXP graph_bitarray_edge_indices(SEXP bits)
 SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim)
 {
     SEXP s_num_edges, ans, matDim, dimNames, colNames;
-    int i = 0, j = 0, k = 0, len = length(bits), *indices ;
-	int dim = asInteger(_dim), tmp, setCount;
+    int i = 0, j = 0, k = 0, len = length(bits), *indices;
+    int dim = asInteger(_dim), tmp, setCount;
     unsigned char v, *bytes = (unsigned char *) RAW(bits);
 
     PROTECT(s_num_edges = graph_bitarray_sum(bits));
-	setCount = INTEGER(s_num_edges)[0];
-   //PROTECT(ans = allocMatrix(INTSXP, setCount, 2));
+    setCount = INTEGER(s_num_edges)[0];
     PROTECT(ans = allocVector(INTSXP, 2*setCount));
-		
     indices = INTEGER(ans);	
     for (i = 0; i < len; i++) {
         for (v = bytes[i], k = 0; v; v >>= 1, k++) {
             if (v & 1) {
-				tmp  = (i * 8) + k + 1; /* R is 1-based */
-				indices[j] =  (tmp -1 ) % dim +1;
-				indices[j + setCount] =  (tmp -1)/dim +1;
-				j++;
-			}
+                tmp  = (i * 8) + k + 1; /* R is 1-based */
+                indices[j] =  (tmp - 1) % dim + 1;
+                indices[j + setCount] =  (tmp - 1) / dim + 1;
+                j++;
+            }
         }
     }
-	PROTECT(matDim = allocVector(INTSXP, 2));
+    PROTECT(matDim = allocVector(INTSXP, 2));
     INTEGER(matDim)[0] = setCount; INTEGER(matDim)[1] = 2;
     setAttrib(ans, R_DimSymbol, matDim);
-	
-	PROTECT(dimNames = NEW_LIST(2));
-	PROTECT(colNames = NEW_CHARACTER(2));
+    PROTECT(dimNames = NEW_LIST(2));
+    PROTECT(colNames = NEW_CHARACTER(2));
     SET_STRING_ELT(colNames, 0, mkChar("from"));
     SET_STRING_ELT(colNames, 1, mkChar("to"));
-	SET_VECTOR_ELT(dimNames, 1, colNames);
+    SET_VECTOR_ELT(dimNames, 1, colNames);
     SET_DIMNAMES(ans, dimNames);
-	      
     UNPROTECT(5);
     return ans;
 }
