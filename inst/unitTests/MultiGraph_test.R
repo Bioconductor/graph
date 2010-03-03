@@ -1,5 +1,7 @@
 set.seed(0x12a9b)
 
+## alias subsetEdgeSets; remove once it is exported
+subsetEdgeSets <- graph:::subsetEdgeSets
 
 make_directed_MultiGraph <- function(use.factors = TRUE)
 {
@@ -380,124 +382,118 @@ test_edgeSetIntersect0_random <- function()
     }
 }
 
-
-test_subSet_Mixed_MultiGraph <- function() {
-    g <- make_mixed_MultiGraph()$g
-    gi <- graph:::subsetEdgeSets(g,c("e1","e3"))
-    checkEquals(nodes(g), nodes(gi))    
-    checkEquals(c(e1 = 5L, e3 = 5L), numEdges(gi))
-    checkEquals(c("e1", "e3"), names(numEdges(gi)))
-	w1 <- c( 1.0, 1.0, 3.1, 5.4, 2.2)
-	w2 <- c(1, 2, 3, 5, 4)
-    names(w1) <- c("b=>a", "a=>b", "a=>c", "a=>d", "b=>d")
-	names(w2) <- c("a=>b", "a=>c", "a=>x", "c=>x", "x=>y")
-    checkEquals(list(e1 = w1, e3 = w2), eweights(gi, "=>"))	
-}
-
-test_subSet_Repeated_EdgeSets <- function() {
-	g <- make_directed_MultiGraph()$g
-	checkException(graph:::subsetEdgeSets(g, c("e1", "e1")))
-}
-
-test_subSet_NonExistent_EdgeSets <- function() {
-	g <- make_directed_MultiGraph()$g	
-}
-
-test_subSet_Char_Zero <- function() {
-	g <- make_directed_MultiGraph()$g
-	gi <- graph:::subsetEdgeSets(g, character(0))
-	checkEquals(nodes(g), nodes(gi)) 
-	checkEquals("list", class(numEdges(gi)))
-    checkEquals(0, length(numEdges(gi)))
-	checkEquals(character(0), names(numEdges(gi)))
-}
-
-test_subSet_Duplicated_Edges <- function(){
-	g <- make_mixed_MultiGraph
+test_subSetEdgeSets_single <- function(){
     g <- make_directed_MultiGraph()$g
-    gi <- graph:::subsetEdgeSets(g,"e1")
-    checkEquals(nodes(g), nodes(gi))    
+    gi <- subsetEdgeSets(g, "e1")
+    checkEquals(nodes(g), nodes(gi))
     checkEquals(c(e1 = 5L), numEdges(gi)[1L])
     checkEquals("e1", names(numEdges(gi)))
-	w <- c(1.0, 1.0, 3.1, 5.4, 2.2)
+    w <- c(1.0, 1.0, 3.1, 5.4, 2.2)
     names(w) <- c("b=>a", "a=>b", "a=>c", "a=>d", "b=>d")
-    checkEquals(list(e1=w), eweights(gi, "=>"))	
+    checkEquals(list(e1=w), eweights(gi, "=>"))
+}
+
+test_subSetEdgeSets_multiple <- function() {
+    g <- make_mixed_MultiGraph()$g
+    gi <- subsetEdgeSets(g, c("e1","e3"))
+    checkEquals(nodes(g), nodes(gi))
+    checkEquals(c(e1 = 5L, e3 = 5L), numEdges(gi))
+    checkEquals(c("e1", "e3"), names(numEdges(gi)))
+    w1 <- c( 1.0, 1.0, 3.1, 5.4, 2.2)
+    w2 <- c(1, 2, 3, 5, 4)
+    names(w1) <- c("b=>a", "a=>b", "a=>c", "a=>d", "b=>d")
+    names(w2) <- c("a=>b", "a=>c", "a=>x", "c=>x", "x=>y")
+    checkEquals(list(e1 = w1, e3 = w2), eweights(gi, "=>"))
+}
+
+test_subSetEdgeSets_no_duplicate_edgeSets <- function() {
+    g <- make_directed_MultiGraph()$g
+    checkException(subsetEdgeSets(g, c("e1", "e1")))
+}
+
+test_subSetEdgeSets_no_such_edgeSet <- function() {
+    g <- make_directed_MultiGraph()$g
+    checkException(subsetEdgeSets(g, "notAnEdgeSet"))
+}
+
+test_subSetEdgeSets_empty_edgeSet <- function() {
+    g <- make_directed_MultiGraph()$g
+    gi <- subsetEdgeSets(g, character(0))
+    checkEquals(nodes(g), nodes(gi))
+    checkEquals("list", class(numEdges(gi)))
+    checkEquals(0, length(numEdges(gi)))
+    checkEquals(character(0), names(numEdges(gi)))
 }
 
 test_extractFromTo_Directed <- function(use.factors=TRUE){
-	ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-                        to=c("b", "c", "d", "a", "d"),
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+                      to=c("b", "c", "d", "a", "d"),
                       weight=c(1, 3.1, 5.4, 1, 2.2),
                       stringsAsFactors = use.factors)
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
-                        to=c("b", "c", "x", "y", "c", "a"),
+                      to=c("b", "c", "x", "y", "c", "a"),
                       weight=c(3.4, 2.6, 1, 1, 1, 7.9),
                       stringsAsFactors = use.factors)
-	esets <- list(e1=ft1, e2=ft2)
-    g <- MultiGraph(esets)		
-	res <- graph:::extractFromTo(g)
-	ft1 <- ft1[do.call(order ,ft1["to"]),]
-	rownames(ft1) <- 1:5
+    esets <- list(e1=ft1, e2=ft2)
+    g <- MultiGraph(esets)
+    res <- graph:::extractFromTo(g)
+    ft1 <- ft1[do.call(order ,ft1["to"]),]
+    rownames(ft1) <- 1:5
     ft2 <- ft2[do.call(order ,ft2["to"]),]
-	rownames(ft2) <- 1:6
-	checkEquals(list(e1 = ft1, e2 = ft2), res)
+    rownames(ft2) <- 1:6
+    checkEquals(list(e1 = ft1, e2 = ft2), res)
 }
 
 test_extractFromTo_UnDirected <- function(use.factors=TRUE){
-	ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-                        to=c("b", "c", "d", "c", "d"),
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+                      to=c("b", "c", "d", "c", "d"),
                       weight=c(1, 3.1, 5.4, 1, 2.2),
                       stringsAsFactors = use.factors)
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
-                        to=c("b", "a", "x", "y", "c", "a"),
+                      to=c("b", "a", "x", "y", "c", "a"),
                       weight=c(3.4, 2.6, 1, 1, 1, 7.9),
                       stringsAsFactors = use.factors)
-	esets <- list(e1=ft1, e2=ft2)
+    esets <- list(e1=ft1, e2=ft2)
 
-    g <- MultiGraph(esets,directed=c(FALSE,FALSE))			  
-	res <- graph:::extractFromTo(g)				  
-	
+    g <- MultiGraph(esets,directed=c(FALSE,FALSE))
+    res <- graph:::extractFromTo(g)
+
     ft1 <- ft1[do.call(order ,ft1["to"]),]
-	rownames(ft1) <- 1:5
-	
-	ft2["from"] <- factor(c("a", "a", "a", "a", "c", "x"))
-	ft2["to"] <- factor(c("a", "b", "c", "x", "x", "y"))
-	ft2["weight"] <- c(2.6, 3.4, 7.9, 1, 1, 1)
-	checkEquals(list(e1 = ft1, e2 = ft2), res)
+    rownames(ft1) <- 1:5
+
+    ft2["from"] <- factor(c("a", "a", "a", "a", "c", "x"))
+    ft2["to"] <- factor(c("a", "b", "c", "x", "x", "y"))
+    ft2["weight"] <- c(2.6, 3.4, 7.9, 1, 1, 1)
+    checkEquals(list(e1 = ft1, e2 = ft2), res)
 }
 
 test_degree_Mixed <- function(use.factors=TRUE){
-	ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-                        to=c("b", "c", "d", "c", "d"),
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+                      to=c("b", "c", "d", "c", "d"),
                       weight=c(1, 3.1, 5.4, 1, 2.2),
                       stringsAsFactors = use.factors)
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
-                        to=c("b", "a", "x", "y", "c", "a"),
+                      to=c("b", "a", "x", "y", "c", "a"),
                       weight=c(3.4, 2.6, 1, 1, 1, 7.9),
                       stringsAsFactors = use.factors)
-	esets <- list(e1=ft1, e2=ft2)
+    esets <- list(e1=ft1, e2=ft2)
     g <- MultiGraph(esets,directed=c(FALSE,TRUE))
-	deg <- degree(g)
-	
-	e1Degree  <- as.numeric(c(3, 3, 2, 2, 0, 0))
-	attributes(e1Degree) <- list(names=c("a","b","c","d","x","y"))
-  
-	inDegree <- as.numeric(c(2, 1, 1, 0, 1, 1))
-	attributes(inDegree) <- list(names=c("a","b","c","d","x","y"))
-	outDegree <- as.numeric(c(3, 0, 1, 0, 2, 0))
-	attributes(outDegree) <- list(names=c("a","b","c","d","x","y"))
-	res <- list(e1 = e1Degree, e2 = list(inDegree = inDegree, 
-				  outDegree=outDegree))
-	checkEquals(res, deg)
+    deg <- degree(g)
+
+    e1Degree  <- as.numeric(c(3, 3, 2, 2, 0, 0))
+    attributes(e1Degree) <- list(names=c("a","b","c","d","x","y"))
+
+    inDegree <- as.numeric(c(2, 1, 1, 0, 1, 1))
+    attributes(inDegree) <- list(names=c("a","b","c","d","x","y"))
+    outDegree <- as.numeric(c(3, 0, 1, 0, 2, 0))
+    attributes(outDegree) <- list(names=c("a","b","c","d","x","y"))
+    res <- list(e1 = e1Degree, e2 = list(inDegree = inDegree,
+                               outDegree=outDegree))
+    checkEquals(res, deg)
 }
-
-
-
-
-
 
 
 ## test_edgeMatrices <- function()
