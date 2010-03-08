@@ -9,6 +9,8 @@
 \alias{MultiGraph}
 \alias{eweights}
 \alias{edgeSetIntersect0}
+\alias{subsetEdgeSets}
+\alias{extractFromTo}
 \alias{isDirected,MultiGraph-method}
 \alias{ugraph,MultiGraph-method}
 % these are not supposed to be publicly available
@@ -108,6 +110,14 @@ edgeSetIntersect0(g)
       \code{object} with a \code{TRUE} indicating a directed edge set
       and \code{FALSE} for undirected.}
 
+    \item{extractFromTo}{Return a list named by the edge sets; each
+      element is a data frame with column names from, to and weight
+	  corresponding to the connected nodes in the edge set.}
+
+    \item{subsetEdgeSets}{Return a new \code{MultiGraph} object 
+	  representing the subset of edge sets from the original 
+      \code{MultiGraph}.}
+
     \item{ugraph}{Return a new \code{MultiGraph} object in which all
       edge sets have been converted to undirected edge sets.  This
       operation sets all edge weights to one and drops other edge
@@ -119,7 +129,7 @@ edgeSetIntersect0(g)
     sets in \code{g} are disjoint.  Otherwise, there will be a single
     edge set containing the shared edges.  The node set is preserved.
     Edge weights and edge attributes are dropped.}
-
+   
     \item{show}{Prints a short summary of a MultiGraph object}
   }
 }
@@ -149,5 +159,8 @@ edgeSetIntersect0(g)
     isDirected(ug)
     numEdges(ug)
     edgeSetIntersect0(g)
+    subsetEdgeSets(g,"es1")
+    extractFromTo(g)
+   
 }
 \keyword{classes}
