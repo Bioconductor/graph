@@ -83,6 +83,9 @@ st(lapply(eweights(g, "=>"), head))
 st(gi <- edgeSetIntersect0(g))
 gi
 
+st(degree(g))
+st(extractFromTo(g))
+
 @
 
 \end{document}

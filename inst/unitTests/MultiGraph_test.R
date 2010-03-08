@@ -1,7 +1,7 @@
 set.seed(0x12a9b)
 
 ## alias subsetEdgeSets; remove once it is exported
-subsetEdgeSets <- graph:::subsetEdgeSets
+
 
 make_directed_MultiGraph <- function(use.factors = TRUE)
 {
@@ -437,7 +437,7 @@ test_extractFromTo_Directed <- function(use.factors=TRUE){
                       stringsAsFactors = use.factors)
     esets <- list(e1=ft1, e2=ft2)
     g <- MultiGraph(esets)
-    res <- graph:::extractFromTo(g)
+    res <- extractFromTo(g)
     ft1 <- ft1[do.call(order ,ft1["to"]),]
     rownames(ft1) <- 1:5
     ft2 <- ft2[do.call(order ,ft2["to"]),]
@@ -458,7 +458,7 @@ test_extractFromTo_UnDirected <- function(use.factors=TRUE){
     esets <- list(e1=ft1, e2=ft2)
 
     g <- MultiGraph(esets,directed=c(FALSE,FALSE))
-    res <- graph:::extractFromTo(g)
+    res <- extractFromTo(g)
 
     ft1 <- ft1[do.call(order ,ft1["to"]),]
     rownames(ft1) <- 1:5
