@@ -18,6 +18,7 @@ SEXP graph_bitarray_edge_indices(SEXP bits);
 SEXP graph_bitarray_transpose(SEXP bits);
 SEXP graph_bitarray_undirect(SEXP bits);
 SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim);
+SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx);
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
 static const R_CallMethodDef R_CallDef[] = {
@@ -590,3 +591,88 @@ SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val)
     UNPROTECT(1);
     return ans;
 }
+
+SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx){
+
+    SEXP _dim =getAttrib(bits,install("bitdim")); 
+    SEXP sgVec, btlen, btdim;
+    int dim, subLen,linIndx, bytIndex, bitIndex, btVal;
+    int row, col, subgBitLen, subgBytes;
+    unsigned char v; 
+    unsigned char *bytes = (unsigned char *) RAW(bits);
+    int *subIndx;
+    dim  = INTEGER(_dim)[0];
+    subIndx = INTEGER(_subIndx);
+    subLen = length(_subIndx);
+    subgBitLen = subLen * subLen;
+    subgBytes = subgBitLen / 8;
+    if((subgBitLen % 8) != 0){
+        subgBytes++;
+    }
+
+    PROTECT(sgVec = allocVector(RAWSXP, subgBytes ));
+    unsigned char *sgBits = RAW(sgVec);
+    memset(sgBits, 0, subgBytes);
+    SEXP _sgSetPos, _ftSetPos, res, namesres;
+    PROTECT(_sgSetPos = allocVector(INTSXP, subgBitLen));
+    int *sgSetPos = INTEGER(_sgSetPos);
+    PROTECT(_ftSetPos = allocVector(INTSXP, dim*dim));
+    int * ftSetPos = INTEGER(_ftSetPos); 
+    int sgSetIndx =0;
+    linIndx = 0;
+    for(col = 0; col < subLen; col++) { 
+        for(row = 0; row < subLen; row++) { 
+            v = bytes[((subIndx[col] - 1)*dim + subIndx[row] -1)/8];
+            bytIndex = linIndx / 8;
+            bitIndex = linIndx % 8;
+            btVal = ( v >> ((subIndx[col] - 1) * dim + subIndx[row] -1) % 8) & 1;
+            if(btVal){
+                sgSetPos[sgSetIndx++] = (subIndx[col] - 1) * dim + (subIndx[row]-1);
+            }
+            sgBits[bytIndex] |= (btVal << (bitIndex));
+            linIndx++;
+        }
+    }
+
+    linIndx =0 ;
+    sgSetIndx =0;
+    int k = 0;
+    for(col = 0; col < dim; col++) {
+        for(row =0; row < dim; row++) {
+            bytIndex = linIndx / 8;
+            bitIndex = linIndx % 8;
+            v = bytes[bytIndex];
+            btVal = (v >> bitIndex) & 1;
+            ftSetPos[linIndx] = 0;
+            if(btVal) {
+                if(linIndx == sgSetPos[sgSetIndx]) {
+                    ftSetPos[k] = 1;
+                    sgSetIndx++;
+                }
+                k++;
+            }
+            linIndx++;
+        }
+    }
+
+    SETLENGTH(_ftSetPos, k);   
+    PROTECT(btlen = allocVector(INTSXP, 1));
+    PROTECT(btdim = allocVector(INTSXP, 2));
+    INTEGER(btlen)[0] = subgBitLen;
+    INTEGER(btdim)[0] = subLen;
+    INTEGER(btdim)[1] = subLen;
+    setAttrib(sgVec, install("bitlen"), btlen);
+    setAttrib(sgVec, install("bitdim"), btdim);
+
+    PROTECT(res = allocVector(VECSXP, 2));
+    SET_VECTOR_ELT(res, 0, _ftSetPos);
+    SET_VECTOR_ELT(res, 1, sgVec); 
+    PROTECT(namesres = allocVector(STRSXP, 2));
+    SET_STRING_ELT(namesres, 0, mkChar("setPos"));
+    SET_STRING_ELT(namesres, 1, mkChar("bitVec"));
+    setAttrib(res, R_NamesSymbol, namesres);
+    UNPROTECT(7);
+    return(res);
+
+}
+
