@@ -495,6 +495,41 @@ test_degree_Mixed <- function(use.factors=TRUE){
     checkEquals(res, deg)
 }
 
+checkSubGraph <- function(g, subG) {
+    nds <- nodes(g)
+    subNodes <- nodes(subG)
+    origFromTo <- extractFromTo(g)
+    subFromTo <- extractFromTo(subG)
+    sapply(names(origFromTo), function(x){
+                indx <- (origFromTo[[x]]$from %in% subNodes) & 
+                (origFromTo[[x]]$to %in% subNodes)
+                origdf = origFromTo[[x]]
+                want <- origdf[(origdf$from %in% subNodes) & (origdf$to %in% subNodes),]
+                subdf <- subFromTo[[x]]
+                checkEquals(as.character(want$from), as.character(subdf$from))
+                checkEquals(as.character(want$to), as.character(subdf$to))
+                checkEquals(g@edge_sets[[x]]@weights[indx], subG@edge_sets[[x]]@weights)
+            })
+}
+
+test_basic_subGraph <- function() {
+    g <- make_mixed_MultiGraph()$g
+    nds <- nodes(g)[1:3]
+    sg <- subGraph(nds, g)
+    checkSubGraph(g,sg) 
+}
+
+test_large_subGraph <- function() {
+    weightFun <- function(n){ 1:n}
+    df1 <- graph:::randFromTo(1000L, 10001L, directed = TRUE)
+    df2 <- graph:::randFromTo(1000L, 10001L, directed = FALSE)
+    g <- MultiGraph(list(e1= df1$ft, e2 = df2$ft))
+    nds <- sample( graph:::nodes(g), 100)
+    subG <- subGraph(nds, g)
+    checkSubGraph(g, subG)
+}
+
+
 
 ## test_edgeMatrices <- function()
 ## {
