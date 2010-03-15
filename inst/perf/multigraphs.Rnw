@@ -86,6 +86,10 @@ gi
 st(degree(g))
 st(extractFromTo(g))
 
+nds <- nodes(g)
+subNds <- sample(nds,0.5*length(nds))
+st(subGraph(subNds,g))
+
 @
 
 \end{document}
