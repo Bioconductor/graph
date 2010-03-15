@@ -3,6 +3,7 @@
 \alias{subGraph,character,graphNEL-method}
 \alias{subGraph,character,clusterGraph-method}
 \alias{subGraph,character,distGraph-method}
+\alias{subGraph,character,MultiGraph-method}
 \title{Create a Subgraph  }
 \description{
   Given a set of nodes and a graph this function creates

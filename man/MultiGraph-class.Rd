@@ -117,7 +117,6 @@ edgeSetIntersect0(g)
     \item{subsetEdgeSets}{Return a new \code{MultiGraph} object 
 	  representing the subset of edge sets from the original 
       \code{MultiGraph}.}
-
     \item{ugraph}{Return a new \code{MultiGraph} object in which all
       edge sets have been converted to undirected edge sets.  This
       operation sets all edge weights to one and drops other edge
@@ -161,6 +160,5 @@ edgeSetIntersect0(g)
     edgeSetIntersect0(g)
     subsetEdgeSets(g,"es1")
     extractFromTo(g)
-   
 }
 \keyword{classes}
