@@ -453,12 +453,11 @@ setMethod("subGraph", signature(snodes="character", graph="MultiGraph"),
               "MultiGraph:\n", paste(bad, collapse=", "))
     }
     graph@edge_sets <-  lapply(graph@edge_sets, function(x){
-                            browser()
                 res <- .Call("graph_bitarray_subGraph", x@bit_vector, snodesIdx) 
                 x@bit_vector <- res$bitVec
-                x@weights <- x@weights[as.logical(res$setPos)]
+                x@weights <- x@weights[res$setPos]
                 if(length(x@edge_attrs))
-                    x@edge_attrs <- x@edge_attrs[as.logical(res$setPos)]
+                    x@edge_attrs <- x@edge_attrs[res$setPos]
                 x
             })
     graph@nodes <- snodes

@@ -592,15 +592,20 @@ SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val)
     return ans;
 }
 
-SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx){
 
+
+SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
+    
     SEXP _dim =getAttrib(bits,install("bitdim")); 
     SEXP sgVec, btlen, btdim;
-    int dim, subLen,linIndx, bytIndex, bitIndex, btVal;
+    int dim, subLen, bytIndex, bitIndex, btVal;
+    int tempBytIndex, tempBitIndex, tempBitVal,m;
+    int curSetPos=0, prevSetPos=0, sgSetIndx=0, linIndx =0, tempCount=0;;
     int row, col, subgBitLen, subgBytes;
-    unsigned char v; 
+    unsigned char v, tempV; 
     unsigned char *bytes = (unsigned char *) RAW(bits);
     int *subIndx;
+    
     dim  = INTEGER(_dim)[0];
     subIndx = INTEGER(_subIndx);
     subLen = length(_subIndx);
@@ -609,53 +614,42 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx){
     if((subgBitLen % 8) != 0){
         subgBytes++;
     }
-
+    
     PROTECT(sgVec = allocVector(RAWSXP, subgBytes ));
     unsigned char *sgBits = RAW(sgVec);
     memset(sgBits, 0, subgBytes);
-    SEXP _sgSetPos, _ftSetPos, res, namesres;
-    PROTECT(_sgSetPos = allocVector(INTSXP, subgBitLen));
-    int *sgSetPos = INTEGER(_sgSetPos);
-    PROTECT(_ftSetPos = allocVector(INTSXP, dim*dim));
+    SEXP _ftSetPos, res, namesres;
+    PROTECT(_ftSetPos = allocVector(INTSXP, subgBitLen));
     int * ftSetPos = INTEGER(_ftSetPos); 
-    int sgSetIndx =0;
-    linIndx = 0;
+    int setPos =0;
+     
     for(col = 0; col < subLen; col++) { 
         for(row = 0; row < subLen; row++) { 
-            v = bytes[((subIndx[col] - 1)*dim + subIndx[row] -1)/8];
+            setPos = (subIndx[col] - 1)*dim + subIndx[row] -1;
+            v = bytes[setPos / 8];
             bytIndex = linIndx / 8;
             bitIndex = linIndx % 8;
-            btVal = ( v >> ((subIndx[col] - 1) * dim + subIndx[row] -1) % 8) & 1;
-            if(btVal){
-                sgSetPos[sgSetIndx++] = (subIndx[col] - 1) * dim + (subIndx[row]-1);
+            btVal = ( v >> setPos % 8) & 1;
+            if(btVal) {
+                curSetPos = setPos;
+                tempCount =0;
+                for(m = prevSetPos; m < curSetPos; m++){
+                    tempBytIndex = m / 8;
+                    tempBitIndex = m % 8;
+                    tempV = bytes[tempBytIndex];
+                    tempBitVal = (tempV >> tempBitIndex) & 1;   
+                    if(tempBitVal) {
+                        tempCount++;
+                    }  
+                } 
+                 prevSetPos = curSetPos +1;        
+                 ftSetPos[sgSetIndx++] = sgSetIndx + tempCount + 1;
             }
             sgBits[bytIndex] |= (btVal << (bitIndex));
             linIndx++;
         }
     }
-
-    linIndx =0 ;
-    sgSetIndx =0;
-    int k = 0;
-    for(col = 0; col < dim; col++) {
-        for(row =0; row < dim; row++) {
-            bytIndex = linIndx / 8;
-            bitIndex = linIndx % 8;
-            v = bytes[bytIndex];
-            btVal = (v >> bitIndex) & 1;
-            ftSetPos[linIndx] = 0;
-            if(btVal) {
-                if(linIndx == sgSetPos[sgSetIndx]) {
-                    ftSetPos[k] = 1;
-                    sgSetIndx++;
-                }
-                k++;
-            }
-            linIndx++;
-        }
-    }
-
-    SETLENGTH(_ftSetPos, k);   
+    SETLENGTH(_ftSetPos, sgSetIndx);
     PROTECT(btlen = allocVector(INTSXP, 1));
     PROTECT(btdim = allocVector(INTSXP, 2));
     INTEGER(btlen)[0] = subgBitLen;
@@ -663,7 +657,6 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx){
     INTEGER(btdim)[1] = subLen;
     setAttrib(sgVec, install("bitlen"), btlen);
     setAttrib(sgVec, install("bitdim"), btdim);
-
     PROTECT(res = allocVector(VECSXP, 2));
     SET_VECTOR_ELT(res, 0, _ftSetPos);
     SET_VECTOR_ELT(res, 1, sgVec); 
@@ -671,8 +664,7 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx){
     SET_STRING_ELT(namesres, 0, mkChar("setPos"));
     SET_STRING_ELT(namesres, 1, mkChar("bitVec"));
     setAttrib(res, R_NamesSymbol, namesres);
-    UNPROTECT(7);
+    UNPROTECT(6);
     return(res);
-
 }
 
