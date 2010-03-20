@@ -596,26 +596,27 @@ SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val)
 
 SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     
-    SEXP _dim =getAttrib(bits,install("bitdim")); 
-    SEXP sgVec, btlen, btdim;
-    int dim, subLen, bytIndex, bitIndex, btVal;
-    int tempBytIndex, tempBitIndex, tempBitVal,m;
-    int curSetPos=0, prevSetPos=0, sgSetIndx=0, linIndx =0, tempCount=0;;
-    int row, col, subgBitLen, subgBytes;
-    unsigned char v, tempV; 
-    unsigned char *bytes = (unsigned char *) RAW(bits);
-    int *subIndx;
-    
+    SEXP _dim = getAttrib(bits,install("bitdim")),
+        sgVec, btlen, btdim;
+    int dim, subLen, bytIndex, bitIndex, btVal,
+        tempBytIndex, tempBitIndex, tempBitVal, m,
+        curSetPos = 0, prevSetPos = 0, sgSetIndx = 0,
+        linIndx = 0, tempCount = 0,
+        row, col, subgBitLen, subgBytes,
+        *subIndx;
+    unsigned char v, tempV,
+        *bytes = (unsigned char *) RAW(bits);
+
     dim  = INTEGER(_dim)[0];
     subIndx = INTEGER(_subIndx);
     subLen = length(_subIndx);
     subgBitLen = subLen * subLen;
     subgBytes = subgBitLen / 8;
-    if((subgBitLen % 8) != 0){
+    if ((subgBitLen % 8) != 0) {
         subgBytes++;
     }
-    
-    PROTECT(sgVec = allocVector(RAWSXP, subgBytes ));
+
+    PROTECT(sgVec = allocVector(RAWSXP, subgBytes));
     unsigned char *sgBits = RAW(sgVec);
     memset(sgBits, 0, subgBytes);
     SEXP _ftSetPos, res, namesres;
@@ -624,32 +625,32 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     */
     PROTECT(_ftSetPos = allocVector(INTSXP, subgBitLen));
     int * ftSetPos = INTEGER(_ftSetPos); 
-    int setPos =0;
-     
-    for(col = 0; col < subLen; col++) { 
-        for(row = 0; row < subLen; row++) { 
-            setPos = (subIndx[col] - 1)*dim + subIndx[row] -1;
+    int setPos = 0;
+
+    for (col = 0; col < subLen; col++) { 
+        for (row = 0; row < subLen; row++) { 
+            setPos = (subIndx[col] - 1) * dim + subIndx[row] - 1;
             v = bytes[setPos / 8];
             bytIndex = linIndx / 8;
             bitIndex = linIndx % 8;
             btVal = ( v >> setPos % 8) & 1;
-            if(btVal) {
+            if (btVal) {
                 curSetPos = setPos;
                 tempCount =0;
-                for(m = prevSetPos; m < curSetPos; m++){
+                for (m = prevSetPos; m < curSetPos; m++) {
                     tempBytIndex = m / 8;
                     tempBitIndex = m % 8;
                     tempV = bytes[tempBytIndex];
                     tempBitVal = (tempV >> tempBitIndex) & 1;   
-                    if(tempBitVal) {
+                    if (tempBitVal) {
                         tempCount++;
                     }  
                 } 
-                 prevSetPos = curSetPos +1;        
-                 ftSetPos[sgSetIndx] = sgSetIndx + tempCount + 1;
-                 sgSetIndx++;
+                prevSetPos = curSetPos + 1;
+                ftSetPos[sgSetIndx] = sgSetIndx + tempCount + 1;
+                sgSetIndx++;
             }
-            sgBits[bytIndex] |= (btVal << (bitIndex));
+            sgBits[bytIndex] |= (btVal << bitIndex);
             linIndx++;
         }
     }
