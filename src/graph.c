@@ -619,6 +619,9 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     unsigned char *sgBits = RAW(sgVec);
     memset(sgBits, 0, subgBytes);
     SEXP _ftSetPos, res, namesres;
+    /* TODO: in many cases, this will be more than we need, we should
+       also use the number of edges in the input as a starting point.
+    */
     PROTECT(_ftSetPos = allocVector(INTSXP, subgBitLen));
     int * ftSetPos = INTEGER(_ftSetPos); 
     int setPos =0;
@@ -643,13 +646,14 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
                     }  
                 } 
                  prevSetPos = curSetPos +1;        
-                 ftSetPos[sgSetIndx++] = sgSetIndx + tempCount + 1;
+                 ftSetPos[sgSetIndx] = sgSetIndx + tempCount + 1;
+                 sgSetIndx++;
             }
             sgBits[bytIndex] |= (btVal << (bitIndex));
             linIndx++;
         }
     }
-    SETLENGTH(_ftSetPos, sgSetIndx);
+    PROTECT(_ftSetPos = lengthgets(_ftSetPos, sgSetIndx));
     PROTECT(btlen = allocVector(INTSXP, 1));
     PROTECT(btdim = allocVector(INTSXP, 2));
     INTEGER(btlen)[0] = subgBitLen;
@@ -664,7 +668,7 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     SET_STRING_ELT(namesres, 0, mkChar("setPos"));
     SET_STRING_ELT(namesres, 1, mkChar("bitVec"));
     setAttrib(res, R_NamesSymbol, namesres);
-    UNPROTECT(6);
+    UNPROTECT(7);
     return(res);
 }
 
