@@ -599,7 +599,7 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     SEXP _dim = getAttrib(bits,install("bitdim")),
         sgVec, btlen, btdim;
     int dim, subLen, bytIndex, bitIndex, btVal,
-        tempBytIndex, tempBitIndex, tempBitVal, m,
+        tempBytIndex, tempBitIndex, m,
         curSetPos = 0, prevSetPos = 0, sgSetIndx = 0,
         linIndx = 0, tempCount = 0,
         row, col, subgBitLen, subgBytes,
@@ -628,23 +628,21 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     int setPos = 0;
 
     for (col = 0; col < subLen; col++) { 
+        int col_idx_dim = ((subIndx[col] - 1) * dim) - 1;
         for (row = 0; row < subLen; row++) { 
-            setPos = (subIndx[col] - 1) * dim + subIndx[row] - 1;
+            setPos = col_idx_dim + subIndx[row];
             v = bytes[setPos / 8];
             bytIndex = linIndx / 8;
             bitIndex = linIndx % 8;
-            btVal = ( v >> setPos % 8) & 1;
+            btVal = (v >> setPos % 8) & 1;
             if (btVal) {
                 curSetPos = setPos;
-                tempCount =0;
+                tempCount = 0;
                 for (m = prevSetPos; m < curSetPos; m++) {
                     tempBytIndex = m / 8;
                     tempBitIndex = m % 8;
                     tempV = bytes[tempBytIndex];
-                    tempBitVal = (tempV >> tempBitIndex) & 1;   
-                    if (tempBitVal) {
-                        tempCount++;
-                    }  
+                    if ((tempV >> tempBitIndex) & 1) tempCount++;
                 } 
                 prevSetPos = curSetPos + 1;
                 ftSetPos[sgSetIndx] = sgSetIndx + tempCount + 1;
