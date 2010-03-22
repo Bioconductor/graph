@@ -599,7 +599,7 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     SEXP _dim = getAttrib(bits,install("bitdim")),
         sgVec, btlen, btdim, _ftSetPos, res, namesres;
     int dim, subLen, prevSetPos = 0, sgSetIndx = 0,
-        linIndx = 0, row, col, subgBitLen, subgBytes,
+        linIndx = 0, col, subgBitLen, subgBytes,
         *subIndx, *ftSetPos;
     unsigned char *bytes = (unsigned char *) RAW(bits), *sgBits;
     dim  = INTEGER(_dim)[0];
@@ -620,20 +620,11 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     ftSetPos = INTEGER(_ftSetPos); 
     for (col = 0; col < subLen; col++) { 
         int col_idx_dim = ((subIndx[col] - 1) * dim) - 1;
-        row = 0;
+        int row = 0;
         while (row < subLen) {
             int setPos = col_idx_dim + subIndx[row];
             unsigned char v = bytes[setPos / 8];
-            if (v == 0) {
-                /* FIXME: we should be able to skip ahead further */
-                linIndx++;
-                row++;
-                continue;
-            }
-            int bytIndex = linIndx / 8;
-            int bitIndex = linIndx % 8;
-            int btVal = (v >> setPos % 8) & 1;
-            if (btVal) {
+            if (v != 0 && v & (1 << (setPos % 8))) {
                 int curSetPos = setPos;
                 int tempCount = 0, m = prevSetPos;
                 while (m < curSetPos) {
@@ -641,15 +632,14 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
                     if (tempV == 0) {
                         m += 8;
                     } else {
-                        int tempBitIndex = m % 8;
-                        if ((tempV >> tempBitIndex) & 1) tempCount++;
+                        if (tempV & (1 << (m % 8))) tempCount++;
                         m++;
                     }
                 }
                 prevSetPos = curSetPos + 1;
                 ftSetPos[sgSetIndx] = sgSetIndx + tempCount + 1;
                 sgSetIndx++;
-                sgBits[bytIndex] |= (btVal << bitIndex);
+                sgBits[linIndx / 8] |= (1 << (linIndx % 8));
             }
             linIndx++;
             row++;
