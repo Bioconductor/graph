@@ -520,9 +520,10 @@ test_basic_subGraph <- function() {
 }
 
 test_large_subGraph <- function() {
-    weightFun <- function(n){ 1:n}
-    df1 <- graph:::randFromTo(1000L, 10001L, directed = TRUE)
-    df2 <- graph:::randFromTo(1000L, 10001L, directed = FALSE)
+    df1 <- graph:::randFromTo(1000L, 10001L, directed = TRUE,
+                              weightFun = seq_len)
+    df2 <- graph:::randFromTo(1000L, 10001L, directed = FALSE,
+                              weightFun = seq_len)
     g <- MultiGraph(list(e1= df1$ft, e2 = df2$ft))
     nds <- sample( graph:::nodes(g), 100)
     subG <- subGraph(nds, g)
