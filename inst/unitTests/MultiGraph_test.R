@@ -530,7 +530,46 @@ test_large_subGraph <- function() {
     checkSubGraph(g, subG)
 }
 
+test_basic_mgToGraphAM <- function() {
+    g <- make_mixed_MultiGraph()$g
+    res <- extractGraphAM(g)
+    checkGraphAMObj(res,g)    
+}
 
+test_large_mgToGraphAM  <- function() {
+    df1 <- graph:::randFromTo(800L, 90L, directed = TRUE,
+                              weightFun = seq_len)
+    df2 <- graph:::randFromTo(800L, 60L, directed = FALSE,
+                              weightFun = seq_len)
+    g <- MultiGraph(list(e1= df1$ft, e2 = df2$ft))
+    res <- extractGraphAM(g)
+    checkGraphAMObj(res,g)
+}
+
+checkGraphAMObj <- function(am, mg){
+    nds <- nodes(mg)
+    dr <- isDirected(mg)
+    checkEquals(names(mg@edge_sets),names(am))
+    sapply(names(am), function(x){
+                mat <- as(am[[x]], "matrix")
+                checkEquals(colnames(mat),rownames(mat))
+                checkEquals(colnames(mat), nds)
+                adjMat <- am[[x]]@adjMat
+                dimnames(adjMat) <- NULL
+                 if(isDirected(mg@edge_sets[[x]])) {
+                    checkEquals( adjMat, graph:::bitToMat(mg@edge_sets[[x]]@bit_vector))
+                }else{ 
+                    tmp <-  graph:::bitToMat(mg@edge_sets[[x]]@bit_vector)
+                    checkEquals( adjMat, (tmp +t(tmp)))
+
+                }
+                wtMg <- .Call("graph_bitarray_edgeSetToRMat", mg@edge_sets[[x]]@bit_vector, 
+                        as.numeric(mg@edge_sets[[x]]@weights),dr[[x]] )
+                dimnames(mat) <- NULL
+                checkEquals(mat,wtMg)
+    })
+
+}
 
 ## test_edgeMatrices <- function()
 ## {
