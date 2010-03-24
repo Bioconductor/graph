@@ -19,6 +19,7 @@ SEXP graph_bitarray_transpose(SEXP bits);
 SEXP graph_bitarray_undirect(SEXP bits);
 SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim);
 SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx);
+SEXP graph_bitarray_edgeSetToRMat(SEXP bits, SEXP _weights, SEXP _directed);
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
 static const R_CallMethodDef R_CallDef[] = {
@@ -672,4 +673,46 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     UNPROTECT(6);
     return(res);
 }
+
+SEXP graph_bitarray_edgeSetToRMat(SEXP bits, SEXP _weights, SEXP _directed) {
+
+    SEXP _dim = getAttrib(bits, install("bitdim"));
+    SEXP  _ftMat, matDim;
+    unsigned char *bytes = (unsigned char *) RAW(bits);
+    int dim = INTEGER(_dim)[0];
+    int directed = asInteger(_directed);
+    double * weights = REAL(_weights);
+    int  col, linIndx = 0, wtIndx = 0;
+    double * ftMat;
+    PROTECT(_ftMat = allocVector(REALSXP, dim*dim ));
+    ftMat = REAL(_ftMat); 
+    memset(ftMat, 0, 8*length(_ftMat)); 
+    for( col = 0; col < dim ; col++) {
+        int row =0;
+        while( row < dim) {
+            unsigned char v = bytes[ linIndx / 8];
+            if(v == 0){
+                row += 8;
+                linIndx += 8;
+            } else {
+                if( v & (1<< (linIndx % 8))) {
+                    ftMat[linIndx] = weights[wtIndx];
+                    if(!directed){
+                        ftMat[linIndx/dim + (linIndx % dim)*dim] = weights[wtIndx];
+                    }
+                    wtIndx++;
+                }
+                linIndx++;
+                row++;
+            }
+        }
+    }
+    PROTECT(matDim = allocVector(INTSXP, 2));
+    INTEGER(matDim)[0] = dim;
+    INTEGER(matDim)[1] = dim;
+    setAttrib(_ftMat, R_DimSymbol, matDim);
+    UNPROTECT(2);
+    return _ftMat;    
+}
+
 
