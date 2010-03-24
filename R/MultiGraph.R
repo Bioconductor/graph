@@ -464,4 +464,22 @@ setMethod("subGraph", signature(snodes="character", graph="MultiGraph"),
     graph
 })
 
+extractGraphAM <- function(mg){
+    nds <- nodes(mg)
+    drct <- isDirected(mg)
+    glst <- lapply(names(mg@edge_sets), function(x) {
+                mat <- edgeSetToRMat(nds,mg@edge_sets[[x]], drct[[x]])
+                new("graphAM", adjMat=mat, 
+                        edgemode = if(drct[[x]]) "directed" else "undirected",
+                        values= list(weight=1))
+            })
+    names(glst) <- names(mg@edge_sets)
+    glst
+}
+
+edgeSetToRMat <- function(nds, edgeSet, dr){
+    mat <- .Call("graph_bitarray_edgeSetToRMat", edgeSet@bit_vector, as.numeric(edgeSet@weights), dr)
+    colnames(mat) <- rownames(mat) <- nds
+    mat
+}
 
