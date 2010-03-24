@@ -11,6 +11,7 @@
 \alias{edgeSetIntersect0}
 \alias{subsetEdgeSets}
 \alias{extractFromTo}
+\alias{extractGraphAM}
 \alias{isDirected,MultiGraph-method}
 \alias{ugraph,MultiGraph-method}
 % these are not supposed to be publicly available
@@ -117,6 +118,11 @@ edgeSetIntersect0(g)
     \item{subsetEdgeSets}{Return a new \code{MultiGraph} object 
 	  representing the subset of edge sets from the original 
       \code{MultiGraph}.}
+
+    \item{extractGraphAM}{Return a named \code{list} of \code{graphAM}
+      objects corresponding to the edge sets from the original 
+      \code{MultiGraph}.}
+
     \item{ugraph}{Return a new \code{MultiGraph} object in which all
       edge sets have been converted to undirected edge sets.  This
       operation sets all edge weights to one and drops other edge
@@ -160,5 +166,6 @@ edgeSetIntersect0(g)
     edgeSetIntersect0(g)
     subsetEdgeSets(g,"es1")
     extractFromTo(g)
+    extractGraphAM(g)
 }
 \keyword{classes}
