@@ -464,22 +464,26 @@ setMethod("subGraph", signature(snodes="character", graph="MultiGraph"),
     graph
 })
 
-extractGraphAM <- function(mg){
-    nds <- nodes(mg)
-    drct <- isDirected(mg)
-    glst <- lapply(names(mg@edge_sets), function(x) {
-                mat <- edgeSetToRMat(nds,mg@edge_sets[[x]], drct[[x]])
-                new("graphAM", adjMat=mat, 
-                        edgemode = if(drct[[x]]) "directed" else "undirected",
-                        values= list(weight=1))
-            })
-    names(glst) <- names(mg@edge_sets)
-    glst
+extractGraphAM <- function(g, edgeSets) {
+    nds <- nodes(g)
+    drct <- isDirected(g)
+    ## FIXME: validate that edgeSets is a valid subset as is
+    ## done in subsetEdgeSets
+    esets <- if (missing(edgeSets)) g@edge_sets else g@edge_sets[edgeSets]
+    nms <- names(esets)
+    names(nms) <- nms
+    lapply(nms, function(x) {
+        mat <- edgeSetToMatrix(nds, esets[[x]], drct[[x]])
+        new("graphAM", adjMat=mat,
+            edgemode = if(drct[[x]]) "directed" else "undirected",
+            values= list(weight=1))
+    })
 }
 
-edgeSetToRMat <- function(nds, edgeSet, dr){
-    mat <- .Call("graph_bitarray_edgeSetToRMat", edgeSet@bit_vector, as.numeric(edgeSet@weights), dr)
-    colnames(mat) <- rownames(mat) <- nds
-    mat
+edgeSetToMatrix <- function(nds, edgeSet, directed)
+{
+    .Call(graph_bitarray_edgeSetToMatrix,
+          nds, edgeSet@bit_vector,
+          as.numeric(edgeSet@weights), as.logical(directed))
 }
 

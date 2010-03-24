@@ -44,6 +44,7 @@
 MultiGraph(edgeSets, nodes = NULL, directed = TRUE)
 eweights(object, names.sep = NULL)
 edgeSetIntersect0(g)
+extractGraphAM(g, edgeSets)
 }
 
 \arguments{
@@ -164,8 +165,9 @@ edgeSetIntersect0(g)
     isDirected(ug)
     numEdges(ug)
     edgeSetIntersect0(g)
-    subsetEdgeSets(g,"es1")
+    subsetEdgeSets(g, "es1")
     extractFromTo(g)
     extractGraphAM(g)
+    extractGraphAM(g, "es1")
 }
 \keyword{classes}
