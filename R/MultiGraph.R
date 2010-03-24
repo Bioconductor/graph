@@ -264,7 +264,7 @@ eweights <- function(object, names.sep = NULL)
             w <- es@weights
             ft <- .Call(graph_bitarray_rowColPos, es@bit_vector, length(nn))
             names(w)  <- paste(nn[ft[, "from"]], nn[ft[, "to"]], sep = names.sep)
-            w           
+            w
         })
     }
 }
@@ -453,7 +453,7 @@ setMethod("subGraph", signature(snodes="character", graph="MultiGraph"),
               "MultiGraph:\n", paste(bad, collapse=", "))
     }
     graph@edge_sets <-  lapply(graph@edge_sets, function(x){
-                res <- .Call("graph_bitarray_subGraph", x@bit_vector, snodesIdx) 
+                res <- .Call("graph_bitarray_subGraph", x@bit_vector, snodesIdx)
                 x@bit_vector <- res$bitVec
                 x@weights <- x@weights[res$setPos]
                 if(length(x@edge_attrs))
