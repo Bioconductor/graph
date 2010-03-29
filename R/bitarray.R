@@ -24,7 +24,7 @@ makebits <- function(n, bitdim=NULL) {
     if (!is.null(bitdim)) bitdim <- as.integer(bitdim)
     n <- as.integer(n)
     structure(raw(ceiling(n / 8)),
-              bitlen = n, bitdim = bitdim)
+              bitlen = n, bitdim = bitdim, nbitset = 0L)
 }
 
 bitdim <- function(x, dims)
@@ -67,6 +67,8 @@ getRow <- function(xx, x)
 
 bitlen <- function(x) attr(x, "bitlen")
 
+nbitset <- function(x) attr(x, "nbitset")
+
 bitToLogical <- function(x) {
     len <- attr(x, "bitlen")
     if (is.null(len)) len <- length(x) * 8L
@@ -75,19 +77,7 @@ bitToLogical <- function(x) {
 
 setbitv <- function(xx, ii, v)
 {
-    .Call(graph:::graph_bitarray_set, xx, ii, as.integer(v))
-    ## i <- ii - 1L
-    ## byteIdx <- (i %/% 8L) + 1L
-    ## bit <- (i %% 8L)
-    ## for (k in seq_len(length(byteIdx))) {
-    ##     val <- v[k]
-    ##     bi <- byteIdx[k]
-    ##     xx[bi] <- if (val)
-    ##         xx[bi] | rawShift(as.raw(1L), bit[k])
-    ##     else
-    ##         xx[bi] & !(rawShift(as.raw(1L), bit[k]))
-    ## }
-    ## xx
+    .Call(graph:::graph_bitarray_set, xx, ii, v)
 }
 
 

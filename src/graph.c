@@ -459,13 +459,12 @@ SEXP graph_bitarray_sum(SEXP bits)
 
 SEXP graph_bitarray_edge_indices(SEXP bits)
 {
-    SEXP s_num_edges, ans;
-    int i = 0, j = 0, k = 0, len = length(bits), *indices;
+    SEXP ans;
+    int i = 0, j = 0, k = 0, len = length(bits), *indices,
+        num_edges = asInteger(getAttrib(bits, install("nbitset")));
     unsigned char v, *bytes = (unsigned char *) RAW(bits);
-
-    PROTECT(s_num_edges = graph_bitarray_sum(bits));
     /* FIXME: is edge count an int?  Is that big enough? */
-    PROTECT(ans = allocVector(INTSXP, INTEGER(s_num_edges)[0]));
+    PROTECT(ans = allocVector(INTSXP, num_edges));
     indices = INTEGER(ans);
     for (i = 0; i < len; i++) {
         for (v = bytes[i], k = 0; v; v >>= 1, k++) {
@@ -483,8 +482,7 @@ SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim)
     int i = 0, j = 0, k = 0, len = length(bits), *indices;
     int dim = asInteger(_dim), tmp, setCount;
     unsigned char v, *bytes = (unsigned char *) RAW(bits);
-
-    setCount = INTEGER(graph_bitarray_sum(bits))[0];
+    setCount = asInteger(getAttrib(bits, install("nbitset")));
     PROTECT(ans = allocVector(INTSXP, 2 * setCount));
     indices = INTEGER(ans);
     for (i = 0; i < len; i++) {
@@ -518,6 +516,7 @@ SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim)
 #define NROW(x) (INTEGER(getAttrib((x), install("bitdim")))[0])
 #define INDEX_TO_ROW(i, n) ((i) % (n))
 #define INDEX_TO_COL(i, n) ((i) / (n))
+#define IS_SET(b, i, bit) ((b)[i] != 0 && ((b)[i] & (1 << (bit))))
 
 SEXP graph_bitarray_transpose(SEXP bits)
 {
@@ -536,10 +535,8 @@ SEXP graph_bitarray_transpose(SEXP bits)
             int byteIndex = idx / 8,
                 bitIndex = idx % 8,
                 tBitIndex = tidx % 8;
-            if (bytes[byteIndex] & (1 << bitIndex))
+            if (IS_SET(bytes, byteIndex, bitIndex))
                 ans_bytes[tidx / 8] |= (1 << tBitIndex);
-            else                /* do we need to set to zero? */
-                ans_bytes[tidx / 8] &= ~(1 << tBitIndex);
         }
     }
     UNPROTECT(1);
@@ -551,22 +548,34 @@ SEXP graph_bitarray_transpose(SEXP bits)
  */
 SEXP graph_bitarray_undirect(SEXP bits)
 {
-    int i, j, idx, len = length(bits), nrow = NROW(bits);
+    int i, j, c = 0, len = length(bits), nrow = NROW(bits);
     SEXP tbits = PROTECT(graph_bitarray_transpose(bits)),
          ans = PROTECT(duplicate(bits));
     unsigned char *bytes = RAW(bits), *tbytes = RAW(tbits), *abytes = RAW(ans);
     for (i = 0; i < len; i++) {
-        abytes[i] = bytes[i] | tbytes[i];
+        unsigned char v;
+        if (0 != (abytes[i] = bytes[i] | tbytes[i])) {
+            /* keep track of edge count */
+            for (v = abytes[i]; v; c++) {
+                v &= v - 1;  /* clear the least significant bit set */
+            }
+        }
     }
     /* zero out lower tri */
     for (i = 0; i < nrow; i++) {
         for (j = 0; j < nrow; j++) {
             if (i > j) {
-                idx = COORD_TO_INDEX(i, j, nrow);
-                abytes[idx / 8] &= ~(1 << (idx % 8));
+                unsigned char v;
+                int idx = COORD_TO_INDEX(i, j, nrow);
+                v = abytes[idx / 8];
+                if (0 != v) {
+                    if (IS_SET(abytes, idx / 8, idx % 8)) c--;
+                    abytes[idx / 8] &= ~(1 << (idx % 8));
+                }
             }
         }
     }
+    INTEGER(getAttrib(ans, install("nbitset")))[0] = c;
     UNPROTECT(2);
     return ans;
 }
@@ -574,32 +583,33 @@ SEXP graph_bitarray_undirect(SEXP bits)
 SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val)
 {
     SEXP ans = PROTECT(duplicate(bits));
-    int *which = INTEGER(idx);
-    int *values = INTEGER(val); /* expecting logical? */
+    int *which, *values, i, nVal = length(val),
+        *num_set = INTEGER(getAttrib(ans, install("nbitset")));
     unsigned char *bytes = RAW(ans);
-    int i, nVal = length(val);
-    int byteIndex;
-    unsigned char bitIndex;
-
+    PROTECT(idx = coerceVector(idx, INTSXP));
+    PROTECT(val = coerceVector(val, INTSXP));
+    which = INTEGER(idx);
+    values = INTEGER(val);
     for (i = 0; i < nVal; i++) {
-        byteIndex = (which[i] - 1) / 8;
-        bitIndex = (which[i] - 1) % 8;
+        int w = which[i] - 1;
+        int offset = w / 8;
+        unsigned char bit = w % 8;
         if (values[i]) {
-            bytes[byteIndex] |= (1 << bitIndex);
+            if (!IS_SET(bytes, offset, bit)) (*num_set)++;
+            bytes[offset] |= (1 << bit);
         } else {
-            bytes[byteIndex] &= ~(1 << bitIndex);
+            if (IS_SET(bytes, offset, bit)) (*num_set)--;
+            bytes[offset] &= ~(1 << bit);
         }
     }
-    UNPROTECT(1);
+    UNPROTECT(3);
     return ans;
 }
-
-
 
 SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     
     SEXP _dim = getAttrib(bits,install("bitdim")),
-        sgVec, btlen, btdim, _ftSetPos, res, namesres;
+        sgVec, btlen, btdim, btcnt, _ftSetPos, res, namesres;
     int dim, subLen, prevSetPos = 0, sgSetIndx = 0,
         linIndx = 0, col, subgBitLen, subgBytes,
         *subIndx, *ftSetPos, edgeCount = 0, ftLen = 256;
@@ -657,13 +667,14 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
         }
     }
     REPROTECT(_ftSetPos = lengthgets(_ftSetPos, sgSetIndx), pidx);
-    PROTECT(btlen = allocVector(INTSXP, 1));
+    PROTECT(btlen = ScalarInteger(subgBitLen));
+    PROTECT(btcnt = ScalarInteger(sgSetIndx));
     PROTECT(btdim = allocVector(INTSXP, 2));
-    INTEGER(btlen)[0] = subgBitLen;
     INTEGER(btdim)[0] = subLen;
     INTEGER(btdim)[1] = subLen;
     setAttrib(sgVec, install("bitlen"), btlen);
     setAttrib(sgVec, install("bitdim"), btdim);
+    setAttrib(sgVec, install("nbitset"), btcnt);
     PROTECT(res = allocVector(VECSXP, 2));
     SET_VECTOR_ELT(res, 0, _ftSetPos);
     SET_VECTOR_ELT(res, 1, sgVec); 
@@ -671,8 +682,8 @@ SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx) {
     SET_STRING_ELT(namesres, 0, mkChar("setPos"));
     SET_STRING_ELT(namesres, 1, mkChar("bitVec"));
     setAttrib(res, R_NamesSymbol, namesres);
-    UNPROTECT(6);
-    return(res);
+    UNPROTECT(7);
+    return res;
 }
 
 SEXP graph_bitarray_edgeSetToMatrix(SEXP nodes, SEXP bits,

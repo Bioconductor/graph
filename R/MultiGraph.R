@@ -55,7 +55,7 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
     ## setBitCell.
     bitVect <- setBitCell(bitVect, from_i[edge_order], to_i[edge_order],
                           rep(1L, length(from_i)))
-    edge_count <- .Call(graph_bitarray_sum, bitVect)
+    edge_count <- nbitset(bitVect)
     if (length(from_i) != edge_count)
         .report_duplicate_edges(es_name, from, to, is_directed)
     klass <- if (is_directed) "DiEdgeSet" else "UEdgeSet"
@@ -191,7 +191,7 @@ setMethod("numEdges", signature = signature(object = "MultiGraph"),
               ## TODO: would it make more sense to just
               ## return the length of @weights?
               sapply(object@edge_sets, function(es) {
-                  .Call(graph_bitarray_sum, es@bit_vector)
+                  nbitset(es@bit_vector)
               })
           })
 
@@ -229,7 +229,7 @@ setMethod("ugraph", "DiEdgeSet",
               ## XXX: edge weights => 1, edge attributes dropped
               bit_vector <- .Call(graph_bitarray_undirect, graph@bit_vector)
               new("UEdgeSet", bit_vector = bit_vector,
-                  weights = rep(1L, .Call(graph_bitarray_sum, bit_vector)),
+                  weights = rep(1L, nbitset(bit_vector)),
                   edge_attrs = list())
           })
 
@@ -356,7 +356,7 @@ edgeSetIntersect0 <- function(g)
         bv <- bv & edge_sets[[i]]@bit_vector
     }
     attributes(bv) <- keepAttrs
-    n_edges <- .Call(graph_bitarray_sum, bv)
+    n_edges <- attr(bv, "nbitset") <- .Call(graph_bitarray_sum, bv)
     if (n_edges > 0) {
         new_edge_sets <- list(new(klass, bit_vector = bv,
                                   weights = rep(1L, n_edges),

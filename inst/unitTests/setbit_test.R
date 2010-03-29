@@ -6,19 +6,19 @@ makebits <- graph:::makebits
 
 test_setbitv <- function()
 {
-    xx <- raw(5)
     len <- 5L * 8L
+    xx <- makebits(len)
     for (i in seq_len(len)) {
         checkEquals(FALSE, .testbit(xx, i))
         xx <- setbitv(xx, i, FALSE)
         checkEquals(FALSE, .testbit(xx, i))
     }
 
-    xx <- raw(5)
+    xx <- makebits(len)
     for (i in seq_len(len)) {
         checkEquals(FALSE, .testbit(xx, i))
         xx <- setbitv(xx, i, TRUE)
-        checkEquals(TRUE, .testbit(xx, i))
+        checkEquals(TRUE, .testbit(xx, i), msg=paste("iter", i))
     }
     for (i in seq_len(len)) checkEquals(TRUE, .testbit(xx, i))
     for (i in seq_len(len)) xx <- setbitv(xx, i, FALSE)
@@ -27,8 +27,8 @@ test_setbitv <- function()
 
 test_setbitv_vectorized <- function()
 {
-    xx <- raw(3)
     len <- 3L * 8L
+    xx <- makebits(len)
     xxall <- setbitv(xx, 1:10, rep(TRUE, 10))
     checkTrue(all(.testbit(xxall, 1:10)))
     checkTrue(!any(.testbit(xxall, 11:len)))
@@ -36,7 +36,7 @@ test_setbitv_vectorized <- function()
 
 test_setbit_basics <- function()
 {
-    xx <- raw(5)
+    xx <- makebits(40L)
     tf <- function(n) rawToBits(setbit(xx, n)[1])
     got <- as.logical(do.call(rbind, lapply(1:8, tf)))
     dim(got) <- c(8, 8)
@@ -58,7 +58,7 @@ test_setbit_basics <- function()
 
 test_testbit <- function()
 {
-    xx <- raw(5)
+    xx <- makebits(40)
     for (i in 1:(5 * 8)) {
         checkTrue(!.testbit(xx, i))
     }
