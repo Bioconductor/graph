@@ -4,6 +4,7 @@
 \alias{subGraph,character,clusterGraph-method}
 \alias{subGraph,character,distGraph-method}
 \alias{subGraph,character,MultiGraph-method}
+\alias{subGraph,character,graphBAM-method}
 \title{Create a Subgraph  }
 \description{
   Given a set of nodes and a graph this function creates
