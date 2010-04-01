@@ -141,7 +141,37 @@ test_BAM_edgeMatrix <- function() {
       checkEquals(em[2,], c(1, 2, 3, 3, 4, 5))
 }
 
+test_BAMSmall_edgeData <- function(){
+      g1 <- make_smallBAM()
+      eg <- edgeData(g1)
+      tmp <- paste(c("c", "a", "a", "x", "a", "x"), c("a","b","c","c","x","y"),sep="|")
+      checkEquals(names(eg), tmp)
+      vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight               
+              })
+      checkEquals(names(vals), tmp)
+      checkEquals( as.numeric(vals),c(7.9, 3.4, 2.6, 1.6, 1.7, 5.3))
 
+      eg <- edgeData(g1, "a", attr="weight")
+      tmp <- paste("c", "a", sep = "|")
+      checkEquals(names(eg), tmp)
+      vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight               
+              })
+      checkEquals(names(vals), tmp)
+      checkEquals( as.numeric(vals),7.9)
+
+      checkException(eg <- edgeData(g1, "a", attr="weightsss"))
+     
+      eg <- edgeData(g1, "a", "b", attr="weight")
+      tmp <- paste("a", "b", sep = "|")
+      checkEquals(names(eg), tmp)
+      vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight               
+              })
+      checkEquals(names(vals), tmp)
+      checkEquals( as.numeric(vals),3.4)
+ }
 
 
 
