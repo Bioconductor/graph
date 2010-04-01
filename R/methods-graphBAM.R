@@ -165,7 +165,7 @@ setMethod("edgeData", signature(self="graphBAM", from="missing", to="missing",
               nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                       sep ="|")
               w <- self@edgeSet@weights
-              eList <- structure(vector(mode="list", length=numNodes),
+              eList <- structure(vector(mode="list", length = length(w)),
                       names = nodeLbl)
 
               for( i in seq_len(length(w))){
