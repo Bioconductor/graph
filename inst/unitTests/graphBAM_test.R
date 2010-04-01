@@ -153,13 +153,13 @@ test_BAMSmall_edgeData <- function(){
       checkEquals( as.numeric(vals),c(7.9, 3.4, 2.6, 1.6, 1.7, 5.3))
 
       eg <- edgeData(g1, "a", attr="weight")
-      tmp <- paste("c", "a", sep = "|")
+      tmp <- paste( c("a", "a", "a"), c("b", "c", "x"), sep = "|")
       checkEquals(names(eg), tmp)
       vals <- sapply( names(eg),function(k){
                eg[[k]]$weight               
               })
       checkEquals(names(vals), tmp)
-      checkEquals( as.numeric(vals),7.9)
+      checkEquals( as.numeric(vals), c(3.4, 2.6, 1.7))
 
       checkException(eg <- edgeData(g1, "a", attr="weightsss"))
      
