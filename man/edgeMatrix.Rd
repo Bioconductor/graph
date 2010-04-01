@@ -6,6 +6,7 @@
 \alias{edgeMatrix,graphAM-method}
 \alias{edgeMatrix,clusterGraph-method}
 \alias{edgeMatrix,distGraph-method}
+\alias{edgeMatrix,graphBAM-method}
 \title{Compute an Edge Matrix or weight vector for a Graph  }
 \description{
  For our purposes an \emph{edge matrix} is a matrix with two rows and as
