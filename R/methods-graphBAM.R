@@ -188,12 +188,12 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="missing",
                         numNodes)
                 w <- self@edgeSet@weights
                 ft <- data.frame(ft,w)
-                ft <- ft[indx,]
+                ft <- ft[ ft[,"from"] %in% indx,]
 
                 nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                         sep ="|")
                 eList <- structure(vector(mode="list", length = nrow(ft)),
-                        names = nodeLbl[indx])
+                        names = nodeLbl)
                 for( i in seq_len(nrow(ft))){
                     eList[[i]] <- list(weight = ft[,"w"][i])
                 }
@@ -214,8 +214,8 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
                         numNodes)
                 w <- self@edgeSet@weights
                 ft <- data.frame(ft,w)
-                ft <- ft[ft[,"from"] == which(nodeNames == from),]
-                ft <- ft[ft[,"to"] == which(nodeNames == to),] 
+                ft <- ft[ft[,"from"] %in% which(nodeNames == from),]
+                ft <- ft[ft[,"to"] %in% which(nodeNames == to),] 
                 nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                         sep ="|")
                 eList <- structure(vector(mode="list", length = nrow(ft)),
