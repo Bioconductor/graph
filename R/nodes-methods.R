@@ -70,9 +70,6 @@ setMethod("renameNodes", "graphNEL", function(g, value) {
     g
 })
 
-### graphAM2
-setMethod("nodes", "graphAM2", function(object) object@nodes)
-
 ### graphAM
 
 setMethod("nodes", signature("graphAM"),
@@ -85,6 +82,19 @@ setMethod("renameNodes", "graphAM", function(g, value) {
     colnames(g@adjMat) <- value
     g
 })
+
+### graphBAM
+
+setMethod("nodes", signature("graphBAM"),
+        function(object) {
+            object@nodes        
+        })
+
+setMethod("renameNodes", "graphBAM", function(g, value) {
+    colnames(g@nodes) <- value
+    g
+})
+
 
 ### clusterGraph
 
