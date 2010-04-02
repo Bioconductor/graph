@@ -27,7 +27,7 @@
 
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
-  An adjacency matrix representation backed by a bit array.
+  The graphAM class represents an adjacency matrix as a bit array.
   The bit array is stored as a raw vector.  This is EXPERIMENTAL and
   subject to change.
 }
@@ -71,9 +71,9 @@ Class \code{"\linkS4class{graph}"}, directly.
     \item{inEdges}{\code{signature(node = "character", object = "graphBAM")}: ... }
     \item{initialize}{\code{signature(.Object = "graphBAM")}: ... }
     \item{isAdjacent}{\code{signature(object = "graphBAM", from = "character", to = "character")}: ... }
-    \item{nodes}{\code{signature(object = "graphBAM")}: ... }
-    \item{numEdges}{\code{signature(object = "graphBAM")}: ... }
-    \item{numNodes}{\code{signature(object = "graphBAM")}: ... }
+    \item{nodes}{\code{signature(object = "graphBAM")} Returns the nodes of the graphBAM object. }
+    \item{numEdges}{\code{signature(object = "graphBAM")} Returns an integer vector of edge counts. }
+    \item{numNodes}{\code{signature(object = "graphBAM")} Returns the number of nodes in the graphBAM object }
     \item{removeEdge}{\code{signature(from = "character", to = "character", graph = "graphBAM")}: ... }
     \item{removeNode}{\code{signature(node = "character", object = "graphBAM")}: ... }
     \item{edgeData}{\code{signature(self = "graphBAM", from = "character", 
@@ -82,9 +82,12 @@ Class \code{"\linkS4class{graph}"}, directly.
             to="missing", attr = "character")}}
     \item{edgeData}{\code{signature(self = "graphBAM", from = "missing", 
             to="missing", attr = "missing")}}
-    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "character")}}
-    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "missing")}}
-    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "numeric")}}
+    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "character")} Returns the 
+     edge weights from the indexed nodes to all adjacent nodes }
+    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "missing")} Returns the edge weights of the 
+     graphBAM object}
+    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "numeric")} Returns the 
+    edge weights from teh indexed nodes to all adjacent nodes }
     \item{show}{\code{signature(object = "graphBAM")}} 
   }
 }
@@ -101,5 +104,16 @@ Class \code{"\linkS4class{graph}"}, directly.
     gd <- GraphBAM(f, t, edgemode = "directed")
     g
     gd
+    nd <- nodes(g)
+    w1 <- edgeWeights(g)
+    w2 <- edgeWeights(g,"a")
+    w3 <- edgeWeights(g,1)
+    d1 <- edges(g)
+    d2 <- edges(g,c("a", "b"))
+    e1 <- edgeData(g)   
+    e2 <- edgeData(g, "a", "c",attr="weight")
+    em <- edgeMatrix(g) 
+    id <- isDirected(g)
+    sg <- subGraph(c("a","c","d"), g)
 }
 \keyword{classes}
