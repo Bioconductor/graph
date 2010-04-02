@@ -32,27 +32,42 @@ setMethod("edges", signature("multiGraph", "character"),
               lapply(object@edgeL, function(x) edges(x, which, nV))
           })
 
-numEHelper = function(gEdges, directed) {
-    if (length(gEdges) == 0)
-        return(length(gEdges))
-    numEdges <- length(unlist(gEdges, use.names=FALSE))
-    if (directed) {
-        numSelfLoops <- sum(mapply(function(e, n) sum(n == e),
-                                   gEdges, names(gEdges)))
-        numEdges <- numSelfLoops + (numEdges - numSelfLoops) / 2
-    }
-    numEdges
-}
-    
+
+setMethod("numEdges", signature(object="MGEdgeSet"), 
+          function(object) {
+              attr(object@bit_vector, "nbitset")
+          }) 
+
 setMethod("numEdges", signature(object="multiGraph"),
           function(object) {
-              gEdges <- edges(object)
-              dir <- isDirected(object)
-              ans <- rep(NA, length(dir))
-              for(i in 1:length(dir))
-                  ans[i] = numEHelper(gEdges[[i]], dir[i])
-              ans
+              sapply(object@edge_sets, numEdges)
+    
           })
+
+  #
+  #numEHelper = function(gEdges, directed) {
+  #    if (length(gEdges) == 0)
+  #        return(length(gEdges))
+  #    numEdges <- length(unlist(gEdges, use.names=FALSE))
+  #    if (directed) {
+  #        numSelfLoops <- sum(mapply(function(e, n) sum(n == e),
+  #                                   gEdges, names(gEdges)))
+  #        numEdges <- numSelfLoops + (numEdges - numSelfLoops) / 2
+  #    }
+  #    numEdges
+  #}
+  #    
+  #setMethod("numEdges", signature(object="multiGraph"),
+  #          function(object) {
+  #              gEdges <- edges(object)
+  #              dir <- isDirected(object)
+  #              ans <- rep(NA, length(dir))
+  #              for(i in 1:length(dir))
+  #                  ans[i] = numEHelper(gEdges[[i]], dir[i])
+  #              ans
+  #          })
+  #
+
 
 ##we need a validity checking method: ensure that nodes are the same
 ##in all edgeSets - which is hard as the edgeSets don't always seem to
