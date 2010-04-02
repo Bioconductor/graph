@@ -4,6 +4,7 @@
 \alias{MultiGraph-class}
 \alias{nodes,MultiGraph-method}
 \alias{numEdges,MultiGraph-method}
+\alias{numEdges,MGEdgeSet-method}
 \alias{numNodes,MultiGraph-method}
 \alias{show,MultiGraph-method}
 \alias{MultiGraph}
