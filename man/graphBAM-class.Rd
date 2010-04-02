@@ -92,7 +92,7 @@ Class \code{"\linkS4class{graph}"}, directly.
   }
 }
 
-\author{S. Falcon}
+\author{S. Falcon, N. Gopalakrishnan}
 
 
 
