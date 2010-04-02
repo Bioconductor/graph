@@ -32,7 +32,7 @@ GraphBAM <- function(from, to, nodes=NULL, weights=NULL, edgemode="undirected") 
 
 setMethod("numEdges", signature = signature(object = "graphBAM"),
         function(object) {
-            length(object@edgeSet@weights)
+            numEdges(object@edgeSet)
         })
 
 setMethod("show", signature("graphBAM"),
@@ -117,7 +117,7 @@ getWeightList2 <- function(g){
         if(length(wts) >0)
             eList[[i]] <- wts
         else
-            eList[[i]] <- character(0)
+            eList[[i]] <- numeric(0)
     }
     eList
 }
