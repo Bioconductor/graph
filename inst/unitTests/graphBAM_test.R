@@ -42,7 +42,7 @@ test_create_graphBAMSmall <- function() {
     w <- edgeWeights(g1)
     checkEquals(names(w), c("a", "b", "c", "d"))
     checkEquals(list(w$a, w$b, w$c, w$d), list(structure(1.5, names="b"),
-            structure(1, names="c"), character(0), structure(c(3.1, 5.4), 
+            structure(1, names="c"), numeric(0), structure(c(3.1, 5.4), 
             names= c("a", "d"))))
     checkEquals(4L, numNodes(g2))
     checkEquals(4L, numEdges(g2))
@@ -106,18 +106,18 @@ test_BAM_edgeWeights <- function() {
     checkEquals(names(ew1), c("a", "b", "c", "x", "y"))
     checkEquals(list(ew1$a, ew1$b, ew1$c, ew1$x, ew1$y), 
             list(structure( c(3.4, 2.6, 1.7), names = c("b","c","x")),
-            character(0), structure(c(7.9), names = "a"),
-            structure(c(1.6, 5.3), names= c("c", "y")), character(0)))
+            numeric(0), structure(c(7.9), names = "a"),
+            structure(c(1.6, 5.3), names= c("c", "y")), numeric(0)))
 
     ew2 <- edgeWeights(g1,c("a","b")) ##index = char
     checkEquals(names(ew2), c("a","b"))
     checkEquals(list(ew2$a, ew2$b), list(structure( c(3.4, 2.6, 1.7),
-                            names = c("b","c","x")), character(0)))
+                            names = c("b","c","x")), numeric(0)))
      
     ew2 <- edgeWeights(g1, 1:2) ##index = numeric
     checkEquals(names(ew2), c("a","b"))
     checkEquals(list(ew2$a, ew2$b), list(structure( c(3.4, 2.6, 1.7),
-                            names = c("b","c","x")), character(0)))
+                            names = c("b","c","x")), numeric(0)))
 }
 
 
