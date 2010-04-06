@@ -108,18 +108,19 @@ getWeightList2 <- function(g){
     bv <- g@edgeSet@bit_vector
     ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector,
             numNodes)
-    df <- data.frame(ft,w)          
-    for( i in seq_len(numNodes)){
-        tmp <- df[df$from == i,]        
-        nds <- nodeNames[tmp$to ]   
-        wts <- tmp$w   
-        names(wts) <- nds
-        if(length(wts) >0)
-            eList[[i]] <- wts
-        else
-            eList[[i]] <- numeric(0)
-    }
-    eList
+    fromNode <- nodeNames[ft[ , "from"]]
+    toNode <- nodeNames[ft[ , "to"]]
+    ## FIXME deal with undirected as well
+    wList <- split(w, fromNode)
+    wNameList <- split(toNode, fromNode)
+    wList <- mapply(function(wVals, wNames) {
+        names(wVals) <- wNames
+        wVals
+    }, wList, wNameList)
+    haveNoEdge <- setdiff(nodeNames, names(wList))
+    names(haveNoEdge) <- haveNoEdge
+    haveNoEdge <- lapply(haveNoEdge, function(x) numeric(0))
+    c(wList, haveNoEdge)[nodeNames]
 }
 
 setMethod("edgeWeights", signature(object="graphBAM", index="character"),
