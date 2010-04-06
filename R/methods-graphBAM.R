@@ -161,18 +161,16 @@ setMethod("edgeData", signature(self="graphBAM", from="missing", to="missing",
               nodeNames <- self@nodes
               numNodes <- length(nodeNames)
               bv <- self@edgeSet@bit_vector
-              ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector,
-                      numNodes)
+              ft <- .Call(graph_bitarray_rowColPos, bv, numNodes)
+              ## FIXME, handle undirected case.  Also, possible to
+              ## reuse code from MultiGraph eweights function?
               nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                       sep ="|")
               w <- self@edgeSet@weights
               eList <- structure(vector(mode="list", length = length(w)),
                       names = nodeLbl)
-
-              for( i in seq_len(length(w))){
-                  eList[[i]] <- list(weight = w[i])
-              }
-              eList
+              names(w) <- nodeLbl
+              lapply(w, function(x) list(weight = as.numeric(x)))
           })
 
 setMethod("edgeData", signature(self="graphBAM", from="character", to="missing",
