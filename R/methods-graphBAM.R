@@ -108,9 +108,13 @@ getWeightList2 <- function(g){
     bv <- g@edgeSet@bit_vector
     ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector,
             numNodes)
+    if(!isDirected(g)){
+        df <- cbind(from=ft[,"to"], to = ft[,"from"])
+        ft <- rbind(ft,df)
+        w <- c(w,w)
+    }
     fromNode <- nodeNames[ft[ , "from"]]
     toNode <- nodeNames[ft[ , "to"]]
-    ## FIXME deal with undirected as well
     wList <- split(w, fromNode)
     wNameList <- split(toNode, fromNode)
     wList <- mapply(function(wVals, wNames) {
@@ -162,13 +166,16 @@ setMethod("edgeData", signature(self="graphBAM", from="missing", to="missing",
               numNodes <- length(nodeNames)
               bv <- self@edgeSet@bit_vector
               ft <- .Call(graph_bitarray_rowColPos, bv, numNodes)
-              ## FIXME, handle undirected case.  Also, possible to
+              w <- self@edgeSet@weights
+              if(!isDirected(self)){
+                    df <- cbind(from=ft[,"to"], to = ft[,"from"])
+                    ft <- rbind(ft,df)
+                    w <- c(w,w)
+              }
+              ## FIXME Also, possible to
               ## reuse code from MultiGraph eweights function?
               nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                       sep ="|")
-              w <- self@edgeSet@weights
-              eList <- structure(vector(mode="list", length = length(w)),
-                      names = nodeLbl)
               names(w) <- nodeLbl
               lapply(w, function(x) list(weight = as.numeric(x)))
           })
@@ -183,20 +190,22 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="missing",
                 indx <- which(nodeNames ==from)
                 numNodes <- length(nodeNames)
                 bv <- self@edgeSet@bit_vector
+                w <- self@edgeSet@weights
                 ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector,
                         numNodes)
-                w <- self@edgeSet@weights
+                if(!isDirected(self)){
+                    df <- cbind(from=ft[,"to"], to = ft[,"from"])
+                    ft <- rbind(ft,df)
+                    w <- c(w,w)
+                }
                 ft <- data.frame(ft,w)
                 ft <- ft[ ft[,"from"] %in% indx,]
-
                 nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                         sep ="|")
-                eList <- structure(vector(mode="list", length = nrow(ft)),
-                        names = nodeLbl)
-                for( i in seq_len(nrow(ft))){
-                    eList[[i]] <- list(weight = ft[,"w"][i])
-                }
-                eList
+                w <- ft[,"w"][1:length(nodeLbl)]
+                names(w) <- nodeLbl
+                lapply(w, function(x) list(weight = as.numeric(x)))
+
             }
         })
 
@@ -209,26 +218,24 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
                 nodeNames <- self@nodes
                 numNodes <- length(nodeNames)
                 bv <- self@edgeSet@bit_vector
+                w <- self@edgeSet@weights
                 ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector,
                         numNodes)
-                w <- self@edgeSet@weights
+                if(!isDirected(self)){
+                    df <- cbind(from=ft[,"to"], to = ft[,"from"])
+                    ft <- rbind(ft,df)
+                    w <- c(w,w)
+                }
                 ft <- data.frame(ft,w)
                 ft <- ft[ft[,"from"] %in% which(nodeNames == from),]
                 ft <- ft[ft[,"to"] %in% which(nodeNames == to),] 
                 nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                         sep ="|")
-                eList <- structure(vector(mode="list", length = nrow(ft)),
-                        names = nodeLbl)
-                for( i in seq_len(nrow(ft))){
-                    eList[[i]] <- list(weight = ft[,"w"][i])
-                }
-                eList
+                w <- ft[,"w"][1:length(nodeLbl)]
+                names(w) <- nodeLbl
+                lapply(w, function(x) list(weight = as.numeric(x)))
             }
         })
-
-
-
-
 
 
 setMethod("numNodes", signature("graphBAM"),
