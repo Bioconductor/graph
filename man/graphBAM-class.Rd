@@ -33,7 +33,7 @@
 }
 
 \usage{
-GraphBAM(from, to, nodes=NULL, weights=NULL, edgemode="undirected")
+GraphBAM(df, nodes=NULL, edgemode="undirected")
 }
   %     Create a \code{graphBAM} instance given an edge list specified as
   %     character vectors from and to.  The nodes argument can be used to
@@ -42,16 +42,14 @@ GraphBAM(from, to, nodes=NULL, weights=NULL, edgemode="undirected")
   %     }
 
 \arguments{
-  \item{from}{A character vector of node labels corresponding to source
-    nodes of edges in the graph.  This must have the same length as
-    \code{to}.}
-  \item{to}{A character vector of node labels corresponding to
-  destination nodes of the edges in the graph.}
-  \item{nodes}{A character vector of node labels.  Use this to add
+ \item{df}{A \code{data.frame} object with three columns: "from", "to" and 
+     "weight". Columns "from" and "to" can be either factors or character vectors. 
+     The "weight" column must be  numeric.
+    }
+ \item{nodes}{A character vector of node labels.  Use this to add
   degree zero nodes to the graph.  If \code{NULL}, the set of nodes
   found in \code{from} and \code{to} will be used.}
-  \item{weights}{A vector of the same length as \code{from} and
-  \code{to} providing an edge weight for the associated edge.}
+
   \item{edgemode}{A string, one of "directed" or "undirected".}
 }
 \section{Constructors}{
@@ -100,8 +98,10 @@ Class \code{"\linkS4class{graph}"}, directly.
 \examples{
     f <- c("a", "a", "b", "c", "d")
     t <- c("b", "c", "c", "d", "a")
-    g <- GraphBAM(f, t)
-    gd <- GraphBAM(f, t, edgemode = "directed")
+    weight <- rep(1,length(f))
+    df <- data.frame(from=f, to=t, weight= weight)
+    g <- GraphBAM(df)
+    gd <- GraphBAM(df, edgemode = "directed")
     g
     gd
     nd <- nodes(g)
