@@ -12,21 +12,24 @@ setMethod("initialize", signature("graphBAM"),
             .Object
         })
 
-GraphBAM <- function(from, to, nodes=NULL, weights=NULL, edgemode="undirected") {
+GraphBAM <- function(df, nodes = NULL, edgemode = "undirected") {
+    cl <- colnames(df) %in%  c("from","to", "weight") 
+    if(!all(cl)){
+        stop(c( c("from", "to", "weight")[!cl], 
+                    " is not in the column names of df \n"))
+    }
     if(is.null(nodes)){
-        nodes <- sort(unique(c(from,to)))
+        nodes <- sort(unique(c(as.character(df$from), as.character(df$to))))
     } else {
-        snodes <- c(from,to)
+        snodes <- c( as.character(df$from), as.character(df$to))
         snodesIdx <- match(snodes, nodes)
         if (any(is.na(snodesIdx))) {
             stop("invalid arg: from or to contains nodes not in the ",
                     "nodes argument\n")
         }
     }
-    weight = if(is.null(weights)) rep(1L, length(from)) else weights
-    ft <- data.frame(from, to, weight)
     is_directed  <-  if(edgemode == "directed") TRUE else FALSE
-    edge_sets <- .makeMDEdgeSet(es_name = 1, es = ft, is_directed = is_directed, nodes)
+    edge_sets <- .makeMDEdgeSet(es_name = 1, es = df, is_directed = is_directed, nodes)
     g <- new("graphBAM", nodes = nodes, edgeSet = edge_sets)
 }
 
