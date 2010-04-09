@@ -5,7 +5,7 @@ randBAMGraph <- function(numNodes = 10 , numEdges = 10)
 {
     df <-  graph:::randFromTo(numNodes, numEdges)
     df$ft$weight = seq_len(numNodes)
-    g <- GraphBAM(df$ft, nodes = df$nodes, edgemode = "directed")
+    g <- graphBAM(df$ft, nodes = df$nodes, edgemode = "directed")
     g
 }
 
@@ -14,7 +14,7 @@ make_smallBAM <- function() {
     to   = c("b", "c", "x", "y", "c", "a")
     weight=c(3.4, 2.6, 1.7, 5.3, 1.6, 7.9)
     df <- data.frame(from, to, weight)
-    g1 <- GraphBAM(df, edgemode = "directed")
+    g1 <- graphBAM(df, edgemode = "directed")
     g1
 }
 
@@ -24,7 +24,7 @@ make_unDirectedBAM <- function() {
     to   = c("b", "c", "x", "y", "c", "d")
     weight=c(3.4, 2.6, 1.7, 5.3, 1.6, 7.9)
     df <- data.frame(from, to, weight)
-    g1 <- GraphBAM(df, edgemode = "undirected")
+    g1 <- graphBAM(df, edgemode = "undirected")
     g1
 
 }
@@ -33,7 +33,7 @@ create_bigBAM <- function()
 {
     r1 <- randFromTo(100, 100)
     r1$ft$weight <- seq_len(100)
-    g1 <- GraphBAM(r1$ft, r1$nodes, edgemode="directed")
+    g1 <- graphBAM(r1$ft, r1$nodes, edgemode="directed")
     g1
 }
 
@@ -44,8 +44,8 @@ test_create_graphBAMSmall <- function() {
     weight= c(1.5, 3.1, 5.4, 1)
     nodes = c("a","b","c","d") 
     df <- data.frame(from, to, weight)
-    g1 <- GraphBAM(df, nodes, edgemode = "directed")
-    g2 <- GraphBAM(df, nodes, edgemode = "undirected")
+    g1 <- graphBAM(df, nodes, edgemode = "directed")
+    g2 <- graphBAM(df, nodes, edgemode = "undirected")
     
     checkEquals(4L, numEdges(g1))
     checkEquals(isDirected(g1), TRUE)
@@ -70,7 +70,7 @@ test_BAMNodes <- function() {
     to   = c("b", "c", "x", "y", "c", "a")
     weight=c(3.4, 2.6, 1.7, 5.3, 1.6, 7.9)
     df <- data.frame(from, to, weight)
-    g1 <- GraphBAM(df, edgemode = "directed")
+    g1 <- graphBAM(df, edgemode = "directed")
     nds <- nodes(g1)
     checkIdentical(all(nds %in% unique(c(from,to))),TRUE)
     checkIdentical(isDirected(g1),TRUE)
