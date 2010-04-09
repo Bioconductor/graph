@@ -28,36 +28,37 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
 
 .makeMDEdgeSet <- function(es_name, es, is_directed, nodes)
 {
-    if (nrow(es) == 0L)
-        stop("edgeSets data.frames must have at least one row")
     if (!all(c("from", "to", "weight") %in% names(es)))
         stop("edgeSets data.frames must have columns: from, to, weight",
              call. = FALSE)
     n_nodes <- length(nodes)
-    from <- as.character(es[["from"]])
-    to <- as.character(es[["to"]])
-    weights <- es[["weight"]]
-    if (!is_directed) {
-        tmp <- .mg_undirectEdges(from, to, weights)
-        from <- tmp[["from"]]
-        to <- tmp[["to"]]
-        weights <- tmp[["weight"]]
-    }
-    ## map 'from', 'to' from character to integer indicies
-    from_i <- match(from, nodes)
-    to_i <- match(to, nodes)
-    edge_order <- order(to_i, from_i)
-    weights <- weights[edge_order]
-    if (!is.numeric(weights))
-        stop("'weight' column must be numeric", call. = FALSE)
     bitVect <- makebits(n_nodes * n_nodes, bitdim = c(n_nodes, n_nodes))
-    ## TODO: should not have to pass vector of 1s for each edge in
-    ## setBitCell.
-    bitVect <- setBitCell(bitVect, from_i[edge_order], to_i[edge_order],
-                          rep(1L, length(from_i)))
-    edge_count <- nbitset(bitVect)
-    if (length(from_i) != edge_count)
-        .report_duplicate_edges(es_name, from, to, is_directed)
+    weights <- numeric(0L)
+    if (nrow(es) > 0L) {
+        from <- as.character(es[["from"]])
+        to <- as.character(es[["to"]])
+        weights <- es[["weight"]]
+        if (!is_directed) {
+            tmp <- .mg_undirectEdges(from, to, weights)
+            from <- tmp[["from"]]
+            to <- tmp[["to"]]
+            weights <- tmp[["weight"]]
+        }
+        ## map 'from', 'to' from character to integer indicies
+        from_i <- match(from, nodes)
+        to_i <- match(to, nodes)
+        edge_order <- order(to_i, from_i)
+        weights <- weights[edge_order]
+        if (!is.numeric(weights))
+        stop("'weight' column must be numeric", call. = FALSE)
+        ## TODO: should not have to pass vector of 1s for each edge in
+        ## setBitCell.
+        bitVect <- setBitCell(bitVect, from_i[edge_order], to_i[edge_order],
+                              rep(1L, length(from_i)))
+        edge_count <- nbitset(bitVect)
+        if (length(from_i) != edge_count)
+            .report_duplicate_edges(es_name, from, to, is_directed)
+    }
     klass <- if (is_directed) "DiEdgeSet" else "UEdgeSet"
     ## FIXME: need to handle extra edge attributes.  These will need to
     ## come in as a separate argument as a list of attribute lists that

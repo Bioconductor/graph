@@ -138,18 +138,31 @@ test_no_edge_sets <- function()
     close(tcon)
 }
 
+test_create_empty_edgeSets <- function()
+{
+    df1 <- data.frame(from=c("a", "b"),
+                       to=c("b", "c"), weight=c(1, 1))
+    esets <- list(e1 = df1, empty1 = df1[FALSE, ])
+    g <- MultiGraph(esets)
+    checkEquals(c(e1=2L, empty1=0L), numEdges(g))
+
+    dg <- MultiGraph(esets, directed = FALSE)
+    checkEquals(c(e1=2L, empty1=0L), numEdges(dg))
+}
+
 test_edgeSets_arg_checking <- function()
 {
-    ## data.frame's in edgeSets list must have rows
-    df1 <- data.frame(from=c("a", "b"),
-                       to=c("b", "c"), weights=c(1, 1))
-    esets <- list(e1 = df1, empty1 = df1[FALSE, ])
-    checkException(MultiGraph(esets))
-    checkException(MultiGraph(esets, directed = FALSE))
+    ## data.frame's in edgeSets list must have names:
+    ## from, to, weights
+    df0 <- data.frame(fr=c("a", "b"),
+                      to=c("b", "c"), weights=c(1, 1))
+    checkException(MultiGraph(list(e1=df0)))
 
     ## edgeSets must be named list or empty list
     checkException(MultiGraph(NULL))
-    checkException(MultiGraph(list(df1)))
+    checkException(MultiGraph(list(data.frame(from=c("a", "b"),
+                                              to=c("b", "c"),
+                                              weights=c(1, 1)))))
 }
 
 test_no_nodes <- function()
