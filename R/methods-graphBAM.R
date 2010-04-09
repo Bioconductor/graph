@@ -12,7 +12,7 @@ setMethod("initialize", signature("graphBAM"),
             .Object
         })
 
-GraphBAM <- function(df, nodes = NULL, edgemode = "undirected") {
+graphBAM <- function(df, nodes = NULL, edgemode = "undirected") {
     cl <- colnames(df) %in%  c("from","to", "weight") 
     if(!all(cl)){
         stop(c( c("from", "to", "weight")[!cl], 
