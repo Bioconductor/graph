@@ -39,9 +39,10 @@ make_mixed_MultiGraph <- function(use.factors = TRUE)
                       weight=c(1:5),
                       stringsAsFactors = use.factors)
 
-    esets <- list(e1=ft1, e2=ft2, e3=ft3)
+    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
+                  e5=ft3[FALSE, ])
 
-    g <- MultiGraph(esets, directed = c(TRUE, TRUE, FALSE))
+    g <- MultiGraph(esets, directed = c(TRUE, TRUE, FALSE, TRUE, FALSE))
     list(esets=esets, g=g)
 }
 
@@ -112,8 +113,9 @@ test_basic_accessors <- function()
 
     checkEquals(6L, numNodes(g))
     checkEquals(c("a", "b", "c", "d", "x", "y"), nodes(g))
-    checkEquals(c(e1=5L, e2=6L, e3=5L), numEdges(g))
-    checkEquals(structure(c(TRUE, TRUE, FALSE), .Names = c("e1", "e2", "e3")),
+    checkEquals(c(e1=5L, e2=6L, e3=5L, e4=0L, e5=0L), numEdges(g))
+    checkEquals(structure(c(TRUE, TRUE, FALSE, TRUE, FALSE),
+                          .Names = paste("e", 1:5, sep="")),
                 isDirected(g))
 }
 
@@ -254,19 +256,20 @@ test_supports_self_loops <- function()
 test_isDirected <- function()
 {
     g <- make_mixed_MultiGraph()$g
-    checkEquals(c(e1=TRUE, e2=TRUE, e3=FALSE), isDirected(g))
+    checkEquals(c(e1=TRUE, e2=TRUE, e3=FALSE, e4=TRUE, e5=FALSE),
+                isDirected(g))
 }
 
 test_ugraph_via_isDirected <- function()
 {
     g <- make_mixed_MultiGraph()$g
     ## verify precondition
-    want <- c(TRUE, TRUE, FALSE)
-    names(want) <- paste("e", 1:3, sep="")
+    want <- c(TRUE, TRUE, FALSE, TRUE, FALSE)
+    names(want) <- paste("e", 1:5, sep="")
     checkEquals(want, isDirected(g))
 
     ug <- ugraph(g)
-    want[1:3] <- FALSE
+    want[] <- FALSE
     checkEquals(want, isDirected(ug))
 }
 
@@ -546,7 +549,7 @@ test_large_subGraph <- function() {
 test_basic_mgToGraphAM <- function() {
     g <- make_mixed_MultiGraph()$g
     res <- extractGraphAM(g)
-    checkGraphAMObj(res,g)
+    checkGraphAMObj(res, g)
 }
 
 test_large_mgToGraphAM  <- function() {

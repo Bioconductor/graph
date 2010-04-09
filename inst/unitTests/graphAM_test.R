@@ -75,6 +75,50 @@ testInvalidBadNodeNames <- function() {
     checkException(new("graphAM", adjMat=mat), silent=TRUE)
 }
 
+test_empty_graph <- function() {
+    mat <- matrix(integer(0), nrow=0, ncol=0)
+    g <- new("graphAM", adjMat = mat)
+    checkEquals(0L, numNodes(g))
+    checkEquals(0L, numEdges(g))
+    checkEquals(character(0), nodes(g))
+    checkEquals(list(), edges(g))
+
+    m <- as(g, "matrix")
+    checkEquals(c(0L, 0L), dim(m))
+    checkEquals(0L, length(m))
+
+    g <- new("graphAM", adjMat = mat, values = list(weight = 1L))
+    checkEquals(0L, numNodes(g))
+    checkEquals(0L, numEdges(g))
+    checkEquals(character(0), nodes(g))
+    checkEquals(list(), edges(g))
+
+    m <- as(g, "matrix")
+    checkEquals(c(0L, 0L), dim(m))
+    checkEquals(0L, length(m))
+}
+
+test_no_edge_graph <- function() {
+    mat <- matrix(0L, nrow=3, ncol=3,
+                  dimnames=list(letters[1:3], letters[1:3]))
+    g <- new("graphAM", adjMat = mat)
+    checkEquals(letters[1:3], nodes(g))
+    checkEquals(0L, numEdges(g))
+    want <- list(a = character(0), b = character(0), c = character(0))
+    checkEquals(want, edges(g))
+    m <- as(g, "matrix")
+    checkEquals(c(3L, 3L), dim(m))
+    checkTrue(all(m == 0L))
+
+    g <- new("graphAM", adjMat = mat, values = list(weight = 1L))
+    checkEquals(letters[1:3], nodes(g))
+    checkEquals(0L, numEdges(g))
+    checkEquals(want, edges(g))
+
+    m <- as(g, "matrix")
+    checkEquals(c(3L, 3L), dim(m))
+    checkTrue(all(m == 0L))
+}
 
 testValuesToAttr <- function() {
     mat <- matrix(c(0, 0, 1, 2,

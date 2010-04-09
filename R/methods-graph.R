@@ -921,6 +921,7 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
 
 .verifyEdges <- function(graph, from, to) {
     stopifnot(length(from) == length(to))
+    if (length(from) == 0L) return(TRUE) # no edges
     adjList <- isAdjacent(graph, from, to)
     if (any(!adjList)) {
         badFr <- from[!adjList]
@@ -1041,9 +1042,13 @@ setReplaceMethod("edgeData",
 
 .getAllEdges <- function(graph) {
     e1 <- edges(graph)
-    n1 <- nodes(graph)
-    n1 <- rep(n1, sapply(e1, length))
-    list(from=n1, to=unlist(e1))
+    if (length(e1) == 0L) {
+        list(from=character(0), to=character(0))
+    } else {
+        n1 <- nodes(graph)
+        n1 <- rep(n1, sapply(e1, length))
+        list(from=n1, to=unlist(e1))
+    }
 }
 
 

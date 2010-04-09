@@ -4,6 +4,7 @@ isValidAdjMat <- function(adjMat, mode="undirected") {
     ## Determine if adjacency matrix adjMat is valid Element adjMat[i, j] == 1
     ## if the graph contains an edge FROM node i TO node j.  If mode is
     ## "undirected", then adjMat should be symmetrix.
+    if (length(adjMat) == 0L) return(character(0L))
     if (! nrow(adjMat) == ncol(adjMat))
       stop("adjacency matrix must be square")
     if (mode == "undirected")
@@ -49,10 +50,12 @@ initEdgeSet <- function(self, values) {
     eSpec <- graph:::.getAllEdges(self)
     from <- eSpec$from
     to <- eSpec$to
-    v <- t(self@adjMat)
-    v <- v[v != 0] ## this unrolls the matrix in the right way
-    edgeData(self, from=from, to=to, attr=valName) <- v
-    ## FIXME: consider storing matrix as logical
+    if (length(from) > 0L && length(to) > 0L) {
+        v <- t(self@adjMat)
+        v <- v[v != 0] ## this unrolls the matrix in the right way
+        edgeData(self, from=from, to=to, attr=valName) <- v
+        ## FIXME: consider storing matrix as logical
+    }
     self
 }
 
@@ -61,7 +64,7 @@ setMethod("initialize", signature("graphAM"),
           function(.Object, adjMat, edgemode="undirected", values) {
               nNames <- graph:::isValidAdjMat(adjMat, edgemode)
               if (is.null(nNames))
-                nNames <- paste("n", 1:ncol(adjMat), sep="")
+                  nNames <- paste("n", 1:ncol(adjMat), sep="")
               .Object@graphData$edgemode <- edgemode
               .Object@nodeData <- new("attrData")
               colnames(adjMat) <- nNames
@@ -76,7 +79,7 @@ setMethod("initialize", signature("graphAM"),
               ## Matrix values have been stored in @edgeData,
               ## so now we normalize to 0/1
               adjMat <- .Object@adjMat
-              adjMat[adjMat != 0] <- 1
+              adjMat[adjMat != 0L] <- 1L
               .Object@adjMat <- adjMat
 
               .Object
@@ -100,12 +103,14 @@ getEdgeList <- function(adjMat, nodeNames) {
 
 setMethod("edges", signature("graphAM", "missing"),
           function(object) {
+              if (length(object@adjMat) == 0L) return(list())
               getEdgeList(object@adjMat, nodes(object))
           })
 
 
 setMethod("edges", signature("graphAM", "character"),
           function(object, which) {
+              if (length(object@adjMat) == 0L) return(list())
               idx <- base::which(colnames(object@adjMat) %in% which)
               getEdgeList(object@adjMat[idx, ], nodes(object)[idx])
           })
@@ -289,12 +294,14 @@ setMethod("inEdges", signature(node="character", object="graphAM"),
 
 setAs(from="graphAM", to="matrix",
       function(from) {
+          am <- from@adjMat
+          if (length(am) == 0L) return(am)
           if ("weight" %in% names(edgeDataDefaults(from))) {
-              tm <- t(from@adjMat)
+              tm <- t(am)
               tm[tm != 0] <- unlist(edgeData(from, attr="weight"))
               m <- t(tm)
           } else {
-              m <- from@adjMat
+              m <- am
           }
 	  rownames(m) <- colnames(m)
 	  m

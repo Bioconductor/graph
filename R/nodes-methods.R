@@ -74,8 +74,10 @@ setMethod("renameNodes", "graphNEL", function(g, value) {
 
 setMethod("nodes", signature("graphAM"),
           function(object) {
-              ## initialize guarantees colnames
-              colnames(object@adjMat)
+              if (!is.null(nn <- colnames(object@adjMat)))
+                  nn
+              else                      # empty graph
+                  character(0)
           })
 
 setMethod("renameNodes", "graphAM", function(g, value) {
