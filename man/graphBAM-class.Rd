@@ -23,7 +23,7 @@
 \alias{edgeData,graphBAM,character,missing,character-method}
 \alias{edgeData,graphBAM,missing,missing,missing-method}
 \alias{edgeData,graphBAM,character,character,character-method}
-\alias{GraphBAM}
+\alias{graphBAM}
 
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
@@ -33,7 +33,7 @@
 }
 
 \usage{
-GraphBAM(df, nodes=NULL, edgemode="undirected")
+graphBAM(df, nodes=NULL, edgemode="undirected")
 }
   %     Create a \code{graphBAM} instance given an edge list specified as
   %     character vectors from and to.  The nodes argument can be used to
@@ -100,8 +100,8 @@ Class \code{"\linkS4class{graph}"}, directly.
     t <- c("b", "c", "c", "d", "a")
     weight <- rep(1,length(f))
     df <- data.frame(from=f, to=t, weight= weight)
-    g <- GraphBAM(df)
-    gd <- GraphBAM(df, edgemode = "directed")
+    g <- graphBAM(df)
+    gd <- graphBAM(df, edgemode = "directed")
     g
     gd
     nd <- nodes(g)
