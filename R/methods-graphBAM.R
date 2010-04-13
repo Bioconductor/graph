@@ -418,6 +418,21 @@ setMethod("inEdges", signature(node="character", object="graphBAM"),
             }
             ans
         })
+
+graphBamExtractFromTo <- function(object) {
+
+    diEdgeSetToDataFrame(object@edgeSet,nodes(object))
+}
+
+graphBamToMatrix <- function(object) {
+    
+    dr <- isDirected(object)
+    mat <- edgeSetToMatrix( nodes(object), object@edgeSet, dr)
+    if(!dr)
+        mat <- mat + t(mat)
+    mat
+}
+
 #
 #edge_set_intersect <- function(g1, g2)
 #{
