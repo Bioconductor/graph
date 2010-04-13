@@ -24,7 +24,8 @@
 \alias{edgeData,graphBAM,missing,missing,missing-method}
 \alias{edgeData,graphBAM,character,character,character-method}
 \alias{graphBAM}
-
+\alias{graphBamExtractFromTo}
+\alias{graphBamToMatrix}
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
   The graphAM class represents an adjacency matrix as a bit array.
@@ -87,6 +88,10 @@ Class \code{"\linkS4class{graph}"}, directly.
     \item{edgeWeights}{\code{signature(object = "graphBAM", index = "numeric")} Returns the 
     edge weights from teh indexed nodes to all adjacent nodes }
     \item{show}{\code{signature(object = "graphBAM")}} 
+    \item{graphBamExtractFromTo}{ Returns a data frame with column names from, to 
+        and weight corresponding to the connected nodes in the graphBAM object.}
+    \item{graphBamToMatrix}{Returns a matrix with the weights corresponding the 
+       connected nodes in the graphBAM object} 
   }
 }
 
@@ -115,5 +120,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     em <- edgeMatrix(g) 
     id <- isDirected(g)
     sg <- subGraph(c("a","c","d"), g)
+    mt <- graphBamToMatrix(g)
+    ft <- graphBamExtractFromTo(g)
 }
 \keyword{classes}
