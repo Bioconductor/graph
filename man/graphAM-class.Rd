@@ -7,6 +7,7 @@
 \alias{coerce,graphAM,graphNEL-method}
 \alias{coerce,graphAM,matrix-method}
 \alias{coerce,matrix,graphAM-method}
+\alias{coerce,graphAM,graphBAM-method}
 \alias{edges,graphAM,missing-method}
 \alias{edges,graphAM,character-method}
 \alias{initialize,graphAM-method}
@@ -59,6 +60,7 @@ Class \code{"graph"}, directly.
     \item{addNode}{\code{signature(object = "graphAM", nodes = "character")}: ... }
     \item{clearNode}{\code{signature(node = "character", object = "graphAM")}: ... }
     \item{coerce}{\code{signature(from = "graphAM", to = "graphNEL")}: ... }
+    \item{coerce}{\code{signature(from = "graphAM", to = "graphBAM")}: ... }
     \item{coerce}{\code{signature(from = "graphAM", to = "matrix")}: In
       converting to a \code{matrix}, if an edge attribute named
       \code{"weight"} is defined, the non-zero elements of the matrix
