@@ -216,7 +216,7 @@ test_unDirectedBAM_edgeWeights  <- function() {
 
 test_BAM_extractFromToUndirected <- function() {
     g1 <- make_unDirectedBAM()
-    ft <- graphBamExtractFromTo(g1)     
+    ft <- graphBAMExtractFromTo(g1)     
     checkEquals(as.character(ft$from), c("a", "a", "c", "a", "c", "x")) 
     checkEquals(as.character(ft$to), c("b", "c", "d", "x", "x", "y"))
     checkEquals(ft$weight, c(3.4, 2.6, 7.9, 1.7, 1.6, 5.3))
@@ -224,7 +224,7 @@ test_BAM_extractFromToUndirected <- function() {
 
 test_BAM_extractFromToDirected <- function() {
     g1 <- make_smallBAM()
-    ft <- graphBamExtractFromTo(g1)
+    ft <- graphBAMExtractFromTo(g1)
     checkEquals(as.character(ft$from), c("c", "a", "a", "x", "a", "x")) 
     checkEquals(as.character(ft$to), c("a", "b", "c", "c", "x", "y"))
     checkEquals(ft$weight, c(7.9, 3.4, 2.6, 1.6, 1.7, 5.3))
@@ -232,7 +232,7 @@ test_BAM_extractFromToDirected <- function() {
 
 test_BAM_bamToMatrix_UnDirected <- function() {
     g1 <- make_unDirectedBAM()
-    mat <- graphBamToMatrix(g1)
+    mat <- as(g1, "matrix")
     checkEquals(isSymmetric(mat), TRUE)
     checkEquals(mat[upper.tri(mat)],c( 6.8, 5.2, 0.0, 0.0, 0.0,
            15.8, 3.4, 0.0, 3.2, 0.0, 0.0, 0.0, 0.0, 0.0,10.6))
@@ -242,7 +242,7 @@ test_BAM_bamToMatrix_UnDirected <- function() {
 
 test_BAM_bamToMatrix_Directed <- function() {
     g1 <- make_smallBAM()
-    mat <- graphBamToMatrix(g1)
+    mat <- as(g1, "matrix")
     checkEquals(as.numeric(mat), c(0.0, 0.0, 7.9, 0.0, 
                     0.0, 3.4, 0.0, 0.0, 0.0, 0.0, 2.6, 0.0,
                     0.0, 1.6, 0.0, 1.7, 0.0, 0.0, 0.0,0.0,
