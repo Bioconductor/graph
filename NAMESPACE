@@ -43,7 +43,7 @@ export(graph.par, graph.par.get, graphRenderInfo,
        "nodeRenderInfo<-", "edgeRenderInfo<-", "parRenderInfo<-",
        "graphRenderInfo<-")
 
-export(graphBAM, graphBamToMatrix, graphBamExtractFromTo)
+export(graphBAM, graphBAMExtractFromTo)
 
 export(MultiGraph, eweights, edgeSetIntersect0, extractFromTo, subsetEdgeSets,
        extractGraphAM)
