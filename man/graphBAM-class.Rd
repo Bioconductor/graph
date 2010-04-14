@@ -24,11 +24,13 @@
 \alias{edgeData,graphBAM,missing,missing,missing-method}
 \alias{edgeData,graphBAM,character,character,character-method}
 \alias{graphBAM}
-\alias{graphBamExtractFromTo}
-\alias{graphBamToMatrix}
+\alias{coerce,graphBAM,graphAM-method}
+\alias{coerce,graphBAM,graphNEL-method}
+\alias{coerce,graphBAM,matrix-method}
+\alias{graphBAMExtractFromTo}
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
-  The graphAM class represents an adjacency matrix as a bit array.
+  The graphBAM class represents an adjacency matrix as a bit array.
   The bit array is stored as a raw vector.  This is EXPERIMENTAL and
   subject to change.
 }
@@ -87,10 +89,13 @@ Class \code{"\linkS4class{graph}"}, directly.
      graphBAM object}
     \item{edgeWeights}{\code{signature(object = "graphBAM", index = "numeric")} Returns the 
     edge weights from teh indexed nodes to all adjacent nodes }
+    \item{coerce}{\code{signature(from = "graphBAM", to = "graphAM")}: ... }
+    \item{coerce}{\code{signature(from = "graphBAM", to = "graphNEL")}: ... }
+    \item{coerce}{\code{signature(from = "graphBAM", to = "matrix")}: ... }
     \item{show}{\code{signature(object = "graphBAM")}} 
-    \item{graphBamExtractFromTo}{ Returns a data frame with column names from, to 
+    \item{graphBAMExtractFromTo}{ Returns a data frame with column names from, to 
         and weight corresponding to the connected nodes in the graphBAM object.}
-    \item{graphBamToMatrix}{Returns a matrix with the weights corresponding the 
+    \item{graphBAMToMatrix}{Returns a matrix with the weights corresponding the 
        connected nodes in the graphBAM object} 
   }
 }
@@ -120,7 +125,9 @@ Class \code{"\linkS4class{graph}"}, directly.
     em <- edgeMatrix(g) 
     id <- isDirected(g)
     sg <- subGraph(c("a","c","d"), g)
-    mt <- graphBamToMatrix(g)
-    ft <- graphBamExtractFromTo(g)
+    ft <- graphBAMExtractFromTo(g)
+    am <- as(g,"graphAM")
+    nl <- as(g,"graphNEL")
+    mt <- as(g,"matrix")
 }
 \keyword{classes}
