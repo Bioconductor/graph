@@ -419,19 +419,68 @@ setMethod("inEdges", signature(node="character", object="graphBAM"),
             ans
         })
 
-graphBamExtractFromTo <- function(object) {
+graphBAMExtractFromTo <- function(object) {
 
     diEdgeSetToDataFrame(object@edgeSet,nodes(object))
 }
 
-graphBamToMatrix <- function(object) {
-    
-    dr <- isDirected(object)
-    mat <- edgeSetToMatrix( nodes(object), object@edgeSet, dr)
+setAs(from="graphBAM", to="matrix",
+        function(from) {
+    dr <- isDirected(from)
+    mat <- edgeSetToMatrix( nodes(from), from@edgeSet, dr)
     if(!dr)
         mat <- mat + t(mat)
     mat
+    })
+
+setAs(from="graphBAM", to="graphAM",
+        function(from) {
+    bam <- new("graphAM", adjMat = as(from, "matrix"), 
+          edgemode = edgemode(from), values = list(weights=1))
+    bam@edgeData <- from@edgeData
+    bam@nodeData <- from@nodeData
+    bam 
+    })
+
+setAs(from="graphBAM", to="graphNEL",
+        function(from) {
+    gnel <- new("graphNEL", nodes = nodes(from), edgeL = edges(from), 
+            edgemode = edgemode(from))
+    gnel@edgeData <- from@edgeData
+    gnel@nodeData <- from@nodeData
+    gnel	
+        })
+
+graphToBAM <- function(object) {
+    is_directed  <-  if(edgemode(object) == "directed") TRUE else FALSE
+    ew <- edgeWeights(object)
+    nodes <- nodes(object)
+    df <- data.frame()
+    sapply(names(ew), function(x){
+                tmp <- ew[[x]]
+                weight <- as.numeric(tmp)
+                if(length(weight) >0) {
+                    to <- as.character(names(tmp))
+                     df <<- rbind(df, data.frame(from = rep(x, length(weight)) ,
+                                     to = names(tmp), weight))                
+                }
+            })
+     edge_sets <- .makeMDEdgeSet(es_name = 1, es = df, is_directed = is_directed, nodes)
+     bam <-  new("graphBAM", nodes = nodes, edgeSet = edge_sets)
+     bam@edgeData <- object@edgeData
+     bam@nodeData <- object@nodeData
+     bam
 }
+
+setAs(from="graphNEL", to="graphBAM",
+        function(from) {
+            graphToBAM(from)
+        })
+
+setAs(from="graphAM", to="graphBAM",
+        function(from) {
+            graphToBAM(from)       
+        })
 
 #
 #edge_set_intersect <- function(g1, g2)
