@@ -72,9 +72,9 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
     df <- cbind(from, to)
     sep <- if (directed) "=>" else "="
     if (any(dups <- duplicated(df))) {
-        dn <- do.call(paste, c(df[dups, ], list(sep=sep)))
         stop("duplicate edges specified in edge set ", name, ": ",
-             paste(dn, collapse = ", "), call. = FALSE)
+             paste(from[dups], to[dups], sep = sep, collapse = ", "),
+             call. = FALSE)
     }
 }
 
