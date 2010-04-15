@@ -18,19 +18,10 @@ graphBAM <- function(df, nodes = NULL, edgemode = "undirected") {
         stop(c( c("from", "to", "weight")[!cl],
                     " is not in the column names of df \n"))
     }
-    if(is.null(nodes)){
-        nodes <- sort(unique(c(as.character(df$from), as.character(df$to))))
-    } else {
-        snodes <- c( as.character(df$from), as.character(df$to))
-        snodesIdx <- match(snodes, nodes)
-        if (any(is.na(snodesIdx))) {
-            stop("invalid arg: from or to contains nodes not in the ",
-                    "nodes argument\n")
-        }
-    }
-    is_directed  <-  if(edgemode == "directed") TRUE else FALSE
+    nodes <- sort(unique(c(as.character(df$from), as.character(df$to), nodes)))
+    is_directed <- edgemode == "directed"
     edge_sets <- .makeMDEdgeSet(es_name = 1, es = df, is_directed = is_directed, nodes)
-    g <- new("graphBAM", nodes = nodes, edgeSet = edge_sets)
+    new("graphBAM", nodes = nodes, edgeSet = edge_sets)
 }
 
 setMethod("numEdges", signature = signature(object = "graphBAM"),
