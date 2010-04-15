@@ -2,9 +2,9 @@
 
 setMethod("initialize", signature("graphBAM"),
         function(.Object, nodes,edgeSet) {
-            .Object@graphData$edgemode <- if(is(edgeSet, "UEdgeSet"))
-                                            "undirected"
-                                          else "directed"
+            .Object@graphData$edgemode <-
+                if (isDirected(edgeSet)) "directed" else "undirected"
+            edgeRenderInfo(.Object) <- list(arrowhead=NULL, arrowtail=NULL)
             .Object@nodeData <- new("attrData")
             .Object@edgeData <- new("attrData")
             .Object@nodes <- nodes
@@ -416,7 +416,7 @@ setAs(from="graphBAM", to="graphAM",
 setAs(from="graphBAM", to="graphNEL",
         function(from) {
             am <- as(from, "graphAM")
-            as(am, "graphNEL") 
+            as(am, "graphNEL")
         })
 
 graphToBAM <- function(object) {
@@ -431,11 +431,13 @@ graphToBAM <- function(object) {
                 } else df_empty
             })
      df <- do.call(rbind, df_list)
-     is_directed  <-  edgemode(object) == "directed"
      nn <- nodes(object)
-     edge_sets <- .makeMDEdgeSet(es_name = 1, es = df,
-                                 is_directed = is_directed, nn)
-     bam <-  new("graphBAM", nodes = nn, edgeSet = edge_sets)
+     bam <- graphBAM(df, nodes = nn, edgemode = edgemode(object))
+     bam@renderInfo <- object@renderInfo
+     bam@graphData <- object@graphData
+     ## FIXME: graphBAM doesn't really handle edge attributes in the same way
+     ## we can copy data over so it can be copied back, but it won't really
+     ## be accessible in the new graphBAM object.
      bam@edgeData <- object@edgeData
      bam@nodeData <- object@nodeData
      bam
@@ -456,11 +458,11 @@ setAs(from="graphAM", to="graphBAM",
 
 setMethod("ugraph", "graphBAM",
           function(graph) {
-              edgemode(graph) <- "undirected"
+              graph@graphData$edgemode <- "undirected"
+              graph@renderInfo <- new("renderInfo")
               graph@edgeSet <- ugraph(graph@edgeSet)
               graph
           })
-
 
 setMethod("addEdge",
           signature=c("character", "character", "graphBAM", "numeric"),
@@ -496,3 +498,26 @@ setMethod("addNode",
             df <- graphBAMExtractFromTo(object)
             graphBAM(df, nodes = node, edgemode = edgemode(object))
         })
+
+setReplaceMethod("edgemode", c("graphBAM", "character"),
+                 function(object, value) {
+                     if (length(value) != 1L) stop("edgemode must be length one")
+                     if (edgemode(object) == value) return(object)
+                     switch(value,
+                            "directed" = {
+                                ## add reciprocal edges
+                                df <- graphBAMExtractFromTo(object)
+                                es <- rbind(df,
+                                            data.frame(from=df$to, to=df$from,
+                                                       weight=df$weight,
+                                                       stringsAsFactors=FALSE))
+                                object <- graphBAM(es, nodes = nodes(object),
+                                                   edgemode = value)
+                            },
+                            "undirected" = {
+                                object <- ugraph(object)
+                            },
+                            stop(paste("supplied mode is", value,
+                                       "it must be either directed or undirected")))
+                     object
+                 })
