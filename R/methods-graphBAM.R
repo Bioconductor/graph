@@ -12,7 +12,8 @@ setMethod("initialize", signature("graphBAM"),
             .Object
         })
 
-graphBAM <- function(df, nodes = NULL, edgemode = "undirected") {
+graphBAM <- function(df, nodes = NULL, edgemode = "undirected",
+                     ignore_dup_edges = FALSE) {
     cl <- colnames(df) %in%  c("from","to", "weight")
     if(!all(cl)){
         stop(c( c("from", "to", "weight")[!cl],
@@ -20,7 +21,9 @@ graphBAM <- function(df, nodes = NULL, edgemode = "undirected") {
     }
     nodes <- sort(unique(c(as.character(df$from), as.character(df$to), nodes)))
     is_directed <- edgemode == "directed"
-    edge_sets <- .makeMDEdgeSet(es_name = 1, es = df, is_directed = is_directed, nodes)
+    edge_sets <- .makeMDEdgeSet(es_name = 1, es = df,
+                                is_directed = is_directed, nodes,
+                                ignore_dup_edges = ignore_dup_edges)
     new("graphBAM", nodes = nodes, edgeSet = edge_sets)
 }
 
@@ -432,7 +435,8 @@ graphToBAM <- function(object) {
             })
      df <- do.call(rbind, df_list)
      nn <- nodes(object)
-     bam <- graphBAM(df, nodes = nn, edgemode = edgemode(object))
+     bam <- graphBAM(df, nodes = nn, edgemode = edgemode(object),
+                     ignore_dup_edges = TRUE)
      bam@renderInfo <- object@renderInfo
      bam@graphData <- object@graphData
      ## FIXME: graphBAM doesn't really handle edge attributes in the same way
@@ -445,9 +449,7 @@ graphToBAM <- function(object) {
 
 setAs(from="graphNEL", to="graphBAM",
         function(from) {
-            #graphToBAM(from)
-            am <- as(from, "graphAM")
-            as(am,"graphBAM")
+            as(as(from, "graphAM"), "graphBAM")
         })
 
 setAs(from="graphAM", to="graphBAM",
