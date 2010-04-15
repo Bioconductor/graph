@@ -407,20 +407,16 @@ setAs(from="graphBAM", to="matrix",
 
 setAs(from="graphBAM", to="graphAM",
         function(from) {
-    bam <- new("graphAM", adjMat = as(from, "matrix"),
-          edgemode = edgemode(from), values = list(weights=1))
-    bam@edgeData <- from@edgeData
-    bam@nodeData <- from@nodeData
-    bam
+    am <- new("graphAM", adjMat = as(from, "matrix"),
+          edgemode = edgemode(from), values = list(weight=1))
+    am@nodeData <- from@nodeData
+    am
     })
 
 setAs(from="graphBAM", to="graphNEL",
         function(from) {
-    gnel <- new("graphNEL", nodes = nodes(from), edgeL = edges(from),
-            edgemode = edgemode(from))
-    gnel@edgeData <- from@edgeData
-    gnel@nodeData <- from@nodeData
-    gnel
+            am <- as(from, "graphAM")
+            as(am, "graphNEL") 
         })
 
 graphToBAM <- function(object) {
@@ -433,7 +429,7 @@ graphToBAM <- function(object) {
                 weight <- as.numeric(tmp)
                 if(length(weight) >0) {
                     to <- as.character(names(tmp))
-                     df <<- rbind(df, data.frame(from = rep(x, length(weight)) ,
+                    df <<- rbind(df, data.frame(from = rep(x, length(weight)) ,
                                      to = names(tmp), weight))
                 }
             })
@@ -446,11 +442,14 @@ graphToBAM <- function(object) {
 
 setAs(from="graphNEL", to="graphBAM",
         function(from) {
-            graphToBAM(from)
+            #graphToBAM(from)
+            am <- as(from, "graphAM")
+            as(am,"graphBAM")
         })
 
 setAs(from="graphAM", to="graphBAM",
         function(from) {
+            ##FIXME for undirected case...
             graphToBAM(from)
         })
 
