@@ -4,7 +4,7 @@
 \alias{graphBAM-class}
 \alias{addEdge,character,character,graphBAM,missing-method}
 \alias{addEdge,character,character,graphBAM,numeric-method}
-\alias{addNode,character,graphBAM,missing-method}
+\alias{edgemode<-,graphBAM,character-method}
 \alias{clearNode,character,graphBAM-method}
 \alias{edges,graphBAM,missing-method}
 \alias{edges,graphBAM,character-method}
@@ -29,6 +29,8 @@
 \alias{coerce,graphBAM,graphNEL-method}
 \alias{coerce,graphBAM,matrix-method}
 \alias{graphBAMExtractFromTo}
+\alias{ugraph,graphBAM-method}
+
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
   The graphBAM class represents an adjacency matrix as a bit array.
@@ -37,7 +39,7 @@
 }
 
 \usage{
-graphBAM(df, nodes=NULL, edgemode="undirected")
+graphBAM(df, nodes=NULL, edgemode="undirected", ignore_dup_edges = FALSE)
 }
   %     Create a \code{graphBAM} instance given an edge list specified as
   %     character vectors from and to.  The nodes argument can be used to
@@ -54,7 +56,12 @@ graphBAM(df, nodes=NULL, edgemode="undirected")
   degree zero nodes to the graph.  If \code{NULL}, the set of nodes
   found in \code{from} and \code{to} will be used.}
 
-  \item{edgemode}{A string, one of "directed" or "undirected".}
+\item{edgemode}{A string, one of "directed" or "undirected".}
+
+\item{ignore_dup_edges}{If \code{FALSE} (default), specifying duplicate
+  edges in the input is an error.  When set to \code{TRUE} duplicate
+  edges are ignored.  Edge weight values are ignored when determining
+  duplicates.  This is most useful for graph import and conversion.}
 }
 \section{Constructors}{
   \code{GraphBAM}
@@ -89,7 +96,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     \item{edgeWeights}{\code{signature(object = "graphBAM", index = "missing")} Returns the edge weights of the 
      graphBAM object}
     \item{edgeWeights}{\code{signature(object = "graphBAM", index = "numeric")} Returns the 
-    edge weights from teh indexed nodes to all adjacent nodes }
+    edge weights from the indexed nodes to all adjacent nodes }
     \item{coerce}{\code{signature(from = "graphBAM", to = "graphAM")}: ... }
     \item{coerce}{\code{signature(from = "graphBAM", to = "graphNEL")}: ... }
     \item{coerce}{\code{signature(from = "graphBAM", to = "matrix")}: ... }
@@ -97,7 +104,16 @@ Class \code{"\linkS4class{graph}"}, directly.
     \item{graphBAMExtractFromTo}{ Returns a data frame with column names from, to 
         and weight corresponding to the connected nodes in the graphBAM object.}
     \item{graphBAMToMatrix}{Returns a matrix with the weights corresponding the 
-       connected nodes in the graphBAM object} 
+      connected nodes in the graphBAM object}
+    \item{edgemode<-}{
+      Set the edgemode for the graph ("directed" or "undirected").  If
+    the specified edgemode is the same, the object is returned without
+    changes.  Otherwise, a directed graph is converted to an undirected
+    graph via \code{ugraph} and an undirected graph is returned such
+    that each edge is interpreted as two edges, one in each direction.
+  }
+  \item{ugraph}{Return an undirected version of the current graph.
+    Conceptually, the arrows of a graph's directed edges are removed.}
   }
 }
 
