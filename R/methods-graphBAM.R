@@ -303,21 +303,6 @@ setMethod("edgeMatrix", "graphBAM",
 ## }
 
 
-setMethod("addNode",
-        signature(node="character", object="graphBAM", edges="missing"),
-        function(node, object) {
-            stop("operation not supported")
-        })
-
-
-setMethod("addEdge",
-        signature(from="character", to="character", graph="graphBAM",
-                weights="missing"),
-        function(from, to, graph) {
-            stop("operation not supported")
-        })
-
-
 setMethod("clearNode",
         signature(node="character", object="graphBAM"),
         function(node, object) {
@@ -477,8 +462,37 @@ setMethod("ugraph", "graphBAM",
           })
 
 
+setMethod("addEdge",
+          signature=c("character", "character", "graphBAM", "numeric"),
+          function(from, to, graph, weights) {
+              nn <- nodes(graph)
+              report_bad <- function(w) {
+                  bad <- w[!(w %in% nn)]
+                  stop("unknown nodes in '", deparse(substitute(w)),
+                       "': ",
+                       paste(bad, collapse=", "))
+              }
+              if (!all(from %in% nn)) report_bad(from)
+              if (!all(to %in% nn)) report_bad(to)
+              df <- graphBAMExtractFromTo(graph)
+              if (length(from) != length(to))
+                  if (length(from) != 1 && length(to) != 1)
+                      stop("'from' and 'to' lengths do not conform")
+              df2 <- data.frame(from=from, to=to, weight=weights,
+                                stringsAsFactors = FALSE)
+              graphBAM(rbind(df, df2), edgemode=edgemode(graph))
+          })
 
+setMethod("addEdge",
+          signature=c("character", "character", "graphBAM", "missing"),
+          function(from, to, graph, weights) {
+              w <- rep(1L, max(length(from), length(to)))
+              addEdge(from, to, graph, w)
+          })
 
-
-
-
+setMethod("addNode",
+        signature(node="character", object="graphBAM", edges="missing"),
+        function(node, object) {
+            df <- graphBAMExtractFromTo(object)
+            graphBAM(df, nodes = node, edgemode = edgemode(object))
+        })

@@ -3,6 +3,7 @@
 \docType{class}
 \alias{graphBAM-class}
 \alias{addEdge,character,character,graphBAM,missing-method}
+\alias{addEdge,character,character,graphBAM,numeric-method}
 \alias{addNode,character,graphBAM,missing-method}
 \alias{clearNode,character,graphBAM-method}
 \alias{edges,graphBAM,missing-method}

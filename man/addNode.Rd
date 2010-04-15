@@ -3,6 +3,7 @@
 \alias{addNode,character,graphNEL,missing-method}
 \alias{addNode,character,graphNEL,list-method}
 \alias{addNode,character,distGraph,list-method}
+\alias{addNode,character,graphBAM,missing-method}
 \title{ addNode }
 \description{
   Add one or more nodes to a graph.
