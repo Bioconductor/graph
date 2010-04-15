@@ -482,6 +482,13 @@ setAs(from="graphAM", to="graphBAM",
             graphToBAM(from)
         })
 
+setMethod("ugraph", "graphBAM",
+          function(graph) {
+              edgemode(graph) <- "undirected"
+              graph@edgeSet <- ugraph(graph@edgeSet)
+              graph
+          })
+
 
 
 
