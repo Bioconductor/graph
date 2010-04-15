@@ -420,21 +420,22 @@ setAs(from="graphBAM", to="graphNEL",
         })
 
 graphToBAM <- function(object) {
-    is_directed  <-  if(edgemode(object) == "directed") TRUE else FALSE
     ew <- edgeWeights(object)
-    nodes <- nodes(object)
-    df <- data.frame()
-    sapply(names(ew), function(x){
+    df_empty <- data.frame(from = character(0), to = character(0),
+                           weight = numeric(0))
+    df_list <- lapply(names(ew), function(x){
                 tmp <- ew[[x]]
-                weight <- as.numeric(tmp)
-                if(length(weight) >0) {
-                    to <- as.character(names(tmp))
-                    df <<- rbind(df, data.frame(from = rep(x, length(weight)) ,
-                                     to = names(tmp), weight))
-                }
+                if ((nw <- length(tmp)) > 0) {
+                    data.frame(from = rep(x, nw), to = names(tmp),
+                               weight = as.numeric(tmp))
+                } else df_empty
             })
-     edge_sets <- .makeMDEdgeSet(es_name = 1, es = df, is_directed = is_directed, nodes)
-     bam <-  new("graphBAM", nodes = nodes, edgeSet = edge_sets)
+     df <- do.call(rbind, df_list)
+     is_directed  <-  edgemode(object) == "directed"
+     nn <- nodes(object)
+     edge_sets <- .makeMDEdgeSet(es_name = 1, es = df,
+                                 is_directed = is_directed, nn)
+     bam <-  new("graphBAM", nodes = nn, edgeSet = edge_sets)
      bam@edgeData <- object@edgeData
      bam@nodeData <- object@nodeData
      bam
