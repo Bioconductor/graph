@@ -2,8 +2,8 @@
 
 setMethod("initialize", signature("graphBAM"),
         function(.Object, nodes,edgeSet) {
-            .Object@graphData$edgemode <- if(is(edgeSet, "UEdgeSet")) 
-                                            "undirected" 
+            .Object@graphData$edgemode <- if(is(edgeSet, "UEdgeSet"))
+                                            "undirected"
                                           else "directed"
             .Object@nodeData <- new("attrData")
             .Object@edgeData <- new("attrData")
@@ -13,9 +13,9 @@ setMethod("initialize", signature("graphBAM"),
         })
 
 graphBAM <- function(df, nodes = NULL, edgemode = "undirected") {
-    cl <- colnames(df) %in%  c("from","to", "weight") 
+    cl <- colnames(df) %in%  c("from","to", "weight")
     if(!all(cl)){
-        stop(c( c("from", "to", "weight")[!cl], 
+        stop(c( c("from", "to", "weight")[!cl],
                     " is not in the column names of df \n"))
     }
     if(is.null(nodes)){
@@ -138,7 +138,7 @@ setMethod("edgeWeights", signature(object="graphBAM", index="character"),
                      " must be a character vector of length one.")
               if (!is.null(type.checker) && !is.function(type.checker))
                 stop(sQuote("type.checker"), " must be a function or NULL.")
-             
+
                lst <- getWeightList2(object)
                lst[index]
           })
@@ -231,7 +231,7 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
                 }
                 ft <- data.frame(ft,w)
                 ft <- ft[ft[,"from"] %in% which(nodeNames == from),]
-                ft <- ft[ft[,"to"] %in% which(nodeNames == to),] 
+                ft <- ft[ft[,"to"] %in% which(nodeNames == to),]
                 nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                         sep ="|")
                 w <- ft[,"w"][1:length(nodeLbl)]
@@ -248,7 +248,7 @@ setMethod("numNodes", signature("graphBAM"),
 setMethod("isAdjacent",
         signature(object="graphBAM", from="character", to="character"),
         function(object, from, to) {
-            
+
             nodeNames <- object@nodes
             snodes <- c(from,to)
             snodesIdx <- match(snodes, nodeNames)
@@ -435,20 +435,20 @@ setAs(from="graphBAM", to="matrix",
 
 setAs(from="graphBAM", to="graphAM",
         function(from) {
-    bam <- new("graphAM", adjMat = as(from, "matrix"), 
+    bam <- new("graphAM", adjMat = as(from, "matrix"),
           edgemode = edgemode(from), values = list(weights=1))
     bam@edgeData <- from@edgeData
     bam@nodeData <- from@nodeData
-    bam 
+    bam
     })
 
 setAs(from="graphBAM", to="graphNEL",
         function(from) {
-    gnel <- new("graphNEL", nodes = nodes(from), edgeL = edges(from), 
+    gnel <- new("graphNEL", nodes = nodes(from), edgeL = edges(from),
             edgemode = edgemode(from))
     gnel@edgeData <- from@edgeData
     gnel@nodeData <- from@nodeData
-    gnel	
+    gnel
         })
 
 graphToBAM <- function(object) {
@@ -462,7 +462,7 @@ graphToBAM <- function(object) {
                 if(length(weight) >0) {
                     to <- as.character(names(tmp))
                      df <<- rbind(df, data.frame(from = rep(x, length(weight)) ,
-                                     to = names(tmp), weight))                
+                                     to = names(tmp), weight))
                 }
             })
      edge_sets <- .makeMDEdgeSet(es_name = 1, es = df, is_directed = is_directed, nodes)
@@ -479,62 +479,8 @@ setAs(from="graphNEL", to="graphBAM",
 
 setAs(from="graphAM", to="graphBAM",
         function(from) {
-            graphToBAM(from)       
+            graphToBAM(from)
         })
-
-#
-#edge_set_intersect <- function(g1, g2)
-#{
-#    ## TODO: make this vectorized to take ... or a list of graph
-#    ## objects.  Probably have to forget about a generic as dispatch
-#    ## will be difficult.
-#    nodeNames <- nodes(g1)
-#    stopifnot(all(nodeNames == nodes(g2)))
-#    all_directed <- all(isDirected(g1))
-#    klass <- if (all_directed) "DiEdgeSet" else "UEdgeSet"
-#    bv <- g1@edgeSet@bit_vector
-#    keepAttrs <- attributes(bv)
-#    bv <- bv & g2@edgeSet@bit_vector
-#    attributes(bv) <- keepAttrs
-#    n_edges <- attr(bv, "nbitset") <- .Call(graph_bitarray_sum, bv)
-#    if (n_edges > 0) {
-#        new_edge_set <- list(new(klass, bit_vector = bv,
-#                                  weights = rep(1L, n_edges),
-#                                  edge_attrs = list()))
-#        names(new_edge_set) <- paste(names(edge_sets), collapse = "_")
-#    } else {
-#        new_edge_set <- list()
-#    }
-#    new("graphBAM", edgeSet = new_edge_set, nodes = nodes(g1))
-#}
-#
-#edge_set_union <- function(g1, g2)
-#{
-#    ## TODO: make this vectorized to take ... or a list of graph
-#    ## objects.  Probably have to forget about a generic as dispatch
-#    ## will be difficult.
-#    nodeNames <- nodes(g1)
-#    stopifnot(all(nodeNames == nodes(g2)))
-#    bv1 <- g1@edgeSet@bit_vector
-#    all_directed <- all(isDirected(g1))
-#    klass <- if (all_directed) "DiEdgeSet" else "UEdgeSet"
-#    bv <- g1@edgeSet@bit_vector
-#    keepAttrs <- attributes(bv)
-#    sharedVect <- bv1 | g2@edgeSet@bit_vector
-#    attributes(sharedVect) <- keepAttrs
-#    n_edges <- attr(bv, "nbitset") <- .Call(graph_bitarray_sum, bv)
-#    if (n_edges > 0) {
-#        new_edge_set <- list(new(klass, bit_vector = bv,
-#                                  weights = rep(1L, n_edges),
-#                                  edge_attrs = list()))
-#        names(new_edge_set) <- paste(names(edge_sets), collapse = "_")
-#    } else {
-#        new_edge_set <- list()
-#    }
-#    new("graphBAM", edgeSet = new_edge_set, nodes = nodes(g1))
-#}
-#
-#
 
 
 
