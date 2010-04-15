@@ -416,13 +416,9 @@ graphBAMExtractFromTo <- function(object) {
 }
 
 setAs(from="graphBAM", to="matrix",
-        function(from) {
-    dr <- isDirected(from)
-    mat <- edgeSetToMatrix( nodes(from), from@edgeSet, dr)
-    if(!dr)
-        mat <- mat + t(mat)
-    mat
-    })
+      function(from) {
+          edgeSetToMatrix(nodes(from), from@edgeSet, isDirected(from))
+      })
 
 setAs(from="graphBAM", to="graphAM",
         function(from) {

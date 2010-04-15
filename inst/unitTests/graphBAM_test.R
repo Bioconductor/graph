@@ -235,7 +235,7 @@ test_BAM_bamToMatrix_UnDirected <- function() {
     mat <- as(g1, "matrix")
     checkEquals(isSymmetric(mat), TRUE)
     checkEquals(mat[upper.tri(mat)],c( 6.8, 5.2, 0.0, 0.0, 0.0,
-           15.8, 3.4, 0.0, 3.2, 0.0, 0.0, 0.0, 0.0, 0.0,10.6))
+           15.8, 3.4, 0.0, 3.2, 0.0, 0.0, 0.0, 0.0, 0.0,10.6) / 2)
     checkEquals(rownames(mat),colnames(mat))
     checkEquals(rownames(mat), c("a", "b", "c", "d", "x", "y"))
 }
