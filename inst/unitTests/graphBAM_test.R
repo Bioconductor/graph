@@ -234,8 +234,9 @@ test_BAM_bamToMatrix_UnDirected <- function() {
     g1 <- make_unDirectedBAM()
     mat <- as(g1, "matrix")
     checkEquals(isSymmetric(mat), TRUE)
-    checkEquals(mat[upper.tri(mat)],c( 6.8, 5.2, 0.0, 0.0, 0.0,
-           15.8, 3.4, 0.0, 3.2, 0.0, 0.0, 0.0, 0.0, 0.0,10.6) / 2)
+    checkEquals(mat[upper.tri(mat)],
+          c(3.4, 2.6, 0.0, 0.0, 0.0, 7.9, 1.7, 0.0,
+                  1.6, 0.0, 0.0, 0.0, 0.0, 0.0, 5.3))
     checkEquals(rownames(mat),colnames(mat))
     checkEquals(rownames(mat), c("a", "b", "c", "d", "x", "y"))
 }
@@ -250,6 +251,162 @@ test_BAM_bamToMatrix_Directed <- function() {
     checkEquals(rownames(mat),colnames(mat))
     checkEquals(rownames(mat), c("a","b", "c", "x","y"))
 }
+
+test_BAM_bamTographAM_unDirected <- function() {
+    g1 <- make_unDirectedBAM()
+    am <- as(g1,"graphAM")
+    checkEquals(nodes(g1), nodes(am))
+    checkEquals(edgemode(g1), edgemode(am))
+    checkEquals(edges(g1), edges(am))
+    w1 <- edgeWeights(g1)
+    w2 <- edgeWeights(am)
+    checkEquals(names(w1), names(w2))
+    checkEquals( w1$a, w2$a)
+    checkEquals( w1$b, w2$b)
+    checkEquals( sort(w1$c), sort(w2$c))
+    checkEquals( w1$d, w2$d)
+    checkEquals( sort(w1$x), sort(w2$x))
+    checkEquals( w1$y, w2$y)
+}
+
+test_BAM_bamTographAM_Directed <- function() {
+    g1 <- make_smallBAM()
+    am <- as(g1,"graphAM")
+    checkEquals(nodes(g1), nodes(am))
+    checkEquals(edgemode(g1), edgemode(am))
+    checkEquals(edges(g1), edges(am))
+    w1 <- edgeWeights(g1)
+    w2 <- edgeWeights(am)
+    checkEquals(names(w1), names(w2))
+    checkEquals( w1$a, w2$a)
+    checkEquals( w1$b, w2$b)
+    checkEquals( sort(w1$c), sort(w2$c))
+    checkEquals( w1$d, w2$d)
+    checkEquals( sort(w1$x), sort(w2$x))
+    checkEquals( w1$y, w2$y)
+}
+
+test_BAM_bamTographNEL_UnDirected <- function() {
+    g1 <- make_unDirectedBAM()
+    nel <- as(g1,"graphNEL")
+    checkEquals(nodes(g1), nodes(nel))
+    checkEquals(edgemode(g1), edgemode(nel))
+    checkEquals(edges(g1), edges(nel))
+    w1 <- edgeWeights(g1)
+    w2 <- edgeWeights(nel)
+    checkEquals(names(w1), names(w2))
+    checkEquals( w1$a, w2$a)
+    checkEquals( w1$b, w2$b)
+    checkEquals( sort(w1$c), sort(w2$c))
+    checkEquals( w1$d, w2$d)
+    checkEquals( sort(w1$x), sort(w2$x))
+    checkEquals( w1$y, w2$y)
+}
+
+
+test_BAM_bamTographNEL_Directed <- function() {
+    g1 <- make_smallBAM()
+    nel <- as(g1,"graphNEL")
+    checkEquals(nodes(g1), nodes(nel))
+    checkEquals(edgemode(g1), edgemode(nel))
+    checkEquals(edges(g1), edges(nel))
+    w1 <- edgeWeights(g1)
+    w2 <- edgeWeights(nel)
+    checkEquals(names(w1), names(w2))
+    checkEquals( w1$a, w2$a)
+    checkEquals( w1$b, w2$b)
+    checkEquals( sort(w1$c), sort(w2$c))
+    checkEquals( w1$d, w2$d)
+    checkEquals( sort(w1$x), sort(w2$x))
+    checkEquals( w1$y, w2$y)
+}
+
+create_GraphNEL_Directed <- function() {
+     set.seed(123)
+     V <- letters[1:4]
+     edL <- vector("list", length=4)
+     names(edL) <- V
+     edL[["a"]] <- list(edges=c(3, 4), weights=c(.13, .14))
+     edL[["b"]] <- list(edges=c(3), weights=.23)
+     edL[["c"]] <- list(edges=numeric(0), weights=numeric(0))
+     edL[["d"]] <- list(edges=c(2, 3), weights=c(.42, .43))
+     gR <- new("graphNEL", nodes = V, edgeL = edL, edgemode = "directed" )
+     gR
+}
+
+create_GraphNEL_UnDirected <- function() {
+     set.seed(123)
+     V <- letters[1:4]
+     edL <- vector("list", length=4)
+     names(edL) <- V
+     edL[["a"]] <- list(edges=c(2, 3), weights=c(.13, .14))
+     edL[["b"]] <- list(edges=c(1), weights=.13)
+     edL[["c"]] <- list(edges=c(1), weights=0.14)
+     edL[["d"]] <- list(edges= numeric(0), weights=numeric(0))
+     gR <- new("graphNEL", nodes = V, edgeL = edL, edgemode = "undirected" )
+     gR
+}
+
+test_graphNEL_Directed_To_graphBAM <-function() {
+    nel <- create_GraphNEL_Directed()
+    bam <- as(nel, "graphBAM")
+    checkEquals(nodes(nel), nodes(bam))
+    checkEquals(edgemode(nel), edgemode(bam))
+    checkEquals(edges(nel), edges(bam))
+    w1 <- edgeWeights(nel)
+    w2 <- edgeWeights(bam)
+    checkEquals(w1,w2)
+}
+
+test_graphNEL_Directed_To_graphBAM <- function() {
+    nel <- create_GraphNEL_Directed()
+    bam <- as(nel, "graphBAM")
+    checkEquals(nodes(nel), nodes(bam))
+    checkEquals(edgemode(nel), edgemode(bam))
+    checkEquals(edges(nel), edges(bam))
+    w1 <- edgeWeights(nel)
+    w2 <- edgeWeights(bam)
+    checkEquals(w1,w2)
+}
+#### To be fixed 
+#test_graphNEL_UnDirected_To_graphBAM <- function()  {
+#    nel <- create_GraphNEL_UnDirected()
+#    bam <- as(nel, "graphBAM")
+#    checkEquals(nodes(nel), nodes(bam))
+#    checkEquals(edgemode(nel), edgemode(bam))
+#    checkEquals(edges(nel), edges(bam))
+#    w1 <- edgeWeights(nel)
+#    w2 <- edgeWeights(bam)
+#    checkEquals(w1,w2)
+#}
+#
+
+test_graphAM_Directed_To_graphBAM <- function() {
+    nel <- create_GraphNEL_Directed()
+    am <- as(nel, "graphAM")
+    bam <- as(am, "graphBAM")
+    checkEquals(nodes(am), nodes(bam))
+    checkEquals(edgemode(am), edgemode(bam))
+    checkEquals(edges(am), edges(bam))
+    w1 <- edgeWeights(am)
+    w2 <- edgeWeights(bam)
+    checkEquals(w1,w2)
+}
+#### To be fixed 
+#test_graphNEL_UnDirected_To_graphBAM<- function() {
+#    nel <- create_GraphNEL_UnDirected()
+#    am <- as(nel, "graphAM")
+#    bam <- as(am, "graphBAM")
+#    checkEquals(nodes(am), nodes(bam))
+#    checkEquals(edgemode(am), edgemode(bam))
+#    checkEquals(edges(am), edges(bam))
+#    w1 <- edgeWeights(am)
+#    w2 <- edgeWeights(bam)
+#    checkEquals(w1,w2)
+#}
+#
+
+
 
 
 
