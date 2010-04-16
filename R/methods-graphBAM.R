@@ -504,20 +504,10 @@ setMethod("addEdge",
           signature=c("character", "character", "graphBAM", "numeric"),
           function(from, to, graph, weights) {
               nn <- nodes(graph)
-              report_bad <- function(w) {
-                  bad <- w[!(w %in% nn)]
-                  stop("unknown nodes in '", deparse(substitute(w)),
-                       "': ",
-                       paste(bad, collapse=", "))
-              }
-              if (!all(from %in% nn)) report_bad(from)
-              if (!all(to %in% nn)) report_bad(to)
+              req_ft <- .align_from_to(from, to, nn)
               df <- graphBAMExtractFromTo(graph)
-              if (length(from) != length(to))
-                  if (length(from) != 1 && length(to) != 1)
-                      stop("'from' and 'to' lengths do not conform")
-              df2 <- data.frame(from=from, to=to, weight=weights,
-                                stringsAsFactors = FALSE)
+              df2 <- data.frame(from=req_ft[ , 1], to=req_ft[ , 2],
+                                weight=weights, stringsAsFactors = FALSE)
               graphBAM(rbind(df, df2), edgemode=edgemode(graph))
           })
 
