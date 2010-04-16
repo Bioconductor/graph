@@ -32,14 +32,6 @@ setMethod("numEdges", signature = signature(object = "graphBAM"),
             numEdges(object@edgeSet)
         })
 
-setMethod("show", signature("graphBAM"),
-        function(object) {
-            numNodes<- numNodes(object)
-            cat("A", class(object), "with", edgemode(object), "edges \n")
-            cat("Number of nodes =", numNodes, "\n")
-            cat("edge_count =", numEdges(object),"\n")
-        })
-
 .undirectEdges <- function(from, to)
 {
     fromIsFirst <- from < to
