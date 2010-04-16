@@ -87,6 +87,9 @@ setMethod("edges", signature("graphBAM", "character"),
             eg[which]
         })
 
+setMethod("adj", signature("graphBAM", "character"),
+          function(object, index) edges(object, index))
+
 getWeightList2 <- function(g){
     nodeNames <- g@nodes
     numNodes <- length(nodeNames)

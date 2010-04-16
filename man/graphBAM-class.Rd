@@ -30,6 +30,7 @@
 \alias{coerce,graphBAM,matrix-method}
 \alias{graphBAMExtractFromTo}
 \alias{ugraph,graphBAM-method}
+\alias{adj,graphBAM,character-method}
 
 \title{EXPERIMENTAL class "graphBAM"}
 \description{

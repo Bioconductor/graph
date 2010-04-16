@@ -148,6 +148,12 @@ test_BAM_edges <- function() {
     checkEquals(list(ew2$c, ew2$b), list("a", character(0)))
 }
 
+test_BAM_adj <- function() {
+    g1 <- make_smallBAM()
+    ew <- adj(g1, c("c", "b"))
+    checkEquals(names(ew), c("c","b"))
+    checkEquals(list(ew$c, ew$b), list("a", character(0)))
+}
 
 test_BAM_edgeMatrix <- function() {
       g1 <- make_smallBAM()
