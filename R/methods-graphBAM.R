@@ -82,8 +82,7 @@ setMethod("edges", signature("graphBAM", "missing"),
 setMethod("edges", signature("graphBAM", "character"),
         function(object, which) {
             ## TODO: refactor to optimize
-            eg <- edges(object)
-            eg[which]
+            edges(object)[which]
         })
 
 setMethod("adj", c("graphBAM", "character"),
@@ -421,15 +420,10 @@ graphToBAM <- function(object) {
 }
 
 setAs(from="graphNEL", to="graphBAM",
-        function(from) {
-            as(as(from, "graphAM"), "graphBAM")
-        })
+        function(from) as(as(from, "graphAM"), "graphBAM"))
 
 setAs(from="graphAM", to="graphBAM",
-        function(from) {
-            ##FIXME for undirected case...
-            graphToBAM(from)
-        })
+        function(from) graphToBAM(from))
 
 setMethod("ugraph", "graphBAM",
           function(graph) {
