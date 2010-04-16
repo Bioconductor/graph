@@ -343,19 +343,6 @@ setMethod("removeNode",
 
 ## coordToIndex <- function(x, y, nrow) (y * nrow) - (nrow - x)
 
-setMethod("removeEdge",
-        signature(from="character", to="character", graph="graphBAM"),
-        function(from, to, graph) {
-            stop("operation not supported")
-            ## fromIdx <- getNodeIndex(nodes(graph), from)
-            ## toIdx <- getNodeIndex(nodes(graph), to)
-            ## rowCnt <- nrow(graph@adjMat)
-            ## graph@adjMat[coordToIndex(fromIdx, toIdx, rowCnt)] <- 0
-            ## if (!isDirected(graph))
-            ##   graph@adjMat[coordToIndex(toIdx, fromIdx, rowCnt)] <- 0
-            ## graph
-        })
-
 ## Yuck, I'd rather not support such shenanigans
 ## ## This signature looks strange, but to get in edges for all nodes
 ## ## it makes sense to be able to write inEdges(g)
@@ -518,3 +505,36 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
                                        "it must be either directed or undirected")))
                      object
                  })
+
+.remEdge <- function(from, to, graph)
+{
+    from_len <- length(from)
+    to_len <- length(to)
+    if (from_len == 0L && to_len == 0L) return(graph)
+    nn <- nodes(graph)
+    req_nn <- unique(c(from, to))
+    if (!all(okidx <- req_nn %in% nn))
+        stop("unknown nodes: ", paste(req_nn[!okidx], collapse = ", "))
+    if (from_len != to_len) {
+        if (from_len == 1L)
+            from <- rep(from, to_len)
+        else if (to_len == 1L)
+            to <- rep(to, from_len)
+        else
+            stop("invalid lengths of 'from' and 'to'")
+    }
+    ft <- .Call(graph_bitarray_rowColPos, graph@edgeSet@bit_vector, length(nn))
+    all_f <- nn[ft[ , 1]]
+    all_t <- nn[ft[ , 2]]
+    wh <- !((all_f %in% from) & (all_t %in% to))
+    new_weights <- graph@edgeSet@weights[wh]
+    graph@edgeSet@bit_vector <- setBitCell(graph@edgeSet@bit_vector,
+                                           match(from, nn),
+                                           match(to, nn),
+                                           rep(0L, max(from_len, to_len)))
+    graph@edgeSet@weights <- new_weights
+    graph
+}
+
+setMethod("removeEdge", c("character", "character", "graphBAM"),
+          function(from, to, graph) .remEdge(from, to, graph))

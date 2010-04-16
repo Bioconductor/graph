@@ -162,6 +162,40 @@ test_BAM_edgeMatrix <- function() {
       checkEquals(em[2,], c(1, 2, 3, 3, 4, 5))
 }
 
+test_BAM_removeEdge_unknown_nodes <- function()
+{
+    g1 <- make_smallBAM()
+    checkException(removeEdge("a", "q", g1))
+    checkException(removeEdge("q", "a", g1))
+    checkException(removeEdge("a", c("q", "aa", "tt"), g1))
+    checkException(removeEdge(c("a", "q", "tt", "aa"),
+                              c("a", "q", "aa", "tt"), g1))
+}
+
+test_BAM_removeEdge <- function()
+{
+    g1 <- make_smallBAM()
+    ## removing nothing does nothing
+    c0 <- character(0)
+    checkEquals(edges(g1), edges(removeEdge(c0, c0, g1)))
+    ## there is no y => a edge
+    checkEquals(edges(g1), edges(removeEdge("y", "a", g1)))
+
+    g2 <- removeEdge("c", "a", g1)
+    checkEquals(list(c=character(0)), edges(g2, "c"))
+    em <- edgeMatrix(g2)
+    checkEquals(em[1,], c(1, 1, 4, 1, 4))
+    checkEquals(em[2,], c(2, 3, 3, 4, 5))
+
+    g3 <- removeEdge("a", c("b", "x"), g1)
+    checkEquals(list(a="c"), edges(g3, "a"))
+    checkEquals(edges(g1)[-1], edges(g3)[-1])
+
+    g4 <- removeEdge(c("a", "x"), "c", g1)
+    checkEquals(list(a=c("b", "x")), edges(g4, "a"))
+    checkEquals(list(x="y"), edges(g4, "x"))
+}
+
 test_BAMSmall_edgeData <- function(){
       g1 <- make_smallBAM()
       eg <- edgeData(g1)
