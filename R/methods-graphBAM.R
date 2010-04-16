@@ -229,6 +229,58 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
             }
         })
 
+.align_from_to <- function(from, to, nodeNames)
+{
+    from_len <- length(from)
+    to_len <- length(to)
+    req_nn <- unique(c(from, to))
+    if (!all(okidx <- req_nn %in% nodeNames))
+        stop("unknown nodes: ", paste(req_nn[!okidx], collapse = ", "))
+    if (from_len != to_len) {
+        if (from_len == 1L)
+            from <- rep(from, to_len)
+        else if (to_len == 1L)
+            to <- rep(to, from_len)
+        else
+            stop("invalid lengths of 'from' and 'to'")
+    }
+    cbind(from=from, to=to)
+}
+
+.set_weights <- function(g, from, to, value)
+{
+    nodeNames <- g@nodes
+    req_ft <- .align_from_to(from, to, nodeNames)
+    ## remove dups
+    req_ft <- req_ft[!duplicated(req_ft), , drop = FALSE]
+    if (length(value) == 1L)
+        value <- rep(value, nrow(req_ft))
+    else if (length(value) != nrow(req_ft))
+        stop("number of edges and weight values must align")
+    ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector, numNodes(g))
+    if (!isDirected(g)) {
+        ## normalize from/to
+        tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], value)
+        req_ft <- cbind(tmp[["from"]], tmp[["to"]])
+        value <- tmp[["weight"]]
+    }
+    ## convert node names to index
+    req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
+    tmp <- rbind(req_i, ft)
+    idx <- duplicated(tmp)[seq(nrow(req_i) + 1L, nrow(tmp))]
+    g@edgeSet@weights[idx] <- value
+    g
+}
+
+setReplaceMethod("edgeData",
+                 signature(self="graphBAM",
+                           from="character", to="character",
+                           attr="character", value="numeric"),
+                 function(self, from, to, attr, value) {
+                     if (attr != "weight")
+                         stop("operation only supported for attr = \"weight\"")
+                     .set_weights(self, from, to, value)
+                 })
 
 setMethod("numNodes", signature("graphBAM"),
         function(object) length(object@nodes))

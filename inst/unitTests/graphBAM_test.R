@@ -444,8 +444,20 @@ test_graphAM_UnDirected_To_graphBAM<- function() {
    checkEquals(w1, w2)
 }
 
+test_BAM_set_edge_weights <- function()
+{
+    getw <- function(x) unlist(edgeWeights(x))
 
+    g <- make_smallBAM()
+    weight0 <- unlist(edgeWeights(g))
+    edgeData(g, "c", "a", attr="weight") <- 123.0
+    want <- weight0
+    want["c.a"] <- 123.0
+    checkEquals(want, getw(g))
 
-
-
-
+    g <- make_smallBAM()
+    edgeData(g, "a", c("b", "c", "x"), attr="weight") <- c(10, 11, 12)
+    want <- weight0
+    want[c("a.b", "a.c", "a.x")] <- c(10, 11, 12)
+    checkEquals(want, getw(g))
+}
