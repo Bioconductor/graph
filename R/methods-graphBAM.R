@@ -79,7 +79,6 @@ setMethod("edges", signature("graphBAM", "missing"),
             ans
         })
 
-
 setMethod("edges", signature("graphBAM", "character"),
         function(object, which) {
             ## TODO: refactor to optimize
@@ -339,77 +338,17 @@ setMethod("edgeMatrix", "graphBAM",
             t(df)
         })
 
-
-
-## getIndices <- function(nodes, from, to) {
-##     ## Return indices into the adjMat for nodes from and to.
-##     i <- match(from, nodes, nomatch=0)
-##     if (i == 0)
-##       stop("Unknown node", sQuote(from), "specified in from")
-##     j <- match(to, nodes, nomatch=0)
-##     if (j == 0)
-##       stop("Unknown node", sQuote(to), "specified in to")
-##     list(from=i, to=j)
-## }
-
-
 setMethod("clearNode",
         signature(node="character", object="graphBAM"),
         function(node, object) {
             stop("operation not supported")
-            ## idx <- getNodeIndex(nodes(object), node)
-            ## zeroVect <- rep(0, ncol(object@adjMat))
-            ## ## clear edges from node to other
-            ## object@adjMat[idx, ] <- zeroVect
-            ## ## clear edges from other to node
-            ## object@adjMat[, idx] <- zeroVect
-
-            ## TODO: clear edge attributes
-
-
-            object
         })
-
-
-## TODO: implement a clearEdgeAttributes method
 
 setMethod("removeNode",
         signature(node="character", object="graphBAM"),
         function(node, object) {
             stop("operation not supported")
-            ## idx <- getNodeIndex(nodes(object), node)
-            ## object@adjMat <- object@adjMat[-idx, -idx]
-
-            ## ## TODO: clear edge attributes
-
-            ## object
         })
-
-
-## getNodeIndex <- function(nodeNames, node) {
-##     idx <- match(node, nodeNames, nomatch=NA)
-##     if (any(is.na(idx)))
-##       stop("Unknown node", sQuote(node))
-##     idx
-## }
-
-## coordToIndex <- function(x, y, nrow) (y * nrow) - (nrow - x)
-
-## Yuck, I'd rather not support such shenanigans
-## ## This signature looks strange, but to get in edges for all nodes
-## ## it makes sense to be able to write inEdges(g)
-## setMethod("inEdges", signature(node="graphBAM", object="missing"),
-##           function(node, object) {
-##               allNodes <- nodes(node)
-##               return(inEdges(allNodes, node))
-##           })
-
-## ## But we still want inEdges(object=g) to work
-## setMethod("inEdges", signature(node="missing", object="graphBAM"),
-##           function(node, object) {
-##               allNodes <- nodes(object)
-##               return(inEdges(allNodes, object))
-##           })
 
 
 setMethod("inEdges", signature(node="character", object="graphBAM"),
