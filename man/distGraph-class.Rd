@@ -5,7 +5,7 @@
 \alias{Dist}
 \alias{[.dist}
 \alias{distGraph-class}
-\alias{adj,distGraph-method}
+\alias{adj,distGraph,ANY-method}
 \alias{Dist,distGraph-method}
 \alias{edges,distGraph,missing-method}
 \alias{edges,distGraph,character-method}

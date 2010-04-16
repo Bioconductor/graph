@@ -24,6 +24,7 @@
 \alias{edgeData,graphBAM,character,missing,character-method}
 \alias{edgeData,graphBAM,missing,missing,missing-method}
 \alias{edgeData,graphBAM,character,character,character-method}
+\alias{edgeData<-,graphBAM,character,character,character,numeric-method}
 \alias{graphBAM}
 \alias{coerce,graphBAM,graphAM-method}
 \alias{coerce,graphBAM,graphNEL-method}

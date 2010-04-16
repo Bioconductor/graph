@@ -87,7 +87,7 @@ setMethod("edges", signature("graphBAM", "character"),
             eg[which]
         })
 
-setMethod("adj", signature("graphBAM", "character"),
+setMethod("adj", c("graphBAM", "character"),
           function(object, index) edges(object, index))
 
 getWeightList2 <- function(g){

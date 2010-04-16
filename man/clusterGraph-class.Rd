@@ -2,7 +2,7 @@
 \docType{class}
 \alias{clusterGraph-class}
 \alias{clusterGraph-class}
-\alias{adj,clusterGraph-method}
+\alias{adj,clusterGraph,ANY-method}
 \alias{coerce,clusterGraph,matrix-method}
 \alias{connComp,clusterGraph-method}
 \alias{edges,clusterGraph,missing-method}

@@ -11,7 +11,7 @@
 \alias{addEdge,character,character,graphNEL,numeric-method}
 \alias{addEdge,character,character,graphNEL,missing-method}
 \alias{addNode,character,graphNEL-method}
-\alias{adj,graphNEL-method}
+\alias{adj,graphNEL,ANY-method}
 \alias{clearNode,character,graphNEL-method}
 \alias{coerce,graphNEL,generalGraph-method}
 \alias{coerce,graphNEL,graphAM-method}

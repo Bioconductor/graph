@@ -120,7 +120,7 @@
   setMethod("numNodes", "distGraph", function(object)
      attr(Dist(object), "Size"))
 
-  setMethod("adj", "distGraph", function(object, index) {
+  setMethod("adj", c("distGraph", "ANY"), function(object, index) {
         nodenames<- nodes(object)
         if( is.character(index) )
           index <- match(index, nodenames)
@@ -273,7 +273,7 @@ setMethod("edgeL", "clusterGraph", function(graph, index) {
  setMethod("numNodes", "clusterGraph", function(object)
     sum(sapply(object@clusters, length)))
 
- setMethod("adj", "clusterGraph", function(object, index) {
+ setMethod("adj", c("clusterGraph", "ANY"), function(object, index) {
      nIndex <- length(index)
      if( any(is.na(match(index, nodes(object)))) )
          stop("invalid node label supplied")

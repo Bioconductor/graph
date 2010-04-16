@@ -175,7 +175,7 @@ setMethod("edges", c("graphNEL", "character"),
               lapply(object@edgeL[which], function(x) gNodes[x$edges])})
 
 
-setMethod("adj", "graphNEL", function(object, index) {
+setMethod("adj", c("graphNEL", "ANY"), function(object, index) {
     initI <- as.character(index)
     nd <- nodes(object)
     if( is.character(index) )
