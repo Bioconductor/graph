@@ -560,30 +560,17 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
 
 .remEdge <- function(from, to, graph)
 {
-    from_len <- length(from)
-    to_len <- length(to)
-    if (from_len == 0L && to_len == 0L) return(graph)
     nn <- nodes(graph)
-    req_nn <- unique(c(from, to))
-    if (!all(okidx <- req_nn %in% nn))
-        stop("unknown nodes: ", paste(req_nn[!okidx], collapse = ", "))
-    if (from_len != to_len) {
-        if (from_len == 1L)
-            from <- rep(from, to_len)
-        else if (to_len == 1L)
-            to <- rep(to, from_len)
-        else
-            stop("invalid lengths of 'from' and 'to'")
-    }
+    req_ft <- .align_from_to(from, to, nn)
     ft <- .Call(graph_bitarray_rowColPos, graph@edgeSet@bit_vector, length(nn))
     all_f <- nn[ft[ , 1]]
     all_t <- nn[ft[ , 2]]
-    wh <- !((all_f %in% from) & (all_t %in% to))
+    wh <- !((all_f %in% req_ft[ , 1]) & (all_t %in% req_ft[ , 2]))
     new_weights <- graph@edgeSet@weights[wh]
     graph@edgeSet@bit_vector <- setBitCell(graph@edgeSet@bit_vector,
                                            match(from, nn),
                                            match(to, nn),
-                                           rep(0L, max(from_len, to_len)))
+                                           rep(0L, nrow(req_ft)))
     graph@edgeSet@weights <- new_weights
     graph
 }
