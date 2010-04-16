@@ -66,7 +66,7 @@ getEdgeList2 <- function(g) {
 setMethod("edges", signature("graphBAM", "missing"),
         function(object) {
             ans <- getEdgeList2(object)
-            if (edgemode(object)=="directed"){
+            if (isDirected(object)) {
                 ans
             } else {
                 lens <- sapply(ans, length)
