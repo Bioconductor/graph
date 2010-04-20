@@ -4,7 +4,7 @@ setMethod("initialize", signature("graphBAM"),
         function(.Object, nodes,edgeSet) {
             .Object@graphData$edgemode <-
                 if (isDirected(edgeSet)) "directed" else "undirected"
-            edgeRenderInfo(.Object) <- list(arrowhead=NULL, arrowtail=NULL)
+            .Object@renderInfo@edges <- list(arrowhead=NULL, arrowtail=NULL)
             .Object@nodeData <- new("attrData")
             .Object@edgeData <- new("attrData")
             .Object@nodes <- nodes
