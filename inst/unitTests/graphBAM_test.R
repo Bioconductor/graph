@@ -461,3 +461,136 @@ test_BAM_set_edge_weights <- function()
     want[c("a.b", "a.c", "a.x")] <- c(10, 11, 12)
     checkEquals(want, getw(g))
 }
+
+test_BAM_Intersect_UnDirected <- function() {
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "x", "y")
+    weight=c(1.2, 2.4, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "undirected")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "undirected")
+
+    g <- graphBAMIntersect(g1,g2)
+    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
+    checkEquals(isDirected(g), FALSE)
+    eg <- edgeData(g)
+    vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight
+              })
+    tmp <- paste(c("a", "b", "d", "b", "c", "x"), c("b", "c", "x", "a", "b", "d"), sep= "|")
+    checkEquals(names(vals), tmp)
+    checkEquals( as.numeric(vals), rep(1,6))
+}
+
+
+test_BAM_Intersect_Directed <- function() {
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "x", "y")
+    weight=c(1.2, 2.4, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "directed")
+
+    g <- graphBAMIntersect(g1,g2)
+    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
+    checkEquals(isDirected(g), TRUE)
+    eg <- edgeData(g)
+    vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight
+              })
+
+    tmp <- paste(c("a", "b", "d"), c("b", "c", "x"), sep= "|")
+    checkEquals(names(vals), tmp)
+    checkEquals( as.numeric(vals), rep(1,3))
+
+}
+
+test_BAM_Intersect_Mixed <- function() {
+    ## nodes a b d x y
+    from = c("a", "d", "d")
+    to   = c("b", "x", "y")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "undirected")
+
+    g <- graphBAMIntersect(g1,g2)
+    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
+    checkEquals(isDirected(g), FALSE)
+    eg <- edgeData(g)
+    vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight
+              })
+    tmp <- paste(c("a", "d", "b", "x"), c("b", "x", "a", "d"), sep= "|")
+    checkEquals(names(vals), tmp)
+    checkEquals( as.numeric(vals), rep(1,4))
+}
+
+test_BAM_Intersect_EmptyEdges <- function() {
+
+    from = c("a", "d", "d")
+    to   = c("b", "x", "y")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+
+    from = c("h", "i", "j")
+    to   = c("b", "x", "y")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, edgemode = "undirected")
+    
+    g <- graphBAMIntersect(g1,g2)
+    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
+    checkEquals(isDirected(g), FALSE)
+    eg <- edgeWeights(g)
+    checkEquals(names(eg), c("b", "x", "y"))
+    checkEquals( list(eg$b, eg$x, eg$y), list(numeric(0), numeric(0), numeric(0)))
+}
+
+test_BAM_Intersect_EmptyNodes <- function() {
+    
+    from = c("a", "d", "d")
+    to   = c("b", "x", "y")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+
+    from = c("h", "i", "j")
+    to   = c("s", "h", "l")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, edgemode = "undirected")
+    
+    g <- graphBAMIntersect(g1,g2)
+    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
+    checkEquals(isDirected(g), FALSE)
+    eg <- edgeWeights(g)
+    checkEquals(eg, list())
+}
+
+
+
