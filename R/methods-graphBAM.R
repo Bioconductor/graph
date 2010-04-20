@@ -498,3 +498,8 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
 
 setMethod("removeEdge", c("character", "character", "graphBAM"),
           function(from, to, graph) .remEdge(from, to, graph))
+
+setReplaceMethod("nodes", c("graphBAM", "character"),
+                 function(object, value) {
+                     stop("operation not supported")
+                 })

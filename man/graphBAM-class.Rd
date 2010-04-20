@@ -32,6 +32,7 @@
 \alias{extractFromTo,graphBAM-method}
 \alias{ugraph,graphBAM-method}
 \alias{adj,graphBAM,character-method}
+\alias{nodes<-,graphBAM,character-method}
 
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
@@ -116,6 +117,9 @@ Class \code{"\linkS4class{graph}"}, directly.
   }
   \item{ugraph}{Return an undirected version of the current graph.
     Conceptually, the arrows of a graph's directed edges are removed.}
+
+  \item{nodes<-}{Replacement of a \code{graphBAM} object's node labels
+    is currently not supported.  An error is raised if this method is called.}
   }
 }
 
