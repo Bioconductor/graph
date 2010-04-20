@@ -43,27 +43,6 @@ setMethod("numEdges", signature = signature(object = "graphBAM"),
     list(from=from, to=to)
 }
 
-getEdgeList2 <- function(g) {
-    ## FIXME: consider using graph_bitarray_rowColPos here?
-    nodeNames <- g@nodes
-    numNodes <- length(nodeNames)
-    eList <- structure(vector(mode="list", length=numNodes),
-            names = nodeNames)
-    isMiss <- logical(numNodes)
-    bv <- g@edgeSet@bit_vector
-    for (i in seq_len(numNodes)) {
-        aRow <- getRow(bv, i)
-        val <- nodeNames[aRow]
-        if (length(val))
-            eList[[i]] <- nodeNames[aRow]
-        else{
-            isMiss[i] <- TRUE
-            eList[[i]] <- character(0)
-        }
-    }
-    eList
-}
-
 .edges_gbam <- function(object, which)
 {
     nn <- nodes(object)
