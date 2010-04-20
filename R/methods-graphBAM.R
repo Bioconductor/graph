@@ -64,26 +64,39 @@ getEdgeList2 <- function(g) {
     eList
 }
 
-setMethod("edges", signature("graphBAM", "missing"),
-        function(object) {
-            ans <- getEdgeList2(object)
-            if (isDirected(object)) {
-                ans
-            } else {
-                lens <- sapply(ans, length)
-                nms <- rep(names(ans), lens)
-                revAns <- split(nms, unlist(ans))
-                for (n in names(revAns)) {
-                    ans[[n]] <- sort(c(ans[[n]], revAns[[n]]))
-                }
-            }
-            ans
-        })
+.edges_gbam <- function(object, which)
+{
+    nn <- nodes(object)
+    if (numEdges(object) == 0L) {
+        names(nn) <- nn
+        c0 <- character(0L)
+        return(lapply(nn, function(x) c0))
+    }
+    ft <- .Call(graph_bitarray_rowColPos, object@edgeSet@bit_vector)
+    ft[] <- nn[ft]
+    eL <- singles <- NULL
+    if (isDirected(object)) {
+        eL <- split(ft[ , "to"], ft[ , "from"])
+        singles <- nn[!(nn %in% ft[ , 1])]
+    } else {
+        eL <- lapply(split(ft, ft[ , c(2L, 1L)]), unique)
+        singles <- nn[!(nn %in% ft)]
+    }
+    if (length(singles) > 0) {
+        names(singles) <- singles
+        c0 <- character(0L)
+        empties <- lapply(singles, function(x) c0)
+        eL <- c(eL, empties)
+    }
+    eL[order(names(eL))]
+}
+
+setMethod("edges", signature("graphBAM", "missing"), .edges_gbam)
 
 setMethod("edges", signature("graphBAM", "character"),
         function(object, which) {
             ## TODO: refactor to optimize
-            edges(object)[which]
+            .edges_gbam(object)[which]
         })
 
 setMethod("adj", c("graphBAM", "character"),
