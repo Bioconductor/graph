@@ -275,7 +275,7 @@ eweights <- function(object, names.sep = NULL)
         n_nodes <- length(object@nodes)
         lapply(object@edge_sets, function(es) {
             w <- es@weights
-            ft <- .Call(graph_bitarray_rowColPos, es@bit_vector, length(nn))
+            ft <- .Call(graph_bitarray_rowColPos, es@bit_vector)
             names(w)  <- paste(nn[ft[, "from"]], nn[ft[, "to"]], sep = names.sep)
             w
         })
@@ -420,7 +420,7 @@ subsetEdgeSets <- function(object, edgeSets) {
 
 diEdgeSetToDataFrame <- function(edgeSets,nodes) {
     bitvec <- edgeSets@bit_vector
-    df <- .Call(graph_bitarray_rowColPos, bitvec, length(nodes))
+    df <- .Call(graph_bitarray_rowColPos, bitvec)
     data.frame(from = nodes[df[, "from"]], to = nodes[df[, "to"]],
                weight = edgeSets@weights)
 }
@@ -436,7 +436,7 @@ extractFromTo <- function(object) {
     idx_str <- as.character(seq_len(len))
     lapply(object@edge_sets, function(edgeSet) {
         bitvec <- edgeSet@bit_vector
-        df <- .Call(graph_bitarray_rowColPos, bitvec, len)
+        df <- .Call(graph_bitarray_rowColPos, bitvec)
 
         tbl <- structure(table(df[, "from"]), class=NULL)
         indx <- idx_str %in% names(tbl)

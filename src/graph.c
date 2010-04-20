@@ -16,7 +16,7 @@ SEXP graph_bitarray_sum(SEXP bits);
 SEXP graph_bitarray_set(SEXP bits, SEXP idx, SEXP val);
 SEXP graph_bitarray_transpose(SEXP bits);
 SEXP graph_bitarray_undirect(SEXP bits);
-SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim);
+SEXP graph_bitarray_rowColPos(SEXP bits);
 SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx);
 SEXP graph_bitarray_edgeSetToMatrix(SEXP nodes, SEXP bits,
                                     SEXP _weights, SEXP _directed);
@@ -29,7 +29,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"graph_attrData_lookup", (DL_FUNC)&graph_attrData_lookup, 3},
     {"graph_sublist_assign", (DL_FUNC)&graph_sublist_assign, 4},
     {"graph_is_adjacent", (DL_FUNC)&graph_is_adjacent, 2},
-	{"graph_bitarray_rowColPos", (DL_FUNC)&graph_bitarray_rowColPos, 2},
+    {"graph_bitarray_rowColPos", (DL_FUNC)&graph_bitarray_rowColPos, 1},
     {NULL, NULL, 0},
 };
 
@@ -456,38 +456,39 @@ SEXP graph_bitarray_sum(SEXP bits)
     return ScalarInteger(c);
 }
 
-SEXP graph_bitarray_rowColPos(SEXP bits, SEXP _dim)
+SEXP graph_bitarray_rowColPos(SEXP bits)
 {
     SEXP ans, matDim, dimNames, colNames;
-    int i = 0, j = 0, k = 0, len = length(bits), *indices;
-    int dim = asInteger(_dim), tmp, setCount;
+    int i, j = 0, k, len = length(bits), *indices,
+        dim = asInteger(getAttrib(bits, install("bitdim"))), 
+        edgeCount = asInteger(getAttrib(bits, install("nbitset")));
     unsigned char v, *bytes = (unsigned char *) RAW(bits);
-    setCount = asInteger(getAttrib(bits, install("nbitset")));
-    PROTECT(ans = allocVector(INTSXP, 2 * setCount));
+
+    PROTECT(ans = allocVector(INTSXP, 2 * edgeCount));
     indices = INTEGER(ans);
     for (i = 0; i < len; i++) {
         for (v = bytes[i], k = 0; v; v >>= 1, k++) {
             if (v & 1) {
-                tmp  = (i * 8) + k + 1; /* R is 1-based */
-                indices[j] =  (tmp - 1) % dim + 1;
-                indices[j + setCount] =  (tmp - 1) / dim + 1;
+                int idx  = (i * 8) + k; 
+                indices[j] =  (idx % dim) + 1; /* R is 1-based */
+                indices[j + edgeCount] =  (idx / dim) + 1;
                 j++;
             }
         }
     }
     PROTECT(matDim = allocVector(INTSXP, 2));
-    INTEGER(matDim)[0] = setCount; INTEGER(matDim)[1] = 2;
+    INTEGER(matDim)[0] = edgeCount; INTEGER(matDim)[1] = 2;
     setAttrib(ans, R_DimSymbol, matDim);
-    UNPROTECT(1);
 
-    PROTECT(dimNames = allocVector(VECSXP, 2));
     PROTECT(colNames = allocVector(STRSXP, 2));
-    SET_VECTOR_ELT(dimNames, 1, R_NilValue);
-    SET_VECTOR_ELT(dimNames, 1, colNames);
     SET_STRING_ELT(colNames, 0, mkChar("from"));
     SET_STRING_ELT(colNames, 1, mkChar("to"));
+
+    PROTECT(dimNames = allocVector(VECSXP, 2));
+    SET_VECTOR_ELT(dimNames, 0, R_NilValue);
+    SET_VECTOR_ELT(dimNames, 1, colNames);
     setAttrib(ans, R_DimNamesSymbol, dimNames);
-    UNPROTECT(3);
+    UNPROTECT(4);
     return ans;
 }
 

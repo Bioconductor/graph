@@ -97,8 +97,7 @@ getWeightList2 <- function(g){
             names = nodeNames)
     isMiss <- logical(numNodes)
     bv <- g@edgeSet@bit_vector
-    ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector,
-            numNodes)
+    ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector)
     if(!isDirected(g)){
         df <- cbind(from=ft[,"to"], to = ft[,"from"])
         ft <- rbind(ft,df)
@@ -156,7 +155,7 @@ setMethod("edgeData", signature(self="graphBAM", from="missing", to="missing",
               nodeNames <- self@nodes
               numNodes <- length(nodeNames)
               bv <- self@edgeSet@bit_vector
-              ft <- .Call(graph_bitarray_rowColPos, bv, numNodes)
+              ft <- .Call(graph_bitarray_rowColPos, bv)
               w <- self@edgeSet@weights
               if(!isDirected(self)){
                     df <- cbind(from=ft[,"to"], to = ft[,"from"])
@@ -182,8 +181,7 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="missing",
                 numNodes <- length(nodeNames)
                 bv <- self@edgeSet@bit_vector
                 w <- self@edgeSet@weights
-                ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector,
-                        numNodes)
+                ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector)
                 if(!isDirected(self)){
                     df <- cbind(from=ft[,"to"], to = ft[,"from"])
                     ft <- rbind(ft,df)
@@ -210,8 +208,7 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
                 numNodes <- length(nodeNames)
                 bv <- self@edgeSet@bit_vector
                 w <- self@edgeSet@weights
-                ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector,
-                        numNodes)
+                ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector)
                 if(!isDirected(self)){
                     df <- cbind(from=ft[,"to"], to = ft[,"from"])
                     ft <- rbind(ft,df)
@@ -256,7 +253,7 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
         value <- rep(value, nrow(req_ft))
     else if (length(value) != nrow(req_ft))
         stop("number of edges and weight values must align")
-    ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector, numNodes(g))
+    ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector)
     if (!isDirected(g)) {
         ## normalize from/to
         tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], value)
@@ -334,7 +331,7 @@ setMethod("edgeMatrix", "graphBAM",
         function(object, duplicates=FALSE) {
             bitvec <- object@edgeSet@bit_vector
             nds <- nodes(object)
-            df <- .Call(graph_bitarray_rowColPos, bitvec, length(nds) )
+            df <- .Call(graph_bitarray_rowColPos, bitvec)
             t(df)
         })
 
@@ -486,7 +483,7 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
 {
     nn <- nodes(graph)
     req_ft <- .align_from_to(from, to, nn)
-    ft <- .Call(graph_bitarray_rowColPos, graph@edgeSet@bit_vector, length(nn))
+    ft <- .Call(graph_bitarray_rowColPos, graph@edgeSet@bit_vector)
     all_f <- nn[ft[ , 1]]
     all_t <- nn[ft[ , 2]]
     wh <- !((all_f %in% req_ft[ , 1]) & (all_t %in% req_ft[ , 2]))

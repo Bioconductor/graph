@@ -81,11 +81,11 @@ checkBAMSubGraph <- function(g, subG) {
     nds <- nodes(g)
     subNodes <- nodes(subG)
     w1 <- g@edgeSet@weights
-    ft1 <- .Call(graph:::graph_bitarray_rowColPos, g@edgeSet@bit_vector, length(nds))
+    ft1 <- .Call(graph:::graph_bitarray_rowColPos, g@edgeSet@bit_vector)
     origFromTo <- data.frame(from=nds[ft1[,"from"]], to = nds[ft1[,"to"]], weights = w1)
 
     w2 <- subG@edgeSet@weights
-    ft2 <- .Call(graph:::graph_bitarray_rowColPos, subG@edgeSet@bit_vector, length(subNodes))
+    ft2 <- .Call(graph:::graph_bitarray_rowColPos, subG@edgeSet@bit_vector)
     subFromTo <- data.frame(from = subNodes[ft2[,"from"]], to = subNodes[ft2[,"to"]], weights = w2)
 
     indx <- (origFromTo$from %in% subNodes) &
