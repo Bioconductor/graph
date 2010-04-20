@@ -492,37 +492,30 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
                      stop("operation not supported")
                  })
 
+## TODO: make this a method for generic intersection(x, y)
 graphBAMIntersect <- function(g1, g2) {
-
     nn <- intersect(nodes(g1), nodes(g2))
     nnLen <- length(nn)
     dr1 <- isDirected(g1)
     dr2 <- isDirected(g2)
-
-    if(nnLen == 0) {
-        df <- data.frame(from=character(0),to =character(0),weight= numeric(0))
-        return(graphBAM(df, nodes = NULL, edgemode = if(dr1 && dr2) "directed" 
-                        else "undirected"))
-    }else{
-        sg1  <- subGraph(nn, g1)
-        sg2 <- subGraph(nn,g2)
-        if(!(dr1 && dr2)) {
-            if(dr1)
-                sg1 <- ugraph(sg1) 
-            if(dr2)
-                sg2 <- ugraph(sg2)
-            sg1@graphData$edgemode = "undirected"
-        }
-        bv <- sg1@edgeSet@bit_vector & sg2@edgeSet@bit_vector   
-        attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
-        attr(bv, "bitdim") <- rep(nnLen, 2)
-        attr(bv, "bitlen") <- nnLen * nnLen
-        sg1@edgeSet@bit_vector <- bv
-        sg1@edgeSet@weights <- rep(1L, ns)
-        sg1@edgeSet@edge_attrs <- list()
-        sg1@nodes <- nn
-        sg1
-    } 
+    theMode <- if (dr1 && dr2) "directed" else "undirected"
+    c0 <- character(0)
+    df <- data.frame(from = c0, to = c0, weight = numeric(0))
+    ans <- graphBAM(df, edgemode = theMode)
+    if (nnLen == 0) return(ans)
+    sg1 <- if (nnLen == numNodes(g1)) g1 else subGraph(nn, g1)
+    sg2 <- if (nnLen == numNodes(g2)) g2 else subGraph(nn, g2)
+    if (!(dr1 && dr2)) {
+        if (dr1) sg1 <- ugraph(sg1) else sg2 <- ugraph(sg2)
+    }
+    bv <- sg1@edgeSet@bit_vector & sg2@edgeSet@bit_vector
+    attributes(bv) <- attributes(sg1@edgeSet@bit_vector)
+    attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
+    ans@edgeSet@edge_attrs <- list()
+    ans@edgeSet@bit_vector <- bv
+    ans@edgeSet@weights <- rep(1L, ns)
+    ans@nodes <- nn
+    ans
 }
 
-        
+
