@@ -91,21 +91,20 @@ getWeightList2 <- function(g){
     bv <- g@edgeSet@bit_vector
     ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector)
     if(!isDirected(g)){
-        df <- cbind(from=ft[,"to"], to = ft[,"from"])
-        ft <- rbind(ft,df)
+        ft <- rbind(ft, ft[ , c(2L, 1L)])
         w <- c(w,w)
     }
-    fromNode <- nodeNames[ft[ , "from"]]
-    toNode <- nodeNames[ft[ , "to"]]
-    wList <- split(w, fromNode)
-    wNameList <- split(toNode, fromNode)
+    ft[] <- nodeNames[ft]
+    wList <- split(w, ft[ , 1L])
+    wNameList <- split(ft[ , 2L], ft[ , 1L])
     wList <- mapply(function(wVals, wNames) {
         names(wVals) <- wNames
         wVals
     }, wList, wNameList)
     haveNoEdge <- setdiff(nodeNames, names(wList))
     names(haveNoEdge) <- haveNoEdge
-    haveNoEdge <- lapply(haveNoEdge, function(x) numeric(0))
+    n0 <- numeric(0)
+    haveNoEdge <- lapply(haveNoEdge, function(x) n0)
     c(wList, haveNoEdge)[nodeNames]
 }
 
@@ -117,26 +116,22 @@ setMethod("edgeWeights", signature(object="graphBAM", index="character"),
                      " must be a character vector of length one.")
               if (!is.null(type.checker) && !is.function(type.checker))
                 stop(sQuote("type.checker"), " must be a function or NULL.")
-
-               lst <- getWeightList2(object)
-               lst[index]
+               getWeightList2(object)[index]
           })
 
 
 setMethod("edgeWeights", signature(object="graphBAM", index="numeric"),
           function(object, index, attr, default, type.checker)
           {
-              index <- nodes(object)[index]
-              edgeWeights(object, index, attr=attr, default=default,
-                          type.checker=type.checker)
+              edgeWeights(object, nodes(object)[index], attr=attr,
+                          default=default, type.checker=type.checker)
           })
 
 
 setMethod("edgeWeights", signature(object="graphBAM", index="missing"),
           function(object, index, attr, default, type.checker)
           {
-              index <- nodes(object)
-              edgeWeights(object, index, attr=attr, default=default,
+              edgeWeights(object, nodes(object), attr=attr, default=default,
                           type.checker=type.checker)
           })
 
