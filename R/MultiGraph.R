@@ -425,10 +425,11 @@ diEdgeSetToDataFrame <- function(edgeSets,nodes) {
                weight = edgeSets@weights)
 }
 
-extractFromTo <- function(object) {
-    nn <- nodes(object)
-    lapply(object@edge_sets, function(x) diEdgeSetToDataFrame(x, nn))
+.extractFromTo_mg <- function(g) {
+    nn <- nodes(g)
+    lapply(g@edge_sets, function(x) diEdgeSetToDataFrame(x, nn))
 }
+setMethod("extractFromTo", "MultiGraph", .extractFromTo_mg)
 
 .mgDegree <- function(object) {
     nn <- nodes(object)

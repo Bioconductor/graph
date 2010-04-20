@@ -27,7 +27,7 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       "attrDefaults<-", edgeDataDefaults, "edgeDataDefaults<-",
       nodeDataDefaults, "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
       "nodeData<-", attrDataItem, "attrDataItem<-",
-      "removeAttrDataItem<-", ugraph, leaves, updateGraph)
+      "removeAttrDataItem<-", ugraph, leaves, updateGraph, extractFromTo)
 
 
 export(boundary, buildRepDepGraph, calcProb, calcSumProb,
@@ -43,7 +43,7 @@ export(graph.par, graph.par.get, graphRenderInfo,
        "nodeRenderInfo<-", "edgeRenderInfo<-", "parRenderInfo<-",
        "graphRenderInfo<-")
 
-export(graphBAM, graphBAMExtractFromTo)
+export(graphBAM)
 
 export(MultiGraph, eweights, edgeSetIntersect0, extractFromTo, subsetEdgeSets,
        extractGraphAM)

@@ -12,6 +12,7 @@
 \alias{edgeSetIntersect0}
 \alias{subsetEdgeSets}
 \alias{extractFromTo}
+\alias{extractFromTo,MultiGraph-method}
 \alias{extractGraphAM}
 \alias{isDirected,MultiGraph-method}
 \alias{ugraph,MultiGraph-method}

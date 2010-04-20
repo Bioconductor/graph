@@ -29,7 +29,7 @@
 \alias{coerce,graphBAM,graphAM-method}
 \alias{coerce,graphBAM,graphNEL-method}
 \alias{coerce,graphBAM,matrix-method}
-\alias{graphBAMExtractFromTo}
+\alias{extractFromTo,graphBAM-method}
 \alias{ugraph,graphBAM-method}
 \alias{adj,graphBAM,character-method}
 
@@ -103,7 +103,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     \item{coerce}{\code{signature(from = "graphBAM", to = "graphNEL")}: ... }
     \item{coerce}{\code{signature(from = "graphBAM", to = "matrix")}: ... }
     \item{show}{\code{signature(object = "graphBAM")}} 
-    \item{graphBAMExtractFromTo}{ Returns a data frame with column names from, to 
+    \item{extractFromTo}{ Returns a data frame with column names from, to 
         and weight corresponding to the connected nodes in the graphBAM object.}
     \item{graphBAMToMatrix}{Returns a matrix with the weights corresponding the 
       connected nodes in the graphBAM object}
@@ -144,7 +144,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     em <- edgeMatrix(g) 
     id <- isDirected(g)
     sg <- subGraph(c("a","c","d"), g)
-    ft <- graphBAMExtractFromTo(g)
+    ft <- extractFromTo(g)
     am <- as(g,"graphAM")
     nl <- as(g,"graphNEL")
     mt <- as(g,"matrix")

@@ -368,10 +368,10 @@ setMethod("inEdges", signature(node="character", object="graphBAM"),
             ans
         })
 
-graphBAMExtractFromTo <- function(object) {
-
-    diEdgeSetToDataFrame(object@edgeSet,nodes(object))
-}
+setMethod("extractFromTo", "graphBAM",
+          function(g) {
+              diEdgeSetToDataFrame(g@edgeSet, nodes(g))
+          })
 
 setAs(from="graphBAM", to="matrix",
       function(from) {
@@ -436,7 +436,7 @@ setMethod("addEdge",
           function(from, to, graph, weights) {
               nn <- nodes(graph)
               req_ft <- .align_from_to(from, to, nn)
-              df <- graphBAMExtractFromTo(graph)
+              df <- extractFromTo(graph)
               df2 <- data.frame(from=req_ft[ , 1], to=req_ft[ , 2],
                                 weight=weights, stringsAsFactors = FALSE)
               graphBAM(rbind(df, df2), edgemode=edgemode(graph))
@@ -452,7 +452,7 @@ setMethod("addEdge",
 setMethod("addNode",
         signature(node="character", object="graphBAM", edges="missing"),
         function(node, object) {
-            df <- graphBAMExtractFromTo(object)
+            df <- extractFromTo(object)
             graphBAM(df, nodes = node, edgemode = edgemode(object))
         })
 
@@ -463,7 +463,7 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
                      switch(value,
                             "directed" = {
                                 ## add reciprocal edges
-                                df <- graphBAMExtractFromTo(object)
+                                df <- extractFromTo(object)
                                 es <- rbind(df,
                                             data.frame(from=df$to, to=df$from,
                                                        weight=df$weight,

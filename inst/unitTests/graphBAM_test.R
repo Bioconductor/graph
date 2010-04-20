@@ -256,7 +256,7 @@ test_unDirectedBAM_edgeWeights  <- function() {
 
 test_BAM_extractFromToUndirected <- function() {
     g1 <- make_unDirectedBAM()
-    ft <- graphBAMExtractFromTo(g1)
+    ft <- extractFromTo(g1)
     checkEquals(as.character(ft$from), c("a", "a", "c", "a", "c", "x"))
     checkEquals(as.character(ft$to), c("b", "c", "d", "x", "x", "y"))
     checkEquals(ft$weight, c(3.4, 2.6, 7.9, 1.7, 1.6, 5.3))
@@ -264,7 +264,7 @@ test_BAM_extractFromToUndirected <- function() {
 
 test_BAM_extractFromToDirected <- function() {
     g1 <- make_smallBAM()
-    ft <- graphBAMExtractFromTo(g1)
+    ft <- extractFromTo(g1)
     checkEquals(as.character(ft$from), c("c", "a", "a", "x", "a", "x"))
     checkEquals(as.character(ft$to), c("a", "b", "c", "c", "x", "y"))
     checkEquals(ft$weight, c(7.9, 3.4, 2.6, 1.6, 1.7, 5.3))

@@ -233,3 +233,5 @@ setGeneric("toDotR", function(G, outDotFile, renderList, optList)
 ## Updating a graph object
 setGeneric("updateGraph", function(object)
            standardGeneric("updateGraph"))
+
+setGeneric("extractFromTo", function(g) standardGeneric("extractFromTo"))
