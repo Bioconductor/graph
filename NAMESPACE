@@ -44,7 +44,7 @@ export(graph.par, graph.par.get, graphRenderInfo,
        "graphRenderInfo<-")
 
 
-export(graphBAM, graphBAMIntersect)
+export(graphBAM)
 
 
 export(MultiGraph, eweights, edgeSetIntersect0, extractFromTo, subsetEdgeSets,
