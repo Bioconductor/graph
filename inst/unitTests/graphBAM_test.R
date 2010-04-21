@@ -593,4 +593,93 @@ test_BAM_Intersect_EmptyNodes <- function() {
 }
 
 
+test_BAM_Union_UnDirected <- function() {
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "x", "y")
+    weight=c(1.2, 2.4, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "undirected")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "undirected")
+
+    g <- union(g1,g2)
+    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(FALSE, isDirected(g))
+    eg <- edgeData(g)
+    vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight
+              })
+    k1 <- c("a", "b", "b", "c", "d", "d")
+    k2 <- c("b", "c", "d", "d", "x", "y")
+    tmp <- paste(c(k1, k2), c(k2, k1), sep= "|")
+    checkEquals(tmp, names(vals))
+    checkEquals(rep(1,12), as.numeric(vals))
+}
+
+
+test_BAM_Union_Directed <- function() {
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "x", "y")
+    weight=c(1.2, 2.4, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "directed")
+
+    g <- union(g1,g2)
+    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(TRUE, isDirected(g))
+    eg <- edgeData(g)
+    vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight
+              })
+    tmp <- paste(c("a", "b", "d", "b", "d", "d"),
+            c("b", "c", "c", "d", "x", "y"), sep="|")
+    checkEquals(tmp, names(vals))
+    checkEquals(rep(1,6), as.numeric(vals))
+}
+
+test_BAM_Union_Mixed <- function() {
+    ## nodes a b d x y
+    from = c("a", "d", "d")
+    to   = c("b", "x", "y")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "undirected")
+
+    g <- union(g1,g2)
+    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(FALSE, isDirected(g))
+    eg <- edgeData(g)
+    vals <- sapply( names(eg),function(k){
+               eg[[k]]$weight
+              })
+    k1 <- c("a", "b", "c", "d", "d", "b")
+    k2 <- c("b", "d", "d", "x", "y", "c")
+    tmp <- paste(c(k1, k2), c(k2, k1), sep= "|")
+    checkEquals(tmp, names(vals))
+    checkEquals(rep(1,12), as.numeric(vals))
+}
 
