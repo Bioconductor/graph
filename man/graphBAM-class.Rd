@@ -32,7 +32,7 @@
 \alias{extractFromTo,graphBAM-method}
 \alias{ugraph,graphBAM-method}
 \alias{adj,graphBAM,character-method}
-\alias{graphBAMIntersect}
+\alias{intersection,graphBAM,graphBAM-method}
 \alias{nodes<-,graphBAM,character-method}
 
 \title{EXPERIMENTAL class "graphBAM"}
@@ -107,11 +107,11 @@ Class \code{"\linkS4class{graph}"}, directly.
     \item{show}{\code{signature(object = "graphBAM")}} 
     \item{extractFromTo}{ Returns a data frame with column names from, to 
         and weight corresponding to the connected nodes in the graphBAM object.}
-    \item{graphBAMIntersect}{ \code{signature(g1 = "graphBAM", g2= "graphBAM"} Returns a  new \code{graphBAM} object
-    representing the intersection of edges sets within \code{g1} and \code{g2}.
-    The return value will have zero edges if the edgeSets in \code{g1} and \code{g2} 
-    are disjoint. The node set is preserved. Edge weights and edge attributes 
-    are dropped.}
+    \item{intersection}{ \code{signature(x = "graphBAM", y= "graphBAM"} Returns
+    a  new \code{graphBAM} object representing the intersection of edges sets 
+    within \code{g1} and \code{g2}. The return value will have zero edges if 
+    the edgeSets in \code{g1} and \code{g2}  are disjoint. 
+    The node set is preserved. Edge weights and edge attributes are dropped.}
     \item{graphBAMToMatrix}{Returns a matrix with the weights corresponding the 
       connected nodes in the graphBAM object}
     \item{edgemode<-}{
@@ -158,6 +158,6 @@ Class \code{"\linkS4class{graph}"}, directly.
     am <- as(g,"graphAM")
     nl <- as(g,"graphNEL")
     mt <- as(g,"matrix")
-    k  <- graphBAMIntersect(g,g)
+    k  <- intersection(g,g)
 }
 \keyword{classes}
