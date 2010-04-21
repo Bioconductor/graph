@@ -478,16 +478,16 @@ test_BAM_Intersect_UnDirected <- function() {
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
             edgemode = "undirected")
 
-    g <- graphBAMIntersect(g1,g2)
-    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
-    checkEquals(isDirected(g), FALSE)
+    g <- intersection(g1,g2)
+    checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(FALSE, isDirected(g))
     eg <- edgeData(g)
     vals <- sapply( names(eg),function(k){
                eg[[k]]$weight
               })
     tmp <- paste(c("a", "b", "d", "b", "c", "x"), c("b", "c", "x", "a", "b", "d"), sep= "|")
-    checkEquals(names(vals), tmp)
-    checkEquals( as.numeric(vals), rep(1,6))
+    checkEquals(tmp, names(vals))
+    checkEquals(rep(1,6), as.numeric(vals))
 }
 
 
@@ -507,17 +507,17 @@ test_BAM_Intersect_Directed <- function() {
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
             edgemode = "directed")
 
-    g <- graphBAMIntersect(g1,g2)
-    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
-    checkEquals(isDirected(g), TRUE)
+    g <- intersection(g1,g2)
+    checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(TRUE, isDirected(g))
     eg <- edgeData(g)
     vals <- sapply( names(eg),function(k){
                eg[[k]]$weight
               })
 
     tmp <- paste(c("a", "b", "d"), c("b", "c", "x"), sep= "|")
-    checkEquals(names(vals), tmp)
-    checkEquals( as.numeric(vals), rep(1,3))
+    checkEquals(tmp, names(vals))
+    checkEquals(rep(1,3), as.numeric(vals))
 
 }
 
@@ -537,16 +537,16 @@ test_BAM_Intersect_Mixed <- function() {
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
             edgemode = "undirected")
 
-    g <- graphBAMIntersect(g1,g2)
-    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
-    checkEquals(isDirected(g), FALSE)
+    g <- intersection(g1,g2)
+    checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(FALSE, isDirected(g))
     eg <- edgeData(g)
     vals <- sapply( names(eg),function(k){
                eg[[k]]$weight
               })
     tmp <- paste(c("a", "d", "b", "x"), c("b", "x", "a", "d"), sep= "|")
-    checkEquals(names(vals), tmp)
-    checkEquals( as.numeric(vals), rep(1,4))
+    checkEquals(tmp, names(vals))
+    checkEquals(rep(1,4), as.numeric(vals))
 }
 
 test_BAM_Intersect_EmptyEdges <- function() {
@@ -563,12 +563,12 @@ test_BAM_Intersect_EmptyEdges <- function() {
     df <- data.frame(from, to, weight)
     g2 <- graphBAM(df, edgemode = "undirected")
     
-    g <- graphBAMIntersect(g1,g2)
+    g <- intersection(g1,g2)
     checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
     checkEquals(isDirected(g), FALSE)
     eg <- edgeWeights(g)
-    checkEquals(names(eg), c("b", "x", "y"))
-    checkEquals( list(eg$b, eg$x, eg$y), list(numeric(0), numeric(0), numeric(0)))
+    checkEquals(c("b", "x", "y"), names(eg))
+    checkEquals(list(numeric(0), numeric(0), numeric(0)),list(eg$b, eg$x, eg$y))
 }
 
 test_BAM_Intersect_EmptyNodes <- function() {
@@ -585,11 +585,11 @@ test_BAM_Intersect_EmptyNodes <- function() {
     df <- data.frame(from, to, weight)
     g2 <- graphBAM(df, edgemode = "undirected")
     
-    g <- graphBAMIntersect(g1,g2)
-    checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
-    checkEquals(isDirected(g), FALSE)
+    g <- intersection(g1,g2)
+    checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(FALSE, isDirected(g))
     eg <- edgeWeights(g)
-    checkEquals(eg, list())
+    checkEquals(list(), eg)
 }
 
 
