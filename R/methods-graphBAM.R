@@ -492,19 +492,19 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
                      stop("operation not supported")
                  })
 
-## TODO: make this a method for generic intersection(x, y)
-graphBAMIntersect <- function(g1, g2) {
-    nn <- intersect(nodes(g1), nodes(g2))
+setMethod("intersection", c("graphBAM","graphBAM"),
+        function(x, y) {
+    nn <- intersect(nodes(x), nodes(y))
     nnLen <- length(nn)
-    dr1 <- isDirected(g1)
-    dr2 <- isDirected(g2)
+    dr1 <- isDirected(x)
+    dr2 <- isDirected(y)
     theMode <- if (dr1 && dr2) "directed" else "undirected"
     c0 <- character(0)
     df <- data.frame(from = c0, to = c0, weight = numeric(0))
     ans <- graphBAM(df, edgemode = theMode)
     if (nnLen == 0) return(ans)
-    sg1 <- if (nnLen == numNodes(g1)) g1 else subGraph(nn, g1)
-    sg2 <- if (nnLen == numNodes(g2)) g2 else subGraph(nn, g2)
+    sg1 <- if (nnLen == numNodes(x)) x else subGraph(nn, x)
+    sg2 <- if (nnLen == numNodes(y)) y else subGraph(nn, y)
     if (!(dr1 && dr2)) {
         if (dr1) sg1 <- ugraph(sg1) else sg2 <- ugraph(sg2)
     }
@@ -516,6 +516,4 @@ graphBAMIntersect <- function(g1, g2) {
     ans@edgeSet@weights <- rep(1L, ns)
     ans@nodes <- nn
     ans
-}
-
-
+})
