@@ -38,105 +38,200 @@
 
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
-  The graphBAM class represents an adjacency matrix as a bit array.
-  The bit array is stored as a raw vector.  This is EXPERIMENTAL and
+  The graphBAM class represents a graph as an adjacency matrix.  The
+  adjacency matrix is stored as a bit array using a \code{raw} vector to
+  reduce the memory footprint and speed operations like
+  \code{intersection}.  This class is EXPERIMENTAL and its API is
   subject to change.
 }
 
 \usage{
 graphBAM(df, nodes=NULL, edgemode="undirected", ignore_dup_edges = FALSE)
 }
-  %     Create a \code{graphBAM} instance given an edge list specified as
-  %     character vectors from and to.  The nodes argument can be used to
-  %     add nodes with degree zero.  The weights argument should have the
-  %     same length as from and to.
-  %     }
 
 \arguments{
- \item{df}{A \code{data.frame} object with three columns: "from", "to" and 
-     "weight". Columns "from" and "to" can be either factors or character vectors. 
-     The "weight" column must be  numeric.
-    }
- \item{nodes}{A character vector of node labels.  Use this to add
-  degree zero nodes to the graph.  If \code{NULL}, the set of nodes
-  found in \code{from} and \code{to} will be used.}
+  \item{df}{
 
-\item{edgemode}{A string, one of "directed" or "undirected".}
+    A \code{data.frame} with three columns: "from", "to" and
+    "weight". Columns "from" and "to" can be either factors or character
+    vectors.  Each row of \code{df} describes an edge in the resulting
+    graph.  The "weight" column must be numeric.
+    
+  }
+  
+  \item{nodes}{
 
-\item{ignore_dup_edges}{If \code{FALSE} (default), specifying duplicate
-  edges in the input is an error.  When set to \code{TRUE} duplicate
-  edges are ignored.  Edge weight values are ignored when determining
-  duplicates.  This is most useful for graph import and conversion.}
+    A character vector of node labels.  Use this to add degree zero
+    nodes to the graph.  If \code{NULL}, the set of nodes found in
+    \code{from} and \code{to} will be used.
+    
+  }
+
+  \item{edgemode}{
+    A string, one of "directed" or "undirected".
+  }
+
+  \item{ignore_dup_edges}{
+
+    If \code{FALSE} (default), specifying duplicate edges in the input
+    is an error.  When set to \code{TRUE} duplicate edges are ignored.
+    Edge weight values are ignored when determining duplicates.  This is
+    most useful for graph import and conversion.
+    
+  }
 }
 \section{Constructors}{
-  \code{GraphBAM}
+  The \code{GraphBAM} function is used to create new \code{graphBAM}
+  instances.  Edges are specified in a \code{data.frame}.  For
+  undirected graphs, reciprical edges should not be includes unless
+  \code{ignoe_dup_edges} is \code{TRUE}.
 }
 \section{Extends}{
 Class \code{"\linkS4class{graph}"}, directly.
 }
-\section{Methods}{
+
+\section{Methods for graphBAM objects}{
+
   \describe{
     
-    \item{addEdge}{\code{signature(from = "character", to = "character", graph = "graphBAM", weights = "missing")}: ... }
-    \item{addNode}{\code{signature(node = "character", object = "graphBAM", edges = "missing")}: ... }
-    \item{clearNode}{\code{signature(node = "character", object = "graphBAM")}: ... }
-    \item{edges}{\code{signature(object = "graphBAM", which = "missing")}: ... }
-    \item{edges}{\code{signature(object = "graphBAM", which = "character")}: ... }
-    \item{inEdges}{\code{signature(node = "character", object = "graphBAM")}: ... }
-    \item{initialize}{\code{signature(.Object = "graphBAM")}: ... }
-    \item{isAdjacent}{\code{signature(object = "graphBAM", from = "character", to = "character")}: ... }
-    \item{nodes}{\code{signature(object = "graphBAM")} Returns the nodes of the graphBAM object. }
-    \item{numEdges}{\code{signature(object = "graphBAM")} Returns an integer vector of edge counts. }
-    \item{numNodes}{\code{signature(object = "graphBAM")} Returns the number of nodes in the graphBAM object }
-    \item{removeEdge}{\code{signature(from = "character", to = "character", graph = "graphBAM")}: ... }
-    \item{removeNode}{\code{signature(node = "character", object = "graphBAM")}: ... }
-    \item{edgeData}{\code{signature(self = "graphBAM", from = "character", 
-            to="character", attr = "character")}}
-    \item{edgeData}{\code{signature(self = "graphBAM", from = "character", 
-            to="missing", attr = "character")}}
-    \item{edgeData}{\code{signature(self = "graphBAM", from = "missing", 
-            to="missing", attr = "missing")}}
-    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "character")} Returns the 
-     edge weights from the indexed nodes to all adjacent nodes }
-    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "missing")} Returns the edge weights of the 
-     graphBAM object}
-    \item{edgeWeights}{\code{signature(object = "graphBAM", index = "numeric")} Returns the 
-    edge weights from the indexed nodes to all adjacent nodes }
-    \item{coerce}{\code{signature(from = "graphBAM", to = "graphAM")}: ... }
-    \item{coerce}{\code{signature(from = "graphBAM", to = "graphNEL")}: ... }
-    \item{coerce}{\code{signature(from = "graphBAM", to = "matrix")}: ... }
-    \item{show}{\code{signature(object = "graphBAM")}} 
-    \item{extractFromTo}{ Returns a data frame with column names from, to 
-        and weight corresponding to the connected nodes in the graphBAM object.}
-    \item{intersection}{\code{signature(x = "graphBAM", y= "graphBAM")} Returns
-    a  new \code{graphBAM} object representing the intersection of edges  
-    within \code{x} and \code{y}. The return value will have zero edges if 
-    the edgeSets in \code{x} and \code{y}  are disjoint. The node set is preserved.
-    Edge weights and edge attributes are dropped.}
-    \item{union}{ \code{signature(x= "graphBAM", y= "graphBAM")} Returns a new 
-    \code{graphBAM} object representing the union of edges in \code{x} and 
-    \code{y}.}
-    \item{graphBAMToMatrix}{Returns a matrix with the weights corresponding the 
-      connected nodes in the graphBAM object}
-    \item{edgemode<-}{
-      Set the edgemode for the graph ("directed" or "undirected").  If
-    the specified edgemode is the same, the object is returned without
-    changes.  Otherwise, a directed graph is converted to an undirected
-    graph via \code{ugraph} and an undirected graph is returned such
-    that each edge is interpreted as two edges, one in each direction.
-  }
-  \item{ugraph}{Return an undirected version of the current graph.
-    Conceptually, the arrows of a graph's directed edges are removed.}
+    \item{\code{addEdge(from, to, graph, weights)}}{
+      
+      Return a new \code{graphBAM} object with the specified edge(s)
+      added.  The \code{from} and \code{to} arguments must either be the
+      same length or one of them must be of length one.  Each time an
+      edge is added, the entire graph is copied.  For the purpose of
+      building a graph it will often be more efficient to build up the
+      list of edges and call \code{GraphBAM}.
 
-  \item{nodes<-}{Replacement of a \code{graphBAM} object's node labels
-    is currently not supported.  An error is raised if this method is called.}
+    }
+  
+    \item{\code{addNode(node, object)}}{
+      
+      Return a new \code{graphBAM} object with the specified node(s)
+      added.
+      
+    }
+
+    \item{\code{clearNode(node, object)}}{
+      
+      This operation is not currently supported.
+      
+    }
+    
+    \item{\code{edges(object, which)}}{
+
+      Returns an adjacency list representation of the graph.  The list
+      will have an entry for each node with a vector of adjacent node
+      labels or \code{character(0)}.  For undirected graphs,
+      \code{edges} returns the reciprocal edges.  The optional
+      argument \code{which} can be a character vector of node labels.
+      When present, only entries for the specified nodes will be
+      returned.
+      
+    }
+    
+    \item{\code{inEdges(node, object)}}{
+      (Not yet supported)
+      Similar to the \code{edges} function, but the adjacency list maps
+      nodes that have an edge to the given node instead of from the
+      given node.
+    }
+    
+    \item{\code{isAdjacent(object, from, to)}}{
+      Returns a logical vector indicating whether there is an edge
+      corresponding to the elements in \code{from} and \code{to}.  These
+      vectors must have the same length, unless one has length one.
+    }
+    
+    \item{\code{nodes(object)}}{
+      Return the node labels for the graph
+    }
+    
+    \item{\code{numEdges(object)}}{
+      Returns the number of edges in the graph.
+    }
+    
+    \item{\code{numNodes(object)}}{
+      Returns the number of nodes in the graph
+    }
+    
+    \item{\code{removeEdge(from, to, graph)}}{
+
+      Return a new \code{graphBAM} object with the specified edges
+      removed.  The \code{from} and \code{to} arguments must be
+      the same length unless one of them has length one.
+      
+    }
+    
+    \item{\code{removeNode(node, object)}}{
+      Operation not supported.
+    }
+    
+    \item{\code{edgeData(self, from, to, attr)}}{
+      Access edge attributes.  See help for \code{edgeData}.
+    }
+    
+    \item{\code{edgeWeights(object, index)}}{
+      Return the edge weights for the graph in adjacency list format.
+      The optional argument \code{index} specified a character vector of
+      nodes.  In this case, only the weights for the specified nodes
+      will be returned.
+    }
+    
+    \item{\code{extractFromTo(g)}}{
+
+      Returns a data frame with column names "from", "to", and "weight"
+      corresponding to the connected nodes in the graphBAM object.
+      
+    }
+
+    \item{\code{intersection(x, y)}}{
+
+      When given two \code{graphBAM} objects, \code{intersection}
+      returns a new \code{graphBAM} containing the nodes and edges in
+      common between the two graphs.  The intersection is computed by
+      first finding the intersection of the node sets, obtaining the
+      induced subgraphs, and finding the intersection of the resulting
+      edge sets.  All node and edge attributes are dropped.  Edges, if
+      any, in the resulting graph will have weights set to one.
+    }
+  
+    \item{\code{edgemode(object) <- value}}{
+      
+      Set the edgemode for the graph ("directed" or "undirected").  If
+      the specified edgemode is the same, the object is returned without
+      changes.  Otherwise, a directed graph is converted to an
+      undirected graph via \code{ugraph} and an undirected graph is
+      returned such that each edge is interpreted as two edges, one in
+      each direction.
+      
+    }
+
+    \item{\code{ugraph(graph)}}{
+
+      Return an undirected version of the current graph.  Conceptually,
+      the arrows of a graph's directed edges are removed.
+
+    }
+
+    \item{\code{nodes(object) <- value}}{
+
+      Replacement of a \code{graphBAM} object's node labels is currently
+      not supported.  An error is raised if this method is called.
+      
+    }
+    
   }
 }
 
+\section{Coercion}{
+
+  \code{graphBAM} objects can be coerced to \code{graphAM},
+  \code{graphNEL}, and \code{matrix} instances via \code{as(g, CLASS)}.
+
+}
+
 \author{S. Falcon, N. Gopalakrishnan}
-
-
-
 
 \examples{
     f <- c("a", "a", "b", "c", "d")
@@ -145,8 +240,6 @@ Class \code{"\linkS4class{graph}"}, directly.
     df <- data.frame(from=f, to=t, weight= weight)
     g <- graphBAM(df)
     gd <- graphBAM(df, edgemode = "directed")
-    g
-    gd
     nd <- nodes(g)
     w1 <- edgeWeights(g)
     w2 <- edgeWeights(g,"a")
@@ -164,5 +257,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     mt <- as(g,"matrix")
     k  <- intersection(g,g)
     k <- union(g,g)
+    g
+    gd
 }
 \keyword{classes}
