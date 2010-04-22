@@ -34,7 +34,7 @@ setMethod("numEdges", signature = signature(object = "graphBAM"),
 
 .undirectEdges <- function(from, to)
 {
-    fromIsFirst <- from < to
+    fromIsFirst <- from <= to
     toIsFirst <- !fromIsFirst
     tmpFrom <- c(from[fromIsFirst], to[toIsFirst])
     tmpTo <- c(to[fromIsFirst], from[toIsFirst])
@@ -272,24 +272,16 @@ setMethod("numNodes", signature("graphBAM"),
 setMethod("isAdjacent",
         signature(object="graphBAM", from="character", to="character"),
         function(object, from, to) {
-
             nodeNames <- object@nodes
-            snodes <- c(from,to)
-            snodesIdx <- match(snodes, nodeNames)
-            if (any(is.na(snodesIdx))) {
-               stop("invalid arg: from or to contains nodes not in the ",
-                        "graphBAM object:\n")
-            }
-            ## FIXME: should use a convention for
-            ## undirected case
+            req_ft <- .align_from_to(from, to, nodeNames)
             if (!isDirected(object)) {
                 ## normalize edges so that edges have nodes in lexical order
-                tmp <- .undirectEdges(from, to)
-                from <- tmp[["from"]]
-                to <- tmp[["to"]]
+                tmp <- .undirectEdges(req_ft[ , "from"], req_ft[ , "to"])
+                req_ft[ , "from"] <- tmp[["from"]]
+                req_ft[ , "to"] <- tmp[["to"]]
             }
-            from_i <- match(from, nodeNames)
-            to_i <- match(to, nodeNames)
+            from_i <- match(req_ft[ , "from"], nodeNames)
+            to_i <- match(req_ft[ , "to"], nodeNames)
             ## FIXME: should check for NA
             getBitCell(object@edgeSet@bit_vector, from_i, to_i)
             ## FIXME: should return value be named with edge labels?

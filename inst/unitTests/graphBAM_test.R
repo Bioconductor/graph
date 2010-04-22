@@ -592,6 +592,25 @@ test_BAM_Intersect_EmptyNodes <- function() {
     checkEquals(list(), eg)
 }
 
+test_BAM_isAdjacent <- function()
+{
+     from = c("a", "d", "d", "b", "a")
+       to = c("b", "a", "d", "c", "c")
+    weight= c(1.5, 2.1, 3.4, 4.1, 5.6)
+     df <- data.frame(from, to, weight)
+     gd <- graphBAM(df, nodes="e", edgemode = "directed")
+
+     ## single edges
+     for (i in seq_len(nrow(df))) {
+         checkEquals(TRUE, isAdjacent(gd, from[i], to[i]))
+     }
+
+     ## vectorized
+     checkEquals(c(FALSE, TRUE, TRUE, FALSE, FALSE),
+                 isAdjacent(gd, "a", letters[1:5]))
+
+     checkEquals(c(FALSE, FALSE, FALSE, TRUE, FALSE),
+                 isAdjacent(gd, letters[1:5], "a"))
 
 test_BAM_Union_UnDirected <- function() {
     ## nodes a b c d x y
@@ -683,3 +702,18 @@ test_BAM_Union_Mixed <- function() {
     checkEquals(rep(1,12), as.numeric(vals))
 }
 
+     ## undirected
+     gu <- graphBAM(df, nodes="e", edgemode = "undirected")
+     ## single edges
+     for (i in seq_len(nrow(df))) {
+         checkEquals(TRUE, isAdjacent(gu, from[i], to[i]))
+         checkEquals(TRUE, isAdjacent(gu, to[i], from[i]))
+     }
+     ## vectorized
+     checkEquals(c(FALSE, TRUE, TRUE, TRUE, FALSE),
+                 isAdjacent(gu, "a", letters[1:5]))
+
+     checkEquals(c(FALSE, TRUE, TRUE, TRUE, FALSE),
+                 isAdjacent(gu, letters[1:5], "a"))
+
+}
