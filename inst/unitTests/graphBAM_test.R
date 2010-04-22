@@ -717,3 +717,24 @@ test_BAM_Union_Mixed <- function() {
                  isAdjacent(gu, letters[1:5], "a"))
 
 }
+
+test_BAM_inEdges <- function()
+{
+      from = c("a", "d", "d", "b", "a")
+        to = c("b", "a", "d", "c", "c")
+    weight = c(1.5, 2.1, 3.4, 4.1, 5.6)
+      df <- data.frame(from, to, weight)
+      ## directed
+      gd <- graphBAM(df, nodes="e", edgemode = "directed")
+
+      want <- list(a="d",
+                   b="a",
+                   c=c("a", "b"),
+                   d="d",
+                   e=character(0))
+      checkEquals(want, inEdges(nodes(gd), gd))
+
+      ## undirected
+      gu <- graphBAM(df, nodes="e", edgemode = "undirected")
+      checkEquals(edges(gu), inEdges(nodes(gu), gu))
+}

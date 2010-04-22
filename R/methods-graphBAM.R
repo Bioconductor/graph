@@ -43,7 +43,7 @@ setMethod("numEdges", signature = signature(object = "graphBAM"),
     list(from=from, to=to)
 }
 
-.edges_gbam <- function(object, which)
+.edges_gbam <- function(object, which, direction="out")
 {
     nn <- nodes(object)
     if (numEdges(object) == 0L) {
@@ -55,10 +55,12 @@ setMethod("numEdges", signature = signature(object = "graphBAM"),
     ft[] <- nn[ft]
     eL <- singles <- NULL
     if (isDirected(object)) {
+        if (direction == "in")
+            ft[ , c("from", "to")] <- ft[ , c("to", "from")]
         eL <- split(ft[ , "to"], ft[ , "from"])
-        singles <- nn[!(nn %in% ft[ , 1])]
+        singles <- nn[!(nn %in% ft[ , "from"])]
     } else {
-        eL <- lapply(split(ft, ft[ , c(2L, 1L)]), unique)
+        eL <- lapply(split(ft, ft[ , c("to", "from")]), unique)
         singles <- nn[!(nn %in% ft)]
     }
     if (length(singles) > 0) {
@@ -69,6 +71,11 @@ setMethod("numEdges", signature = signature(object = "graphBAM"),
     }
     eL[order(names(eL))]
 }
+
+setMethod("inEdges", signature("character", "graphBAM"),
+          function(node, object) {
+              .edges_gbam(object, direction = "in")[node]
+          })
 
 setMethod("edges", signature("graphBAM", "missing"), .edges_gbam)
 
@@ -324,27 +331,6 @@ setMethod("removeNode",
         signature(node="character", object="graphBAM"),
         function(node, object) {
             stop("operation not supported")
-        })
-
-
-setMethod("inEdges", signature(node="character", object="graphBAM"),
-        function(node, object) {
-            allNodes <- nodes(object)
-            unknownNodes <- !(node %in% allNodes)
-            if (any(unknownNodes))
-                stop("Unknown nodes:\n", paste(unknownNodes, collapse=", "))
-            ## cols of adjacency give us in edges
-            bv <- object@edgeSet@bit_vector
-
-            ans <- structure(vector("list", length(node)),
-                    names = node)
-            node_i <- match(node, allNodes)
-            k <- 1L
-            for (i in node_i) {
-                ans[[k]] <- allNodes[getColumn(bv, i)]
-                k <- k + 1L
-            }
-            ans
         })
 
 setMethod("extractFromTo", "graphBAM",
