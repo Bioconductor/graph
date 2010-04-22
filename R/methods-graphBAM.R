@@ -496,28 +496,13 @@ setMethod("intersection", c("graphBAM", "graphBAM"),
     ans
 })
 
-setMethod("union", c("graphBAM", "graphBAM"), 
-        function(x,y) {
-
+setMethod("union", c("graphBAM", "graphBAM"), function(x, y) {
     dr1 <- isDirected(x)
     dr2 <- isDirected(y)
-    theMode <- if (dr1 && dr2) TRUE else FALSE
-    theNodes <-  unique(c(nodes(x), nodes(y)))
-    df1 <- extractFromTo(x)
-    df1["weight"] <- 1L
-    df2 <- extractFromTo(y)
-    df2["weight"] <- 1L
-    df <- rbind(df1, df2)  
-    edge_sets <- .makeMDEdgeSet(es_name = 1, es = df,
-                                is_directed = theMode, theNodes,
-                                ignore_dup_edges = TRUE)
-    
-    c0 <- character(0)
-    df <- data.frame(from = c0, to = c0, weight = numeric(0))
-    ans <- graphBAM(df, edgemode = if(theMode) "directed" else "undirected")
-    ans@edgeSet <- edge_sets
-    ans@nodes <- theNodes  
-    ans
+    theMode <- if (dr1 && dr2) "directed" else "undirected"
+    theNodes <- unique(c(nodes(x), nodes(y)))
+    df <- rbind(extractFromTo(x), extractFromTo(y))
+    df[["weight"]] <- 1L
+    graphBAM(df, nodes = theNodes, edgemode = theMode, ignore_dup_edges = TRUE)
 })
 
-       
