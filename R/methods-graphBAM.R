@@ -92,10 +92,6 @@ getWeightList2 <- function(g){
     nodeNames <- g@nodes
     numNodes <- length(nodeNames)
     w <- g@edgeSet@weights
-    eList <- structure(vector(mode="list", length=numNodes),
-            names = nodeNames)
-    isMiss <- logical(numNodes)
-    bv <- g@edgeSet@bit_vector
     ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector)
     if(!isDirected(g)){
         ft <- rbind(ft, ft[ , c(2L, 1L)])
@@ -106,7 +102,8 @@ getWeightList2 <- function(g){
     wNameList <- split(ft[ , 2L], ft[ , 1L])
     wList <- mapply(function(wVals, wNames) {
         names(wVals) <- wNames
-        wVals
+        a <- wVals[order(wNames)]
+        if (!isDirected(g)) a[!duplicated(names(a))] else a
     }, wList, wNameList)
     haveNoEdge <- setdiff(nodeNames, names(wList))
     names(haveNoEdge) <- haveNoEdge

@@ -135,6 +135,23 @@ test_BAM_edgeWeights <- function() {
                             names = c("b","c","x")), numeric(0)))
 }
 
+test_BAM_edgeWeights_undirected <- function()
+{
+      from = c("a", "d", "d", "b", "a")
+        to = c("b", "a", "d", "c", "c")
+    weight = c(1.5, 2.1, 3.4, 4.1, 5.6)
+    df <- data.frame(from, to, weight)
+    gu <- graphBAM(df, nodes="e", edgemode = "undirected")
+    want <- list(a=c(b=1.5, c=5.6, d=2.1),
+                 b=c(a=1.5, c=4.1),
+                 c=c(a=5.6, b=4.1),
+                 d=c(a=2.1, d=3.4),
+                 e=numeric(0))
+   checkEquals(want, edgeWeights(gu))
+
+   checkEquals(want[c("c", "a")], edgeWeights(gu, c("c", "a")))
+}
+
 
 test_BAM_edges <- function() {
     g1 <- make_smallBAM()
@@ -227,32 +244,6 @@ test_BAMSmall_edgeData <- function(){
       checkEquals(names(vals), tmp)
       checkEquals( as.numeric(vals),3.4)
  }
-
-test_unDirectedBAM_edgeWeights  <- function() {
-    g1 <- make_unDirectedBAM()
-    ew1 <- edgeWeights(g1)
-    checkEquals(names(ew1), c("a", "b", "c","d", "x", "y"))
-    checkEquals(list(ew1$a, ew1$b, ew1$c, ew1$d, ew1$x, ew1$y),
-            list(structure( c(3.4, 2.6, 1.7), names = c("b","c","x")),
-            structure(c(3.4), names = "a"),
-            structure( c(7.9, 1.6, 2.6), names = c("d", "x" ,"a")),
-            structure(c(7.9), names = c("c")),
-            structure(c(5.3, 1.7, 1.6), names = c("y", "a", "c")),
-            structure(c(5.3), names = c("x"))
-            ))
-
-    ew2 <- edgeWeights(g1,c("a","b")) ##index = char
-    checkEquals(names(ew2), c("a","b"))
-    checkEquals(list(ew2$a, ew2$b),
-            list(structure( c(3.4, 2.6, 1.7), names = c("b","c","x")),
-            structure(c(3.4), names= c("a"))))
-
-    ew2 <- edgeWeights(g1, 1:2) ##index = numeric
-    checkEquals(names(ew2), c("a","b"))
-    checkEquals(list(ew2$a, ew2$b),
-            list(structure( c(3.4, 2.6, 1.7), names = c("b","c","x")),
-            structure(c(3.4), names= c("a"))))
-}
 
 test_BAM_extractFromToUndirected <- function() {
     g1 <- make_unDirectedBAM()
