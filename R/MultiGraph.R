@@ -501,3 +501,44 @@ edgeSetToMatrix <- function(nds, edgeSet, directed)
           as.numeric(edgeSet@weights), as.logical(directed))
 }
 
+edgeIntersect <- function(e1, e2) {
+
+    dr1 <- isDirected(e1)
+    dr2 <- isDirected(e2)
+    if (! (dr1 && dr2)) {
+        if(dr1) e1 <- ugraph(e1)
+        else    e2 <- ugraph(e2)
+    }
+    klass <- if (dr1 && dr2) "DiEdgeSet" else "UEdgeSet"
+    bv <- e1@bit_vector & e2@bit_vector
+    attributes(bv) <- attributes(e1@bit_vector)
+    attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
+    new_edge_set <- new(klass, bit_vector = bv,
+                                  weights = rep(1L, ns),
+                                  edge_attrs = list())
+    new_edge_set
+}
+  
+setMethod("intersection", c("MultiGraph", "MultiGraph"),
+        function(x, y) {
+
+    nn <- intersect(nodes(x), nodes(y))
+    nnLen <- length(nn)
+
+    nmsX <- names(x@edge_sets)
+    nmsY <- names(y@edge_sets)
+    eg <- intersect(nmsX, nmsY)
+    x@edge_sets <- x@edge_sets[eg]
+    y@edge_sets <- y@edge_sets[eg]
+
+    sgx <- if (nnLen == numNodes(x)) x else subGraph(nn, x)
+    sgy <- if (nnLen == numNodes(y)) y else subGraph(nn, y)
+  
+    new_edge_sets <- lapply(eg, function(k) {
+                        edgeIntersect(sgx@edge_sets[[k]], sgy@edge_sets[[k]])         
+                     })
+    names(new_edge_sets) <- eg    
+    new("MultiGraph", edge_sets = new_edge_sets, nodes = nn)
+})
+
+
