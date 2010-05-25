@@ -23,6 +23,7 @@
 \alias{ugraph,DiEdgeSet-method}
 \alias{ugraph,UEdgeSet-method}
 \alias{intersection,MultiGraph,MultiGraph-method}
+\alias{union,MultiGraph,MultiGraph-method}
 \title{EXPERIMENTAL class "MultiGraph"}
 \description{
 
@@ -43,7 +44,7 @@
 }
 
 \usage{
-MultiGraph(edgeSets, nodes = NULL, directed = TRUE)
+MultiGraph(edgeSets, nodes = NULL, directed = TRUE, ignore_dup_edges = FALSE)
 eweights(object, names.sep = NULL)
 edgeSetIntersect0(g)
 extractGraphAM(g, edgeSets)
@@ -92,6 +93,16 @@ extractGraphAM(g, edgeSets)
     If \code{NULL} no names will be attached to the returned vector.
     
   }
+
+  \item{ignore_dup_edges}{
+
+    If \code{FALSE} (default), specifying duplicate edges in the input
+    is an error.  When set to \code{TRUE} duplicate edges are ignored.
+    Edge weight values are ignored when determining duplicates.  This is
+    most useful for graph import and conversion.
+    
+  }
+
 
 }
 \section{Constructors}{
@@ -146,6 +157,13 @@ extractGraphAM(g, edgeSets)
     induced subgraphs, and finding the intersection of the resulting
     edge sets.  All node and edge attributes are dropped.  Edges, if
     any, in the resulting graph will have weights set to one.
+    }
+
+    \item{\code{union(x, y)}}{
+    When given two \code{MultiGraph} objects, \code{intersection}
+    returns a new \code{MultiGraph} containing the union of nodes and 
+    edges between the two graphs.  All node and edge attributes are dropped.
+    Edges in the resulting graph will have weights set to one.
     }
 
     \item{show}{Prints a short summary of a MultiGraph object}
