@@ -575,3 +575,51 @@ checkGraphAMObj <- function(am, mg){
     })
 
 }
+
+test_mixed_MultiGraph_Intersect <- function(use.factors=TRUE) {
+
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+                      to=c("b", "c", "d", "a", "d"),
+                      weight=c(1, 3.1, 5.4, 1, 2.2),
+                      stringsAsFactors = use.factors)
+    
+    ft2 <- data.frame(from=c("a", "a", "a", "x", "x"),
+                      to=c("b", "c", "x", "y", "c"),
+                      weight=c(3.4, 2.6, 1, 1, 1),
+                      stringsAsFactors = use.factors)
+
+    ft3 <- data.frame(from=c("a", "a", "x", "x", "x"),
+                      to  =c("b", "c", "a", "y", "c"),
+                      weight=c(1:5),
+                      stringsAsFactors = use.factors)
+
+    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
+                  e5=ft3[FALSE, ])
+
+    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
+
+    ft1 <- data.frame(from=c("a", "b"),
+                      to=c("d", "d"),
+                      weight=c(5.4, 2.2),
+                      stringsAsFactors = use.factors)
+
+    ft2 <- data.frame(from=c("a", "a", "a"),
+                      to=c("b", "c", "x"),
+                      weight=c(3.4, 2.6, 1),
+                      stringsAsFactors = use.factors)
+
+    esets <- list(e1=ft1, e2=ft2)
+
+    g2 <- MultiGraph(esets, directed = c(TRUE, TRUE))
+    res <- intersection(g1, g2)
+    checkEquals(nodes(res), c("a", "b", "c", "d", "x"))
+    checkEquals(isDirected(res),
+            structure(c(TRUE, FALSE), names = c("e1", "e2")))
+    df <- extractFromTo(res)
+    checkEquals(names(df), c("e1", "e2"))
+    df1 <- data.frame(from = c("a", "b"), to = c("d", "d"), weight = c(1, 1))
+    checkEquals(df$e1, df1)   
+    df2 <- data.frame(from = c("a", "a", "a"), to = c("b", "c", "x"), weight = c(1, 1, 1))
+    checkEquals(df$e2, df2)   
+
+}
