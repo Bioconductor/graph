@@ -1,13 +1,15 @@
-MultiGraph <- function(edgeSets, nodes = NULL, directed = TRUE)
+MultiGraph <- function(edgeSets, nodes = NULL, directed = TRUE, 
+        ignore_dup_edges = FALSE)
 {
     .mg_validate_edgeSet(edgeSets)
     nodeNames <- .mg_node_names(edgeSets, nodes)
     n_nodes <- length(nodeNames)
-    edge_sets <- makeMDEdgeSets(edgeSets, directed, nodeNames)
+    edge_sets <- makeMDEdgeSets(edgeSets, directed, nodeNames,
+            ignore_dup_edges = ignore_dup_edges)
     new("MultiGraph", edge_sets = edge_sets, nodes = nodeNames)
 }
 
-makeMDEdgeSets <- function(edgeSets, directed, nodes)
+makeMDEdgeSets <- function(edgeSets, directed, nodes, ignore_dup_edges = FALSE)
 {
     directed <- if (length(directed) == 1L)
         rep(directed, length(edgeSets))
@@ -21,7 +23,8 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes)
     nms <- names(edgeSets)
     names(ans) <- nms
     for (i in seq_along(edgeSets)) {
-        ans[[i]] <- .makeMDEdgeSet(nms[[i]], edgeSets[[i]], directed[[i]], nodes)
+        ans[[i]] <- .makeMDEdgeSet(nms[[i]], edgeSets[[i]], directed[[i]], nodes,
+                ignore_dup_edges = ignore_dup_edges) 
     }
     ans
 }
@@ -541,4 +544,29 @@ setMethod("intersection", c("MultiGraph", "MultiGraph"),
     new("MultiGraph", edge_sets = new_edge_sets, nodes = nn)
 })
 
+setMethod("union", c("MultiGraph", "MultiGraph"), function(x, y) {
+
+    theNodes <- unique(c(nodes(x), nodes(y)))
+    dfx <- extractFromTo(x)
+    dfy <- extractFromTo(y)
+    theEdgeSets <- unique(c(names(dfx), names(dfy)))
+    dr1 <- isDirected(x)
+    dr2 <- isDirected(y)
+    
+    ft <- lapply(theEdgeSets, function(k) {
+        df <- rbind(dfx[[k]], dfy[[k]])
+        if(nrow(df) > 0)
+            df[["weight"]] <- 1L
+        df
+    })
+    names(ft) <- theEdgeSets
+    theMode <- structure(rep(FALSE,length(theEdgeSets)), names = theEdgeSets)
+    cmn <- intersect(names(dr1), names(dr2))
+    rest <- theEdgeSets[!theEdgeSets %in% cmn]
+    theMode[names(which(dr1[names(dr1) %in% rest]))] <- TRUE
+    theMode[names(which(dr2[names(dr2) %in% rest]))] <- TRUE
+    theMode[cmn] <- dr1[cmn] & dr2[cmn]
+    MultiGraph(edgeSets = ft, nodes = theNodes, directed = theMode,
+            ignore_dup_edges = TRUE)
+})
 
