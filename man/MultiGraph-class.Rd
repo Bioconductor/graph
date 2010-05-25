@@ -22,7 +22,7 @@
 \alias{isDirected,UEdgeSet-method}
 \alias{ugraph,DiEdgeSet-method}
 \alias{ugraph,UEdgeSet-method}
-
+\alias{intersection,MultiGraph,MultiGraph-method}
 \title{EXPERIMENTAL class "MultiGraph"}
 \description{
 
@@ -138,6 +138,16 @@ extractGraphAM(g, edgeSets)
     edge set containing the shared edges.  The node set is preserved.
     Edge weights and edge attributes are dropped.}
    
+    \item{\code{intersection(x, y)}}{
+    When given two \code{MultiGraph} objects, \code{intersection}
+    returns a new \code{MultiGraph} containing the nodes and edges in
+    common between the two graphs.  The intersection is computed by
+    first finding the intersection of the node sets, obtaining the
+    induced subgraphs, and finding the intersection of the resulting
+    edge sets.  All node and edge attributes are dropped.  Edges, if
+    any, in the resulting graph will have weights set to one.
+    }
+
     \item{show}{Prints a short summary of a MultiGraph object}
   }
 }
@@ -171,5 +181,6 @@ extractGraphAM(g, edgeSets)
     extractFromTo(g)
     extractGraphAM(g)
     extractGraphAM(g, "es1")
+    intersection(g, g)
 }
 \keyword{classes}
