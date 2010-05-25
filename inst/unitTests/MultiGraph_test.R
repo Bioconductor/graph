@@ -621,5 +621,68 @@ test_mixed_MultiGraph_Intersect <- function(use.factors=TRUE) {
     checkEquals(df$e1, df1)   
     df2 <- data.frame(from = c("a", "a", "a"), to = c("b", "c", "x"), weight = c(1, 1, 1))
     checkEquals(df$e2, df2)   
+}
 
+
+
+test_mixed_MultiGraph_Union <- function(use.factors=TRUE) {
+
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+                      to  =c("b", "c", "d", "a", "d"),
+                      weight=c(1, 3.1, 5.4, 1, 2.2),
+                      stringsAsFactors = use.factors)
+    
+    ft2 <- data.frame(from=c("a", "a"),
+                      to=c("b", "c"),
+                      weight=c(3.4, 2.6),
+                      stringsAsFactors = use.factors)
+
+    ft3 <- data.frame(from=c("a", "a"),
+                      to  =c("d", "b"),
+                      weight=c(1,2),
+                      stringsAsFactors = use.factors)
+
+    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
+                  e5=ft3[FALSE, ])
+
+    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
+
+    ft1 <- data.frame(from=c("a", "a", "b"),
+                      to=c("b", "x", "z"),
+                      weight=c(6, 5, 2),
+                      stringsAsFactors = use.factors)
+
+    ft2 <- data.frame(from=c("a", "a", "a"),
+                      to=c("a", "x", "y"),
+                      weight=c(1, 2, 3),
+                      stringsAsFactors = use.factors)
+
+    esets <- list(e1=ft1, e2=ft2)
+
+    g2 <- MultiGraph(esets, directed = c(TRUE, TRUE))
+    res <- union(g1, g2)
+    checkEquals(nodes(res), c("a", "b", "c", "d", "x", "y", "z"))
+    checkEquals(names(res@edge_sets), c("e1", "e2", "e3", "e4", "e5"))
+    checkEquals(isDirected(res), structure(c(TRUE, FALSE, TRUE, TRUE, FALSE), 
+                                 names = c("e1", "e2", "e3", "e4", "e5")))
+    df <- extractFromTo(res)
+    checkEquals(names(df), c("e1", "e2", "e3", "e4", "e5"))
+    df1 <- data.frame(from = c("b", "a", "a", "a", "b", "a", "b"), 
+                        to = c("a", "b", "c", "d", "d", "x", "z"),
+                        weight = rep(1L, 7))
+    checkEquals(df$e1, df1)   
+    
+    df2 <- data.frame(from = c("a", "a", "a", "a", "a"), 
+                        to = c("a", "b", "c", "x", "y"),
+                        weight = rep(1L,5))
+    checkEquals(df$e2, df2)  
+    
+    df3 <- data.frame(from = c("a", "a"), 
+                        to = c("b", "d"),
+                        weight = c(1L,1L))
+    checkEquals(df$e3, df3)
+    
+    df4 <- data.frame(from = factor(), to = factor(), weight = numeric())
+    checkEquals(df$e4, df4)
+    checkEquals(df$e5, df4)
 }
