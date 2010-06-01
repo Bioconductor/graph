@@ -48,6 +48,6 @@ export(graphBAM)
 
 
 export(MultiGraph, eweights, edgeSetIntersect0, extractFromTo, subsetEdgeSets,
-       extractGraphAM)
+       extractGraphAM, extractGraphBAM)
 
 S3method(write,tlp)
