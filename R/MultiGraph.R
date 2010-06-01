@@ -570,3 +570,20 @@ setMethod("union", c("MultiGraph", "MultiGraph"), function(x, y) {
             ignore_dup_edges = TRUE)
 })
 
+extractGraphBAM <- function(g, edgeSets) {
+    nn <- nodes(g)
+    esets <- if (missing(edgeSets)) g@edge_sets else g@edge_sets[edgeSets]
+    df_empty <- data.frame(from = character(0), to = character(0),
+            weight = numeric(0))
+    lapply(esets, function(x) {
+                edgeMode <- if(isDirected(x)) "directed" else "undirected"
+                bam <- graphBAM(df_empty, nodes = nn, edgemode = edgeMode,
+                        ignore_dup_edges = TRUE)
+                bam@edgeSet <- x
+                bam
+            })
+}
+
+
+
+
