@@ -14,6 +14,7 @@
 \alias{extractFromTo}
 \alias{extractFromTo,MultiGraph-method}
 \alias{extractGraphAM}
+\alias{extractGraphBAM}
 \alias{isDirected,MultiGraph-method}
 \alias{ugraph,MultiGraph-method}
 % these are not supposed to be publicly available
@@ -48,6 +49,7 @@ MultiGraph(edgeSets, nodes = NULL, directed = TRUE, ignore_dup_edges = FALSE)
 eweights(object, names.sep = NULL)
 edgeSetIntersect0(g)
 extractGraphAM(g, edgeSets)
+extractGraphBAM(g, edgeSets)
 }
 
 \arguments{
@@ -136,6 +138,10 @@ extractGraphAM(g, edgeSets)
     \item{extractGraphAM}{Return a named \code{list} of \code{graphAM}
       objects corresponding to the edge sets from the original 
       \code{MultiGraph}.}
+  
+    \item{extractGraphBAM}{Return a named \code{list} of \code{graphBAM}
+      objects corresponding to the edge sets from the original 
+      \code{MultiGraph}.}
 
     \item{ugraph}{Return a new \code{MultiGraph} object in which all
       edge sets have been converted to undirected edge sets.  This
@@ -199,6 +205,7 @@ extractGraphAM(g, edgeSets)
     extractFromTo(g)
     extractGraphAM(g)
     extractGraphAM(g, "es1")
+    extractGraphBAM(g, "es1")
     intersection(g, g)
 }
 \keyword{classes}
