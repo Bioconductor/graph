@@ -686,3 +686,36 @@ test_mixed_MultiGraph_Union <- function(use.factors=TRUE) {
     checkEquals(df$e4, df4)
     checkEquals(df$e5, df4)
 }
+
+test_MultiGraph_To_graphBAM <- function(use.factors=TRUE) {
+
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+                      to=c("b", "c", "d", "a", "d"),
+                      weight=c(1, 3.1, 5.4, 1, 2.2),
+                      stringsAsFactors = use.factors)
+    
+    ft2 <- data.frame(from=c("a", "a", "a", "x", "x"),
+                      to=c("b", "c", "x", "y", "c"),
+                      weight=c(3.4, 2.6, 1, 1, 1),
+                      stringsAsFactors = use.factors)
+
+    esets <- list(e1 = ft1, e2 = ft2, e3 = ft2[FALSE, ])
+    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE))
+    res <- extractGraphBAM(g1) 
+    checkEquals(names(res), c("e1", "e2", "e3"))
+  
+    bam1 <- graphBAM(ft1, nodes=nodes(g1), edgemode = "directed")
+    checkEquals(bam1, res$e1)
+
+    bam2 <- graphBAM(ft2, nodes=nodes(g1), edgemode = "undirected")
+    checkEquals(bam2, res$e2)
+
+    bam3 <- graphBAM( ft2[FALSE, ], nodes=nodes(g1), edgemode = "directed")
+    checkEquals(bam3, res$e3)
+  
+    res <- extractGraphBAM(g1, "e1") 
+    checkEquals(bam1, res$e1)
+    res <- extractGraphBAM(g1, c("e2", "e3"))
+    target <- structure(list(bam2, bam3), names = c("e2", "e3"))
+    checkEquals(target, res)
+}    
