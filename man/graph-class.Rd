@@ -20,6 +20,9 @@
 \alias{edgeDataDefaults<-,graph,character,ANY-method}
 \alias{edgeDataDefaults,graph,missing-method}
 \alias{edgeDataDefaults,graph,character-method}
+\alias{edgeData<-,graph,character,character,character-method}
+\alias{edgeData<-,graph,character,missing,character-method}
+\alias{edgeData<-,graph,missing,character,character-method}
 \alias{edgeData<-,graph,character,character,character,ANY-method}
 \alias{edgeData<-,graph,character,missing,character,ANY-method}
 \alias{edgeData<-,graph,missing,character,character,ANY-method}
@@ -29,12 +32,10 @@
 \alias{edgeData,graph,missing,character,character-method}
 \alias{edgeData,graph,missing,missing,character-method}
 \alias{edgeData,graph,missing,missing,missing-method}
-
 \alias{edgemode}
 \alias{edgemode<-}
 \alias{edgemode,graph-method}
 \alias{edgemode<-,graph,character-method}
-
 \alias{edgeNames}
 \alias{edgeNames,graph-method}
 \alias{edgeL,graph-method}
