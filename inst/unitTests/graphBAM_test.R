@@ -228,7 +228,7 @@ test_BAMSmall_edgeData <- function(){
       tmp <- paste( c("a", "a", "a"), c("b", "c", "x"), sep = "|")
       checkEquals(names(eg), tmp)
       vals <- sapply( names(eg),function(k){
-               eg[[k]]$weight
+               eg[[k]] 
               })
       checkEquals(names(vals), tmp)
       checkEquals( as.numeric(vals), c(3.4, 2.6, 1.7))
@@ -239,7 +239,7 @@ test_BAMSmall_edgeData <- function(){
       tmp <- paste("a", "b", sep = "|")
       checkEquals(names(eg), tmp)
       vals <- sapply( names(eg),function(k){
-               eg[[k]]$weight
+               eg[[k]]
               })
       checkEquals(names(vals), tmp)
       checkEquals( as.numeric(vals),3.4)
@@ -728,4 +728,84 @@ test_BAM_inEdges <- function()
       ## undirected
       gu <- graphBAM(df, nodes="e", edgemode = "undirected")
       checkEquals(edges(gu), inEdges(nodes(gu), gu))
+}
+
+
+test_BAM_directed_attrs <- function() {
+
+    from = c("a", "a", "a", "x", "x", "c")
+    to   = c("b", "c", "x", "y", "c", "a")
+    weight = c(2, 1, 3, 4, 5, 6)
+    df <- data.frame(from, to, weight)
+    bam <- graphBAM(df, edgemode = "directed")
+    
+    checkException(edgeData(bam,from="a", attr="code"))
+    checkException(edgeData(bam,from = "a", to = "x", attr= "code") <- "red")
+     
+     
+    edgeDataDefaults(bam, "weight") <- 1
+    edgeDataDefaults(bam, "code") <- "plain"
+    res <- edgeDataDefaults(bam)
+    checkEquals(names(res), c("weight", "code"))
+    checkEquals(c(res$weight, res$code), c(1, "plain"))
+
+    res <- unlist(edgeData(bam,from="a", attr="code"))
+    nmres <- paste(c("a","a","a"), c ("b", "c", "x"), sep="|")  
+    checkEquals(names(res), nmres)
+    checkEquals(as.character(res), c("plain", "plain", "plain"))
+
+    edgeData(bam,from = "a", to = "x", attr= "code") <- "red"
+    res <- unlist(edgeData(bam, from = "a", attr = "code"))
+    checkEquals(names(res), nmres)
+    checkEquals(as.character(res), c("plain", "plain", "red"))
+
+    edgeData(bam,to = "c", attr= "code") <- "yellow"
+    res <- unlist(edgeData(bam, to= "c", attr = "code"))
+    nmres <- paste(c("a", "x"), c("c", "c"), sep = "|")
+    checkEquals(names(res), nmres)
+    checkEquals(as.character(res), c("yellow", "yellow"))
+}
+
+test_BAM_undirected_attrs <- function() {
+
+    from = c("a", "a", "a", "x", "x")
+    to   = c("b", "c", "x", "y", "c")
+    weight = c(2, 1, 3, 4, 5)
+    df <- data.frame(from, to, weight)
+    bam <- graphBAM(df, edgemode = "undirected")
+    checkException(edgeData(bam,from="a", attr="code"))
+    checkException(edgeData(bam,from = "a", to = "x", attr= "code") <- "red")
+     
+    am <- as(bam, "graphAM") 
+    edgeDataDefaults(am, "weight") <- 1
+    edgeDataDefaults(am, "code") <- "plain"
+
+    resam <- unlist(edgeData(am,from="a", attr="code"))
+
+
+    edgeDataDefaults(bam, "weight") <- 1
+    edgeDataDefaults(bam, "code") <- "plain"
+    res <- edgeDataDefaults(bam)
+    checkEquals(names(res), c("weight", "code"))
+    checkEquals(c(res$weight, res$code), c(1, "plain"))
+
+    res <- unlist(edgeData(bam,from="a", attr="code"))
+    nmres <- paste(c("a","a","a"), c ("b", "c", "x"), sep="|")  
+    checkEquals(names(res), nmres)
+    checkEquals(as.character(res), c("plain", "plain", "plain"))
+
+    edgeData(bam,from = "a", to = "x", attr= "code") <- "red"
+    res <- unlist(edgeData(bam, from = "a", attr = "code"))
+    checkEquals(names(res), nmres)
+    checkEquals(as.character(res), c("plain", "plain", "red"))
+
+    edgeData(bam,to = "c", attr= "code") <- "yellow"
+    res <- unlist(edgeData(bam, to= "c", attr = "code"))
+    nmres <- paste(c("a", "x"), c("c", "c"), sep = "|")
+    checkEquals(names(res), nmres)
+    checkEquals(as.character(res), c("yellow", "yellow"))
+
+
+
+
 }
