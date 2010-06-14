@@ -31,7 +31,7 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes, ignore_dup_edges = FALSE)
 
 .makeMDEdgeSet <- function(es_name, es, is_directed, nodes,
                            ignore_dup_edges = FALSE)
-{
+{ 
     if (!all(c("from", "to", "weight") %in% names(es)))
         stop("edgeSets data.frames must have columns: from, to, weight",
              call. = FALSE)
@@ -59,7 +59,8 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes, ignore_dup_edges = FALSE)
             ## NB: we only consider nodes for duplication, ignoring
             ## weight value.
             ft <- cbind(from_i, to_i)[edge_order, ]
-            want <- !duplicated(ft)
+            tmp <- paste(ft[,"from_i"],ft[,"to_i"], sep="_")
+            want <- !duplicated(tmp)
             from_i <- ft[want, 1]
             to_i <- ft[want, 2]
             weights <- weights[want]
@@ -545,10 +546,10 @@ setMethod("intersection", c("MultiGraph", "MultiGraph"),
 })
 
 setMethod("union", c("MultiGraph", "MultiGraph"), function(x, y) {
-
+    
     theNodes <- unique(c(nodes(x), nodes(y)))
-    dfx <- extractFromTo(x)
-    dfy <- extractFromTo(y)
+    dfx <- .extractFromTo_mg(x)
+    dfy <- .extractFromTo_mg(y)
     theEdgeSets <- unique(c(names(dfx), names(dfy)))
     dr1 <- isDirected(x)
     dr2 <- isDirected(y)
