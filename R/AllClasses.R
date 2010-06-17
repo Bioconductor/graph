@@ -102,6 +102,7 @@ setClass("UEdgeSet", contains = "MGEdgeSet")
 setClass("MultiGraph",
          representation = representation(
          nodes = "character",
+         nodeData = "list",
          ## items will be MGEdgeSet objects
          edge_sets = "list"))
 
