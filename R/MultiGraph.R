@@ -478,6 +478,9 @@ setMethod("subGraph", signature(snodes="character", graph="MultiGraph"),
                     x@edge_attrs <- x@edge_attrs[res$setPos]
                 x
             })
+    graph@nodeData <- lapply(graph@nodeData, function(x) {
+                         x[snodesIdx]
+                      })
     graph@nodes <- snodes
     graph
 })
@@ -584,6 +587,108 @@ extractGraphBAM <- function(g, edgeSets) {
                 bam
             })
 }
+
+
+## Degree of a multigraph
+setMethod("degree", signature(object = "MultiGraph", Nodes = "missing"),
+      function(object){
+          .mgDegree(object)
+})
+
+## Node data accces methods 
+setMethod("nodeData",
+        signature(self = "MultiGraph", n = "character", attr = "character"),
+        function(self, n, attr) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            if( ! (attr %in% names(self@nodeData)))
+                stop(paste("attribute", attr," is not present in self"))
+
+            nds <- nodes(self)
+            .verifyNodes(n, nds)
+            idx <- nds %in% n
+            structure(self@nodeData[[attr]][idx], names = n)
+        })
+
+setMethod("nodeData",
+        signature(self = "MultiGraph", n = "missing", attr = "character"),
+        function(self, n, attr) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            if( ! (attr %in% names(self@nodeData)))
+                stop(paste("attribute", attr," is not present in self"))
+
+
+            nds <- nodes(self)
+            structure(self@nodeData[[attr]], names = nds)
+        })
+
+setMethod("nodeData",
+        signature(self = "MultiGraph", n = "character", attr = "missing"),
+        function(self, n, attr) {
+
+            nds <- nodes(self)
+            .verifyNodes(n ,nds)
+            idx <- nds %in% n
+            if(!any(idx))
+                stop("Specified node is not in self")
+            lapply(self@nodeData, function(x) {
+                        structure(x[idx], names = n)
+                    })
+        })
+
+setMethod("nodeData",
+        signature(self = "MultiGraph", n = "missing", attr = "missing"),
+        function(self, n, attr) {
+           nds <- nodes(self)
+           lapply(self@nodeData, function(x) {
+                    structure(x, names = nds)
+                   })
+        })
+
+## Node data replacement methods 
+
+setReplaceMethod("nodeData",
+        signature(self = "MultiGraph", n="character", attr="character", value="ANY"),
+        function(self, n, attr, value) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            len <- length(value)
+            if(len != 1L) {
+                if(len != length(n)) {
+                    stop("value must be of length one or have the same length
+                            as n")
+                }
+            }
+            nms <- names(self@nodeData)
+            nds <- nodes(self)
+            .verifyNodes(n, nds)
+            idx <- nds %in% n
+            if(!( attr %in% nms))
+                self@nodeData[[attr]] <- rep(NA, length(nds))
+            
+            self@nodeData[[attr]][idx]  <- value
+            self 
+        })
+
+setReplaceMethod("nodeData",
+        signature(self = "MultiGraph", n="missing", attr="character", value="ANY"),
+        function(self, n, attr, value) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            lenVal  <- length(value)
+            lenNode <- length(nodes(self))
+
+            if(lenVal != 1L) {
+                if(lenVal != lenNode) {
+                    stop("value must be of length one or have the same length
+                            as number of nodes of self")
+                }
+            }
+            idx <- seq_len(lenNode)
+            self@nodeData[[attr]][idx] <- value
+            self
+        })
 
 
 
