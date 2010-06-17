@@ -718,4 +718,28 @@ test_MultiGraph_To_graphBAM <- function(use.factors=TRUE) {
     res <- extractGraphBAM(g1, c("e2", "e3"))
     target <- structure(list(bam2, bam3), names = c("e2", "e3"))
     checkEquals(target, res)
-}    
+}  
+
+test_MultiGraph_nodeAttributes <- function() {
+
+    mg <- make_directed_MultiGraph()$g
+    nds <- nodes(mg)
+    checkException(nodeData(mg, n = c("a"), attr = "color"))
+
+    checkException( nodeData(mg, n = "z", attr = "color") <- "red")
+    nodeData(mg, n = c("a", "x") , attr = "color") <- "red"
+    nodeData(mg, attr = "class") <- "high"
+    
+    current  <- nodeData(mg, attr = "color")
+    target <- structure(c("red", rep(NA, 3), "red", NA), names = nds)
+    checkEquals(target, current)
+    
+    current <- nodeData(mg, attr = "class")
+    target <- structure(rep("high",6), names = nds)
+    checkEquals(target, current)
+    
+    sg <- subGraph(c("a", "x"), mg)
+    current <- nodeData(sg, attr = "color")
+    target <- structure( c("red","red"), names = c("a", "x"))
+    checkEquals(target, current)
+}
