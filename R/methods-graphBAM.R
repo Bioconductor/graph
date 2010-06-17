@@ -404,8 +404,12 @@ setMethod("subGraph", signature(snodes="character", graph="graphBAM"),
             res <- .Call("graph_bitarray_subGraph", graph@edgeSet@bit_vector, snodesIdx)
             graph@edgeSet@bit_vector <- res$bitVec
             graph@edgeSet@weights <- graph@edgeSet@weights[res$setPos]
-            if(length(graph@edgeSet@edge_attrs))
-                graph@edgeSet@edge_attrs <- graph@edgeSet@edge_attrs[res$setPos]
+            if(length(graph@edgeSet@edge_attrs)) {
+                graph@edgeSet@edge_attrs <- lapply(graph@edgeSet@edge_attrs, 
+                        function(x) {
+                            x[res$setPos]
+                        })
+            }
             graph@nodes <- snodes
             graph
         })
@@ -550,6 +554,9 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
     all_t <- nn[ft[ , 2]]
     wh <- !((all_f %in% req_ft[ , 1]) & (all_t %in% req_ft[ , 2]))
     new_weights <- graph@edgeSet@weights[wh]
+    graph@edgeSet@edge_attrs <- lapply( graph@edgeSet@edge_attrs, function(x) {
+                x[wh]   
+            })
     graph@edgeSet@bit_vector <- setBitCell(graph@edgeSet@bit_vector,
                                            match(from, nn),
                                            match(to, nn),
