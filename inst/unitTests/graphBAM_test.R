@@ -775,14 +775,8 @@ test_BAM_undirected_attrs <- function() {
     bam <- graphBAM(df, edgemode = "undirected")
     checkException(edgeData(bam,from="a", attr="code"))
     checkException(edgeData(bam,from = "a", to = "x", attr= "code") <- "red")
-     
-    am <- as(bam, "graphAM") 
-    edgeDataDefaults(am, "weight") <- 1
-    edgeDataDefaults(am, "code") <- "plain"
-
-    resam <- unlist(edgeData(am,from="a", attr="code"))
-
-
+    
+    
     edgeDataDefaults(bam, "weight") <- 1
     edgeDataDefaults(bam, "code") <- "plain"
     res <- edgeDataDefaults(bam)
@@ -804,8 +798,5 @@ test_BAM_undirected_attrs <- function() {
     nmres <- paste(c("a", "x"), c("c", "c"), sep = "|")
     checkEquals(names(res), nmres)
     checkEquals(as.character(res), c("yellow", "yellow"))
-
-
-
 
 }
