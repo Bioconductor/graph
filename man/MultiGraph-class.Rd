@@ -25,6 +25,12 @@
 \alias{ugraph,UEdgeSet-method}
 \alias{intersection,MultiGraph,MultiGraph-method}
 \alias{union,MultiGraph,MultiGraph-method}
+\alias{nodeData,MultiGraph,character,character-method}
+\alias{nodeData,MultiGraph,character,missing-method}
+\alias{nodeData,MultiGraph,missing,character-method}
+\alias{nodeData,MultiGraph,missing,missing-method}
+\alias{nodeData<-,MultiGraph,character,character-method}
+\alias{nodeData<-,MultiGraph,missing,character-method}
 \title{EXPERIMENTAL class "MultiGraph"}
 \description{
 
