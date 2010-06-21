@@ -699,6 +699,8 @@ setReplaceMethod("nodeData",
 .verifyMgEdgeSet <- function(mg, e) {
     if(!e %in% names(mg@edge_sets))
         stop( paste("edgeSet", e, "not found in self", sep = " "))
+    if(numEdges(mg)[e] == 0)
+        stop( paste("edgeSet", e, "does not have any connected edges", sep = " "))
 }
 setMethod("mgEdgeData",
         signature(self = "MultiGraph", edgeSet = "character", from = "missing", 
@@ -816,6 +818,19 @@ setReplaceMethod("mgEdgeData",
                      from  <- unlist(eg, use.names = FALSE) 
                      len <- as.numeric(sapply(eg, length))
                      to <- rep(names(eg), len)
+                     .mgSetAttrs(self, edgeSet, from, to, attr, value)
+                 })
+
+setReplaceMethod("mgEdgeData",
+                 signature(self="MultiGraph", edgeSet = "character",
+                         from="missing", to="missing",
+                         attr="character", value="ANY"),
+                 function(self, edgeSet, from, to, attr, value) {
+                     .verifyMgEdgeSet(self, edgeSet)
+                     eg <- .edges_mg(self, edgeSet)
+                     to <- unlist(eg, use.names = FALSE)
+                     len <- as.numeric(sapply(eg, length))
+                     from <- rep(names(eg),len)  
                      .mgSetAttrs(self, edgeSet, from, to, attr, value)
                  })
 
