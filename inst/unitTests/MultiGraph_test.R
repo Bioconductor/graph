@@ -743,3 +743,61 @@ test_MultiGraph_nodeAttributes <- function() {
     target <- structure( c("red","red"), names = c("a", "x"))
     checkEquals(target, current)
 }
+
+
+
+
+test_MultiGraph_edgeAttributes_directed  <- function() {
+    ## Check directed edge
+    mg <- make_mixed_MultiGraph()$g
+
+    mgEdgeData(mg, "e1", from = c("a"), to = c("b"), attr = "color") <- "red"
+    current  <- mgEdgeData(mg, "e1", attr = "color")
+
+    nms <- paste( c("b", "a", "a", "a", "b"), c("a","b", "c", "d", "d"),sep ="|")
+    target <- structure( c( NA, "red", rep(NA, 3)), names = nms)
+    checkEquals(target, current)
+
+    mgEdgeData(mg, "e1", to = "d",  attr = "color") <- "green"
+    current <- mgEdgeData(mg, "e1", attr = "color") 
+    target <- structure( c(NA, "red", NA, "green", "green"), names = nms)
+    checkEquals(target, current)
+   
+    mgEdgeData(mg, "e1", from = "b", attr = "color") <- c("pink")
+    current <- mgEdgeData(mg, "e1", attr = "color") 
+    target <- structure( c("pink", "red", NA, "green" ,"pink"), names = nms)
+    checkEquals(target, current)
+   
+    checkException(mgEdgeData(mg, "e1", attr = "class"))
+    checkException(mgEdgeData(mg, "e9", attr = "color"))
+   
+}
+
+
+test_MultiGraph_edgeAttributes_undirected  <- function() {
+    ## Check undirected edge
+    mg <- make_mixed_MultiGraph()$g
+
+    mgEdgeData(mg, "e3", from = c("a"), to = c("b"), attr = "color") <- "red"
+    current  <- mgEdgeData(mg, "e3", to = "a",  attr = "color")
+    nms <- paste( c("b", "c", "x"), rep("a", 3), sep = "|")
+    target <- structure(c("red", NA, NA), names = nms)
+    checkEquals(target, current)
+
+
+    mgEdgeData(mg, "e3", to = "c",  attr = "color") <- "green"
+    current <- mgEdgeData(mg, "e3", to = "c",  attr = "color") 
+    nms <- paste(c("a", "x"), c("c", "c"), sep = "|")
+    target <- structure( c("green", "green"), names = nms)
+    checkEquals(target, current)
+   
+    mgEdgeData(mg, "e3", from = "b", attr = "color") <- c("pink")
+    current <- mgEdgeData(mg, "e3", attr = "color") 
+    nms <- paste(c("a", "a", "a", "c", "x", "b", "c", "x", "x", "y"),
+            c("b", "c", "x", "x", "y", "a", "a", "a", "c", "x"), sep ="|")
+
+    target <- structure( c("pink", "green", NA, "green", NA, "pink", "green",
+                    NA, "green", NA), names = nms)
+    checkEquals(target, current)
+}
+
