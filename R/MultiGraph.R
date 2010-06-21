@@ -690,6 +690,222 @@ setReplaceMethod("nodeData",
             self
         })
 
+## edgeData access methods for MultiGraph 
+.verifyMgEdgeSet <- function(mg, e) {
+    if(!e %in% names(mg@edge_sets))
+        stop( paste("edgeSet", e, "not found in self", sep = " "))
+}
+setMethod("mgEdgeData",
+        signature(self = "MultiGraph", edgeSet = "character", from = "missing", 
+                to = "missing", attr = "character"),
+        function(self, edgeSet, from , to, attr) {
+            .verifyMgEdgeSet(self,edgeSet)
+            eg <- .edges_mg(self, edgeSet)             
+            .mgGetAttrs( self, edgeSet, from = names(eg), attr)
+        })
 
+setMethod("mgEdgeData",
+        signature(self = "MultiGraph", edgeSet = "character", from = "character", 
+                to = "missing", attr = "character"),
+        function(self, edgeSet, from , to, attr) {
+            .verifyMgEdgeSet(self,edgeSet)
+            .mgGetAttrs( self, edgeSet, from, attr)
+        })
+
+setMethod("mgEdgeData",
+        signature(self = "MultiGraph", edgeSet = "character", from = "missing", 
+                to = "character", attr = "character"),
+        function(self, edgeSet, from , to, attr) {
+            .verifyMgEdgeSet(self,edgeSet)
+            nodeNames <- self@nodes
+            numNodes <- length(nodeNames)
+            bv <- self@edge_sets[[edgeSet]]@bit_vector
+            if(attr == "weight")
+                val <- self@edge_sets[[edgeSet]]@weights
+            else 
+                val <- self@edge_sets[[edgeSet]]@edge_attrs[[attr]]
+
+            ft <- .Call(graph_bitarray_rowColPos, self@edge_sets[[edgeSet]]@bit_vector)
+            if(!isDirected(self@edge_sets[[edgeSet]])) {
+                df <- cbind(from=ft[,"to"], to = ft[,"from"])
+                ft <- rbind(ft,df)
+                val <- c(val,val)
+            }
+            ft <- data.frame(ft, val, stringsAsFactors = FALSE)
+            ft <- ft[ft[,"to"] %in% which(nodeNames %in% to),]  ## was ==
+            nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
+                    sep ="|")
+            val <- ft[,"val"][1:length(nodeLbl)]
+            names(val) <- nodeLbl
+            val
+        })
+
+setMethod("mgEdgeData",
+        signature(self = "MultiGraph", edgeSet = "character", from = "character", 
+                to = "character", attr = "character"),
+        function(self, edgeSet, from , to, attr) {
+            .verifyMgEdgeSet(self,edgeSet)
+            nodeNames <- self@nodes
+            req_ft <- .align_from_to(from, to, nodeNames)
+            numNodes <- length(nodeNames)
+            bv <- self@edge_sets[[edgeSet]]@bit_vector
+            if(attr == "weight")
+               val <- self@edge_sets[[edgeSet]]@weights
+            else
+               val <- self@edge_sets[[edgeSet]]@edge_attrs[[attr]]
+
+            ft <- .Call(graph_bitarray_rowColPos, self@edge_sets[[edgeSet]]@bit_vector)
+            if(!isDirected(self@edge_sets[[edgeSet]])) {
+                df <- cbind(from=ft[,"to"], to = ft[,"from"])
+                ft <- rbind(ft,df)
+                val <- c(val, val)
+            }
+            ft <- data.frame(ft, val, stringsAsFactors = FALSE)
+            df_list <- lapply( seq_len( nrow(req_ft)), function(x) {
+                        fIndx <- which(nodeNames %in% req_ft[,"from"][x])
+                        tIndx <- which(nodeNames %in% req_ft[,"to"][x])
+                        ft[ ft[, "from"] == fIndx & ft[, "to"] == tIndx,]
+                    })
+            ft <- do.call(rbind, df_list)
+
+            nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
+                    sep ="|")
+            val <- ft[,"val"][1:length(nodeLbl)]
+            names(val) <- nodeLbl
+            val
+        })
+
+setReplaceMethod("mgEdgeData",
+        signature(self = "MultiGraph", edgeSet = "character", from = "character", 
+                to = "character", attr = "character", value = "ANY"),
+        function(self, edgeSet, from, to, attr, value) { 
+            .verifyMgEdgeSet(self,edgeSet)
+            if(length(edgeSet) != 1L)
+                stop("edgeSet has to be of length 1")
+
+            .mgSetAttrs(self, edgeSet, from, to, attr, value) 
+        })
+
+
+setReplaceMethod("mgEdgeData",
+        signature(self="MultiGraph", edgeSet = "character", from = "character",
+                to = "missing", attr="character", value = "ANY"),
+        function(self, edgeSet, from, to, attr, value) {
+            .verifyMgEdgeSet(self,edgeSet)
+            eg <- .edges_mg(self, edgeSet)[from]
+            to <- unlist(eg, use.names = FALSE)
+            len <- as.numeric(sapply(eg, length))
+            from <- rep(names(eg),len)  
+            .mgSetAttrs(self, edgeSet, from, to, attr, value)
+        })
+
+
+setReplaceMethod("mgEdgeData",
+                 signature(self="MultiGraph", edgeSet = "character",
+                           from="missing", to="character",
+                           attr="character", value="ANY"),
+                 function(self,edgeSet, from, to, attr, value) {
+                     .verifyMgEdgeSet(self,edgeSet)
+                     eg <- .edges_mg(self, edgeSet, direction = "in")
+                     eg <- eg[order(names(eg))][to]
+                     from  <- unlist(eg, use.names = FALSE) 
+                     len <- as.numeric(sapply(eg, length))
+                     to <- rep(names(eg), len)
+                     .mgSetAttrs(self, edgeSet, from, to, attr, value)
+                 })
+
+.edges_mg <- function(object, e, direction="out")
+{
+    nn <- nodes(object)
+    if (numEdges(object)[e] == 0L) {
+        names(nn) <- nn
+        c0 <- character(0L)
+        return(lapply(nn, function(x) c0))
+    }
+    ft <- .Call(graph_bitarray_rowColPos, object@edge_sets[[e]]@bit_vector)
+    ft[] <- nn[ft]
+    eL <- singles <- NULL
+    if (isDirected(object@edge_sets[[e]])) {
+        if (direction == "in")
+            ft[ , c("from", "to")] <- ft[ , c("to", "from")]
+        eL <- split(ft[ , "to"], ft[ , "from"])
+        singles <- nn[!(nn %in% ft[ , "from"])]
+    } else {
+        eL <- lapply(split(ft, ft[ , c("to", "from")]), unique)
+        singles <- nn[!(nn %in% ft)]
+    }
+    if (length(singles) > 0) {
+        names(singles) <- singles
+        c0 <- character(0L)
+        empties <- lapply(singles, function(x) c0)
+        eL <- c(eL, empties)
+    }
+    eL[order(names(eL))]
+}
+
+
+.mgSetAttrs <- function(mg, e, from, to, attr, value)
+{   
+    nodeNames <- mg@nodes
+    req_ft <- .align_from_to(from, to, nodeNames)
+
+    ## remove dups
+    req_ft <- req_ft[!duplicated(req_ft), , drop = FALSE]
+    if (length(value) == 1L)
+        value <- rep(value, nrow(req_ft))
+    else if (length(value) != nrow(req_ft))
+        stop("number of edges and attribute values must align")
+    ft <- .Call(graph_bitarray_rowColPos, mg@edge_sets[[e]]@bit_vector)
+    if (!isDirected(mg@edge_sets[[e]])) {
+        ## normalize from/to
+        tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], value)
+        req_ft <- cbind(tmp[["from"]], tmp[["to"]])
+        value <- tmp[["weight"]]
+    }
+    ## convert node names to index
+    req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
+    value <- value[order(req_i[,1], req_i[,2])]
+    tmp <- rbind(req_i, ft)
+    idx <- duplicated(tmp)[seq(nrow(req_i) + 1L, nrow(tmp))]
+    if(attr == "weight") {
+         mg@edge_sets[[e]]@weights[idx] <- value
+    } else {
+         if(!(attr %in% names(mg@edge_sets[[e]]@edge_attrs)))
+             mg@edge_sets[[e]]@edge_attrs[[attr]] <- 
+                    rep(NA, attr(mg@edge_sets[[e]]@bit_vector, "nbitset"))
+         mg@edge_sets[[e]]@edge_attrs[[attr]][idx] <- value
+    }
+    mg
+}
+
+.mgGetAttrs <- function(self, edge, from, attr) {
+    
+    nodeNames <- self@nodes
+    indx <- which(nodeNames %in% from)
+    numNodes <- length(nodeNames)
+    bv <- self@edge_sets[[edge]]@bit_vector
+    if(attr == "weight") {
+        val <- self@edge_sets[[edge]]@weights
+    } else { 
+        if(attr %in% names(self@edge_sets[[edge]]@edge_attrs)) {
+            val <- self@edge_sets[[edge]]@edge_attrs[[attr]]
+        } else {
+            stop(paste("Unknown attribute name: ", attr, sep="")) 
+        }
+    }
+    ft <- .Call(graph_bitarray_rowColPos, bv)
+    if(!isDirected(self@edge_sets[[edge]])) {
+        df <- cbind(from=ft[,"to"], to = ft[,"from"])
+        ft <- rbind(ft,df)
+        val <- c(val,val)
+    }
+    ft <- data.frame(ft, val, stringsAsFactors = FALSE )
+    ft <- ft[ ft[,"from"] %in% indx,]
+    nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
+            sep ="|")
+    val <- ft[,"val"][1:length(nodeLbl)]
+    names(val) <- nodeLbl
+    val
+}
 
 
