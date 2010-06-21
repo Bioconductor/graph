@@ -40,6 +40,7 @@
 \alias{mgEdgeData<-,MultiGraph,character,character,character,character-method}
 \alias{mgEdgeData<-,MultiGraph,character,character,missing,character-method}
 \alias{mgEdgeData<-,MultiGraph,character,missing,character,character-method}
+\alias{mgEdgeData<-,MultiGraph,character,missing,missing,character-method}
 \title{EXPERIMENTAL class "MultiGraph"}
 \description{
 
