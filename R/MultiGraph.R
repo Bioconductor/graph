@@ -474,8 +474,13 @@ setMethod("subGraph", signature(snodes="character", graph="MultiGraph"),
                 res <- .Call("graph_bitarray_subGraph", x@bit_vector, snodesIdx)
                 x@bit_vector <- res$bitVec
                 x@weights <- x@weights[res$setPos]
-                if(length(x@edge_attrs))
-                    x@edge_attrs <- x@edge_attrs[res$setPos]
+                if(length(x@edge_attrs)){
+                    #  x@edge_attrs <- x@edge_attrs[res$setPos]
+                    x@edge_attrs <- lapply(x@edge_attrs, 
+                        function(y) {
+                            y[res$setPos]
+                        })
+                }
                 x
             })
     graph@nodeData <- lapply(graph@nodeData, function(x) {
