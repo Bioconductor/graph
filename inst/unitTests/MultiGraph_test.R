@@ -801,3 +801,30 @@ test_MultiGraph_edgeAttributes_undirected  <- function() {
     checkEquals(target, current)
 }
 
+test_MultiGraph_edgeAttributes_empty <- function() {
+
+    mg <- make_mixed_MultiGraph()$g
+    checkException(mgEdgeData(mg, "e4", from ="a", attr = "color") <- "green")
+    checkException(mgEdgeData(mg, "e4", attr = "color"))
+}
+
+test_MultiGraph_edgeAttributs_subGraph <- function() {
+
+    mg <- make_mixed_MultiGraph()$g
+    mgEdgeData(mg, "e1", attr = "color") <- "red"
+    mgEdgeData(mg, "e1", from = c("a", "a"), to = c("b", "c"), attr = "color") <- c("yellow", "pink")
+    
+    current <- mgEdgeData(mg,"e1", attr ="color")
+    nms <- paste(c("b", "a", "a", "a", "b"), c("a", "b", "c", "d", "d"), sep = "|")
+    target <- structure(c("red", "yellow", "pink", "red", "red"), names = nms)
+    checkEquals(target, current)
+ 
+    sg <- subGraph(c("a","c", "d"), mg)
+    current <- mgEdgeData(sg, "e1", attr = "color")
+    nms <- paste(c("a", "a"), c("c", "d"), sep ="|")
+    target <- structure( c("pink", "red"), names = nms)
+    checkEquals(target, current)
+}
+
+
+
