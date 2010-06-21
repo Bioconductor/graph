@@ -147,6 +147,14 @@ setGeneric("edgeData", function(self, from, to, attr)
 
 setGeneric("edgeData<-", function(self, from, to, attr, value)
            standardGeneric("edgeData<-"))
+
+setGeneric("mgEdgeData", function(self, edgeSet, from, to, attr)
+        standardGeneric("mgEdgeData"))
+
+setGeneric("mgEdgeData<-", function(self, edgeSet, from, to, attr, value)
+        standardGeneric("mgEdgeData<-"))
+
+
 ## ---------------------------------------------------------------------
 
 
