@@ -879,11 +879,11 @@ setReplaceMethod("mgEdgeData",
     ## remove dups
     req_ft <- req_ft[!duplicated(req_ft), , drop = FALSE]
     if (length(value) == 1L) {
-        value <- rep(value, nrow(req_ft))
+        value <- if(is.atomic(value)) rep(value, nrow(req_ft)) else  rep(list(value), nrow(req_ft))
     } else if (length(value) != nrow(req_ft))
-        stop("number of edges and attribute values must align")
+    stop("number of edges and attribute values must align")
     ft <- .Call(graph_bitarray_rowColPos, mg@edge_sets[[e]]@bit_vector)
-    if (!isDirected(mg@edge_sets[[e]])) {
+if (!isDirected(mg@edge_sets[[e]])) {
         ## normalize from/to
         tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], value)
         req_ft <- cbind(tmp[["from"]], tmp[["to"]])
