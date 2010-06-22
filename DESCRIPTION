@@ -1,6 +1,6 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.27.7
+Version: 1.27.8
 Author: R. Gentleman, Elizabeth Whalen, W. Huber, S. Falcon
 Description: A package that implements some simple graph handling
         capabilities.
