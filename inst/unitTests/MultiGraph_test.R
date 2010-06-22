@@ -727,24 +727,22 @@ test_MultiGraph_nodeAttributes <- function() {
     checkException(nodeData(mg, n = c("a"), attr = "color"))
 
     checkException( nodeData(mg, n = "z", attr = "color") <- "red")
-    nodeData(mg, n = c("a", "x") , attr = "color") <- "red"
+    nodeData(mg, n = c("a", "x") , attr = "color") <- c("red", "green")
     nodeData(mg, attr = "class") <- "high"
     
     current  <- nodeData(mg, attr = "color")
-    target <- structure(c("red", rep(NA, 3), "red", NA), names = nds)
+    target <- structure(list("red", NA, NA, NA, "green", NA) , names = nds)
     checkEquals(target, current)
     
     current <- nodeData(mg, attr = "class")
-    target <- structure(rep("high",6), names = nds)
+    target <- structure( as.list(rep("high",6)), names = nds)
     checkEquals(target, current)
     
     sg <- subGraph(c("a", "x"), mg)
     current <- nodeData(sg, attr = "color")
-    target <- structure( c("red","red"), names = c("a", "x"))
+    target <- structure( list("red","green"), names = c("a", "x"))
     checkEquals(target, current)
 }
-
-
 
 
 test_MultiGraph_edgeAttributes_directed  <- function() {
@@ -755,17 +753,17 @@ test_MultiGraph_edgeAttributes_directed  <- function() {
     current  <- mgEdgeData(mg, "e1", attr = "color")
 
     nms <- paste( c("b", "a", "a", "a", "b"), c("a","b", "c", "d", "d"),sep ="|")
-    target <- structure( c( NA, "red", rep(NA, 3)), names = nms)
+    target <- structure( list( NA, "red", NA, NA, NA), names = nms)
     checkEquals(target, current)
 
     mgEdgeData(mg, "e1", to = "d",  attr = "color") <- "green"
     current <- mgEdgeData(mg, "e1", attr = "color") 
-    target <- structure( c(NA, "red", NA, "green", "green"), names = nms)
+    target <- structure( list(NA, "red", NA, "green", "green"), names = nms)
     checkEquals(target, current)
    
     mgEdgeData(mg, "e1", from = "b", attr = "color") <- c("pink")
     current <- mgEdgeData(mg, "e1", attr = "color") 
-    target <- structure( c("pink", "red", NA, "green" ,"pink"), names = nms)
+    target <- structure( list("pink", "red", NA, "green" ,"pink"), names = nms)
     checkEquals(target, current)
    
     checkException(mgEdgeData(mg, "e1", attr = "class"))
@@ -781,22 +779,21 @@ test_MultiGraph_edgeAttributes_undirected  <- function() {
     mgEdgeData(mg, "e3", from = c("a"), to = c("b"), attr = "color") <- "red"
     current  <- mgEdgeData(mg, "e3", to = "a",  attr = "color")
     nms <- paste( c("b", "c", "x"), rep("a", 3), sep = "|")
-    target <- structure(c("red", NA, NA), names = nms)
+    target <- structure(list("red", NA, NA), names = nms)
     checkEquals(target, current)
 
 
     mgEdgeData(mg, "e3", to = "c",  attr = "color") <- "green"
     current <- mgEdgeData(mg, "e3", to = "c",  attr = "color") 
     nms <- paste(c("a", "x"), c("c", "c"), sep = "|")
-    target <- structure( c("green", "green"), names = nms)
+    target <- structure( list("green", "green"), names = nms)
     checkEquals(target, current)
    
     mgEdgeData(mg, "e3", from = "b", attr = "color") <- c("pink")
     current <- mgEdgeData(mg, "e3", attr = "color") 
     nms <- paste(c("a", "a", "a", "c", "x", "b", "c", "x", "x", "y"),
             c("b", "c", "x", "x", "y", "a", "a", "a", "c", "x"), sep ="|")
-
-    target <- structure( c("pink", "green", NA, "green", NA, "pink", "green",
+    target <- structure( list("pink", "green", NA, "green", NA, "pink", "green",
                     NA, "green", NA), names = nms)
     checkEquals(target, current)
 }
@@ -808,7 +805,7 @@ test_MultiGraph_edgeAttributes_empty <- function() {
     checkException(mgEdgeData(mg, "e4", attr = "color"))
 }
 
-test_MultiGraph_edgeAttributs_subGraph <- function() {
+test_MultiGraph_edgeAttributes_subGraph <- function() {
 
     mg <- make_mixed_MultiGraph()$g
     mgEdgeData(mg, "e1", attr = "color") <- "red"
@@ -816,13 +813,13 @@ test_MultiGraph_edgeAttributs_subGraph <- function() {
     
     current <- mgEdgeData(mg,"e1", attr ="color")
     nms <- paste(c("b", "a", "a", "a", "b"), c("a", "b", "c", "d", "d"), sep = "|")
-    target <- structure(c("red", "yellow", "pink", "red", "red"), names = nms)
+    target <- structure(list("red", "yellow", "pink", "red", "red"), names = nms)
     checkEquals(target, current)
  
     sg <- subGraph(c("a","c", "d"), mg)
     current <- mgEdgeData(sg, "e1", attr = "color")
     nms <- paste(c("a", "a"), c("c", "d"), sep ="|")
-    target <- structure( c("pink", "red"), names = nms)
+    target <- structure( list("pink", "red"), names = nms)
     checkEquals(target, current)
 }
 
