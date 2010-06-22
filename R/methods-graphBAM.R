@@ -159,11 +159,12 @@ setMethod("edgeWeights", signature(object="graphBAM", index="missing"),
         ft <- rbind(ft,df)
         val <- c(val,val)
     }
-    ft <- data.frame(ft, val, stringsAsFactors = FALSE )
+    tmp <- seq_len(length(val))
+    ft <- data.frame(ft, tmp, stringsAsFactors = FALSE )
     ft <- ft[ ft[,"from"] %in% indx,]
     nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
             sep ="|")
-    val <- ft[,"val"][1:length(nodeLbl)]
+    val <- val[ft[,"tmp"]][1:length(nodeLbl)]
     names(val) <- nodeLbl
     val
 }
@@ -220,11 +221,12 @@ setMethod("edgeData", signature(self="graphBAM", from="missing", to= "character"
                     ft <- rbind(ft,df)
                     val <- c(val,val)
                 }
-                ft <- data.frame(ft, val, stringsAsFactors = FALSE)
+                tmp <- seq_len(length(val))
+                ft <- data.frame(ft, tmp, stringsAsFactors = FALSE)
                 ft <- ft[ft[,"to"] %in% which(nodeNames %in% to),]  ## was ==
                 nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                         sep ="|")
-                val <- ft[,"val"][1:length(nodeLbl)]
+                val <- val[ft[,"tmp"]][1:length(nodeLbl)]
                 names(val) <- nodeLbl
                 as.list(val)
         })
@@ -247,7 +249,8 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
                 ft <- rbind(ft,df)
                 val <- c(val, val)
             }
-            ft <- data.frame(ft, val, stringsAsFactors = FALSE)
+            tmp <- seq_len(length(val))
+            ft <- data.frame(ft, tmp, stringsAsFactors = FALSE)
             df_list <- lapply( seq_len( nrow(req_ft)), function(x) {
                         fIndx <- which(nodeNames %in% req_ft[,"from"][x])
                         tIndx <- which(nodeNames %in% req_ft[,"to"][x])
@@ -257,7 +260,7 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
 
             nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                     sep ="|")
-            val <- ft[,"val"][1:length(nodeLbl)]
+            val <- val[ft[,"tmp"]][1:length(nodeLbl)]
             names(val) <- nodeLbl
             as.list(val)
             
@@ -289,7 +292,8 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
     ## remove dups
     req_ft <- req_ft[!duplicated(req_ft), , drop = FALSE]
     if (length(value) == 1L)
-        value <- rep(value, nrow(req_ft))
+        value <- if(is.atomic(value)) rep(value, nrow(req_ft)) 
+            else rep(list(value), nrow(req_ft))
     else if (length(value) != nrow(req_ft))
         stop("number of edges and attribute values must align")
     ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector)
@@ -361,13 +365,11 @@ setReplaceMethod("edgeDataDefaults", signature(self="graphBAM", attr="character"
                      } else {
                            ## create a new vector
                         len <- attr(self@edgeSet@bit_vector, "nbitset")
-                        self@edgeSet@edge_attrs <- structure(list(rep(value, len))
-                                , names = attr)
+                        self@edgeSet@edge_attrs <- structure( 
+                                list( if(is.atomic(value)) rep(value, len) else rep(list(value), len)), names = attr)
                      }
                      self
                  })
-
-
 
 setMethod("numNodes", signature("graphBAM"),
         function(object) length(object@nodes))
