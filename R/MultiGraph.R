@@ -670,9 +670,11 @@ setReplaceMethod("nodeData",
             .verifyNodes(n, nds)
             idx <- nds %in% n
             if(!( attr %in% nms))
-                self@nodeData[[attr]] <- rep(NA, length(nds))
-            
-            self@nodeData[[attr]][idx]  <- value
+                self@nodeData[[attr]] <- rep( list(NA), length(nds))
+            if(is.atomic(value))
+                self@nodeData[[attr]][idx] <- as.list(value)
+            else 
+                self@nodeData[[attr]][idx] <- list(value)
             self 
         })
 
@@ -691,7 +693,11 @@ setReplaceMethod("nodeData",
                 }
             }
             idx <- seq_len(lenNode)
-            self@nodeData[[attr]][idx] <- value
+            if(is.atomic(value))
+                self@nodeData[[attr]][idx] <- as.list(value)
+            else 
+                self@nodeData[[attr]][idx] <- list(value)
+
             self
         })
 
@@ -738,13 +744,14 @@ setMethod("mgEdgeData",
                 ft <- rbind(ft,df)
                 val <- c(val,val)
             }
-            ft <- data.frame(ft, val, stringsAsFactors = FALSE)
+            indx <- seq_len(length(val))
+            ft <- data.frame(ft, indx, stringsAsFactors = FALSE)
             ft <- ft[ft[,"to"] %in% which(nodeNames %in% to),]  ## was ==
             nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                     sep ="|")
-            val <- ft[,"val"][1:length(nodeLbl)]
+            val <- val[ft[,"indx"]][1:length(nodeLbl)]
             names(val) <- nodeLbl
-            val
+            as.list(val)
         })
 
 setMethod("mgEdgeData",
@@ -767,7 +774,8 @@ setMethod("mgEdgeData",
                 ft <- rbind(ft,df)
                 val <- c(val, val)
             }
-            ft <- data.frame(ft, val, stringsAsFactors = FALSE)
+            indx <- seq_len(length(val))
+            ft <- data.frame(ft, indx, stringsAsFactors = FALSE)
             df_list <- lapply( seq_len( nrow(req_ft)), function(x) {
                         fIndx <- which(nodeNames %in% req_ft[,"from"][x])
                         tIndx <- which(nodeNames %in% req_ft[,"to"][x])
@@ -777,9 +785,9 @@ setMethod("mgEdgeData",
 
             nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                     sep ="|")
-            val <- ft[,"val"][1:length(nodeLbl)]
+            val <- val[ft[,"indx"]][1:length(nodeLbl)]
             names(val) <- nodeLbl
-            val
+            as.list(val)
         })
 
 setReplaceMethod("mgEdgeData",
@@ -789,7 +797,6 @@ setReplaceMethod("mgEdgeData",
             .verifyMgEdgeSet(self,edgeSet)
             if(length(edgeSet) != 1L)
                 stop("edgeSet has to be of length 1")
-
             .mgSetAttrs(self, edgeSet, from, to, attr, value) 
         })
 
@@ -871,9 +878,9 @@ setReplaceMethod("mgEdgeData",
 
     ## remove dups
     req_ft <- req_ft[!duplicated(req_ft), , drop = FALSE]
-    if (length(value) == 1L)
+    if (length(value) == 1L) {
         value <- rep(value, nrow(req_ft))
-    else if (length(value) != nrow(req_ft))
+    } else if (length(value) != nrow(req_ft))
         stop("number of edges and attribute values must align")
     ft <- .Call(graph_bitarray_rowColPos, mg@edge_sets[[e]]@bit_vector)
     if (!isDirected(mg@edge_sets[[e]])) {
@@ -893,7 +900,8 @@ setReplaceMethod("mgEdgeData",
          if(!(attr %in% names(mg@edge_sets[[e]]@edge_attrs)))
              mg@edge_sets[[e]]@edge_attrs[[attr]] <- 
                     rep(NA, attr(mg@edge_sets[[e]]@bit_vector, "nbitset"))
-         mg@edge_sets[[e]]@edge_attrs[[attr]][idx] <- value
+         mg@edge_sets[[e]]@edge_attrs[[attr]][idx] <- 
+                if(is.atomic(value)) as.list(value) else list(value)
     }
     mg
 }
@@ -919,13 +927,14 @@ setReplaceMethod("mgEdgeData",
         ft <- rbind(ft,df)
         val <- c(val,val)
     }
-    ft <- data.frame(ft, val, stringsAsFactors = FALSE )
+    indx <- seq_len(length(val))
+    ft <- data.frame(ft, indx, stringsAsFactors = FALSE )
     ft <- ft[ ft[,"from"] %in% indx,]
     nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
             sep ="|")
-    val <- ft[,"val"][1:length(nodeLbl)]
+    val <- val[ft[,"indx"]][1:length(nodeLbl)]
     names(val) <- nodeLbl
-    val
+    as.list(val)
 }
 
 
