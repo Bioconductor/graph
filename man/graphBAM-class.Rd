@@ -29,10 +29,11 @@
 \alias{edgeData<-,graphBAM,character,character,character-method}
 \alias{edgeData<-,graphBAM,missing,character,character-method}
 \alias{edgeData<-,graphBAM,character,missing,character-method}
+\alias{edgeData<-,graphBAM,missing,missing,character-method}
 \alias{edgeData<-,graphBAM,character,character,character,ANY-method}
 \alias{edgeData<-,graphBAM,missing,character,character,ANY-method}
 \alias{edgeData<-,graphBAM,character,missing,character,ANY-method}
-\alias{edgeDataDefaults<-,graphBAM,character,ANY-method}
+\alias{edgeData<-,graphBAM,missing,missing,character,ANY-method}
 \alias{graphBAM}
 \alias{coerce,graphBAM,graphAM-method}
 \alias{coerce,graphBAM,graphNEL-method}
