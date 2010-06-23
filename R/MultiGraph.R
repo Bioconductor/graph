@@ -708,6 +708,20 @@ setReplaceMethod("nodeData",
     if(numEdges(mg)[e] == 0)
         stop( paste("edgeSet", e, "does not have any connected edges", sep = " "))
 }
+
+.verifyMgEdges <- function(mg, e, from, to) {
+    stopifnot(length(from) == length(to))
+    if (length(from) == 0L) 
+        stop("Edges specified not found in edgeSet:", e)
+    adjList <- .mgIsAdj(mg, e, from, to)
+    if (any(!adjList)) {
+        badFr <- from[!adjList]
+        badTo <- to[!adjList]
+        res <- paste(badFr, badTo, sep = "|", collapse = ", ")
+        stop("Edges not found: ", res)
+    }
+    TRUE
+}
 setMethod("mgEdgeData",
         signature(self = "MultiGraph", edgeSet = "character", from = "missing", 
                 to = "missing", attr = "character"),
@@ -761,6 +775,11 @@ setMethod("mgEdgeData",
             .verifyMgEdgeSet(self,edgeSet)
             nodeNames <- self@nodes
             req_ft <- .align_from_to(from, to, nodeNames)
+             if(nrow(req_ft) > 0)
+                 .verifyMgEdges(self, edgeSet, req_ft[,"from"], req_ft[,"to"])
+             else 
+                 stop(paste("Edges specified could not be found in edgeSet", edgeSet, sep = " "))
+
             numNodes <- length(nodeNames)
             bv <- self@edge_sets[[edgeSet]]@bit_vector
             if(attr == "weight")
@@ -809,7 +828,7 @@ setReplaceMethod("mgEdgeData",
             eg <- .edges_mg(self, edgeSet)[from]
             to <- unlist(eg, use.names = FALSE)
             len <- as.numeric(sapply(eg, length))
-            from <- rep(names(eg),len)  
+            from <- rep(names(eg),len)
             .mgSetAttrs(self, edgeSet, from, to, attr, value)
         })
 
@@ -834,10 +853,10 @@ setReplaceMethod("mgEdgeData",
                          attr="character", value="ANY"),
                  function(self, edgeSet, from, to, attr, value) {
                      .verifyMgEdgeSet(self, edgeSet)
-                     eg <- .edges_mg(self, edgeSet)
-                     to <- unlist(eg, use.names = FALSE)
-                     len <- as.numeric(sapply(eg, length))
-                     from <- rep(names(eg),len)  
+                     nn <- nodes(self)
+                     df <- diEdgeSetToDataFrame(self@edge_sets[[edgeSet]], nn)
+                     from <- nn[df[,"from"]]
+                     to <- nn[df[,"to"]]
                      .mgSetAttrs(self, edgeSet, from, to, attr, value)
                  })
 
@@ -870,6 +889,22 @@ setReplaceMethod("mgEdgeData",
     eL[order(names(eL))]
 }
 
+.mgIsAdj <- function(object, e, from, to) {
+    eSpec <- graph:::.normalizeEdges(from, to)
+    from <- eSpec$from
+    to <- eSpec$to
+    fromIdx <- match(from, nodes(object), nomatch=0)
+    toIdx <- match(to, nodes(object), nomatch=0)
+    if (any(fromIdx == 0))
+        stop("Unknown nodes in from: ",
+            paste(from[fromIdx == 0], collapse=", "))
+    if (any(toIdx == 0))
+        stop("Unknown nodes in to: ",
+            paste(to[toIdx == 0], collapse=", "))
+    fromEdges <- .edges_mg(object, e)[from]
+    .Call("graph_is_adjacent", fromEdges, to,
+            PACKAGE="BioC_graph")
+}
 
 .mgSetAttrs <- function(mg, e, from, to, attr, value)
 {   
@@ -878,12 +913,17 @@ setReplaceMethod("mgEdgeData",
 
     ## remove dups
     req_ft <- req_ft[!duplicated(req_ft), , drop = FALSE]
+    if(nrow(req_ft) > 0)
+        .verifyMgEdges(mg, e, req_ft[,"from"], req_ft[,"to"])
+    else 
+       stop(paste("Edges specified could not be found in edgeSet", e, sep = " "))
+
     if (length(value) == 1L) {
         value <- if(is.atomic(value)) rep(value, nrow(req_ft)) else  rep(list(value), nrow(req_ft))
     } else if (length(value) != nrow(req_ft))
     stop("number of edges and attribute values must align")
     ft <- .Call(graph_bitarray_rowColPos, mg@edge_sets[[e]]@bit_vector)
-if (!isDirected(mg@edge_sets[[e]])) {
+    if (!isDirected(mg@edge_sets[[e]])) {
         ## normalize from/to
         tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], value)
         req_ft <- cbind(tmp[["from"]], tmp[["to"]])
@@ -927,12 +967,17 @@ if (!isDirected(mg@edge_sets[[e]])) {
         ft <- rbind(ft,df)
         val <- c(val,val)
     }
-    indx <- seq_len(length(val))
-    ft <- data.frame(ft, indx, stringsAsFactors = FALSE )
+    tmp <- seq_len(length(val))
+    ft <- data.frame(ft, tmp, stringsAsFactors = FALSE )
     ft <- ft[ ft[,"from"] %in% indx,]
+    if(nrow(ft) >0 )
+        .verifyMgEdges(self, edge, nodeNames[ft[,"from"]], nodeNames[ft[,"to"]])
+    else 
+        stop(paste("Edges specified in \"from\" could not be found in edgeSet", edge, sep = " "))
+
     nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
             sep ="|")
-    val <- val[ft[,"indx"]][1:length(nodeLbl)]
+    val <- val[ft[,"tmp"]][1:length(nodeLbl)]
     names(val) <- nodeLbl
     as.list(val)
 }
