@@ -162,6 +162,9 @@ setMethod("edgeWeights", signature(object="graphBAM", index="missing"),
     tmp <- seq_len(length(val))
     ft <- data.frame(ft, tmp, stringsAsFactors = FALSE )
     ft <- ft[ ft[,"from"] %in% indx,]
+    if(nrow(ft) == 0)
+         stop("Edges specified in \"from\" not found in \"self\"")
+
     nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
             sep ="|")
     val <- val[ft[,"tmp"]][1:length(nodeLbl)]
@@ -210,11 +213,14 @@ setMethod("edgeData", signature(self="graphBAM", from="missing", to= "character"
                 nodeNames <- self@nodes
                 numNodes <- length(nodeNames)
                 bv <- self@edgeSet@bit_vector
-                if(attr == "weight")
+                if(attr == "weight") {
                     val <- self@edgeSet@weights
-                else 
-                    val <- self@edgeSet@edge_attrs[[attr]]
-
+                } else { 
+                    if(attr %in% names(self@edgeSet@edge_attrs))
+                        val <- self@edgeSet@edge_attrs[[attr]]
+                    else
+                        stop(paste("Unknown attribute name: ", attr, sep="")) 
+                }
                 ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector)
                 if(!isDirected(self)){
                     df <- cbind(from=ft[,"to"], to = ft[,"from"])
@@ -224,6 +230,9 @@ setMethod("edgeData", signature(self="graphBAM", from="missing", to= "character"
                 tmp <- seq_len(length(val))
                 ft <- data.frame(ft, tmp, stringsAsFactors = FALSE)
                 ft <- ft[ft[,"to"] %in% which(nodeNames %in% to),]  ## was ==
+                if(nrow(ft) == 0)
+                    stop("Edges specified in \"to\" not found in \"self\"")
+                .verifyEdges(self, nodeNames[ft[,"from"]], nodeNames[ft[,"to"]])
                 nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                         sep ="|")
                 val <- val[ft[,"tmp"]][1:length(nodeLbl)]
@@ -236,20 +245,25 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
         function(self, from, to, attr) {
             nodeNames <- self@nodes
             req_ft <- .align_from_to(from, to, nodeNames)
+           .verifyEdges(self, req_ft[,"from"],req_ft[,"to"])
             numNodes <- length(nodeNames)
             bv <- self@edgeSet@bit_vector
-            if(attr == "weight")
+            if(attr == "weight") {
                val <- self@edgeSet@weights
-            else
-               val <- self@edgeSet@edge_attrs[[attr]]
-
+           } else{
+               if(attr %in% names(self@edgeSet@edge_attrs))
+                     val <- self@edgeSet@edge_attrs[[attr]]
+               else
+                    stop(paste("Unknown attribute name: ", attr, sep="")) 
+            }
+ 
             ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector)
             if(!isDirected(self)){
                 df <- cbind(from=ft[,"to"], to = ft[,"from"])
                 ft <- rbind(ft,df)
                 val <- c(val, val)
             }
-            tmp <- seq_len(length(val))
+              tmp <- seq_len(length(val))
             ft <- data.frame(ft, tmp, stringsAsFactors = FALSE)
             df_list <- lapply( seq_len( nrow(req_ft)), function(x) {
                         fIndx <- which(nodeNames %in% req_ft[,"from"][x])
@@ -284,17 +298,29 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
     df <- cbind(from=from, to=to)
 }
 
+.verifyBAMAttrs <- function(bam, attr) {
+    if( !(attr %in% c(names(bam@edgeSet@edge_attrs), "weight")))
+        stop(paste("attr", attr, "could not be found in \"self\"", sep =" "))
+}
+
 .set_attrs <- function(g, from, to, attr, value)
-{   
+{  
     nodeNames <- g@nodes
     req_ft <- .align_from_to(from, to, nodeNames)
 
     ## remove dups
     req_ft <- req_ft[!duplicated(req_ft), , drop = FALSE]
-    if (length(value) == 1L)
-        value <- if(is.atomic(value)) rep(value, nrow(req_ft)) 
-            else rep(list(value), nrow(req_ft))
-    else if (length(value) != nrow(req_ft))
+    if(nrow(req_ft) > 0 )
+        .verifyEdges(g, req_ft[,1], req_ft[,2])
+    else
+        stop("Edges specified could not be found in \"self\"")
+    if (length(value) == 1L) {
+        value <- if(is.atomic(value)) {
+                     rep(value, nrow(req_ft))
+                 } else{ 
+                    rep(list(value), nrow(req_ft))
+                }
+    } else if(length(value) != nrow(req_ft))
         stop("number of edges and attribute values must align")
     ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector)
     if (!isDirected(g)) {
@@ -311,10 +337,10 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
     if(attr == "weight") {
          g@edgeSet@weights[idx] <- value
     } else {
-        if(attr %in% names(g@edgeSet@edge_attrs))
+        #        if(attr %in% names(g@edgeSet@edge_attrs))
             g@edgeSet@edge_attrs[[attr]][idx] <- value
-        else 
-            stop("Default values for attr need to be set")
+            #      else 
+            #stop("Default values for attr need to be set")
     }
     g
 }
@@ -324,7 +350,7 @@ setReplaceMethod("edgeData",
                            from="character", to="character",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
-                        .set_attrs(self, from, to, attr, value)
+                      .set_attrs(self, from, to, attr, value)
                  })
 
 setReplaceMethod("edgeData",
@@ -352,23 +378,15 @@ setReplaceMethod("edgeData",
                      .set_attrs(self, from, to, attr, value)
                  })
 
-## edgeDataDefaults
-setReplaceMethod("edgeDataDefaults", signature(self="graphBAM", attr="character",
-                                               value="ANY"),
-                 function(self, attr, value) {
-                     attrDefaults(self@edgeData, attr) <- value
-                     if( attr %in% names(self@edgeSet@edge_attrs)) {
-                           ## set the ones that match the default
-                         vec <- self@edgeSet@edge_attrs[[attr]]
-                         vec[vec == self@edgeData@defaults[[attr]]] <- value
-                         self@edgeSet@edge_attrs[[attr]] <- vec
-                     } else {
-                           ## create a new vector
-                        len <- attr(self@edgeSet@bit_vector, "nbitset")
-                        self@edgeSet@edge_attrs <- structure( 
-                                list( if(is.atomic(value)) rep(value, len) else rep(list(value), len)), names = attr)
-                     }
-                     self
+setReplaceMethod("edgeData",
+                 signature(self="graphBAM",
+                           from="missing", to="missing",
+                           attr="character", value="ANY"),
+                 function(self, from, to, attr, value) {
+                     df <- extractFromTo(self)
+                     from = as.character(df[,"from"])
+                     to = as.character(df[,"to"])
+                     .set_attrs(self, from, to, attr, value)
                  })
 
 setMethod("numNodes", signature("graphBAM"),
