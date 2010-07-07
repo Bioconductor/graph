@@ -27,7 +27,8 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       "attrDefaults<-", edgeDataDefaults, "edgeDataDefaults<-",
       nodeDataDefaults, "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
       "nodeData<-", attrDataItem, "attrDataItem<-",
-      "removeAttrDataItem<-", ugraph, leaves, updateGraph, extractFromTo)
+      "removeAttrDataItem<-", ugraph, leaves, updateGraph, extractFromTo, 
+      graphIntersect, graphUnion)
 
 
 export(boundary, buildRepDepGraph, calcProb, calcSumProb,
