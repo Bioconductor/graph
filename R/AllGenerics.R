@@ -243,3 +243,12 @@ setGeneric("updateGraph", function(object)
            standardGeneric("updateGraph"))
 
 setGeneric("extractFromTo", function(g) standardGeneric("extractFromTo"))
+
+setGeneric("graphIntersect", function(x, y, ...)
+           standardGeneric("graphIntersect"))
+
+setGeneric("graphUnion", function(x, y, ...)
+           standardGeneric("graphUnion"))
+
+
+
