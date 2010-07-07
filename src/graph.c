@@ -20,6 +20,13 @@ SEXP graph_bitarray_rowColPos(SEXP bits);
 SEXP graph_bitarray_subGraph(SEXP bits, SEXP _subIndx);
 SEXP graph_bitarray_edgeSetToMatrix(SEXP nodes, SEXP bits,
                                     SEXP _weights, SEXP _directed);
+SEXP graph_bitarray_getBitCell(SEXP bits, SEXP _from, SEXP _to); 
+SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
+        SEXP fromTwoBits);
+SEXP graph_bitarray_Intesect_Attrs(SEXP cmnBits, SEXP fromOneBits,
+        SEXP fromTwoBits);
+
+
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
 static const R_CallMethodDef R_CallDef[] = {
@@ -709,3 +716,116 @@ SEXP graph_bitarray_edgeSetToMatrix(SEXP nodes, SEXP bits,
 }
 
 
+SEXP graph_bitarray_getBitCell(SEXP bits, SEXP _from, SEXP _to)
+{
+    int len = length(_to);
+    SEXP ans;
+    PROTECT(ans = allocVector(LGLSXP, len));
+    unsigned char *bytes = (unsigned char *) RAW(bits);
+    int *from = INTEGER(_from);
+    int *to = INTEGER(_to);
+    int dim = NROW(bits);
+    int i = 0,j = 0, val, byteIndex, bitIndex, indx;
+    for(i =0; i < len; i++) {
+        indx = COORD_TO_INDEX(from[i]-1, to[i]-1, dim) ;
+        byteIndex = indx / 8 ;
+        bitIndex = indx % 8 ;
+        val = bytes[byteIndex] & (1 << bitIndex); 
+        LOGICAL(ans)[i] = 0;
+        if (val) {
+            LOGICAL(ans)[i] = 1;
+
+        } 
+    }
+    UNPROTECT(1);
+    return(ans);
+}
+
+
+SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
+        SEXP fromTwoBits) {
+    unsigned char *ans = (unsigned char*) RAW(inputBits);
+    unsigned char *cmn = (unsigned char*) RAW(cmnBits);
+    unsigned char *fromOne = (unsigned char *) RAW(fromOneBits);
+    unsigned char *fromTwo = (unsigned char *) RAW(fromTwoBits);
+    int len = asInteger(getAttrib(inputBits, install("bitlen")));
+    int i, byteIndex, bitIndex , val, shft, setIndx = 0;
+    int nn = asInteger(getAttrib(inputBits, install("nbitset")));
+    SEXP from, indx1, indx2 ;
+      
+    PROTECT(from = allocVector(INTSXP, nn));
+    PROTECT(indx1 = allocVector(INTSXP , nn));
+    PROTECT(indx2 = allocVector(INTSXP , nn));
+
+    int from1Indx = 0;
+    int from2Indx = 0;  
+    int cmnIndx = 0;
+    for( i =0 ; i < len; i ++) {
+         byteIndex = i / 8;
+         bitIndex = i % 8;
+         shft = 1 << bitIndex;
+         if(ans[byteIndex] & (shft)) {
+            if(cmn [byteIndex] & (shft)) {
+               cmnIndx ++;
+               from1Indx++;
+               from2Indx++;
+               INTEGER(from)[setIndx] = 0;
+               INTEGER(indx1)[setIndx] = from1Indx ;
+               INTEGER(indx2)[setIndx] = from2Indx;
+            } else if(fromOne[byteIndex] & (shft)) {
+               from1Indx++; 
+               INTEGER(from)[setIndx] = 1;
+               INTEGER(indx1)[setIndx] = from1Indx;
+                      
+            } else if(fromTwo[byteIndex] & (shft)) {
+                from2Indx++;
+                INTEGER(from)[setIndx] = 2;
+                INTEGER(indx2)[setIndx] = from2Indx;
+            }
+            setIndx++;
+         }
+    }
+     
+    setAttrib(from, install("indx1"), indx1);
+    setAttrib(from, install("indx2"), indx2);
+    UNPROTECT(3);
+    return(from);
+}
+
+
+SEXP graph_bitarray_Intersect_Attrs(SEXP cmnBits, SEXP fromOneBits, 
+        SEXP fromTwoBits) {
+    unsigned char *cmn = (unsigned char*) RAW(cmnBits);
+    unsigned char *fromOne = (unsigned char *) RAW(fromOneBits);
+    unsigned char *fromTwo = (unsigned char *) RAW(fromTwoBits);
+    int len = asInteger(getAttrib(cmnBits, install("bitlen")));
+    int i, byteIndex, bitIndex , val, shft, setIndx = 0;
+    int nn = asInteger(getAttrib(cmnBits, install("nbitset")));
+    SEXP from, indx1, indx2;
+    PROTECT(from = allocVector(INTSXP, nn));
+    PROTECT(indx1 = allocVector(INTSXP , nn));
+    PROTECT(indx2 = allocVector(INTSXP , nn));
+    int from1Indx = 0;
+    int from2Indx = 0;  
+    for( i =0 ; i < len; i ++) {
+         byteIndex = i / 8;
+         bitIndex = i % 8;
+         shft = 1 << bitIndex;
+         if(fromOne[byteIndex] & (shft) ) {
+               from1Indx++; 
+         }
+         if(fromTwo[byteIndex] & (shft)) {
+                from2Indx++;
+         }
+         if(cmn[byteIndex] & (shft)) {
+                 INTEGER(from)[setIndx] = 0;
+                 INTEGER(indx1)[setIndx] = from1Indx;
+                 INTEGER(indx2)[setIndx] = from2Indx;
+                 setIndx++;
+         } 
+    }
+    setAttrib(from, install("indx1"), indx1);
+    setAttrib(from, install("indx2"), indx2);
+    UNPROTECT(3);
+    return(from);
+}
