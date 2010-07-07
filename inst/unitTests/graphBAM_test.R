@@ -469,7 +469,7 @@ test_BAM_Intersect_UnDirected <- function() {
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
             edgemode = "undirected")
 
-    g <- intersection(g1,g2)
+    g <- graphIntersect(g1,g2)
     checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
     checkEquals(FALSE, isDirected(g))
     eg <- edgeData(g)
@@ -478,7 +478,7 @@ test_BAM_Intersect_UnDirected <- function() {
               })
     tmp <- paste(c("a", "b", "d", "b", "c", "x"), c("b", "c", "x", "a", "b", "d"), sep= "|")
     checkEquals(tmp, names(vals))
-    checkEquals(rep(1,6), as.numeric(vals))
+    checkEquals(as.numeric(rep(NA, 6)), as.numeric(vals))
 }
 
 
@@ -493,12 +493,12 @@ test_BAM_Intersect_Directed <- function() {
     ## nodes a b c d x y z
     from = c("a", "b", "b", "d", "d")
     to   = c("b", "c", "d", "c", "x")
-    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    weight=c(1.2, 1.2, 2.1, 3.2, 3.5)
     df <- data.frame(from, to, weight)
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
             edgemode = "directed")
 
-    g <- intersection(g1,g2)
+    g <- graphIntersect(g1,g2)
     checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
     checkEquals(TRUE, isDirected(g))
     eg <- edgeData(g)
@@ -508,27 +508,27 @@ test_BAM_Intersect_Directed <- function() {
 
     tmp <- paste(c("a", "b", "d"), c("b", "c", "x"), sep= "|")
     checkEquals(tmp, names(vals))
-    checkEquals(rep(1,3), as.numeric(vals))
+    checkEquals(c(1.2, NA, NA), as.numeric(vals))
 
 }
 
-test_BAM_Intersect_Mixed <- function() {
+test_BAM_Intersect_UnDirected2 <- function() {
     ## nodes a b d x y
     from = c("a", "d", "d")
     to   = c("b", "x", "y")
     weight=c(1.2, 3.2, 5.4)
     df <- data.frame(from, to, weight)
-    g1 <- graphBAM(df, edgemode = "directed")
+    g1 <- graphBAM(df, edgemode = "undirected")
 
     ## nodes a b c d x y z
     from = c("a", "b", "b", "d", "d")
     to   = c("b", "c", "d", "c", "x")
-    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    weight=c(3.2, 1.2, 2.1, 5.2, 3.2)
     df <- data.frame(from, to, weight)
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
             edgemode = "undirected")
 
-    g <- intersection(g1,g2)
+    g <- graphIntersect(g1,g2)
     checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
     checkEquals(FALSE, isDirected(g))
     eg <- edgeData(g)
@@ -537,7 +537,7 @@ test_BAM_Intersect_Mixed <- function() {
               })
     tmp <- paste(c("a", "d", "b", "x"), c("b", "x", "a", "d"), sep= "|")
     checkEquals(tmp, names(vals))
-    checkEquals(rep(1,4), as.numeric(vals))
+    checkEquals(rep(c(NA,3.2),2), as.numeric(vals))
 }
 
 test_BAM_Intersect_EmptyEdges <- function() {
@@ -552,11 +552,11 @@ test_BAM_Intersect_EmptyEdges <- function() {
     to   = c("b", "x", "y")
     weight=c(1.2, 3.2, 5.4)
     df <- data.frame(from, to, weight)
-    g2 <- graphBAM(df, edgemode = "undirected")
+    g2 <- graphBAM(df, edgemode = "directed")
 
-    g <- intersection(g1,g2)
+    g <- graphIntersect(g1,g2)
     checkEquals(nodes(g), intersect(nodes(g1), nodes(g2)))
-    checkEquals(isDirected(g), FALSE)
+    checkEquals(isDirected(g), TRUE)
     eg <- edgeWeights(g)
     checkEquals(c("b", "x", "y"), names(eg))
     checkEquals(list(numeric(0), numeric(0), numeric(0)),list(eg$b, eg$x, eg$y))
@@ -568,7 +568,7 @@ test_BAM_Intersect_EmptyNodes <- function() {
     to   = c("b", "x", "y")
     weight=c(1.2, 3.2, 5.4)
     df <- data.frame(from, to, weight)
-    g1 <- graphBAM(df, edgemode = "directed")
+    g1 <- graphBAM(df, edgemode = "unirected")
 
     from = c("h", "i", "j")
     to   = c("s", "h", "l")
@@ -576,7 +576,7 @@ test_BAM_Intersect_EmptyNodes <- function() {
     df <- data.frame(from, to, weight)
     g2 <- graphBAM(df, edgemode = "undirected")
 
-    g <- intersection(g1,g2)
+    g <- graphIntersect(g1,g2)
     checkEquals(intersect(nodes(g1), nodes(g2)), nodes(g))
     checkEquals(FALSE, isDirected(g))
     eg <- edgeWeights(g)
@@ -586,8 +586,8 @@ test_BAM_Intersect_EmptyNodes <- function() {
 test_BAM_isAdjacent <- function()
 {
      from = c("a", "d", "d", "b", "a")
-       to = c("b", "a", "d", "c", "c")
-    weight= c(1.5, 2.1, 3.4, 4.1, 5.6)
+     to = c("b", "a", "d", "c", "c")
+     weight= c(1.5, 2.1, 3.4, 4.1, 5.6)
      df <- data.frame(from, to, weight)
      gd <- graphBAM(df, nodes="e", edgemode = "directed")
 
@@ -602,12 +602,13 @@ test_BAM_isAdjacent <- function()
 
      checkEquals(c(FALSE, FALSE, FALSE, TRUE, FALSE),
                  isAdjacent(gd, letters[1:5], "a"))
+}
 
 test_BAM_Union_UnDirected <- function() {
     ## nodes a b c d x y
     from = c("a", "b", "d", "d")
     to   = c("b", "c", "x", "y")
-    weight=c(1.2, 2.4, 3.2, 5.4)
+    weight=c(1.2, 2.4, 3.5, 5.4)
     df <- data.frame(from, to, weight)
     g1 <- graphBAM(df, edgemode = "undirected")
 
@@ -619,18 +620,14 @@ test_BAM_Union_UnDirected <- function() {
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
             edgemode = "undirected")
 
-    g <- union(g1,g2)
+    g <- graphUnion(g1,g2)
     checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
     checkEquals(FALSE, isDirected(g))
-    eg <- edgeData(g)
-    vals <- sapply( names(eg),function(k){
-               eg[[k]]$weight
-              })
-    k1 <- c("a", "b", "b", "c", "d", "d")
-    k2 <- c("b", "c", "d", "d", "x", "y")
-    tmp <- paste(c(k1, k2), c(k2, k1), sep= "|")
-    checkEquals(tmp, names(vals))
-    checkEquals(rep(1,12), as.numeric(vals))
+    df <- extractFromTo(g)
+    tmp <- data.frame(from = c("a", "b", "b", "c", "d", "d"),
+                      to = c("b", "c", "d", "d", "x", "y"),
+                      weight = c( NA, NA, 2.1, 3.2, 3.5, 5.4))
+    checkEquals(tmp, df)
 }
 
 
@@ -638,9 +635,37 @@ test_BAM_Union_Directed <- function() {
     ## nodes a b c d x y
     from = c("a", "b", "d", "d")
     to   = c("b", "c", "x", "y")
-    weight=c(1.2, 2.4, 3.2, 5.4)
+    weight=c(1.2, 2.4, 3.5, 5.4)
     df <- data.frame(from, to, weight)
     g1 <- graphBAM(df, edgemode = "directed")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(1.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "directed")
+
+    g <- graphUnion(g1,g2)
+    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(TRUE, isDirected(g))
+
+    df <- extractFromTo(g)
+    tmp <- data.frame(from = c("a", "b", "d", "b", "d", "d"),
+                        to = c("b", "c", "c", "d", "x", "y"),
+                    weight = c( 1.2, NA, 3.2, 2.1, 3.5, 5.4))
+    checkEquals(tmp, df)
+
+}
+
+test_BAM_Union_Mixed <- function() {
+    ## nodes a b d x y
+    from = c("a", "d", "d")
+    to   = c("b", "x", "y")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "undirected")
 
     ## nodes a b c d x y z 
     from = c("a", "b", "b", "d", "d")
@@ -650,63 +675,7 @@ test_BAM_Union_Directed <- function() {
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
             edgemode = "directed")
 
-    g <- union(g1,g2)
-    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
-    checkEquals(TRUE, isDirected(g))
-    eg <- edgeData(g)
-    vals <- sapply( names(eg),function(k){
-               eg[[k]]$weight
-              })
-    tmp <- paste(c("a", "b", "d", "b", "d", "d"),
-            c("b", "c", "c", "d", "x", "y"), sep="|")
-    checkEquals(tmp, names(vals))
-    checkEquals(rep(1,6), as.numeric(vals))
-}
-
-test_BAM_Union_Mixed <- function() {
-    ## nodes a b d x y
-    from = c("a", "d", "d")
-    to   = c("b", "x", "y")
-    weight=c(1.2, 3.2, 5.4)
-    df <- data.frame(from, to, weight)
-    g1 <- graphBAM(df, edgemode = "directed")
-
-    ## nodes a b c d x y z 
-    from = c("a", "b", "b", "d", "d")
-    to   = c("b", "c", "d", "c", "x")
-    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
-    df <- data.frame(from, to, weight)
-    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
-            edgemode = "undirected")
-
-    g <- union(g1,g2)
-    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
-    checkEquals(FALSE, isDirected(g))
-    eg <- edgeData(g)
-    vals <- sapply( names(eg),function(k){
-               eg[[k]]$weight
-              })
-    k1 <- c("a", "b", "c", "d", "d", "b")
-    k2 <- c("b", "d", "d", "x", "y", "c")
-    tmp <- paste(c(k1, k2), c(k2, k1), sep= "|")
-    checkEquals(tmp, names(vals))
-    checkEquals(rep(1,12), as.numeric(vals))
-}
-
-     ## undirected
-     gu <- graphBAM(df, nodes="e", edgemode = "undirected")
-     ## single edges
-     for (i in seq_len(nrow(df))) {
-         checkEquals(TRUE, isAdjacent(gu, from[i], to[i]))
-         checkEquals(TRUE, isAdjacent(gu, to[i], from[i]))
-     }
-     ## vectorized
-     checkEquals(c(FALSE, TRUE, TRUE, TRUE, FALSE),
-                 isAdjacent(gu, "a", letters[1:5]))
-
-     checkEquals(c(FALSE, TRUE, TRUE, TRUE, FALSE),
-                 isAdjacent(gu, letters[1:5], "a"))
-
+    checkException(g <- graphUnion(g1,g2))
 }
 
 test_BAM_inEdges <- function()
@@ -787,3 +756,142 @@ test_BAM_undirected_attrs <- function() {
     checkEquals(names(res), nmres)
     checkEquals(as.character(res), c("yellow", "yellow"))
 }
+
+
+test_graphBAM_detailed_Attribute_Intersection <- function() {
+
+## nodes a b c d x y
+from = c("a", "b", "d", "d")
+to   = c("b", "c", "y", "x")
+weight=c(1.2, 2.4, 5.4, 3.2)
+df <- data.frame(from, to, weight)
+g1 <- graphBAM(df, edgemode = "directed")
+edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
+
+edgeData(g1, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
+edgeData(g1, from = from, to = to , attr = "type") <-  c("high", "low", "high", NA)
+## nodes a b c d x y z
+from = c("a", "b", "b", "d", "d")
+to   = c("b", "c", "d", "c", "x")
+weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
+df <- data.frame(from, to, weight)
+g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
+        edgemode = "directed")
+edgeData(g2, from = from, to = to,  attr = "color") <- c("red", "blue", NA, "red",
+                                                         "yellow")
+g <- graphIntersect(g1, g2)
+df <- extractFromTo(g)
+tmp <- data.frame( from = c("a", "b", "d"), 
+                     to = c("b", "c", "x"), 
+                 weight = c(1.2, NA, 3.2))
+
+checkEquals(tmp, df)
+
+attColor <- edgeData(g, attr = "color")
+nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+target <- structure( c("red", "blue", NA), names = nms)
+checkEquals(target, unlist(attColor))
+
+checkException(edgeData(g, attr = "type"))
+
+weightFun <- function(x, y) {
+   return(x +y )
+}
+
+colorFun <- function(x,y) {
+    if(x=="red" && y == "red")
+        return("white")
+    else
+        return("black")
+}
+
+g <- graphIntersect(g1, g2, funList = list(weight = weightFun, color = colorFun))
+
+attWeight <- edgeData(g, attr = "weight")
+nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+target <- structure( c( 2.4, 6.6, 6.4), names = nms)
+checkEquals(target, unlist(attWeight))
+
+attColor <- edgeData(g, attr = "color")
+nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+target <- structure( c( 2.4, 6.6, 6.4), names = nms)
+checkEquals(target, unlist(attWeight))
+
+}
+
+
+test_graphBAM_detailed_Attribute_Union <- function() {
+
+## nodes a b c d x y
+from = c("a", "b", "d", "d")
+to   = c("b", "c", "y", "x")
+weight=c(1.2, 2.4, 5.4, 3.2)
+df <- data.frame(from, to, weight)
+g1 <- graphBAM(df, edgemode = "directed")
+edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
+
+edgeData(g1, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
+edgeData(g1, from = from, to = to , attr = "type") <-  c("high", "low", "high", NA)
+## nodes a b c d x y z
+from = c("a", "b", "b", "d", "d")
+to   = c("b", "c", "d", "c", "x")
+weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
+df <- data.frame(from, to, weight)
+g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
+        edgemode = "directed")
+edgeData(g2, from = from, to = to,  attr = "color") <- c("red", "blue", NA, "red",
+                                                         "yellow")
+g <- graphUnion(g1, g2)
+df <- extractFromTo(g)
+tmp <- data.frame( from = c("a", "b", "d", "b", "d", "d"), 
+                     to = c("b", "c", "c", "d", "x", "y"), 
+                 weight = c(1.2, NA, 2.1, 5.6, 3.2, 5.4))
+checkEquals(tmp, df)
+
+attColor <- edgeData(g, attr = "color")
+nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+target <- structure( c("red", "blue", "red", NA, NA, NA), names = nms)
+checkEquals(target, unlist(attColor))
+
+attType <- edgeData(g, attr = "type")
+nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
+checkEquals(target, unlist(attType))
+
+
+weightFun <- function(x, y) {
+   return(x + y )
+}
+
+colorFun <- function(x,y) {
+    if(x=="red" || y == "red")
+        return("white")
+    else
+        return("black")
+}
+
+g <- graphUnion(g1, g2, funList = list(weight = weightFun, color = colorFun))
+
+attWeight <- edgeData(g, attr = "weight")
+nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+target <- structure( c( 2.4, 6.6, 2.1, 5.6, 6.4, 5.4), names = nms)
+checkEquals(target, unlist(attWeight))
+
+attColor <- edgeData(g, attr = "color")
+nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+target <- structure(c( "white", "black", "red", NA, "black", NA), names = nms)
+checkEquals( target, unlist(attColor))
+
+attType <- edgeData(g, attr = "type")
+nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
+checkEquals(target, unlist(attType))
+
+
+attType <- edgeData(g, attr = "type")
+nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
+checkEquals(target, unlist(attType))
+
+}
+
