@@ -41,8 +41,10 @@
 \alias{extractFromTo,graphBAM-method}
 \alias{ugraph,graphBAM-method}
 \alias{adj,graphBAM,character-method}
-\alias{intersection,graphBAM,graphBAM-method}
-\alias{union,graphBAM,graphBAM-method}
+\alias{graphIntersect}
+\alias{graphIntersect,graphBAM,graphBAM-method}
+\alias{graphUnion}
+\alias{graphUnion,graphBAM,graphBAM-method}
 \alias{nodes<-,graphBAM,character-method}
 
 \title{EXPERIMENTAL class "graphBAM"}
@@ -50,7 +52,7 @@
   The graphBAM class represents a graph as an adjacency matrix.  The
   adjacency matrix is stored as a bit array using a \code{raw} vector to
   reduce the memory footprint and speed operations like
-  \code{intersection}.  This class is EXPERIMENTAL and its API is
+  \code{graphIntersection}.  This class is EXPERIMENTAL and its API is
   subject to change.
 }
 
@@ -194,15 +196,18 @@ Class \code{"\linkS4class{graph}"}, directly.
       
     }
 
-    \item{\code{intersection(x, y)}}{
+    \item{\code{graphIntersect(x, y, funList)}}{
 
-      When given two \code{graphBAM} objects, \code{intersection}
+      When given two \code{graphBAM} objects, \code{graphIntersect}
       returns a new \code{graphBAM} containing the nodes and edges in
       common between the two graphs.  The intersection is computed by
       first finding the intersection of the node sets, obtaining the
       induced subgraphs, and finding the intersection of the resulting
-      edge sets.  All node and edge attributes are dropped.  Edges, if
-      any, in the resulting graph will have weights set to one.
+      edge sets. Node/Edge attributes that are equal are carried over to
+      the result. Non equal edge/node attributes will result in the 
+      corresponding attribute being set to NA. The user has the option 
+      of providing a named list of functions for resolving conflicting
+      edge attributes.
     }
   
     \item{\code{edgemode(object) <- value}}{
@@ -240,7 +245,7 @@ Class \code{"\linkS4class{graph}"}, directly.
 
 }
 
-\author{S. Falcon, N. Gopalakrishnan}
+\author{N. Gopalakrishnan, S. Falcon}
 
 \examples{
     f <- c("a", "a", "b", "c", "d")
@@ -264,7 +269,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     am <- as(g,"graphAM")
     nl <- as(g,"graphNEL")
     mt <- as(g,"matrix")
-    k  <- intersection(g,g)
+    k  <- graphIntersect(g,g)
     k <- union(g,g)
     g
     gd
