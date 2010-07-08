@@ -725,7 +725,7 @@ SEXP graph_bitarray_getBitCell(SEXP bits, SEXP _from, SEXP _to)
     int *from = INTEGER(_from);
     int *to = INTEGER(_to);
     int dim = NROW(bits);
-    int i = 0,j = 0, val, byteIndex, bitIndex, indx;
+    int i = 0, val, byteIndex, bitIndex, indx;
     for(i =0; i < len; i++) {
         indx = COORD_TO_INDEX(from[i]-1, to[i]-1, dim) ;
         byteIndex = indx / 8 ;
@@ -749,7 +749,7 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
     unsigned char *fromOne = (unsigned char *) RAW(fromOneBits);
     unsigned char *fromTwo = (unsigned char *) RAW(fromTwoBits);
     int len = asInteger(getAttrib(inputBits, install("bitlen")));
-    int i, byteIndex, bitIndex , val, shft, setIndx = 0;
+    int i, byteIndex, bitIndex , shft, setIndx = 0;
     int nn = asInteger(getAttrib(inputBits, install("nbitset")));
     SEXP from, indx1, indx2 ;
       
@@ -799,7 +799,7 @@ SEXP graph_bitarray_Intersect_Attrs(SEXP cmnBits, SEXP fromOneBits,
     unsigned char *fromOne = (unsigned char *) RAW(fromOneBits);
     unsigned char *fromTwo = (unsigned char *) RAW(fromTwoBits);
     int len = asInteger(getAttrib(cmnBits, install("bitlen")));
-    int i, byteIndex, bitIndex , val, shft, setIndx = 0;
+    int i, byteIndex, bitIndex , shft, setIndx = 0;
     int nn = asInteger(getAttrib(cmnBits, install("nbitset")));
     SEXP from, indx1, indx2;
     PROTECT(from = allocVector(INTSXP, nn));
