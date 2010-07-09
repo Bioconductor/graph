@@ -25,6 +25,7 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
         SEXP fromTwoBits);
 SEXP graph_bitarray_Intesect_Attrs(SEXP cmnBits, SEXP fromOneBits,
         SEXP fromTwoBits);
+SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx);
 
 
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
@@ -829,3 +830,31 @@ SEXP graph_bitarray_Intersect_Attrs(SEXP cmnBits, SEXP fromOneBits,
     UNPROTECT(3);
     return(from);
 }
+
+SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx) {
+    SEXP ans = PROTECT(duplicate(bits)), btcnt;
+    unsigned char *bytes = RAW(ans);
+    int *indx =  INTEGER(_indx);
+    int len = asInteger(getAttrib(ans, install("bitlen")));
+    int i, byteIndex, bitIndex , shft, subIndx =0;
+    int nSet = 0;
+    for( i =0 ; i < len; i ++) {
+         byteIndex = i / 8;
+         bitIndex = i % 8;
+         shft = 1 << bitIndex;
+         if(bytes[byteIndex] & (shft)) {
+            if(indx[subIndx] == 0){
+                bytes[byteIndex]  = bytes[byteIndex]  & (0 << bitIndex);
+            } else {
+                nSet++;
+            }
+            subIndx++;
+         }         
+    }
+    PROTECT(btcnt = ScalarInteger(nSet));
+    setAttrib(ans, install("nbitset"), btcnt);
+    UNPROTECT(2);
+    return(ans);
+}
+
+
