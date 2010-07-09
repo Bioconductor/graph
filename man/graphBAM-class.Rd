@@ -46,7 +46,8 @@
 \alias{graphUnion}
 \alias{graphUnion,graphBAM,graphBAM-method}
 \alias{nodes<-,graphBAM,character-method}
-
+\alias{removeEdgesByWeight}
+\alias{removeEdgesByWeight,graphBAM-method}
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
   The graphBAM class represents a graph as an adjacency matrix.  The
@@ -270,7 +271,8 @@ Class \code{"\linkS4class{graph}"}, directly.
     nl <- as(g,"graphNEL")
     mt <- as(g,"matrix")
     k  <- graphIntersect(g,g)
-    k <- union(g,g)
+    k <-  graphunion(g,g)
+
     g
     gd
 }
