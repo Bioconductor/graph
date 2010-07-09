@@ -251,7 +251,7 @@ Class \code{"\linkS4class{graph}"}, directly.
 \examples{
     f <- c("a", "a", "b", "c", "d")
     t <- c("b", "c", "c", "d", "a")
-    weight <- rep(1,length(f))
+    weight <- c(2.3, 2.3, 4.3, 1.0, 3.0)
     df <- data.frame(from=f, to=t, weight= weight)
     g <- graphBAM(df)
     gd <- graphBAM(df, edgemode = "directed")
@@ -271,8 +271,8 @@ Class \code{"\linkS4class{graph}"}, directly.
     nl <- as(g,"graphNEL")
     mt <- as(g,"matrix")
     k  <- graphIntersect(g,g)
-    k <-  graphunion(g,g)
-
+    k <- graphUnion(g,g)
+    e <- removeEdgesByWeight(g,lessThan= 3.0)
     g
     gd
 }
