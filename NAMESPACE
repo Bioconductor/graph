@@ -1,7 +1,8 @@
 useDynLib(BioC_graph, graph_bitarray_sum, graph_bitarray_set,
           graph_bitarray_undirect,
           graph_bitarray_transpose,graph_bitarray_rowColPos,
-          graph_bitarray_edgeSetToMatrix)
+          graph_bitarray_edgeSetToMatrix, graph_bitarray_removeEdges,
+          graph_bitarray_Intersect_Attrs, graph_bitarray_Union_Attrs)
 
 importClassesFrom(methods, ANY, character, list, logical, matrix,
                   missing, "NULL", numeric, oldClass, vector)
@@ -28,7 +29,7 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       nodeDataDefaults, "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
       "nodeData<-", attrDataItem, "attrDataItem<-",
       "removeAttrDataItem<-", ugraph, leaves, updateGraph, extractFromTo, 
-      graphIntersect, graphUnion)
+      graphIntersect, graphUnion, removeEdgesByWeight)
 
 
 export(boundary, buildRepDepGraph, calcProb, calcSumProb,
