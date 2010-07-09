@@ -895,3 +895,39 @@ checkEquals(target, unlist(attType))
 
 }
 
+test_graphBAM_removeEdgesByWeight <- function() {
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(2.2, 2.0, 0.4, 0.2)
+    df <- data.frame(from, to, weight)
+    g <- graphBAM(df, edgemode = "directed")
+
+    edgeData(g, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
+  
+    res <- removeEdgesByWeight(g, lessThan = 2.0)
+    checkEquals(attr(res@edgeSet@bit_vector, "nbitset"), 2)
+    checkEquals(res@edgeSet@weights, c(2.2, 2.0))
+    current <- unlist( edgeData(res, attr = "color"))
+    target <- structure(c("red", "blue"), 
+               names = paste(c("a", "b"), c("b", "c"), sep = "|"))
+    checkEquals(target, current)
+
+    res <- removeEdgesByWeight(g, greaterThan = 1.9)
+    checkEquals(attr(res@edgeSet@bit_vector, "nbitset"), 2)
+    checkEquals(res@edgeSet@weights, c(0.2, 0.4))
+    current <- unlist( edgeData(res, attr = "color"))
+    target <- structure(c("green", NA), 
+               names = paste(c("d", "d"), c("x", "y"), sep = "|"))
+    checkEquals(target, current)
+
+    res <- removeEdgesByWeight(g, lessThan =1.0, greaterThan = 2)
+    checkEquals(res@edgeSet@weights, c(2.0))
+    current <- unlist( edgeData(res, attr = "color"))
+    target <- structure(c("blue"), 
+               names = paste(  "b", "c", sep = "|"))
+    checkEquals(target, current)
+
+    res <- removeEdgesByWeight(g, greaterThan = 0.1)
+    checkEquals(res@edgeSet@weights, numeric(0))
+    checkEquals(res@edgeSet@edge_attrs$color, character(0))
+}
