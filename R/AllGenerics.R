@@ -83,6 +83,10 @@ setGeneric("removeEdge", function(from, to, graph)
 
 setGeneric("removeEdges", function(container, from, to, ...)
            standardGeneric("removeEdges"))
+
+
+setGeneric("removeEdgesByWeight", function(graph, ...)
+        standardGeneric("removeEdgesByWeight"))
 ## ---------------------------------------------------------------------
 
 
