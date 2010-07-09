@@ -609,6 +609,30 @@ setMethod("removeEdge", c("character", "character", "graphBAM"),
           function(from, to, graph) .remEdge(from, to, graph))
 
 
+setMethod("removeEdgesByWeight", c("graphBAM"),
+      function(graph, lessThan, greaterThan ){
+          if(missing(lessThan) && missing(greaterThan))
+              stop("For the edges to be removed, please specify a \"lessThan\" 
+                  and \"greaterThan\" threshold for the weight attribute")
+          if(!missing(lessThan) && !missing(greaterThan)){
+              indx <- ( graph@edgeSet@weights >= lessThan & 
+                      graph@edgeSet@weights <= greaterThan)
+          } else if(missing(lessThan)){
+              indx <- graph@edgeSet@weights <= greaterThan
+          }else if(missing(greaterThan)){
+              indx <- graph@edgeSet@weights >= lessThan
+          }
+          nn <- nodes(graph)
+          graph@edgeSet@weights <- graph@edgeSet@weights[indx]
+          graph@edgeSet@edge_attrs <- lapply( graph@edgeSet@edge_attrs, 
+                  function(x) {
+                      x[indx]   
+                  })
+          graph@edgeSet@bit_vector <- .Call(graph_bitarray_removeEdges, 
+                                            graph@edgeSet@bit_vector, indx)
+          graph
+      })
+
 setReplaceMethod("nodes", c("graphBAM", "character"),
                  function(object, value) {
                      stop("operation not supported")
