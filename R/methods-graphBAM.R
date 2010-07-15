@@ -558,6 +558,7 @@ setMethod("addEdge",
 setMethod("addNode",
         signature(node="character", object="graphBAM", edges="missing"),
         function(node, object) {
+            node <- unique(c(nodes(object), node))
             df <- extractFromTo(object)
             graphBAM(df, nodes = node, edgemode = edgemode(object))
         })
