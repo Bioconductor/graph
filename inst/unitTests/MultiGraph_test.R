@@ -759,35 +759,63 @@ test_MultiGraph_edgeAttributes_directed  <- function() {
 
     mgEdgeData(mg, "e1", from = c("a"), to = c("b"), attr = "color") <- "red"
     current  <- mgEdgeData(mg, "e1", attr = "color")
-
+     
+    ch <- as.character(NA)
     nms <- paste( c("b", "a", "a", "a", "b"), c("a","b", "c", "d", "d"),sep ="|")
-    target <- structure( list( NA, "red", NA, NA, NA), names = nms)
+    target <- structure( list( ch, "red", ch, ch, ch), names = nms)
     checkEquals(target, current)
 
     mgEdgeData(mg, "e1", to = "d",  attr = "color") <- "green"
     current <- mgEdgeData(mg, "e1", attr = "color") 
-    target <- structure( list(NA, "red", NA, "green", "green"), names = nms)
+    target <- structure( list(ch, "red", ch, "green", "green"), names = nms)
     checkEquals(target, current)
    
     mgEdgeData(mg, "e1", from = "b", attr = "color") <- c("pink")
     current <- mgEdgeData(mg, "e1", attr = "color") 
-    target <- structure( list("pink", "red", NA, "green" ,"pink"), names = nms)
+    target <- structure( list("pink", "red", ch, "green" ,"pink"), names = nms)
     checkEquals(target, current)
    
     checkException(mgEdgeData(mg, "e1", attr = "class"))
     checkException(mgEdgeData(mg, "e9", attr = "color"))
-   
+ 
 }
 
+test_MultiGraph_edgeAttributes_directed_S4  <- function() {
+    ## Check directed edge
+    mg <- make_mixed_MultiGraph()$g
+    df <- extractFromTo(mg)$e1
+    mgEdgeData(mg, "e1", from = c("a"), to = c("b"), attr = "color") <- df
+    current  <- mgEdgeData(mg, "e1", attr = "color")
+     
+    ch <- as.logical(NA)
+    nms <- paste( c("b", "a", "a", "a", "b"), c("a","b", "c", "d", "d"),sep ="|")
+    target <- structure( list( ch, df, ch, ch, ch), names = nms)
+    checkEquals(target, current)
+
+    mgEdgeData(mg, "e1", to = "d",  attr = "color") <- matrix(1)
+    current <- mgEdgeData(mg, "e1", attr = "color") 
+    target <- structure( list(ch, df, ch, matrix(1), matrix(1)), names = nms)
+    checkEquals(target, current)
+   
+    mgEdgeData(mg, "e1", from = "b", attr = "color") <- matrix(0)
+    current <- mgEdgeData(mg, "e1", attr = "color") 
+    target <- structure( list(matrix(0), df, ch, matrix(1), matrix(0)), names = nms)
+    checkEquals(target, current)
+   
+    checkException(mgEdgeData(mg, "e1", attr = "class"))
+    checkException(mgEdgeData(mg, "e9", attr = "color"))
+ 
+}
 
 test_MultiGraph_edgeAttributes_undirected  <- function() {
     ## Check undirected edge
     mg <- make_mixed_MultiGraph()$g
 
+    ch <- as.character(NA)
     mgEdgeData(mg, "e3", from = c("a"), to = c("b"), attr = "color") <- "red"
     current  <- mgEdgeData(mg, "e3", to = "a",  attr = "color")
     nms <- paste( c("b", "c", "x"), rep("a", 3), sep = "|")
-    target <- structure(list("red", NA, NA), names = nms)
+    target <- structure(list("red", ch, ch), names = nms)
     checkEquals(target, current)
 
 
@@ -801,10 +829,38 @@ test_MultiGraph_edgeAttributes_undirected  <- function() {
     current <- mgEdgeData(mg, "e3", attr = "color") 
     nms <- paste(c("a", "a", "a", "c", "x", "b", "c", "x", "x", "y"),
             c("b", "c", "x", "x", "y", "a", "a", "a", "c", "x"), sep ="|")
-    target <- structure( list("pink", "green", NA, "green", NA, "pink", "green",
-                    NA, "green", NA), names = nms)
+    target <- structure( list("pink", "green", ch, "green", ch, "pink", "green",
+                    ch, "green", ch), names = nms)
     checkEquals(target, current)
 }
+
+test_MultiGraph_edgeAttributes_undirected_S4  <- function() {
+    ## Check undirected edge
+    mg <- make_mixed_MultiGraph()$g
+
+    ch <- as.logical(NA)
+    mgEdgeData(mg, "e3", from = c("a"), to = c("b"), attr = "color") <- matrix(1)
+    current  <- mgEdgeData(mg, "e3", to = "a",  attr = "color")
+    nms <- paste( c("b", "c", "x"), rep("a", 3), sep = "|")
+    target <- structure(list(matrix(1), ch, ch), names = nms)
+    checkEquals(target, current)
+
+
+    mgEdgeData(mg, "e3", to = "c",  attr = "color") <- df
+    current <- mgEdgeData(mg, "e3", to = "c",  attr = "color") 
+    nms <- paste(c("a", "x"), c("c", "c"), sep = "|")
+    target <- structure( list(df, df), names = nms)
+    checkEquals(target, current)
+   
+    mgEdgeData(mg, "e3", from = "b", attr = "color") <- matrix(0)
+    current <- mgEdgeData(mg, "e3", attr = "color") 
+    nms <- paste(c("a", "a", "a", "c", "x", "b", "c", "x", "x", "y"),
+            c("b", "c", "x", "x", "y", "a", "a", "a", "c", "x"), sep ="|")
+    target <- structure( list(matrix(0), df, ch, df, ch, matrix(0), df,
+                    ch, df, ch), names = nms)
+    checkEquals(target, current)
+}
+
 
 test_MultiGraph_edgeAttributes_empty <- function() {
 
