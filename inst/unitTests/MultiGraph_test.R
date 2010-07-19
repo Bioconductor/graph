@@ -731,7 +731,8 @@ test_MultiGraph_nodeAttributes <- function() {
     nodeData(mg, attr = "class") <- "high"
     
     current  <- nodeData(mg, attr = "color")
-    target <- structure(list("red", NA, NA, NA, "green", NA) , names = nds)
+    tp <- as.character(NA)
+    target <- structure(list("red",tp, tp, tp, "green", tp) , names = nds)
     checkEquals(target, current)
     
     current <- nodeData(mg, attr = "class")
@@ -742,6 +743,13 @@ test_MultiGraph_nodeAttributes <- function() {
     current <- nodeData(sg, attr = "color")
     target <- structure( list("red","green"), names = c("a", "x"))
     checkEquals(target, current)
+
+    nodeData(mg, n = c("b", "d"), attr = "st") <- mg@edge_sets$e1
+    current <- nodeData(mg, attr = "st")
+    target <- structure(list(NA,  mg@edge_sets$e1, NA, mg@edge_sets$e1, NA, NA),
+                   names = c( "a", "b", "c", "d", "x", "y"))
+    checkEquals(target, current)
+
 }
 
 
