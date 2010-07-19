@@ -956,3 +956,66 @@ test_graphBAM_nodeAttributes <- function(){
     target  <- as.list(structure(c(NA, "red"), names = c("b", "d")))
     checkEquals(target, current)
 }
+
+
+test_BAM_directed_attrs_s4 <- function() {
+
+    from = c("a", "a", "a", "x", "x", "c")
+    to   = c("b", "c", "x", "y", "c", "a")
+    weight = c(2, 1, 3, 4, 5, 6)
+    df <- data.frame(from, to, weight)
+    bam <- graphBAM(df, edgemode = "directed")
+    
+    edgeData(bam, attr = "weight") <- 1.3
+    edgeData(bam, attr = "vals") <- df
+    edgeData(bam, from = "a", attr= "vals") <- "unknown"
+
+    res <- edgeData(bam, attr="vals")
+    nmres <- c("c|a", "a|b", "a|c", "x|c", "a|x", "x|y")
+    target <- structure(list(df, "unknown", "unknown", df, "unknown",df), names = nmres)
+    checkEquals(res, target)
+
+    edgeData(bam,from = "a", to = "x", attr= "mat") <- matrix(1)
+    res <- edgeData(bam, from = "a", attr = "mat")
+    nmres <- paste(c("a", "a", "a"), c("b", "c", "x"), sep = "|")
+    target <- structure( list(NA, NA, matrix(1)), names = nmres)
+    checkEquals(res, target)
+
+    edgeData(bam,to = "c", attr= "mk") <- matrix(1)
+    res <- edgeData(bam, attr = "mk")
+    nmres <- paste(c("c", "a", "a", "x", "a", "x"), c("a", "b", "c", "c", "x", "y"), sep ="|")
+    target <- structure( list(NA, NA, matrix(1), matrix(1), NA ,NA), names = nmres)
+    checkEquals(res, target)
+}
+
+test_BAM_undirected_attrs_s4 <- function() {
+
+    from = c("a", "a", "a", "x")
+    to   = c("b", "c", "x", "y")
+    weight = c(2, 1, 3, 4)
+    df <- data.frame(from, to, weight)
+    bam <- graphBAM(df, edgemode = "undirected")
+    
+    edgeData(bam, attr = "weight") <- 1.3
+    edgeData(bam, attr = "vals") <- df
+    edgeData(bam, from = "x", attr = "vals") <- "unknown"
+
+    res <- edgeData(bam, attr="vals")
+    nmres <- c("a|b", "a|c", "a|x", "x|y", "b|a", "c|a", "x|a", "y|x")
+    target <- structure(list(df, df, "unknown", "unknown", df, df, "unknown", 
+                    "unknown"), names = nmres)
+    checkEquals(res, target)
+   
+    edgeData(bam,from = "a", to = "x", attr= "mat") <- matrix(1)
+    res <- edgeData(bam, attr = "mat")
+    target <- structure(list(NA, NA, matrix(1), NA, NA, NA, matrix(1), NA), 
+            names = nmres)
+    checkEquals(res, target)
+
+    edgeData(bam,to = "c", attr= "mk") <- matrix(1)
+    res <- edgeData(bam, attr = "mk")
+    target <- structure( list(NA, matrix(1), NA, NA, NA, matrix(1), NA ,NA), 
+            names = nmres)
+    checkEquals(res, target)
+}
+
