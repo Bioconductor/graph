@@ -314,20 +314,26 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
         .verifyEdges(g, req_ft[,1], req_ft[,2])
     else
         stop("Edges specified could not be found in \"self\"")
-    if (length(value) == 1L) {
-        value <- if(is.atomic(value)) {
-                     rep(value, nrow(req_ft))
-                 } else{ 
-                    rep(list(value), nrow(req_ft))
-                }
-    } else if(length(value) != nrow(req_ft))
-        stop("number of edges and attribute values must align")
+    if(is.vector(value)) {
+        len  <- length(value)
+    }else{
+        len <- 1
+        value <- list(value)
+    }
+    if(len == 1L)
+        value <- rep(value, nrow(req_ft))
+
+    if(length(value) != nrow(req_ft))
+         stop("Number of edges and attribute values must be the same")
+
     ft <- .Call(graph_bitarray_rowColPos, g@edgeSet@bit_vector)
+
     if (!isDirected(g)) {
         ## normalize from/to
-        tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], value)
+        valIndx <- seq_len(length(value))
+        tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], valIndx)
         req_ft <- cbind("from"= tmp[["from"]],"to" = tmp[["to"]])
-        value <- tmp[["weight"]]
+        value <- value[tmp[["weight"]]]
     }
     ft <- data.frame(ft)
     ft <- ft[with(ft, order(to,from)),]
@@ -389,16 +395,18 @@ setReplaceMethod("edgeData",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
                     nset <- attr(self@edgeSet@bit_vector,"nbitset")
-                    len = length(value)
-                    if (len == 1L) {
-                        value <- if(is.atomic(value)) {
-                                    rep(value, nset)
-                                 }else{ 
-                                    rep(list(value), nset)
-                                 }
+                    
+                    if(is.vector(value)){
+                       len <- length(value)
+                        
+                    
                     } else {
-                        stop("value should be of length 1")
+                        len <- 1
+                        value <- list(value)
                     }
+                    if(len != 1L)
+                        stop("value should be of length 1")
+                    value <- rep(value, nset)
                     
                     if(attr == "weight"){
                         self@edgeSet@weights <- value
