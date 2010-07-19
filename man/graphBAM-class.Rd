@@ -48,6 +48,17 @@
 \alias{nodes<-,graphBAM,character-method}
 \alias{removeEdgesByWeight}
 \alias{removeEdgesByWeight,graphBAM-method}
+\alias{nodeDataDefaults,graphBAM,character-method}
+\alias{nodeDataDefaults,graphBAM,missing-method}
+\alias{nodeDataDefaults<-,graphBAM,character,ANY-method}
+\alias{nodeDataDefaults<-,graphBAM,missing,ANY-method}
+\alias{nodeData,graphBAM,character,character-method}
+\alias{nodeData,graphBAM,character,missing-method}
+\alias{nodeData,graphBAM,missing,character-method}
+\alias{nodeData,graphBAM,missing,missing-method}
+\alias{nodeData<-,graphBAM,character,character-method}
+\alias{nodeData<-,graphBAM,missing,character-method}
+
 \title{EXPERIMENTAL class "graphBAM"}
 \description{
   The graphBAM class represents a graph as an adjacency matrix.  The
@@ -256,6 +267,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     g <- graphBAM(df)
     gd <- graphBAM(df, edgemode = "directed")
     nd <- nodes(g)
+    nodeData(g,n=c("b", "c"), attr ="color") <- "red"
     w1 <- edgeWeights(g)
     w2 <- edgeWeights(g,"a")
     w3 <- edgeWeights(g,1)
