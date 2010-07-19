@@ -611,8 +611,8 @@ setMethod("nodeData",
 
             nds <- nodes(self)
             .verifyNodes(n, nds)
-            idx <- nds %in% n
-            structure(self@nodeData[[attr]][idx], names = n)
+            idx <- match(n, nds)
+            as.list(structure(self@nodeData[[attr]][idx], names = n))
         })
 
 setMethod("nodeData",
@@ -622,10 +622,8 @@ setMethod("nodeData",
                 stop("attr argument must specify a single attribute name")
             if( ! (attr %in% names(self@nodeData)))
                 stop(paste("attribute", attr," is not present in self"))
-
-
             nds <- nodes(self)
-            structure(self@nodeData[[attr]], names = nds)
+            as.list(structure(self@nodeData[[attr]], names = nds))
         })
 
 setMethod("nodeData",
@@ -634,7 +632,7 @@ setMethod("nodeData",
 
             nds <- nodes(self)
             .verifyNodes(n ,nds)
-            idx <- nds %in% n
+            idx <- match(n, nds)
             if(!any(idx))
                 stop("Specified node is not in self")
             lapply(self@nodeData, function(x) {
@@ -658,23 +656,23 @@ setReplaceMethod("nodeData",
         function(self, n, attr, value) {
             if(length(attr) != 1L)
                 stop("attr argument must specify a single attribute name")
-            len <- length(value)
-            if(len != 1L) {
-                if(len != length(n)) {
-                    stop("value must be of length one or have the same length
-                            as n")
-                }
+            if(is.vector(value)){
+                len <- length(value)
+            } else {
+                len <- 1
+                value <- list(value)
             }
+            if(len!=1L && len != length(n)) {
+                stop("value must be of length one or have the same length as n")
+            }
+
             nms <- names(self@nodeData)
             nds <- nodes(self)
             .verifyNodes(n, nds)
-            idx <- nds %in% n
+            idx <- match(n, nds)
             if(!( attr %in% nms))
-                self@nodeData[[attr]] <- rep( list(NA), length(nds))
-            if(is.atomic(value))
-                self@nodeData[[attr]][idx] <- as.list(value)
-            else 
-                self@nodeData[[attr]][idx] <- list(value)
+                self@nodeData[[attr]] <- rep(NA, length(nds))
+            self@nodeData[[attr]][idx] <- value
             self 
         })
 
@@ -683,21 +681,20 @@ setReplaceMethod("nodeData",
         function(self, n, attr, value) {
             if(length(attr) != 1L)
                 stop("attr argument must specify a single attribute name")
-            lenVal  <- length(value)
+            
             lenNode <- length(nodes(self))
-
-            if(lenVal != 1L) {
-                if(lenVal != lenNode) {
-                    stop("value must be of length one or have the same length
+            if(is.vector(value)){
+                lenVal <- length(value)
+            } else {
+                lenVal <- 1
+                value <- list(value)
+            }
+            if(lenVal !=1L && lenVal != lenNode) {
+                stop("value must be of length one or have the same length
                             as number of nodes of self")
-                }
             }
             idx <- seq_len(lenNode)
-            if(is.atomic(value))
-                self@nodeData[[attr]][idx] <- as.list(value)
-            else 
-                self@nodeData[[attr]][idx] <- list(value)
-
+            self@nodeData[[attr]][idx] <- value
             self
         })
 
