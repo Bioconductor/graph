@@ -931,3 +931,28 @@ test_graphBAM_removeEdgesByWeight <- function() {
     checkEquals(res@edgeSet@weights, numeric(0))
     checkEquals(res@edgeSet@edge_attrs$color, character(0))
 }
+
+test_graphBAM_nodeAttributes <- function(){
+
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(2.2, 2.0, 0.4, 0.2)
+    df <- data.frame(from, to, weight)
+    g <- graphBAM(df, edgemode = "directed")
+
+    nodeData(g, n = c("d","a"), attr = "color") <- c("red", "green")
+    current <- nodeData(g, attr = "color")
+    target <- as.list(structure(  c("green", NA, NA, "red", NA, NA), 
+                        names = c("a", "b", "c", "d", "x", "y")))
+    checkEquals(target, current)
+      
+    nodeData(g, n= c("x", "y"), attr = "mat") <- df
+    current <-  nodeData(g, n= c("x", "y"), attr = "mat")
+    target <- list(x = df, y = df)
+    checkEquals(target, current)
+
+    sg <- subGraph(c("d","b"), g)
+    current <- nodeData(sg, attr = "color")
+    target  <- as.list(structure(c(NA, "red"), names = c("b", "d")))
+    checkEquals(target, current)
+}
