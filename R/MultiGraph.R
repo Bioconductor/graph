@@ -915,16 +915,25 @@ setReplaceMethod("mgEdgeData",
     else 
        stop(paste("Edges specified could not be found in edgeSet", e, sep = " "))
 
-    if (length(value) == 1L) {
-        value <- if(is.atomic(value)) rep(value, nrow(req_ft)) else  rep(list(value), nrow(req_ft))
-    } else if (length(value) != nrow(req_ft))
-    stop("number of edges and attribute values must align")
+    if(is.vector(value)) {
+        len  <- length(value)
+    }else{
+        len <- 1
+        value <- list(value)
+    }
+    if(len == 1L)
+        value <- rep(value, nrow(req_ft))
+
+    if(length(value) != nrow(req_ft))
+         stop("Number of edges and attribute values must be the same")
+
     ft <- .Call(graph_bitarray_rowColPos, mg@edge_sets[[e]]@bit_vector)
     if (!isDirected(mg@edge_sets[[e]])) {
         ## normalize from/to
-        tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], value)
+        valIndx <- seq_len(length(value))
+        tmp <- .mg_undirectEdges(req_ft[ , 1], req_ft[, 2], valIndx)
         req_ft <- cbind(tmp[["from"]], tmp[["to"]])
-        value <- tmp[["weight"]]
+        value <- value[tmp[["weight"]]]
     }
     ## convert node names to index
     req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
@@ -934,11 +943,11 @@ setReplaceMethod("mgEdgeData",
     if(attr == "weight") {
          mg@edge_sets[[e]]@weights[idx] <- value
     } else {
-         if(!(attr %in% names(mg@edge_sets[[e]]@edge_attrs)))
-             mg@edge_sets[[e]]@edge_attrs[[attr]] <- 
-                    rep(NA, attr(mg@edge_sets[[e]]@bit_vector, "nbitset"))
-         mg@edge_sets[[e]]@edge_attrs[[attr]][idx] <- 
-                if(is.atomic(value)) as.list(value) else list(value)
+         if(!(attr %in% names(mg@edge_sets[[e]]@edge_attrs))) {
+            nn <- attr(mg@edge_sets[[e]]@bit_vector, "nbitset")
+             mg@edge_sets[[e]]@edge_attrs[[attr]][1:nn] <- NA
+         }
+         mg@edge_sets[[e]]@edge_attrs[[attr]][idx] <- value 
     }
     mg
 }
