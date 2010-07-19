@@ -450,6 +450,11 @@ setMethod("subGraph", signature(snodes="character", graph="graphBAM"),
                             x[res$setPos]
                         })
             }
+            if(length(graph@nodeData@data)){
+                graph@nodeData@data <- lapply(graph@nodeData@data, function(x) {
+                        x[snodesIdx]
+                        })
+            }
             graph@nodes <- snodes
             graph
         })
@@ -874,3 +879,136 @@ setMethod("graphUnion", c("graphBAM", "graphBAM"),
     ans@edgeSet@weights <- as.numeric(.getUnionWeights(attrType, x, y, funList))
     ans
 })
+
+
+setMethod("nodeDataDefaults", 
+        signature(self="graphBAM", attr="missing"),
+        function(self, attr){
+            stop("Method not supported for graphBAM objects")
+
+        })
+
+setMethod("nodeDataDefaults", 
+        signature(self="graphBAM", attr="character"),
+        function(self, attr){
+            stop("Method not supported for graphBAM objects")
+        })
+
+setReplaceMethod("nodeDataDefaults", 
+        signature(self="graphBAM", attr="missing", value="ANY"),
+        function(self, attr, value) {
+            stop("Method not supported for graphBAM objects")
+        })
+
+setReplaceMethod("nodeDataDefaults", 
+        signature(self="graphBAM", attr="character", value="ANY"),
+        function(self, attr, value) {
+            stop("Method not supported for graphBAM objects")
+        })
+
+
+
+## Node data replacement methods 
+
+setReplaceMethod("nodeData",
+        signature(self = "graphBAM", n="character", attr="character", value="ANY"),
+        function(self, n, attr, value) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            if(is.vector(value)){
+                len <- length(value)
+            } else {
+                len <- 1
+                value <- list(value)
+            }
+            if(len!=1L && len != length(n)) {
+                stop("value must be of length one or have the same length as n")
+            }
+
+            nms <- names(self@nodeData@data)
+            nds <- nodes(self)
+            .verifyNodes(n, nds)
+            idx <- match(n, nds)
+            if(!( attr %in% nms))
+                self@nodeData@data[[attr]] <- rep( NA, length(nds))
+            self@nodeData@data[[attr]][idx] <- value
+            self 
+        })
+
+setReplaceMethod("nodeData",
+        signature(self = "graphBAM", n="missing", attr="character", value="ANY"),
+        function(self, n, attr, value) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            lenNode <- length(nodes(self))
+            if(is.vector(value)){
+                lenVal <- length(value)
+            } else {
+                lenVal <- 1
+                value <- list(value)
+            }
+            if(lenVal !=1L && lenVal != lenNode) {
+                    stop("value must be of length one or have the same length
+                            as number of nodes of self")
+            }
+
+            idx <- seq_len(lenNode)
+            self@nodeData@data[[attr]][idx] <-  value
+            self
+        })
+
+
+## Node data accces methods 
+setMethod("nodeData",
+        signature(self = "graphBAM", n = "character", attr = "character"),
+        function(self, n, attr) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            if( ! (attr %in% names(self@nodeData@data)))
+                stop(paste("attribute", attr," is not present in self"))
+
+            nds <- nodes(self)
+            .verifyNodes(n, nds)
+            idx <- nds %in% n
+            as.list(structure(self@nodeData@data[[attr]][idx], names = n))
+        })
+
+setMethod("nodeData",
+        signature(self = "graphBAM", n = "missing", attr = "character"),
+        function(self, n, attr) {
+            if(length(attr) != 1L)
+                stop("attr argument must specify a single attribute name")
+            if( ! (attr %in% names(self@nodeData@data)))
+                stop(paste("attribute", attr," is not present in self"))
+
+
+            nds <- nodes(self)
+            as.list(structure(self@nodeData@data[[attr]], names = nds))
+        })
+
+setMethod("nodeData",
+        signature(self = "graphBAM", n = "character", attr = "missing"),
+        function(self, n, attr) {
+
+            nds <- nodes(self)
+            .verifyNodes(n ,nds)
+            idx <- nds %in% n
+            if(!any(idx))
+                stop("Specified node is not in self")
+            lapply(self@nodeData@data, function(x) {
+                        structure(x[idx], names = n)
+                    })
+        })
+
+setMethod("nodeData",
+        signature(self = "graphBAM", n = "missing", attr = "missing"),
+        function(self, n, attr) {
+           nds <- nodes(self)
+           lapply(self@nodeData@data, function(x) {
+                    structure(x, names = nds)
+                   })
+        })
+
+
+
+
