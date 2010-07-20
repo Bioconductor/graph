@@ -831,23 +831,26 @@ SEXP graph_bitarray_Intersect_Attrs(SEXP cmnBits, SEXP fromOneBits,
     return(from);
 }
 
+
 SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx) {
+    
     SEXP ans = PROTECT(duplicate(bits)), btcnt;
-    unsigned char *bytes = RAW(ans);
+    unsigned char *bytes = (unsigned char *) RAW(ans);
     int *indx =  INTEGER(_indx);
-    int len = asInteger(getAttrib(ans, install("bitlen")));
-    int i, byteIndex, bitIndex , shft, subIndx =0;
+    int len = length(bits) * 8 ;
+    int i, byteIndex, bitIndex, subIndx =0;
     int nSet = 0;
+    unsigned char mask;
     for( i =0 ; i < len; i ++) {
          byteIndex = i / 8;
          bitIndex = i % 8;
-         shft = 1 << bitIndex;
-         if(bytes[byteIndex] & (shft)) {
-            if(indx[subIndx] == 0){
-                bytes[byteIndex]  = bytes[byteIndex]  & (0 << bitIndex);
-            } else {
+         if(IS_SET(bytes, byteIndex, bitIndex)) {
+           if(indx[subIndx] == 0){
+               mask = ~(1 << bitIndex) ;
+               bytes[byteIndex] = bytes[byteIndex] & mask;
+           } else {
                 nSet++;
-            }
+           }
             subIndx++;
          }         
     }
