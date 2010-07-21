@@ -23,7 +23,7 @@ SEXP graph_bitarray_edgeSetToMatrix(SEXP nodes, SEXP bits,
 SEXP graph_bitarray_getBitCell(SEXP bits, SEXP _from, SEXP _to); 
 SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
         SEXP fromTwoBits);
-SEXP graph_bitarray_Intesect_Attrs(SEXP cmnBits, SEXP fromOneBits,
+SEXP graph_bitarray_Interect_Attrs(SEXP cmnBits, SEXP fromOneBits,
         SEXP fromTwoBits);
 SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx);
 
@@ -749,11 +749,10 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
     unsigned char *cmn = (unsigned char*) RAW(cmnBits);
     unsigned char *fromOne = (unsigned char *) RAW(fromOneBits);
     unsigned char *fromTwo = (unsigned char *) RAW(fromTwoBits);
-    int len = asInteger(getAttrib(inputBits, install("bitlen")));
+    int len = length(inputBits) * 8;
     int i, byteIndex, bitIndex , shft, setIndx = 0;
     int nn = asInteger(getAttrib(inputBits, install("nbitset")));
     SEXP from, indx1, indx2 ;
-      
     PROTECT(from = allocVector(INTSXP, nn));
     PROTECT(indx1 = allocVector(INTSXP , nn));
     PROTECT(indx2 = allocVector(INTSXP , nn));
@@ -799,7 +798,7 @@ SEXP graph_bitarray_Intersect_Attrs(SEXP cmnBits, SEXP fromOneBits,
     unsigned char *cmn = (unsigned char*) RAW(cmnBits);
     unsigned char *fromOne = (unsigned char *) RAW(fromOneBits);
     unsigned char *fromTwo = (unsigned char *) RAW(fromTwoBits);
-    int len = asInteger(getAttrib(cmnBits, install("bitlen")));
+    int len = length(cmnBits) * 8;
     int i, byteIndex, bitIndex , shft, setIndx = 0;
     int nn = asInteger(getAttrib(cmnBits, install("nbitset")));
     SEXP from, indx1, indx2;
