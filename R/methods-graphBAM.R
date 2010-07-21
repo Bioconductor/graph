@@ -690,15 +690,16 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
         attr1[k] <- sapply(seq_len(sum(k)), function(p) {
                     return(funList[[att]](val1[[p]], val2[[p]]))
                 })
-    } else if (is.atomic(val1) && is.atomic(val2)) {
-         pt <-  which(val1 == val2)
+    } else if (is.vector(val1) && is.vector(val2)) {
+        eqInd <- sapply(seq_len(length(val1)), function(x){
+                     identical(val1[x], val2[x])
+                 })
+
+         pt <-  which(eqInd)
          tmp <- rep(NA, sum(k))
          tmp[pt] <-  val1[pt]
          attr1[k]  <- tmp
-    } else {
-         stop( paste("Please specify a function for handling the union of two
-                         objects of attribute", att, sep =" "))
-    }
+    } 
     attr1
 }
 
@@ -724,8 +725,11 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
          attr1[k] <-  sapply(seq_len(sum(k)), function(p) {
                     return(funList[["weight"]](val1[[p]], val2[[p]]))
                 })
-    } else if(is.atomic(val1) && is.atomic(val2)) {
-         pt <-  which(val1 == val2)
+    } else if(is.vector(val1) && is.vector(val2)) {
+         eqInd <- sapply(seq_len(length(val1)), function(x){
+                     identical(val1[x], val2[x])
+                 })
+         pt <-  which(eqInd)
          tmp <- rep(NA, length(which(k)))
          tmp[pt] <-  val1[pt]
          attr1[k]  <- tmp
@@ -762,15 +766,15 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
         attr1[k] <- sapply(seq_len(sum(k)), function(p) {
                     return(funList[[att]](val1[[p]], val2[[p]]))
                 })
-    } else if (is.atomic(val1) && is.atomic(val2)) {
-         pt <-  which(val1 == val2)
+    } else if (is.vector(val1) && is.vector(val2)) {
+         eqInd <- sapply(seq_len(length(val1)), function(x){
+                     identical(val1[x], val2[x])
+                 })
+         pt <-  which(eqInd)
          tmp <- rep(NA, sum(k))
          tmp[pt] <-  val1[pt]
          attr1[k]  <- tmp
-    } else {
-         stop( paste("Please specify a function for handling the union of two
-                         objects of attribute", att, sep =" "))
-    }
+    } 
     attr1
 }
 
