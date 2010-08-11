@@ -571,9 +571,17 @@ setMethod("addEdge",
 setMethod("addNode",
         signature(node="character", object="graphBAM", edges="missing"),
         function(node, object) {
-            node <- unique(c(nodes(object), node))
+            nds <- unique(c(nodes(object), node))
             df <- extractFromTo(object)
-            graphBAM(df, nodes = node, edgemode = edgemode(object))
+            g <- graphBAM(df, nodes = nds, edgemode = edgemode(object))
+            indx <- match(nodes(object), nodes(g))
+            att <- lapply(object@nodeData@data, function(x) {
+                      val <- rep(NA, length(nodes(g)))
+                      val[indx] <- x
+                      val
+                    })
+            g@nodeData@data <- att
+            g
         })
 
 setReplaceMethod("edgemode", c("graphBAM", "character"),
