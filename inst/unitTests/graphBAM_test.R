@@ -1168,6 +1168,27 @@ test_graphBAM_S4_Attribute_Union <- function() {
 
 }
 
+test_graphBAM_addNode <- function(){
 
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(2.2, 2.0, 0.4, 0.2)
+    df <- data.frame(from, to, weight)
+    g <- graphBAM(df, edgemode = "directed")
 
+    nodeData(g, n = c("d","a"), attr = "color") <- c("red", "green")
+    nodeData(g, attr= "type" ) <- "low"
+    nodeData(g, n = c("a", "b", "y", "d"), attr = "type") <- c("high", "med", "high", "low") 
+
+    gr <- addNode(c("q", "ss"), g)
+    current <- nodeData(gr, attr = "color")
+    target <- as.list(structure( c("green", NA, NA, "red", NA, NA, NA, NA), 
+                            names = c("a", "b", "c", "d", "q", "ss", "x", "y")))
+    checkEquals(target, current)
+    
+    current <- nodeData(gr, attr = "type")
+    target <- as.list(structure( c("high", "med", "low", "low", NA, NA, "low", "high"), 
+                            names = c("a", "b", "c", "d", "q", "ss", "x", "y")))
+    checkEquals(target, current)
+}
 
