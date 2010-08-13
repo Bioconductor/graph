@@ -558,7 +558,18 @@ setMethod("addEdge",
               df <- extractFromTo(graph)
               df2 <- data.frame(from=req_ft[ , 1], to=req_ft[ , 2],
                                 weight=weights, stringsAsFactors = FALSE)
-              graphBAM(rbind(df, df2), edgemode=edgemode(graph))
+              g <- graphBAM(rbind(df, df2), edgemode=edgemode(graph))
+              indx <- .Call("graph_bitarray_getEdgeAttrPos", graph@edgeSet@bit_vector,
+                             g@edgeSet@bit_vector)
+              len <- attr(g@edgeSet@bit_vector, "nbitset")
+              g@edgeSet@edge_attrs <- lapply(graph@edgeSet@edge_attrs, function(x){
+                       val <- rep(NA, len)
+                       val[indx] <- x
+                       val
+                      })
+              g@nodeData@data <- graph@nodeData@data
+              g@renderInfo <- graph@renderInfo
+              g
           })
 
 setMethod("addEdge",
@@ -575,12 +586,13 @@ setMethod("addNode",
             df <- extractFromTo(object)
             g <- graphBAM(df, nodes = nds, edgemode = edgemode(object))
             indx <- match(nodes(object), nodes(g))
-            att <- lapply(object@nodeData@data, function(x) {
+            g@nodeData@data <- lapply(object@nodeData@data, function(x) {
                       val <- rep(NA, length(nodes(g)))
                       val[indx] <- x
                       val
                     })
-            g@nodeData@data <- att
+            g@edgeSet@edge_attrs <- graph@edgeSet@edge_attrs
+            g@renderInfo <- graph@renderInfo
             g
         })
 
