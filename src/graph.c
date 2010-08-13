@@ -26,7 +26,7 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
 SEXP graph_bitarray_Interect_Attrs(SEXP cmnBits, SEXP fromOneBits,
         SEXP fromTwoBits);
 SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx);
-
+SEXP graph_bitarray_getEdgeAttrPos(SEXP origBits, SEXP newBits) ;
 
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
@@ -38,6 +38,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"graph_sublist_assign", (DL_FUNC)&graph_sublist_assign, 4},
     {"graph_is_adjacent", (DL_FUNC)&graph_is_adjacent, 2},
     {"graph_bitarray_rowColPos", (DL_FUNC)&graph_bitarray_rowColPos, 1},
+    {"graph_bitarray_getEdgeAttrPos", (DL_FUNC)&graph_bitarray_getEdgeAttrPos, 2},
     {NULL, NULL, 0},
 };
 
@@ -859,4 +860,29 @@ SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx) {
     return(ans);
 }
 
+
+SEXP graph_bitarray_getEdgeAttrPos(SEXP origBits, SEXP newBits) {
+    unsigned char *origBt = (unsigned char*) RAW(origBits);
+    unsigned char *newBt = (unsigned char *) RAW(newBits);
+    int len = length(origBits) * 8;
+    int i, byteIndex, bitIndex , shft, setIndx = 0;
+    int nn = asInteger(getAttrib(origBits, install("nbitset")));
+    SEXP indx;
+    PROTECT(indx = allocVector(INTSXP , nn));
+    int newIndx = 0;  
+    for( i =0 ; i < len; i ++) {
+         byteIndex = i / 8;
+         bitIndex = i % 8;
+         shft = 1 << bitIndex;
+         if(newBt[byteIndex] & (shft) ) {
+               newIndx++; 
+         }
+         if(origBt[byteIndex] & (shft)) {
+                INTEGER(indx)[setIndx] = newIndx;
+                setIndx++;
+         }
+    }
+    UNPROTECT(1);
+    return(indx);
+}
 
