@@ -23,7 +23,7 @@
 \alias{isDirected,UEdgeSet-method}
 \alias{ugraph,DiEdgeSet-method}
 \alias{ugraph,UEdgeSet-method}
-\alias{intersection,MultiGraph,MultiGraph-method}
+\alias{graphIntersect,MultiGraph,MultiGraph-method}
 \alias{union,MultiGraph,MultiGraph-method}
 \alias{nodeData,MultiGraph,character,character-method}
 \alias{nodeData,MultiGraph,character,missing-method}
@@ -171,8 +171,8 @@ extractGraphBAM(g, edgeSets)
     edge set containing the shared edges.  The node set is preserved.
     Edge weights and edge attributes are dropped.}
    
-    \item{\code{intersection(x, y)}}{
-    When given two \code{MultiGraph} objects, \code{intersection}
+    \item{\code{graphIntersect(x, y, funList)}}{
+    When given two \code{MultiGraph} objects, \code{graphIntersect}
     returns a new \code{MultiGraph} containing the nodes and edges in
     common between the two graphs.  The intersection is computed by
     first finding the intersection of the node sets, obtaining the
@@ -222,6 +222,6 @@ extractGraphBAM(g, edgeSets)
     extractGraphAM(g)
     extractGraphAM(g, "es1")
     extractGraphBAM(g, "es1")
-    intersection(g, g)
+    graphIntersect(g, g)
 }
 \keyword{classes}
