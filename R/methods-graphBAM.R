@@ -398,7 +398,6 @@ setReplaceMethod("edgeData",
                     
                     if(is.vector(value)){
                        len <- length(value)
-                        
                     
                     } else {
                         len <- 1
@@ -679,8 +678,8 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     from2 <- attr(attrType, "indx2")
     attr1 <- rep(NA, len)
     k <- indx ==0
-    val1 <- x@edgeSet@weights[from1[k]]
-    val2 <- y@edgeSet@weights[from2[k]]
+    val1 <- x@weights[from1[k]]
+    val2 <- y@weights[from2[k]]
 
     if(!is.null(funList) && ("weight" %in% names(funList))) {
         attr1[k] <-  sapply(seq_len(sum(k)), function(p) {
@@ -703,9 +702,9 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     attr1 <- rep(NA, len)
     ## resolve union
     k <- indx ==0
-    val1 <- x@edgeSet@edge_attrs[[att]][from1[k]]
-    val2 <- y@edgeSet@edge_attrs[[att]][from2[k]]
- 
+    val1 <- x@edge_attrs[[att]][from1[k]]
+    val2 <- y@edge_attrs[[att]][from2[k]]
+  
     if(!is.null(funList) && (att %in% names(funList))) {
         attr1[k] <- sapply(seq_len(sum(k)), function(p) {
                     return(funList[[att]](val1[[p]], val2[[p]]))
@@ -799,61 +798,28 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
 }
 
 setMethod("graphIntersect", c("graphBAM", "graphBAM"),
-           function(x, y, ..., funList){
-           dr1 <- isDirected(x)
-           dr2 <- isDirected(y)
-           if(dr1 != dr2)
-               stop("x and y should both be directed or undirected")
-           theMode <- if (dr1 && dr2) "directed" else "undirected"
-
-           xAttr <- names(x@edgeSet@edge_attrs)
-           yAttr <- names(y@edgeSet@edge_attrs) 
-           commonAttr <- intersect(xAttr, yAttr)
-           if(!missing(funList)) {
-               fIndx <- names(funList) %in% c(commonAttr, "weight")
-               if(!all(fIndx))
-                   stop( paste("Attributes", names(funList)[fIndx], "defined by 
-                               \"funList\", were not found in the edge 
-                                  attributes", sep = " "))
-                          
-            } else {
-               funList <- NULL
-            }
-            nn <- intersect(nodes(x), nodes(y))
-            nnLen <- length(nn)
-                        c0 <- character(0)
-            df <- data.frame(from = c0, to = c0, weight = numeric(0), 
-                    stringsAsFactors = FALSE)
-            ans <- graphBAM(df, edgemode = theMode)
-            if (nnLen == 0) return(ans)
-            sg1 <- if (nnLen == numNodes(x)) x else subGraph(nn, x)
-            sg2 <- if (nnLen == numNodes(y)) y else subGraph(nn, y)
-            bv <- sg1@edgeSet@bit_vector & sg2@edgeSet@bit_vector
-            attributes(bv) <- attributes(sg1@edgeSet@bit_vector)
-            attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
-            ans@edgeSet@edge_attrs <- list()
-            ans@edgeSet@bit_vector <- bv
-            ans@edgeSet@weights <- rep(1L, ns)
-            ans@nodes <- nn
-            
-            fromOneBit <- sg1@edgeSet@bit_vector 
-            attributes(fromOneBit) <- attributes(sg1@edgeSet@bit_vector)
-            attr(fromOneBit, "nbitset") <- .Call(graph_bitarray_sum, fromOneBit)
-
-            fromTwoBit <- sg2@edgeSet@bit_vector 
-            attributes(fromTwoBit) <- attributes(sg2@edgeSet@bit_vector)
-            attr(fromTwoBit, "nbitset") <- .Call(graph_bitarray_sum, fromTwoBit)
-
-            attrType <- .Call("graph_bitarray_Intersect_Attrs", bv,
-                    fromOneBit, fromTwoBit)
-     
-            ans@edgeSet@edge_attrs <- structure( lapply(commonAttr, function(k) {
-                                     .getIntersectAttrs(k, attrType, sg1, sg2, funList)
-                                       }), names = commonAttr)
-    
-            ans@edgeSet@weights <- as.numeric(.getIntersectWeights(attrType, sg1, 
-                                              sg2, funList))
-            ans
+           function(x, y, funList, ...){
+    nn <- intersect(nodes(x), nodes(y))
+    nnLen <- length(nn)
+    if(nnLen ==0) {
+        dr1 <- isDirected(x)
+        dr2 <- isDirected(y)
+        if(dr1 != dr2)
+            stop("x and y should both be directed or undirected")
+        theMode <- if (dr1) "directed" else "undirected"
+        c0 <- character(0)
+        df <- data.frame(from = c0, to = c0, weight = numeric(0), 
+                stringsAsFactors = FALSE)
+        ans <- graphBAM(df, edgemode = theMode)
+        return(ans)
+    }
+    sg1 <- if (nnLen == numNodes(x)) x else subGraph(nn, x)
+    sg2 <- if (nnLen == numNodes(y)) y else subGraph(nn, y)
+    if(missing(funList))
+        funList <- NULL
+    edge_set <- .edgeIntersect(sg1@edgeSet, sg2@edgeSet, funList)
+    ans <- new("graphBAM", edgeSet= edge_set, nodes =nn)
+    ans
 })
  
 setMethod("graphUnion", c("graphBAM", "graphBAM"), 
@@ -947,11 +913,12 @@ setReplaceMethod("nodeData",
         function(self, n, attr, value) {
             if(length(attr) != 1L)
                 stop("attr argument must specify a single attribute name")
+            
             if(is.vector(value)){
                 len <- length(value)
             } else {
-                len <- 1
-                value <- list(value)
+             len <- 1
+             value <- list(value)
             }
             if(len!=1L && len != length(n)) {
                 stop("value must be of length one or have the same length as n")
