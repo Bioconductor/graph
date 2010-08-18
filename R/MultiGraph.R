@@ -513,45 +513,87 @@ edgeSetToMatrix <- function(nds, edgeSet, directed)
           as.numeric(edgeSet@weights), as.logical(directed))
 }
 
-edgeIntersect <- function(e1, e2) {
-
-    dr1 <- isDirected(e1)
-    dr2 <- isDirected(e2)
-    if (! (dr1 && dr2)) {
-        if(dr1) e1 <- ugraph(e1)
-        else    e2 <- ugraph(e2)
-    }
-    klass <- if (dr1 && dr2) "DiEdgeSet" else "UEdgeSet"
-    bv <- e1@bit_vector & e2@bit_vector
-    attributes(bv) <- attributes(e1@bit_vector)
-    attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
-    new_edge_set <- new(klass, bit_vector = bv,
-                                  weights = rep(1L, ns),
-                                  edge_attrs = list())
-    new_edge_set
-}
-  
-setMethod("intersection", c("MultiGraph", "MultiGraph"),
-        function(x, y) {
+setMethod("graphIntersect", c("MultiGraph", "MultiGraph"),
+           function(x, y, funList, ...){
 
     nn <- intersect(nodes(x), nodes(y))
     nnLen <- length(nn)
-
     nmsX <- names(x@edge_sets)
     nmsY <- names(y@edge_sets)
     eg <- intersect(nmsX, nmsY)
+    dr1 <- isDirected(x)[eg]
+    dr2 <- isDirected(y)[eg]
+    if(!all(dr1 == dr2)) {
+        stop("Names edgeSets to be intersected in x and y should both be 
+              directed or undirected")
+    }
+    theMode <- dr1 & dr2
+    if (nnLen == 0){
+        ft <- data.frame(from = character(0), to = character(0), weight = numeric(0))
+        es <- structure(rep(list(ft), length(eg)), names = eg)
+        mg <- MultiGraph(es, directed = theMode)
+        return(mg)
+    }
+
     x@edge_sets <- x@edge_sets[eg]
     y@edge_sets <- y@edge_sets[eg]
-
     sgx <- if (nnLen == numNodes(x)) x else subGraph(nn, x)
     sgy <- if (nnLen == numNodes(y)) y else subGraph(nn, y)
-  
+     
+    if(missing(funList))
+       funList <- structure( rep(list(NULL),length(eg)), names = eg)
     new_edge_sets <- lapply(eg, function(k) {
-                        edgeIntersect(sgx@edge_sets[[k]], sgy@edge_sets[[k]])         
+                        .edgeIntersect(sgx@edge_sets[[k]], sgy@edge_sets[[k]],
+                                funList[[k]])         
                      })
     names(new_edge_sets) <- eg    
     new("MultiGraph", edge_sets = new_edge_sets, nodes = nn)
 })
+
+
+.edgeIntersect <- function(e1, e2, funList) {
+    dr1 <- isDirected(e1)
+    dr2 <- isDirected(e1)
+    if(dr1 != dr2)
+        stop("Edges should both be directed or undirected")
+    theMode <- if (dr1 && dr2) "directed" else "undirected"
+    e1Attr <- names(e1@edge_attrs)
+    e2Attr <- names(e2@edge_attrs) 
+    commonAttr <- intersect(e1Attr, e2Attr)
+    if(!is.null(funList)) {
+        fIndx <- names(funList) %in% c(commonAttr, "weight")
+        if(!all(fIndx))
+            stop( paste("Attributes", names(funList)[fIndx], "defined by 
+                               \"funList\", were not found in the edge 
+                                  attributes", sep = " "))
+    }
+    bv <- e1@bit_vector & e2@bit_vector
+    attributes(bv) <- attributes(e1@bit_vector)
+    attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
+    c0 <- character(0)
+    df <- data.frame(from = c0, to = c0, weight = numeric(0), stringsAsFactors = FALSE)
+    edge_set <- .makeMDEdgeSet(es_name = 1, es = df,
+                                is_directed = theMode == "directed", nodes = c0,
+                                ignore_dup_edges = FALSE)
+    edge_set@bit_vector <- bv
+    edge_set@weights <- rep(1L, ns)
+   
+    fromOneBit <- e1@bit_vector 
+    attributes(fromOneBit) <- attributes(e1@bit_vector)
+    attr(fromOneBit, "nbitset") <- .Call(graph_bitarray_sum, fromOneBit)
+
+    fromTwoBit <- e2@bit_vector 
+    attributes(fromTwoBit) <- attributes(e2@bit_vector)
+    attr(fromTwoBit, "nbitset") <- .Call(graph_bitarray_sum, fromTwoBit)
+
+    attrType <- .Call("graph_bitarray_Intersect_Attrs", bv, fromOneBit, fromTwoBit)
+    edge_set@edge_attrs <- structure( lapply(commonAttr, function(k) {
+                                     .getIntersectAttrs(k, attrType, e1, e2, funList)
+                                 }), names = commonAttr)
+    edge_set@weights <- as.numeric(.getIntersectWeights(attrType, e1, e2, funList))
+    edge_set
+}
+
 
 setMethod("union", c("MultiGraph", "MultiGraph"), function(x, y) {
     
