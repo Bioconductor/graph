@@ -1192,3 +1192,40 @@ test_graphBAM_addNode <- function(){
     checkEquals(target, current)
 }
 
+test_graphBAM_addNode <- function(){
+
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(2.2, 2.0, 0.4, 0.2)
+    df <- data.frame(from, to, weight)
+    g <- graphBAM(df, edgemode = "directed")
+
+    edgeData(g, from = c("d","a"), to = c("y", "b"), attr = "color") <- c("red", "green")
+    edgeData(g, from = c("a", "b"), to = c("b", "c") , attr = "type") <- c("low", "high")
+    g1 <- addEdge(from = c("d", "b"), to = c("c", "x"), g, weights = c(4.0, 10.0))
+
+    current <- edgeData(g1, attr ="weight")
+    lbl <- paste(c("a", "b", "d", "b", "d", "d"), c( "b", "c", "c", "x", "x", "y") , sep ="|")
+    target <- as.list( structure(c(2.2, 2, 4, 10, 0.2, 0.4), names = lbl))
+    checkEquals(target, current)
+      
+    current <- edgeData(g1, attr ="color")
+    lbl <- paste(c("a", "b", "d", "b", "d", "d"), c( "b", "c", "c", "x", "x", "y") , sep ="|")
+    target <- as.list( structure(c("green", NA, NA, NA, NA, "red"), names = lbl))
+    checkEquals(target, current)
+
+    current <- edgeData(g1, attr ="type")
+    lbl <- paste(c("a", "b", "d", "b", "d", "d"), c( "b", "c", "c", "x", "x", "y") , sep ="|")
+    target <- as.list( structure(c("low", "high", NA, NA, NA, NA), names = lbl))
+    checkEquals(target, current)
+}
+
+
+
+
+
+
+
+
+
+
