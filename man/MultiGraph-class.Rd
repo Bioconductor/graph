@@ -24,7 +24,7 @@
 \alias{ugraph,DiEdgeSet-method}
 \alias{ugraph,UEdgeSet-method}
 \alias{graphIntersect,MultiGraph,MultiGraph-method}
-\alias{union,MultiGraph,MultiGraph-method}
+\alias{graphUnion,MultiGraph,MultiGraph-method}
 \alias{nodeData,MultiGraph,character,character-method}
 \alias{nodeData,MultiGraph,character,missing-method}
 \alias{nodeData,MultiGraph,missing,character-method}
@@ -177,15 +177,13 @@ extractGraphBAM(g, edgeSets)
     common between the two graphs.  The intersection is computed by
     first finding the intersection of the node sets, obtaining the
     induced subgraphs, and finding the intersection of the resulting
-    edge sets.  All node and edge attributes are dropped.  Edges, if
-    any, in the resulting graph will have weights set to one.
+    edge sets. 
     }
 
-    \item{\code{union(x, y)}}{
-    When given two \code{MultiGraph} objects, \code{intersection}
+    \item{\code{graphUnion(x, y, funList)}}{
+    When given two \code{MultiGraph} objects, \code{graphUnion}
     returns a new \code{MultiGraph} containing the union of nodes and 
-    edges between the two graphs.  All node and edge attributes are dropped.
-    Edges in the resulting graph will have weights set to one.
+    edges between the two graphs.  
     }
 
     \item{show}{Prints a short summary of a MultiGraph object}
@@ -223,5 +221,6 @@ extractGraphBAM(g, edgeSets)
     extractGraphAM(g, "es1")
     extractGraphBAM(g, "es1")
     graphIntersect(g, g)
+    graphUnion(g,g)
 }
 \keyword{classes}
