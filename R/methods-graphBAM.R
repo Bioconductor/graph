@@ -590,8 +590,8 @@ setMethod("addNode",
                       val[indx] <- x
                       val
                     })
-            g@edgeSet@edge_attrs <- graph@edgeSet@edge_attrs
-            g@renderInfo <- graph@renderInfo
+            g@edgeSet@edge_attrs <- object@edgeSet@edge_attrs
+            g@renderInfo <- object@renderInfo
             g
         })
 
@@ -804,7 +804,7 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
 }
 
 setMethod("graphIntersect", c("graphBAM", "graphBAM"),
-           function(x, y, funList, ...){
+           function(x, y, nodeFun, edgeFun, ...){
     nn <- intersect(nodes(x), nodes(y))
     nnLen <- length(nn)
     if(nnLen ==0) {
@@ -821,26 +821,122 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
     }
     sg1 <- if (nnLen == numNodes(x)) x else subGraph(nn, x)
     sg2 <- if (nnLen == numNodes(y)) y else subGraph(nn, y)
-    if(missing(funList))
-        funList <- NULL
-    edge_set <- .edgeIntersect(sg1@edgeSet, sg2@edgeSet, funList)
+    if(missing(nodeFun))
+        nodeFun <- NULL
+    if(missing(edgeFun))
+        edgeFun <- NULL
+    edge_set <- .edgeIntersect(sg1@edgeSet, sg2@edgeSet, edgeFun)
     ans <- new("graphBAM", edgeSet= edge_set, nodes =nn)
+    ans@nodeData@data <- .nodeIntersect(sg1@nodeData@data, sg2@nodeData@data, nodeFun)
     ans
 })
- 
-setMethod("graphUnion", c("graphBAM", "graphBAM"), 
-        function(x, y, funList, ...) {
 
-   if(missing(funList))
-       funList <- NULL
+.nodeIntersect <- function(attr1, attr2, funList){
+    cmn <- intersect(names(attr1), names(attr2))
+    nattr <- structure(lapply(cmn, function(x) {
+                 len <- length(attr1[[x]])
+                 if(!is.null(funList) && (x %in% names(funList))) {
+                    res <- sapply(seq_len(len), function(p) {
+                             return(funList[[x]](attr1[[x]][[p]], attr2[[x]][[p]]))
+                           })
+                 } else if (is.vector(attr1[[x]]) && is.vector(attr2[[x]])) {
+                    indx <- which(sapply(seq_len(len), function(p){
+                                identical(attr1[[x]][p], attr2[[x]][p])
+                           }))
+                    res <- rep(NA, len)
+                    res[indx] <- attr1[[x]][indx]
+                }
+                res
+             }), names = cmn)
+     nattr
+ }
+
+setMethod("graphUnion", c("graphBAM", "graphBAM"), 
+        function(x, y, nodeFun, edgeFun, ...) {
    theNodes <- unique(c(nodes(x), nodes(y)))
-   df1 <- extractFromTo(x)
-   df2 <- extractFromTo(y)
-   edge_set <- .edgeUnion(x@edgeSet, y@edgeSet, df1, df2, theNodes, funList)
+   nnLen <- length(theNodes)
+   if(nnLen ==0) {
+       dr1 <- isDirected(x)
+       dr2 <- isDirected(y)
+       if(dr1 != dr2)
+           stop("x and y should both be directed or undirected")
+       theMode <- if (dr1) "directed" else "undirected"
+       c0 <- character(0)
+       df <- data.frame(from = c0, to = c0, weight = numeric(0), 
+                stringsAsFactors = FALSE)
+       ans <- graphBAM(df, edgemode = theMode)
+       return(ans)
+   }
+   if(missing(nodeFun))
+       nodeFun <- NULL
+   if(missing(edgeFun))
+       edgeFun <- NULL
+   # df1 <- extractFromTo(x)
+   # df2 <- extractFromTo(y)
+   df1 <- diEdgeSetToDataFrame(x@edgeSet,nodes(x))
+   df2 <- diEdgeSetToDataFrame(y@edgeSet,nodes(y))
+   edge_set <- .edgeUnion(x@edgeSet, y@edgeSet, df1, df2, theNodes, edgeFun)
    ans <- new("graphBAM", edgeSet= edge_set, nodes =theNodes)
+   ans@nodeData@data <- .nodeUnion(x@nodeData@data, y@nodeData@data,
+                           nodes(x), nodes(y), nodes(ans), nodeFun)  
    ans 
 })
 
+.nodeUnion <- function(attr1, attr2, ndX, ndY, ndAns, funList) {
+    xAttr <-  names(attr1)
+    yAttr <-  names(attr2)
+    unionAttrs <- union(xAttr, yAttr)
+    commonAttrs <- intersect(xAttr,yAttr)
+    singleAttrs <- unionAttrs[!unionAttrs %in% commonAttrs]
+      
+    cmnNds <- intersect(ndX, ndY)
+    fxNds <-  ndX[!ndX %in% cmnNds]
+    fyNds <-  ndY[!ndY %in% cmnNds]
+
+    ### deal with single attrs
+    n1 <- sapply(singleAttrs, function(k){
+               if(k %in% xAttr){
+                    indx <- match(ndX, ndAns)
+                    att <- rep(NA, length(ndAns))
+                    att[indx] <- attr1[[k]]
+               } else if(k %in% yAttr){
+                    indx <- match(ndY, ndAns)
+                    att <- rep(NA, length(ndAns))
+                    att[indx] <- attr2[[k]]
+               }
+               list(att)
+           })
+    
+    n2 <- sapply(commonAttrs, function(k) {
+               att <- rep(NA, length(ndAns))
+               ##from X
+               indx <- match(fxNds, ndAns)
+               att[indx] <- attr1[[k]][match(fxNds,ndX)]
+               ##from Y
+               indx <- match(fyNds, ndAns)
+               att[indx] <- attr2[[k]][match(fyNds,ndY)]
+               
+               if(!is.null(funList) && (k %in% names(funList))) {
+                    tmp <- sapply(cmnNds, function(p){
+                            dX <- match(p, ndX)
+                            dY <- match(p, ndY)
+                            funList[[k]](attr1[[k]][[dX]], attr2[[k]][[dY]])
+                        }, USE.NAMES = FALSE)
+                    indx <- match(cmnNds, ndAns)
+                    att[indx] <- tmp
+                } else if (is.vector(attr1[[k]]) && is.vector(attr2[[k]])){
+                    tmp <- sapply(cmnNds, function(p){
+                            dX <- match(p, ndX)
+                            dY <- match(p, ndY)
+                            identical(attr1[[k]][[dX]], attr2[[k]][[dY]])
+                        }, USE.NAMES = FALSE)
+                    indx <- match(cmnNds[tmp], ndAns)
+                    att[indx] <- attr1[[k]][match(cmnNds[tmp], ndX)]
+               }
+               list(att)
+            })
+     c(n1,n2)
+ }
 
 setMethod("nodeDataDefaults", 
         signature(self="graphBAM", attr="missing"),
