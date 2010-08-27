@@ -208,7 +208,7 @@ Class \code{"\linkS4class{graph}"}, directly.
       
     }
 
-    \item{\code{graphIntersect(x, y, funList)}}{
+    \item{\code{graphIntersect(x, y, nodeFun, edgeFun)}}{
 
       When given two \code{graphBAM} objects, \code{graphIntersect}
       returns a new \code{graphBAM} containing the nodes and edges in
@@ -221,7 +221,12 @@ Class \code{"\linkS4class{graph}"}, directly.
       of providing a named list of functions for resolving conflicting
       edge attributes.
     }
-  
+    \item{\code{graphUnion(x, y, nodeFun, edgeFun)}}{
+    When given two \code{graphBAM} objects, \code{graphUnion}
+    returns a new \code{graphBAM} containing the union of nodes and 
+    edges between the two graphs.  
+    }
+ 
     \item{\code{edgemode(object) <- value}}{
       
       Set the edgemode for the graph ("directed" or "undirected").  If
