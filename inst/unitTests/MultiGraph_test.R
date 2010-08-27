@@ -896,9 +896,19 @@ test_MultiGraph_Intersection_Attributes <- function(use.factors=TRUE){
         else
         return("high")
     }
-    funList <- structure(rep(list(structure( list(colorFun), names = "myType")),2),
+    typeFun <- function(x,y) {
+    if(is(x, "myType")  && is(y, "myType")){
+          if(x@typ =="low" || y@typ == "med")
+            return("low")
+         else
+            return("high")
+        }
+        else {return (NA)}
+        
+    }
+    edgeFun <- structure(rep(list(structure( list(colorFun), names = "myType")),2),
                  names = c("e1", "e2"))
-
+   
     ft1 <- data.frame(from=c("a", "b", "b", "f"),
                       to=c("b", "c", "d", "g"),
                       weight=c(1, 2, 3, 4),
@@ -947,8 +957,13 @@ test_MultiGraph_Intersection_Attributes <- function(use.factors=TRUE){
     mgEdgeData(g2, "e2", from = c("a", "f"), 
                            to = c("b", "c"),
              attr = "myType") <- c(myType("high"), myType("med"))
+ 
+    nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
+    nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
+    nodeData(g2,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "red")
+    nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
     
-    res <- graphIntersect(g1, g2, funList)
+    res <- graphIntersect(g1, g2, nodeFun = list(type =typeFun), edgeFun = edgeFun)
     
     current <- mgEdgeData(res,"e1", attr = "weight")
     target <- structure(list(2, as.numeric(NA)), names = paste(c("b", "f"), c("c", "g"), sep="|"))
@@ -976,6 +991,19 @@ test_MultiGraph_Intersection_Attributes <- function(use.factors=TRUE){
     target <- structure(list("high", "low"), 
             names = paste(c("a", "f"), c("b", "c"), sep="|"))
     checkEquals(target, current)
+
+
+    nodeColor <- nodeData(res, attr = "color")
+    target <-  as.list(structure(c("red", "green", NA, NA, NA), 
+                 names = c("a", "b", "c", "f", "g")))
+    checkEquals(target, nodeColor)
+
+    nodeType <- nodeData(res, attr = "type")
+    cn <- as.character(NA)
+    target <-  as.list(structure(c(cn, "low", "high", cn, cn), 
+                 names = c("a", "b", "c", "f", "g")))
+    checkEquals(target, nodeType)
+
 }
 
 test_MultiGraph_Union_Attributes <- function(use.factors=TRUE){
@@ -1041,7 +1069,7 @@ test_MultiGraph_Union_Attributes <- function(use.factors=TRUE){
                            to = c("b", "c"),
              attr = "myType") <- c(myType("high"), myType("med"))
     
-    res <- graphUnion(g1, g2, funList)
+    res <- graphUnion(g1, g2, edgeFun = funList)
     
     current <- mgEdgeData(res,"e1", attr = "weight")
     target <- structure(list(1, 2, 3, as.numeric(NA)), 
@@ -1075,4 +1103,89 @@ test_MultiGraph_Union_Attributes <- function(use.factors=TRUE){
     checkEquals(target, current)
 }
 
+
+test_MultiGraph_nodeUnion_Attributes <- function(use.factors=TRUE){
+
+    setClass("myType", representation = representation(typ ="character")) 
+    myType <- function(typ){ new("myType", typ = typ)}
+    testFun <- function(x,y) {
+        if(x@typ =="aa" || y@typ == "ac")
+            return("ax")
+        else
+            return("ab")
+    }
+    funList <- structure(list(testFun), names ="gene")
+
+
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+            to  =c("b", "c", "d", "a", "d"),
+            weight=c(1, 3.1, 5.4, 1, 2.2),
+            stringsAsFactors = use.factors)
+
+    ft2 <- data.frame(from=c("a", "a"),
+            to=c("b", "c"),
+            weight=c(3.4, 2.6),
+            stringsAsFactors = use.factors)
+
+    ft3 <- data.frame(from=c("a", "a"),
+            to  =c("d", "b"),
+            weight=c(1,2),
+            stringsAsFactors = use.factors)
+
+    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
+            e5=ft3[FALSE, ])
+
+    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
+    nodeData(g1, n = c("a", "b", "c") , attr = "color") <- c("red", "green", "blue")
+    nodeData(g1, n = c("a", "b"), attr = "type") <- c("low", "high")
+    nodeData(g1, n = c("a", "b"), attr = "kp") <- c("kplow", "kphigh")
+    nodeData(g1, n = c("a", "b"), attr = "gene") <- c(myType("aa"), myType("bt"))
+
+    ft1 <- data.frame(from=c("a", "a", "b"),
+            to=c("b", "x", "z"),
+            weight=c(6, 5, 2),
+            stringsAsFactors = use.factors)
+
+    ft2 <- data.frame(from=c("a", "a", "a"),
+            to=c("a", "x", "y"),
+            weight=c(1, 2, 3),
+            stringsAsFactors = use.factors)
+
+    esets <- list(e1=ft1, e2=ft2)
+    g2 <- MultiGraph(esets, directed = c(TRUE, FALSE))
+    nodeData(g2, n = c("a", "b", "x", "y", "z") , attr = "color") <- c("red", "red", "green", "pink", "yellow")
+    nodeData(g2, n = c("a", "b"), attr = "type") <- c("low", "high")
+    nodeData(g2, n = c("a", "b"), attr = "gene") <- c(myType("at"), myType("kt"))
+
+    res <- graphUnion(g1, g2, nodeFun = funList )
+
+    current <- nodeData(res, attr = "color")
+    cn <- as.character(NA)
+    target <- as.list( structure(c("red", cn, "blue", cn, "green", "pink", "yellow"), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, attr = "type")
+    cn <- as.character(NA)
+    target <- as.list( structure(c("low", "high", cn, cn, cn, cn, cn), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, attr = "kp")
+    cn <- as.character(NA)
+    target <- as.list( structure(c("kplow", "kphigh", cn, cn, cn, cn, cn), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+    current <- nodeData(res, n =c("a", "b"), attr ="gene")
+    target <- as.list( structure(c("ax", "ab"), 
+                    names = c("a", "b")))
+    checkEquals(target, current)
+
+    cn <- as.logical(NA)
+    current <- nodeData(res, n = c("c", "d", "x", "y", "z"), attr ="gene")
+    target <- as.list( structure(c( cn, cn, cn, cn, cn), 
+                    names = c("c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+
+}
 

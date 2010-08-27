@@ -805,7 +805,24 @@ colorFun <- function(x,y) {
         return("black")
 }
 
-g <- graphIntersect(g1, g2, funList = list(weight = weightFun, color = colorFun))
+setClass("myType", representation = representation(typ ="character")) 
+myType <- function(typ){ new("myType", typ = typ)}
+typeFun <- function(x,y) {
+    if(is(x, "myType")  && is(y, "myType")){
+          if(x@typ =="low" || y@typ == "med")
+            return("low")
+         else
+            return("high")
+        }
+        else {return (NA)}
+        
+}
+nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
+nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
+nodeData(g2,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "red")
+nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
+g <- graphIntersect(g1, g2, nodeFun = list(type = typeFun),
+            edgeFun = list(weight = weightFun, color = colorFun))
 
 attWeight <- edgeData(g, attr = "weight")
 nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
@@ -816,6 +833,17 @@ attColor <- edgeData(g, attr = "color")
 nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
 target <- structure( c( 2.4, 6.6, 6.4), names = nms)
 checkEquals(target, unlist(attWeight))
+
+nodeColor <- nodeData(g, attr = "color")
+target <-  as.list(structure(c("red", "green", NA, NA, NA, NA), 
+                 names = c("a", "b", "c", "d", "x", "y")))
+checkEquals(target, nodeColor)
+
+nodeType <- nodeData(g, attr = "type")
+cn <- as.character(NA)
+target <-  as.list(structure(c(cn, "low", "high", cn, cn, cn), 
+                 names = c("a", "b", "c", "d", "x", "y")))
+checkEquals(target, nodeType)
 
 }
 
@@ -870,7 +898,26 @@ colorFun <- function(x,y) {
         return("black")
 }
 
-g <- graphUnion(g1, g2, funList = list(weight = weightFun, color = colorFun))
+setClass("myType", representation = representation(typ ="character")) 
+myType <- function(typ){ new("myType", typ = typ)}
+typeFun <- function(x,y) {
+    if(is(x, "myType")  && is(y, "myType")){
+          if(x@typ =="low" || y@typ == "med")
+            return("low")
+         else
+            return("high")
+        }
+        else {return (NA)}
+        
+}
+nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
+nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
+nodeData(g2,n = c("a", "b", "c", "z"), attr ="color") <- c("red", "green", "red","pink")
+nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
+nodeData(g2,n = c("a", "b", "c"), attr = "test") <- c("pass", "fail", "pass")
+
+
+g <- graphUnion(g1, g2, edgeFun = list(weight = weightFun, color = colorFun))
 
 attWeight <- edgeData(g, attr = "weight")
 nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
@@ -1072,7 +1119,7 @@ test_graphBAM_S4_Attribute_Intersection <- function() {
         else
             return("black")
     }
-    g <- graphIntersect(g1, g2, funList =list(weight = weightFun, color = colorFun))
+    g <- graphIntersect(g1, g2, edgeFun =list(weight = weightFun, color = colorFun))
 
     df <- extractFromTo(g)
     tmp <- data.frame( from = c("a", "b", "d"), 
@@ -1144,7 +1191,7 @@ test_graphBAM_S4_Attribute_Union <- function() {
             return("black")
     }
 
-    g <- graphUnion(g1, g2, funList = list(weight = weightFun, color = colorFun))
+    g <- graphUnion(g1, g2, edgeFun = list(weight = weightFun, color = colorFun))
 
     attWeight <- edgeData(g, attr = "weight")
     nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
@@ -1221,6 +1268,71 @@ test_graphBAM_addNode <- function(){
 }
 
 
+
+test_graphBAM_nodeUnion_Attributes <- function(use.factors=TRUE){
+    setClass("myType", representation = representation(typ ="character")) 
+    myType <- function(typ){ new("myType", typ = typ)}
+    testFun <- function(x,y) {
+        if(is(x, "myType")  && is(y, "myType")){
+    
+            if(x@typ =="aa" || y@typ == "ac")
+                return("ax")
+            else
+                return("ab")
+        } else return(as.character(NA))
+
+    }
+    funList <- structure(list(testFun), names ="gene")
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+            to  =c("b", "c", "d", "a", "d"),
+            weight=c(1, 3.1, 5.4, 1, 2.2),
+            stringsAsFactors = use.factors)
+
+    g1 <- graphBAM(ft1, edgemode="directed")
+    nodeData(g1, n = c("a", "b", "c") , attr = "color") <- c("red", "green", "blue")
+    nodeData(g1, n = c("a", "b"), attr = "type") <- c("low", "high")
+    nodeData(g1, n = c("a", "b"), attr = "kp") <- c("kplow", "kphigh")
+    nodeData(g1, n = c("a", "b"), attr = "gene") <- c(myType("aa"), myType("bt"))
+
+    ft1 <- data.frame(from=c("a", "a", "b"),
+            to=c("b", "x", "z"),
+            weight=c(6, 5, 2),
+            stringsAsFactors = use.factors)
+    g2 <- graphBAM(ft1,nodes = c("a","b", "c", "d", "x", "y", "z"), edgemode = "directed")
+    nodeData(g2, n = c("a", "b", "x", "y", "z") , attr = "color") <- c("red", "red", "green", "pink", "yellow")
+    nodeData(g2, n = c("a", "b"), attr = "type") <- c("low", "high")
+    nodeData(g2, n = c("a", "b"), attr = "gene") <- c(myType("at"), myType("kt"))
+
+
+    res <- graphUnion(g1, g2, nodeFun = funList)
+
+    current <- nodeData(res, attr = "color")
+    cn <- as.character(NA)
+    target <- as.list( structure(c("red", cn, cn, cn, "green", "pink", "yellow"), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, attr = "type")
+    cn <- as.character(NA)
+    target <- as.list( structure(c("low", "high", cn, cn, cn, cn, cn), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, attr = "kp")
+    cn <- as.character(NA)
+    target <- as.list( structure(c("kplow", "kphigh", cn, cn, cn, cn, cn), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+  
+    current <- nodeData(res, n = c("a", "b", "c", "d"), attr ="gene")
+    target <- as.list( structure(c("ax", "ab", cn ,cn), names = c("a", "b", "c", "d")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, n= c( "x", "y", "z"), attr ="gene")
+    target <- as.list( structure(c(as.logical(NA), as.logical(NA), as.logical(NA)), 
+                    names = c("x", "y", "z")))
+    checkEquals(target, current)
+}
 
 
 
