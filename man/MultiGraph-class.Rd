@@ -171,7 +171,7 @@ extractGraphBAM(g, edgeSets)
     edge set containing the shared edges.  The node set is preserved.
     Edge weights and edge attributes are dropped.}
    
-    \item{\code{graphIntersect(x, y, funList)}}{
+    \item{\code{graphIntersect(x, y, nodeFun, edgeFun)}}{
     When given two \code{MultiGraph} objects, \code{graphIntersect}
     returns a new \code{MultiGraph} containing the nodes and edges in
     common between the two graphs.  The intersection is computed by
@@ -180,7 +180,7 @@ extractGraphBAM(g, edgeSets)
     edge sets. 
     }
 
-    \item{\code{graphUnion(x, y, funList)}}{
+    \item{\code{graphUnion(x, y, nodeFun, edgeFun)}}{
     When given two \code{MultiGraph} objects, \code{graphUnion}
     returns a new \code{MultiGraph} containing the union of nodes and 
     edges between the two graphs.  
