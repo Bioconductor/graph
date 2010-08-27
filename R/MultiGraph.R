@@ -514,7 +514,7 @@ edgeSetToMatrix <- function(nds, edgeSet, directed)
 }
 
 setMethod("graphIntersect", c("MultiGraph", "MultiGraph"),
-           function(x, y, funList, ...){
+           function(x, y, nodeFun, edgeFun, ...){
 
     nn <- intersect(nodes(x), nodes(y))
     nnLen <- length(nn)
@@ -540,18 +540,23 @@ setMethod("graphIntersect", c("MultiGraph", "MultiGraph"),
     sgx <- if (nnLen == numNodes(x)) x else subGraph(nn, x)
     sgy <- if (nnLen == numNodes(y)) y else subGraph(nn, y)
      
-    if(missing(funList))
-       funList <- structure( rep(list(NULL),length(eg)), names = eg)
+    if(missing(edgeFun))
+       edgeFun <- structure( rep(list(NULL),length(eg)), names = eg)
+    if(missing(nodeFun))
+        nodeFun <- NULL
+
     new_edge_sets <- lapply(eg, function(k) {
                         .edgeIntersect(sgx@edge_sets[[k]], sgy@edge_sets[[k]],
-                                funList[[k]])         
+                                edgeFun[[k]])         
                      })
-    names(new_edge_sets) <- eg    
-    new("MultiGraph", edge_sets = new_edge_sets, nodes = nn)
+    names(new_edge_sets) <- eg   
+    mg <- new("MultiGraph", edge_sets = new_edge_sets, nodes = nn)
+    mg@nodeData <- .nodeIntersect(sgx@nodeData, sgy@nodeData, nodeFun)
+    mg 
 })
 
 setMethod("graphUnion", c("MultiGraph", "MultiGraph"),
-           function(x, y, funList, ...){
+           function(x, y, nodeFun, edgeFun, ...){
     theNodes <- unique(c(nodes(x), nodes(y)))
     nnLen <- length(theNodes)
     nmsX <- names(x@edge_sets)
@@ -577,38 +582,46 @@ setMethod("graphUnion", c("MultiGraph", "MultiGraph"),
         mg <- MultiGraph(es, directed = theMode)
         return(mg)
     }
-    if(missing(funList))
-       funList <- structure( rep(list(NULL),length(eg)), names = eg)
-
-    edgeX <- structure( lapply(fromX, function(k) {
-              df <- diEdgeSetToDataFrame(x@edge_sets[[k]],nodes(x))
-              edge_set <- .makeMDEdgeSet(es_name = 1, es = df,
+    if(missing(edgeFun))
+       edgeFun <- structure( rep(list(NULL),length(eg)), names = eg)
+    if(missing(nodeFun))
+       nodeFun <- NULL
+    
+    edgeX <- if(length(fromX) >0) {
+                sapply(fromX, function(k) {
+                    df <- diEdgeSetToDataFrame(x@edge_sets[[k]],nodes(x))
+                    edge_set <- .makeMDEdgeSet(es_name = 1, es = df,
                                 is_directed = theMode[k], nodes = theNodes,
                                 ignore_dup_edges = FALSE)
-              edge_set@edge_attrs <- x@edge_sets[[k]]@edge_attrs
-              edge_set@weights <- x@edge_sets[[k]]@weights
-              edge_set
+                    edge_set@edge_attrs <- x@edge_sets[[k]]@edge_attrs
+                    edge_set@weights <- x@edge_sets[[k]]@weights
+                    list(edge_set)
+                })
+             }else {list()}
 
-            }), names = fromX)
-
-    edgeY <- structure(lapply(fromY, function(k) {
-              df <- diEdgeSetToDataFrame(y@edge_sets[[k]],nodes(x))
-              edge_set <- .makeMDEdgeSet(es_name = 1, es = df,
+    edgeY <- if(length(fromY) >0) {
+                sapply(fromY, function(k) {
+                    df <- diEdgeSetToDataFrame(y@edge_sets[[k]],nodes(y))
+                    edge_set <- .makeMDEdgeSet(es_name = 1, es = df,
                                 is_directed = theMode[k], nodes = theNodes,
                                 ignore_dup_edges = FALSE)
-              edge_set@edge_attrs <- y@edge_sets[[k]]@edge_attrs
-              edge_set@weights <- y@edge_sets[[k]]@weights
-              edge_set
-            }), names = fromY)
+                    edge_set@edge_attrs <- y@edge_sets[[k]]@edge_attrs
+                    edge_set@weights <- y@edge_sets[[k]]@weights
+                    list(edge_set)
+                })
+             } else { list()}
 
-    new_edge_sets <- structure(lapply(eg, function(k) {
+    new_edge_sets <- sapply(eg, function(k) {
                       df1 <- diEdgeSetToDataFrame(x@edge_sets[[k]],nodes(x))
                       df2 <- diEdgeSetToDataFrame(y@edge_sets[[k]],nodes(y))
-                      .edgeUnion(x@edge_sets[[k]], y@edge_sets[[k]], df1, df2, 
-                              theNodes, funList[[k]])         
-                     }), names = eg)
-    new("MultiGraph", edge_sets = c(new_edge_sets, edgeX, edgeY), 
+                      list(.edgeUnion(x@edge_sets[[k]], y@edge_sets[[k]], df1, df2, 
+                              theNodes, edgeFun[[k]]))         
+                     })
+    mg <- new("MultiGraph", edge_sets = c(new_edge_sets, edgeX, edgeY), 
             nodes = theNodes)
+    mg@nodeData <- .nodeUnion(x@nodeData, y@nodeData,
+                          nodes(x), nodes(y), nodes(mg), nodeFun)
+    mg
 })
 
 .edgeIntersect <- function(e1, e2, funList) {
