@@ -50,7 +50,7 @@ export(graph.par, graph.par.get, graphRenderInfo,
 export(graphBAM)
 
 
-export(MultiGraph, eweights, edgeSetIntersect0, extractFromTo, subsetEdgeSets,
+export(MultiGraph, eweights, edgeSetIntersect0, edgeSetUnion0, extractFromTo, subsetEdgeSets,
        extractGraphAM, extractGraphBAM, mgEdgeData, "mgEdgeData<-")
 
 S3method(write,tlp)
