@@ -10,6 +10,7 @@
 \alias{MultiGraph}
 \alias{eweights}
 \alias{edgeSetIntersect0}
+\alias{edgeSetUnion0}
 \alias{subsetEdgeSets}
 \alias{extractFromTo}
 \alias{extractFromTo,MultiGraph-method}
@@ -63,7 +64,8 @@
 \usage{
 MultiGraph(edgeSets, nodes = NULL, directed = TRUE, ignore_dup_edges = FALSE)
 eweights(object, names.sep = NULL)
-edgeSetIntersect0(g)
+edgeSetIntersect0(g, edgeFun = NULL)
+edgeSetIntersect0(g, edgeFun = NULL)
 extractGraphAM(g, edgeSets)
 extractGraphBAM(g, edgeSets)
 }
@@ -118,9 +120,11 @@ extractGraphBAM(g, edgeSets)
     is an error.  When set to \code{TRUE} duplicate edges are ignored.
     Edge weight values are ignored when determining duplicates.  This is
     most useful for graph import and conversion.
-    
   }
-
+  \item{edgeFun}{
+    A user specified named list of functions to resolve edge attributes in a union
+    or intersection operation
+  } 
 
 }
 \section{Constructors}{
@@ -166,11 +170,19 @@ extractGraphBAM(g, edgeSets)
 
     \item{edgeSetIntersect0}{Return a new \code{MultiGraph} object
     representing the intersection of edges across all edge sets within
-    \code{g}.  The return value will have zero edge sets if the edge
+    \code{g}.  The return value will have a single edge set if the edge
     sets in \code{g} are disjoint.  Otherwise, there will be a single
     edge set containing the shared edges.  The node set is preserved.
-    Edge weights and edge attributes are dropped.}
-   
+    Edge weights and edge attributes are transferred over to the output if they
+    have the same value, else user has the option of providing a function
+    to resolve the conflict.}
+
+    \item{edgeSetUnion0}{Return a new \code{MultiGraph} object
+    representing the union of edges across all edge sets within
+    \code{g}.  The node set is preserved.  Edge weights and edge attributes are
+    transferred over to the output if they have the same value, else user has
+    the option of providing a function to resolve the conflict.}
+
     \item{\code{graphIntersect(x, y, nodeFun, edgeFun)}}{
     When given two \code{MultiGraph} objects, \code{graphIntersect}
     returns a new \code{MultiGraph} containing the nodes and edges in
