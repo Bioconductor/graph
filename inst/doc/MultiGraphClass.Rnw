@@ -1,0 +1,288 @@
+%\VignetteIndexEntry{Graph}
+%\VignetteDepends{graph}
+%\VignetteKeywords{Graph}
+%\VignettePackage{graph}
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\textwidth=6.2in
+\textheight=8.5in
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+\newcommand{\classdef}[1]{%
+  {\em #1}
+}
+
+\begin{document}
+\title{MultiGraph representations in the graph package.}
+
+\maketitle
+
+\section{Introduction}
+
+The \Rclass{MultiGraph} class can be used to represent graphs that share a single
+node set and have have one or more edgesets, each \Robject{edgeSet} representing
+ a different type of interaction between the nodes. An \Robject{edgeSet} can be 
+described as representing the relationship between a set of from-nodes and to-nodes 
+which can either be directed or undirected. A numeric value (weight) indicates 
+the strength of interaction between the connected edges. 
+
+In the implementation of the \Rclass{MultiGraph} class a default value of 1
+is assumed for the weight if the user does not provide a value. Self loops are 
+permitted in the \Rclass{MultiGraph} class representation. (ie the from-node is the 
+same as the to-node)
+
+The \Rclass{MultiGraph} class supports the handling of arbitary node and edge 
+attributes. These attributes are  stored separately from the edge weights to 
+facilitate efficient edge weight computation.
+
+\section{Getting Started}
+
+We shall load the \Rpackage{graph} and \Rpackage{RBGL} libraries that we will be
+using. We  will then create a \Rclass{MultiGraph} object and then spend some time 
+examining some of the different functions that can be applied to \Rclass{MultiGraph}
+objects.
+
+<<loadLibs>>=
+library(graph)
+library(RBGL)
+@
+
+We proceed to construct a \Rclass{MultiGraph} object with directed \Robject{edgeSets} to 
+represent the flight connections of airlines Alaska, Delta, United and American
+that fly between the cities Baltimore, Denver, Houston, Los Angeles, 
+Seattle and San Francisco.
+
+For each airline, we create a \Rclass{data.frame} containing the originating city,
+ the destination city and the fare. 
+
+<<createDataFrames>>=
+ft1 <- data.frame(from = c("SEA", "SFO", "SEA", "LAX", "SEA"),
+                       to = c("SFO", "LAX", "LAX", "SEA", "DEN"),
+                   weight = c( 90, 96, 124, 115, 259))
+
+ft2 <- data.frame(
+         from = c("SEA", "SFO", "SEA", "LAX", "SEA", "DEN", "SEA", "IAH", "DEN"),
+           to = c("SFO", "LAX", "LAX", "SEA", "DEN", "IAH", "IAH", "DEN", "BWI"),
+        weight= c(169, 65, 110, 110, 269, 256, 304, 256, 271))
+
+ft3 <- data.frame( 
+   from = c("SEA", "SFO", "SEA", "LAX", "SEA", "DEN", "SEA", "IAH", "DEN", "BWI"),
+    to  = c("SFO", "LAX", "LAX", "SEA", "DEN", "IAH", "IAH", "DEN", "BWI", "SFO"),
+ weight = c(237, 65, 156, 139, 281, 161, 282, 265, 298, 244))
+
+ft4 <- data.frame( 
+    from = c("SEA", "SFO", "SEA", "SEA", "DEN", "SEA", "BWI"),
+     to  = c("SFO", "LAX", "LAX", "DEN", "IAH", "IAH", "SFO"),
+  weight = c(237, 60, 125, 259, 265, 349, 191))
+@
+
+These data frames are then passed to \Rclass{MultiGraph} class constructor as a 
+named \Robject{list}. The directed argument indicates that the graph we want to 
+create is directed for the four \Robject{edgeSets}.
+
+<<createMG>>= 
+esets <- list(Alaska = ft1, United = ft2, Delta = ft3, American = ft4)
+mg <- MultiGraph(esets, directed = TRUE)
+mg
+@
+    
+The nodes (cities) of the \Rclass{MultiGraph} object can be obtained by using the 
+\Rmethod{nodes} method.
+<<cities>>=
+nodes(mg)
+@
+   
+To find the fares for all the flights that originate from SEA for the Delta 
+airline, we can use the \Rmethod{mgEdgeData} method.
+
+<<DeltafromSeattle>>=
+mgEdgeData(mg, "Delta", from = c("SEA"), attr = "weight")
+@
+
+We proceed to add some node attributes to the \Robject{MultiGraph} using the 
+\Rfunction{nodeData} method. We set the node attribute shape for Seattle to
+\Rcode{triangle} and that for the cities that connect with Seattle to 
+\Rcode{circle}.
+
+<<nodeData>>=
+nodeData(mg, n = c("SEA", "DEN", "IAH", "LAX", "SFO"), attr = "shape")  <- 
+    c("triangle", "circle", "circle", "circle", "circle")
+@
+
+The node attribute shape for cities we have not specifically assigned a value 
+(such as BWI) gets assigned a default value of NA.
+
+<<nodeDataVal>>=
+nodeData(mg,  attr = "shape")  
+@
+
+We then update the edge attribute \Rcode{color} for the Delta airline flights
+that connect with Seattle to "green" and for the remaining Delta flights that
+connect to other destination in the MultiGraph to "red" using the 
+\Rfunction{mgEdgeData} replacement methods.
+
+<<edgeDataVal>>=
+mgEdgeData(mg, "Delta", attr = "color")   <- "red"
+mgEdgeData(mg, "Delta", from = c("SEA", "SEA", "SEA", "SEA"), 
+        to = c("DEN", "IAH", "LAX", "SFO"), attr = "color")   <- "green"
+@
+
+<<mgEdgeDataVal>>=
+mgEdgeData(mg, "Delta", attr = "color")
+@
+
+We can create a subset of the MultiGraph with only edgeSets for Alaska, United and 
+Delta using the \Rmethod{subsetEdgeSets} method.
+
+<<subsetMG>>=
+g <- subsetEdgeSets(mg, c("Alaska", "United", "Delta"))
+
+@
+
+We proceed to find out the lowest fares for Alaska, United and Delta along the 
+routes common to them.  To do this, we make use of the \Rmethod{edgeSetIntersect0}
+method. This function computes the intersection of all the edgesets in a MultiGraph.
+In addition, we also pass in a named list of function corresponding to name of the 
+attributes that are to be intersected using the \Rmethod{edgeSetIntersect0} method. 
+In our example, we pass in a named list containing the \Rmethod{weight} function as 
+input to the \Rmethod{edgeSetIntersect0} method. The \Rmethod{weight} function
+returns the minimum of two weights for handling the weight attribute during the 
+intersection process.
+
+<<intersecmg>>=
+weightFun <- function(x,y) {
+  return(min(x,y))
+}
+edgeFun <- list( weight = weightFun)
+gInt <- edgeSetIntersect0(g, edgeFun = edgeFun)
+gInt
+@
+
+The edgeSet created after the \Rmethod{edgeSetIntersect0} operation is named by 
+concatenating the names of the edgeSets passed as input to the function.
+  
+<<intersectWeights>>=
+mgEdgeData(gInt, "Alaska_United_Delta", attr= "weight")
+@
+
+\section{Mouse data from SAGE}
+
+The C57BL/6J and C3H/HeJ mouse strains exhibit different cardiovascular and 
+metabolic phenotypes on the  hyperlipidemic apolipoprotein E (Apoe) null background.
+The interaction data for the genes that could potentially contribute to these 
+differences has been included in the \Rpackage{graph} package in the form of a 
+from-gene, to-gene, strength of interaction(weight) \Robject{data.frame}. Adipose, 
+brain, liver and muscle tissue samples were studied in male and female mice.
+
+We proceed to load the data for male and female mice. 
+
+<<loadData>>=
+data("esetsFemale")
+data("esetsMale")
+names(esetsFemale)
+head(esetsFemale$brain)
+@
+
+The \Robject{esetsFemale} and \Robject{esetsMale} objects are a named \Robject{list}
+of data frames corresponding to the data obtained from adipose, brain, liver and 
+muscle tissues for the male and female mice that were studied. Each data frame has a from, to 
+and a weight column corresponding to the from and to genes that were studied and 
+weight representing the strength of interaction of the corresponding genes.
+
+We proceed to create \Rclass{MultiGraph} objects s for the male and female data sets 
+by making use of the \Rclass{MultiGraph} constructor, which directly accepts 
+a named list of data frames as the input and creates a Multigraph with edgeSets
+corresponding to the names of the data frames. 
+
+<<createMultiGraphs>>=
+female  <- MultiGraph(edgeSets = esetsFemale, directed = TRUE)
+male  <- MultiGraph(edgeSets = esetsMale, directed = TRUE )
+male
+female
+@
+
+We then select a particular gene of interest in this network and proceed to 
+identify its neighboring genes connected to this gene in terms of the maximum sum
+of weights along the path that connects the genes.
+
+We create \Rclass{MultiGraph} objects for the male and female \Robject{MultiGraphs}
+containing the union of their respective edgeSets. For the union operation, we 
+select the maximum value of the weight attribute.
+
+
+<<edgeUnionDistance>>=
+weightFun <- function(x,y) {
+     return(max(x,y))
+  }
+edgeFun <- list( weight = weightFun)
+maleUnion <- edgeSetUnion0(male, edgeFun = edgeFun)
+femaleUnion <- edgeSetUnion0(female, edgeFun = edgeFun)
+@
+ We can identify the genes connected to gene "10024393146" as well as the sum of 
+the weights along the path that connect the identified genes using the function 
+\Rfunction{bellman.ford.sp.mg} function. 
+
+<<edgeDistance>>=
+maleWt <- graph:::bellman.ford.sp.mg(maleUnion, start = c("10024393146"))$distance
+femaleWt <- graph:::bellman.ford.sp.mg(femaleUnion, start = c("10024393146"))$distance
+maleWt <- maleWt[maleWt != Inf]
+femaleWt <-  femaleWt[femaleWt != Inf]
+head(maleWt)
+femaleWt
+@
+
+We are interested in identifying 6 genes that have the maximum weight along the 
+path from gene 10024393146. For the subset of genes we identifed, we add node
+attributes to our original \Robject{MultiGraph} objects. The nodes with the 
+maximum weight along the path are assigned a color attribute "red" and a shape 
+attribute "circle". For the gene 10024393146, we add a node color attribute of 
+"green" and a shape attribte of "square".
+
+<<nodeAttr>>=
+nodeMale <- names(sort(maleWt, decreasing = TRUE)[1:6])
+nodeMale
+nodeFemale <- names(sort(femaleWt, decreasing = TRUE)[1:6])
+nodeFemale
+
+nodeData(male , n = c("10024393146"), attr = "color" ) <- c("green")
+nodeData(male , n = c(nodeMale), attr = "color" ) <- c("red")
+
+nodeData(female , n = c("10024393146"), attr = "color" ) <- c("green")
+nodeData(female , n = c(nodeFemale), attr = "color" ) <- c("red")
+
+nodeData(male , n = "10024393146", attr = "shape" ) <- "square"
+nodeData(male , n = nodeMale, attr = "shape" ) <- "circle"
+
+nodeData(female , n = "10024393146", attr = "shape" ) <- "square"
+nodeData(female , n = nodeFemale, attr = "shape" ) <- "circle"
+@
+
+Our \Robject{Multigraph} objects now contain the required node attributes for the
+subset of genes that we have narrowed our selection to.
+
+For the \Robject{MultiGraph} objects for male and female, we are also interested in the
+genes that are common to both \Robject{MultiGraph}s. This can be calculated using
+the \Rfunction{graphIntersect} method.
+
+<<nodeSub>>=
+resInt <- graphIntersect(male, female)
+resInt
+@
+
+The operations we have dealt with so far only deal with manipulation of \Rclass{MultiGraph}
+objects. Additional functions will need to be implemented for the visualization
+ of the \Rclass{MultiGraph} objects.
+
+\end{document}
+
+
+
