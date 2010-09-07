@@ -345,7 +345,7 @@ test_edgeSetIntersect0_directed_1 <- function()
     checkEquals(nodes(g), nodes(gi))    # original nodes
     checkEquals(c(e1_e2=2L), numEdges(gi)[1L])
     checkEquals("e1_e2", names(numEdges(gi)))
-    w <- c(1L, 1L)
+    w <- c(as.numeric(NA), as.numeric(NA))
     names(w) <- c("a=>b", "a=>c")
     checkEquals(list(e1_e2=w), eweights(gi, "=>"))
 }
@@ -353,7 +353,7 @@ test_edgeSetIntersect0_directed_1 <- function()
 test_edgeSetIntersect0_random <- function()
 {
     make_data <- function(nsets, nn, ne, ns,
-                          type=c("directed", "undirected", "mixed")) {
+                          type=c("directed", "undirected")) {
         ## nsets: number of edge sets
         ## nn: number of nodes
         ## ne: number of edges
@@ -388,7 +388,7 @@ test_edgeSetIntersect0_random <- function()
         checkEquals(nodes(d$g), nodes(gi))
     }
 
-    for (t in c("directed", "undirected", "mixed")) {
+    for (t in c("directed", "undirected")) {
         for (i in 1:10) {
             do_test(make_data(2, 10, 10, 3, type = t))
             do_test(make_data(3, 10, 10, 3, type = t))
