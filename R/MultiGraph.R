@@ -357,33 +357,99 @@ randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N),
 
 oneWeights <- function(x) rep(1L, nrow(x))
 
-edgeSetIntersect0 <- function(g)
+edgeSetIntersect0 <- function(g, edgeFun = NULL)
 {
     edge_sets <- g@edge_sets
     n_sets <- length(edge_sets)
     if (n_sets < 2L) return(g)
-
-    all_directed <- all(isDirected(g))
-    if (!all_directed) edge_sets <- lapply(edge_sets, ugraph)
-    klass <- if (all_directed) "DiEdgeSet" else "UEdgeSet"
-
-    bv <- edge_sets[[1L]]@bit_vector
-    keepAttrs <- attributes(bv)
-    for (i in seq.int(2L, n_sets)) {
-        bv <- bv & edge_sets[[i]]@bit_vector
+ 
+    nms <- names(edge_sets)
+    nName <- paste( nms, collapse = "_")
+    funList <- structure(list(edgeFun), names = nName)
+    directed <- isDirected(g)
+    klass <- if (all(directed)) "DiEdgeSet" else "UEdgeSet"
+   
+    if(!( all(directed) || all(!directed))) {
+        stop("All edges must either be directed or undirected")
     }
-    attributes(bv) <- keepAttrs
-    n_edges <- attr(bv, "nbitset") <- .Call(graph_bitarray_sum, bv)
-    if (n_edges > 0) {
-        new_edge_sets <- list(new(klass, bit_vector = bv,
-                                  weights = rep(1L, n_edges),
-                                  edge_attrs = list()))
-        names(new_edge_sets) <- paste(names(edge_sets), collapse = "_")
+    
+    g1 <- subsetEdgeSets(g,nms[1])
+    names(g1@edge_sets) <- nName
+    for ( i in seq.int(2L, n_sets)) {
+        g2 <- subsetEdgeSets(g, nms[i])
+        names(g2@edge_sets) <- nName
+        g1 <- graphIntersect(g1, g2, edgeFun = funList)
+    }
+    n_edges <- attr(g1@edge_sets[[1L]], "nbitset") <- .Call(graph_bitarray_sum, 
+            g1@edge_sets[[1L]]@bit_vector )
+    if(n_edges >0) {
+        return(g1)
     } else {
         new_edge_sets <- list()
+        return(new("MultiGraph", edge_sets = new_edge_sets, nodes = nodes(g1)))
     }
-    new("MultiGraph", edge_sets = new_edge_sets, nodes = nodes(g))
 }
+
+edgeSetUnion0 <- function(g, edgeFun = NULL)
+{
+    edge_sets <- g@edge_sets
+    n_sets <- length(edge_sets)
+    if (n_sets < 2L) return(g)
+    nms <- names(edge_sets)
+    nName <- paste( names(edge_sets), collapse = "_")
+    
+    funList <- structure(list(edgeFun), names = nms[1])
+
+    directed <- isDirected(g)
+    klass <- if (all(directed)) "DiEdgeSet" else "UEdgeSet"
+   
+    if(!( all(directed) || all(!directed))) {
+        stop("All edges must either be directed or undirected")
+    }
+    
+    g1 <- subsetEdgeSets(g,nms[1])
+    names(g1@edge_sets) <- nName
+    for ( i in seq.int(2L, n_sets)) {
+        g2 <- subsetEdgeSets(g, names(g@edge_sets)[i])
+        names(g2@edge_sets) <- nName
+        g1 <- graphUnion(g1, g2, funList)
+    }
+
+    n_edges <- attr(g1@edge_sets[[1L]], "nbitset") <- .Call(graph_bitarray_sum,
+            g1@edge_sets[[1L]]@bit_vector )
+    if(n_edges >0) {
+        return(g1)
+    } else {
+        new_edge_sets <- list()
+        return(new("MultiGraph", edge_sets = new_edge_sets, nodes = nodes(g1)))
+    }
+
+
+}
+ 
+bellman.ford.sp.mg <- function(g, start = nodes(g)[1], edgeFun = NULL) {
+    nv <- length(nodes(g))
+    mg <- edgeSetUnion0(g, edgeFun)
+    bitvec <- mg@edge_sets[[1]]@bit_vector
+    em <- t(.Call(graph_bitarray_rowColPos, bitvec))
+    ne <- ncol(em)
+    eW <- unlist(eweights(mg)[[1]])
+    if (is.character(start)) 
+        s <- match(start, nodes(g), 0)
+    else s <- start
+    if (s <= 0 || s > nv) 
+        stop("start not found in nodes of g")
+    ans <- .Call("BGL_bellman_ford_shortest_paths", as.integer(nv), 
+                 as.integer(ne), as.integer(em - 1), 
+                 as.double(eW), as.integer(s - 1), PACKAGE = "RBGL")
+    ans[[2]][ans[[2]] >= .Machine$double.xmax] <- Inf
+                ans[[3]] <- ans[[3]] + 1
+                names(ans[[2]]) <- names(ans[[3]]) <- nodes(g)
+                list(`all edges minimized` = ans[[1]], distance = ans[[2]], 
+                        penult = ans[[3]], start = nodes(g)[s])
+}
+
+
 
 edgeUnion <- function(object, weightFun = NULL)
 {
