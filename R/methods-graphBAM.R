@@ -480,11 +480,32 @@ setMethod("clearNode",
             stop("operation not supported")
         })
 
+
 setMethod("removeNode",
         signature(node="character", object="graphBAM"),
         function(node, object) {
-            stop("operation not supported")
+            nn <- nodes(object)
+            if(!all(node %in% nn))
+                stop("nodes specified do not exist in object")
+            df <- extractFromTo(object)
+            indx <- ! ( (as.character(df[,"from"])  %in% node) |
+            (as.character(df[,"to"])  %in% node))
+            nIndx <- !(nn %in% node)
+            bam <- graphBAM(df[indx,], nodes = nn[nIndx] , 
+                    edgemode = edgemode(object))
+            bam@edgeSet@weights <- object@edgeSet@weights[indx]
+            bam@edgeSet@edge_attrs <- lapply(object@edgeSet@edge_attrs, 
+                  function(x) {
+                      x[indx]   
+                  })
+            bam@nodeData@data <- lapply(object@nodeData@data, function(x){
+                                            x[nIndx]
+                    })
+            bam
+
         })
+
+
 
 setMethod("extractFromTo", "graphBAM",
           function(g) {
