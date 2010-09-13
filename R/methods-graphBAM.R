@@ -501,11 +501,11 @@ setMethod("removeNode",
             bam@nodeData@data <- lapply(object@nodeData@data, function(x){
                                             x[nIndx]
                     })
+
+            bam@renderInfo <- object@renderInfo
             bam
 
         })
-
-
 
 setMethod("extractFromTo", "graphBAM",
           function(g) {
