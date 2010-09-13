@@ -84,6 +84,7 @@ graphBAM(df, nodes=NULL, edgemode="undirected", ignore_dup_edges = FALSE)
   
   \item{nodes}{
 
+
     A character vector of node labels.  Use this to add degree zero
     nodes to the graph.  If \code{NULL}, the set of nodes found in
     \code{from} and \code{to} will be used.
@@ -187,7 +188,8 @@ Class \code{"\linkS4class{graph}"}, directly.
     }
     
     \item{\code{removeNode(node, object)}}{
-      Operation not supported.
+     Returns a new \code{graphBAM} object with the specified node removed.
+     Node and edge attributes corresponding to that node are also removed.
     }
     
     \item{\code{edgeData(self, from, to, attr)}}{
@@ -290,6 +292,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     k  <- graphIntersect(g,g)
     k <- graphUnion(g,g)
     e <- removeEdgesByWeight(g,lessThan= 3.0)
+    f <- removeNode("a", g)
     g
     gd
 }
