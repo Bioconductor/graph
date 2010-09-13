@@ -310,11 +310,11 @@ fromToList <- function(object)
     })
 }
 
-subsetEdgeSets <- function(object, expr)
-{
-    new("MultiGraph", nodes = object@nodes,
-        edgeAttrs = object@edgeAttrs[expr])
-}
+#subsetEdgeSets <- function(object, expr)
+#{
+#    new("MultiGraph", nodes = object@nodes,
+#        edgeAttrs = object@edgeAttrs[expr])
+#}
 
 extractGraph <- function(object, which)
 {
@@ -427,7 +427,7 @@ edgeSetUnion0 <- function(g, edgeFun = NULL)
 
 }
  
-bellman.ford.sp.mg <- function(g, start = nodes(g)[1], edgeFun = NULL) {
+bellman.ford.sp.mg <- function(g,e,  start = nodes(g)[1], edgeFun = NULL) {
     nv <- length(nodes(g))
     mg <- edgeSetUnion0(g, edgeFun)
     bitvec <- mg@edge_sets[[1]]@bit_vector
@@ -557,18 +557,22 @@ setMethod("subGraph", signature(snodes="character", graph="MultiGraph"),
 })
 
 extractGraphAM <- function(g, edgeSets) {
+    if(missing(edgeSets))
+        edgeSets <- names(g@edge_sets)
+    if (!all(nzchar(edgeSets)) || any(is.na(edgeSets)) ||
+        !(all(edgeSets %in% names(g@edge_sets))))
+        stop("edgeSet specified is invalid")
+
     nds <- nodes(g)
     drct <- isDirected(g)
-    ## FIXME: validate that edgeSets is a valid subset as is
-    ## done in subsetEdgeSets
     esets <- if (missing(edgeSets)) g@edge_sets else g@edge_sets[edgeSets]
     nms <- names(esets)
     names(nms) <- nms
     lapply(nms, function(x) {
         mat <- edgeSetToMatrix(nds, esets[[x]], drct[[x]])
-        new("graphAM", adjMat=mat,
+        bam <- new("graphAM", adjMat=mat,
             edgemode = if(drct[[x]]) "directed" else "undirected",
-            values= list(weight=1))
+            values= list(weight = esets[[x]]@weights))
     })
 }
 
@@ -788,8 +792,13 @@ setMethod("graphUnion", c("MultiGraph", "MultiGraph"),
 }
 
 extractGraphBAM <- function(g, edgeSets) {
+    if(missing(edgeSets))
+        edgeSets <- names(g@edge_sets)
+    if (!all(nzchar(edgeSets)) || any(is.na(edgeSets)) ||
+        !(all(edgeSets %in% names(g@edge_sets))))
+        stop("edgeSet specified is invalid")
     nn <- nodes(g)
-    esets <- if (missing(edgeSets)) g@edge_sets else g@edge_sets[edgeSets]
+    esets <-  g@edge_sets[edgeSets]
     df_empty <- data.frame(from = character(0), to = character(0),
             weight = numeric(0))
     lapply(esets, function(x) {
@@ -797,6 +806,7 @@ extractGraphBAM <- function(g, edgeSets) {
                 bam <- graphBAM(df_empty, nodes = nn, edgemode = edgeMode,
                         ignore_dup_edges = TRUE)
                 bam@edgeSet <- x
+                bam@nodeData@data <- g@nodeData
                 bam
             })
 }
