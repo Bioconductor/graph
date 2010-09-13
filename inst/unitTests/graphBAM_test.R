@@ -1335,9 +1335,31 @@ test_graphBAM_nodeUnion_Attributes <- function(use.factors=TRUE){
 }
 
 
+test_graphBAM_removeNode <- function(){
 
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(2.2, 2.0, 0.4, 0.2)
+    df <- data.frame(from, to, weight)
+    g <- graphBAM(df, edgemode = "directed")
+    nodeData(g, n = c("a","b", "c", "d", "x", "y"), attr = "name") <-  
+             c("a", "b", "c", "d", "x", "y")
+    edgeData(g, from = from, to = to , attr = "name") <- 
+            paste(from, to , sep= "")
 
+    res <- removeNode(c("x","b"), g)
+    current <- nodeData(res, attr = "name")
+    target <- as.list(structure( c("a", "c", "d", "y"), names =  c("a", "c",
+                            "d", "y")))
+    checkEquals(target, current)
+     
+    current <- edgeData(res, attr = "name")
+    target <-  as.list(structure( "dy", names =  paste("d", "y", sep = "|")))
+    checkEquals(current, target)                       
 
-
-
-
+    res <- removeNode(c("x", "a"), g)
+    current <- edgeData(res, attr = "name")
+    target <-  as.list(structure( c("bc", "dy"), names =  paste(c("b", "d"),
+                            c("c","y"), sep = "|")))
+    checkEquals(target, current)
+ }
