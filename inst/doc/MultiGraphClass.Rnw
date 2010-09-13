@@ -22,11 +22,175 @@
 }
 
 \begin{document}
-\title{MultiGraph representations in the graph package.}
-
+\title{graphBAM and MultiGraph classes for representation of graphs.}
 \maketitle
 
-\section{Introduction}
+\section{graphBAM class}
+
+The \Rclass{graphBAM} has been created as a more efficient replacement for the 
+\Rclass{graphAM} class in the \Rpackage{graph} package. The adjacency matrix in 
+the \Rclass{graphBAM} class is represented as a bit array using a \Rcode{raw}
+vector. This significantly reduces the memory occupied by graphs having a large 
+number of nodes. The bit vector representation also provides advantages in terms
+of performing operations such as intersection or union of graphs.
+
+We first load the required packages \Rpackage{graph} and \Rpackage{RBGL} required 
+for demonstrating some of the operations supported by the \Rclass{graphBAM} class.
+
+<<loadLibs>>=
+library(graph)
+library(RBGL)
+@
+
+One  of the arguments \Rcode{df} to the \Rclass{graphBAM} constructor is a \Robject{data.frame}
+containing three columns: "from","to" and "weight", each row in the \Robject{data.frame} representing an edge in 
+the graph. The \Rcode{from} and \Rcode{to} columns can be character vectors or 
+factors, while the \Rcode{weight} column must be a numeric vector. The argument
+\Rcode{nodes} are calculated from the unique names in the \Rcode{from} and \Rcode{to}
+columns of the \Robject{data.frame}. The argument \Rcode{edgeMode} should be a 
+character vector, either "directed" or "undirected" indicating whether the graph 
+represented should be directed or undirected respectively.
+
+We proceed to represent a simple graph using the \Rclass{graphBAM} class. Our example 
+is a directed graph representing airlines flying between different cities. In this 
+case, cities represent the nodes of the graph and each edge represents a flight 
+from an originating city (\Rcode{from}) to the destination city (\Rcode{to}). The
+weight represents the fare for flying between the \Rcode{from} and \Rcode{to} 
+cities.
+
+<<creategraphBAM>>=
+df <- data.frame(from = c("SEA", "SFO", "SEA", "LAX", "SEA"),
+                   to = c("SFO", "LAX", "LAX", "SEA", "DEN"),
+               weight = c( 90, 96, 124, 115, 259))
+g <- graphBAM(df, edgemode = "directed")
+g 
+@
+
+The cities (nodes) included in our \Rclass{graph} object  as well as the stored 
+fares(\Rcode{weight}) can be obtained using the \Rmethod{nodes} and 
+\Rmethod{edgeWeights} methods respectively.
+
+<<nodeAndWeights>>=
+nodes(g)
+edgeWeights(g, index = c("SEA", "LAX"))
+@
+
+We can add new nodes or edges to the graph using the \Rmethod{addNode} and 
+\Rmethod{addEdge} methods. For our example we first add a new city "IAH" to 
+our graph. We then add a flight connection between "DEN" and "IAH" having a fare
+of \$120.
+
+<<addNodeEdge>>=
+g <- addNode("IAH", g)
+g
+g <- addEdge(from = "DEN", to = "IAH", graph = g, weight = 120)
+g
+@
+
+Similarly edges and nodes can be removed from the graph using the 
+\Rmethod{removeNode} and \Rmethod{removeEdge} methods respectively. We proceed to 
+remove the flight connection from "DEN" to "IAH" and subsequently the node "IAH"
+
+<<removeEdge>>=
+g <- removeEdge(from ="DEN", to = "IAH", g)
+g
+#g <- removeNode(node = "IAH", g)
+g
+@
+
+We can create a subgraph with only the cities  "DEN", "IAH", "LAX" and "SEA" 
+using the \Rmethod{subGraph} method.
+
+<<subGraph>>=
+g <- subGraph(snodes = c("DEN", "IAH", "LAX", "SEA"), g)
+g
+@
+
+We can extract the \Rcode{from}-\Rcode{to} relationships for our graph
+using the \Rmethod{extractFromTo} method.
+
+<<fromTo>>=
+extractFromTo(g)
+@
+
+\section{Mice gene interaction data for brain tissue (SAGE data)}
+
+The C57BL/6J and C3H/HeJ mouse strains exhibit different cardiovascular and 
+metabolic phenotypes on the  hyperlipidemic apolipoprotein E (Apoe) null background.
+The interaction data for the genes from adipose, brain, liver and muscle tissue 
+samples from male and female mice were studied. This interaction data for the 
+various genes is included in the \Rpackage{graph} package as a list of 
+\Robject{data.frame}s containing information for \Rcode{from-gene}, \Rcode{to-gene} 
+and the strength of interaction \Rcode{weight} for each of the tissues studied.
+
+We proceed to load the data for male and female mice. 
+
+<<loadData1>>=
+data("esetsFemale")
+data("esetsMale")
+@
+
+We are interested in studying the interaction data for the genes in the  brain 
+tissue  and hence proceed to represent this data as a graph using \Rclass{graphBAM} 
+objects for male and female mice data.
+
+<<dataFrames>>=
+dfMale <- esetsMale[["brain"]]
+dfFemale <- esetsFemale[["brain"]]
+head(dfMale)
+@
+
+<<creategraphBAMs>>=
+male <- graphBAM(dfMale, edgemode = "directed")
+female <- graphBAM(dfFemale, edgemode = "directed")
+@
+
+We proceed to identify genes that are connected and are common to both male and 
+female graphs for the brain tissue and hence proceed to perform a graph intersection 
+operation using the \Rmethod{graphIntersect} method. Since edges can have 
+different values of the weight attribute, we would like the result to have the 
+sum of the weight attribute in the male and female graphs. We pass in
+\Rcode{sum} as the function for handling weights as the \Rcode{edgeFun} argument
+for the \Rmethod{graphIntersect} method. The \Rcode{edgeFun} argument should be 
+passed a list of named functions corresponding to the edge attributes to be 
+handled during the intersection process.
+
+<<bamIntersect>>=
+intrsct <- graphIntersect(male, female, edgeFun=list(weight =  sum))
+intrsct
+@
+
+If node attributes were present in the \Robject{graphBAM} objects, a list of
+named function can be passed as input to the \Rcode{graphIntersect} method for 
+handling them during the intersection process.
+
+We proceed to remove edges from the \Robject{graphBAM} result we just calculated
+with a weight attribute less than a numeric value of 0.8 using the
+\Rmethod{removeEdgesByWeight} method.
+
+<<removeEdges>>=
+resWt <- removeEdgesByWeight(intrsct, lessThan = 1.5)
+@
+
+Once we have narrowed down to the edges that we are interested in, we would like
+to change the color attribute for these edges in our original \Robject{graphBAM}
+objects for the male and female graphs to "red".
+
+To do that we first obtain the from - to relationship using the
+\Rmethod{extractFromTo} method and then make use of the \Rmethod{edgeData} method to
+update the "color" edge attribute.
+
+<<updateColor>>=
+ftSub <- extractFromTo(resWt)
+edgeData(male, from = as.character(ftSub[,"from"]), 
+        to = as.character(ftSub[,"to"]), attr = "color") <- "red"
+
+edgeData(female, from = as.character(ftSub[,"from"]), 
+        to = as.character(ftSub[,"to"]), attr = "color") <- "red"
+
+@
+
+\section{MultiGraphs - Introduction}
 
 The \Rclass{MultiGraph} class can be used to represent graphs that share a single
 node set and have have one or more edgesets, each \Robject{edgeSet} representing
@@ -50,11 +214,6 @@ We shall load the \Rpackage{graph} and \Rpackage{RBGL} libraries that we will be
 using. We  will then create a \Rclass{MultiGraph} object and then spend some time 
 examining some of the different functions that can be applied to \Rclass{MultiGraph}
 objects.
-
-<<loadLibs>>=
-library(graph)
-library(RBGL)
-@
 
 We proceed to construct a \Rclass{MultiGraph} object with directed \Robject{edgeSets} to 
 represent the flight connections of airlines Alaska, Delta, United and American
