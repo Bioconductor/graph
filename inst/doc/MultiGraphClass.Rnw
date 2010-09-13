@@ -94,7 +94,7 @@ remove the flight connection from "DEN" to "IAH" and subsequently the node "IAH"
 <<removeEdge>>=
 g <- removeEdge(from ="DEN", to = "IAH", g)
 g
-#g <- removeNode(node = "IAH", g)
+g <- removeNode(node = "IAH", g)
 g
 @
 
@@ -102,7 +102,7 @@ We can create a subgraph with only the cities  "DEN", "IAH", "LAX" and "SEA"
 using the \Rmethod{subGraph} method.
 
 <<subGraph>>=
-g <- subGraph(snodes = c("DEN", "IAH", "LAX", "SEA"), g)
+g <- subGraph(snodes = c("DEN","LAX", "SEA"), g)
 g
 @
 
