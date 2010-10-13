@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Graph}
+%\VignetteIndexEntry{graphBAM and MultiGraph classes}
 %\VignetteDepends{graph}
 %\VignetteKeywords{Graph}
 %\VignettePackage{graph}
@@ -22,7 +22,7 @@
 }
 
 \begin{document}
-\title{graphBAM and MultiGraph classes in the graph package.}
+\title{graphBAM and MultiGraph classes.}
 \author{N. Gopalakrishnan}
 \maketitle
 
