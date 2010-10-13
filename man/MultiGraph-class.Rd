@@ -189,20 +189,38 @@ extractGraphBAM(g, edgeSets)
     common between the two graphs.  The intersection is computed by
     first finding the intersection of the node sets, obtaining the
     induced subgraphs, and finding the intersection of the resulting
-    edge sets. 
+    edge sets. The corresponding named edgeSets in \code{x} and \code{y} should
+    both be either directed or undirected.Node/Edge attributes that are equal
+    are carried over to the result. Non equal edge/node attributes will result 
+    in the corresponding attribute being set to NA. The user has the option 
+    of providing a named list(names of edgeSets) of list (names of edge attributes)
+    of edge functions correspoding to the names of the edge attributes for 
+    resolving conflicting edge attributes (\code{edgeFun}). For resolving any 
+    of the conflicting node attributes, the user has the option of providing a
+    named \code{list} of functions corresponding to the node attribute names (\code{nodeFun}). 
     }
 
     \item{\code{graphUnion(x, y, nodeFun, edgeFun)}}{
     When given two \code{MultiGraph} objects, \code{graphUnion}
     returns a new \code{MultiGraph} containing the union of nodes and 
-    edges between the two graphs.  
+    edges between the two graphs. The corresponding pairs of named edgeSets
+    in  \code{x} and \code{y} should both be either directed or undirected. 
+    Non equal edge/node attributes will result in the corresponding attribute 
+    being set to NA. The user has the option of providing a named list(names of
+    edgeSets) of list (names of edge attributes) of edge functions correspoding
+    to the names of the edge attributes for resolving conflicting edge 
+    attributes (\code{edgeFun}). For resolving any of the conflicting node attributes, the user 
+    has the option of providing a named \code{list} of functions corresponding 
+    to the node attribute names (\code{nodeFun}). 
+
+
     }
 
     \item{show}{Prints a short summary of a MultiGraph object}
   }
 }
 
-\author{S. Falcon}
+\author{S. Falcon, Gopalakrishnan N}
 
 \examples{
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),

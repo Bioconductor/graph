@@ -214,19 +214,34 @@ Class \code{"\linkS4class{graph}"}, directly.
 
       When given two \code{graphBAM} objects, \code{graphIntersect}
       returns a new \code{graphBAM} containing the nodes and edges in
-      common between the two graphs.  The intersection is computed by
+      common between the two graphs.  Both x and y should either be 
+      directed or undirected. The intersection is computed by
       first finding the intersection of the node sets, obtaining the
-      induced subgraphs, and finding the intersection of the resulting
+      resulting subgraphs, and finding the intersection of the resulting
       edge sets. Node/Edge attributes that are equal are carried over to
       the result. Non equal edge/node attributes will result in the 
       corresponding attribute being set to NA. The user has the option 
-      of providing a named list of functions for resolving conflicting
-      edge attributes.
+      of providing a named list of functions correspoding to the names of 
+      the edge attributes for resolving conflicting edge attributes. 
+      For resolving any of the conflicting node attributes
+      the user has the option of providing a named \code{list} of functions
+      corresponding to the node attribute names. 
+
     }
     \item{\code{graphUnion(x, y, nodeFun, edgeFun)}}{
     When given two \code{graphBAM} objects, \code{graphUnion}
     returns a new \code{graphBAM} containing the union of nodes and 
-    edges between the two graphs.  
+    edges between the two graphs. The union is compted by first finding
+    the union of the nodesets. Both x and y should be either directed or 
+    undirected. Node/Edge attributes that are equal are carried over to
+    the result. Non equal edge/node attributes will result in the 
+    corresponding attribute being set to NA. The user has the option 
+      of providing a named list of functions correspoding to the names of 
+      the edge attributes for resolving conflicting edge attributes. 
+      For resolving any of the conflicting node attributes
+      the user has the option of providing a named \code{list} of functions
+      corresponding to the node attribute names. 
+
     }
  
     \item{\code{edgemode(object) <- value}}{
