@@ -426,30 +426,6 @@ edgeSetUnion0 <- function(g, edgeFun = NULL)
 
 
 }
- 
-bellman.ford.sp.mg <- function(g,e,  start = nodes(g)[1], edgeFun = NULL) {
-    nv <- length(nodes(g))
-    mg <- edgeSetUnion0(g, edgeFun)
-    bitvec <- mg@edge_sets[[1]]@bit_vector
-    em <- t(.Call(graph_bitarray_rowColPos, bitvec))
-    ne <- ncol(em)
-    eW <- unlist(eweights(mg)[[1]])
-    if (is.character(start)) 
-        s <- match(start, nodes(g), 0)
-    else s <- start
-    if (s <= 0 || s > nv) 
-        stop("start not found in nodes of g")
-    ans <- .Call("BGL_bellman_ford_shortest_paths", as.integer(nv), 
-                 as.integer(ne), as.integer(em - 1), 
-                 as.double(eW), as.integer(s - 1), PACKAGE = "RBGL")
-    ans[[2]][ans[[2]] >= .Machine$double.xmax] <- Inf
-                ans[[3]] <- ans[[3]] + 1
-                names(ans[[2]]) <- names(ans[[3]]) <- nodes(g)
-                list(`all edges minimized` = ans[[1]], distance = ans[[2]], 
-                        penult = ans[[3]], start = nodes(g)[s])
-}
-
-
 
 edgeUnion <- function(object, weightFun = NULL)
 {
