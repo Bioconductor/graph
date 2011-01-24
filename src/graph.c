@@ -862,32 +862,6 @@ SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx) {
     return(ans);
 }
 
-/*
-SEXP graph_bitarray_getEdgeAttrPos(SEXP origBits, SEXP newBits) {
-    unsigned char *origBt = (unsigned char*) RAW(origBits);
-    unsigned char *newBt = (unsigned char *) RAW(newBits);
-    int len = length(origBits) * 8;
-    int i, byteIndex, bitIndex , shft, setIndx = 0;
-    int nn = asInteger(getAttrib(origBits, install("nbitset")));
-    SEXP indx;
-    PROTECT(indx = allocVector(INTSXP , nn));
-    int newIndx = 0;  
-    for( i =0 ; i < len; i ++) {
-         byteIndex = i / 8;
-         bitIndex = i % 8;
-         shft = 1 << bitIndex;
-         if(newBt[byteIndex] & (shft) ) {
-               newIndx++; 
-         }
-         if(origBt[byteIndex] & (shft)) {
-                INTEGER(indx)[setIndx] = newIndx;
-                setIndx++;
-         }
-    }
-    UNPROTECT(1);
-    return(indx);
-}*/
-
 SEXP graph_bitarray_getEdgeAttrOrder(SEXP _bits, SEXP _from, SEXP _to) {
     unsigned char *bits = (unsigned char*) RAW(_bits);
     int ns = asInteger(getAttrib(_bits, install("nbitset")));
@@ -948,67 +922,4 @@ SEXP graph_bitarray_getEdgeAttrOrder(SEXP _bits, SEXP _from, SEXP _to) {
     return(res);
 
 }
-//
-//SEXP graph_bitarray_getEdgeAttrOrder(SEXP _bits, SEXP _from, SEXP _to){
-//
-//    unsigned char *bits = (unsigned char*) RAW(_bits);
-//    int nn = asInteger(getAttrib(_bits, install("nbitset")));
-//    int mm = length(_from);
-//    SEXP fval, fpos, nval, npos, res, namesres;
-//    PROTECT(fval = allocVector(INTSXP, nn));
-//    PROTECT(fpos = allocVector(INTSXP, nn));
-//    PROTECT(npos = allocVector(INTSXP, mm));
-//    PROTECT(nval = allocVector(INTSXP, mm));
-//    int *from = INTEGER(_from);
-//    int *to = INTEGER(_to);
-//    int dim = NROW(_bits);
-//    int i, j;
-//    int byteIndex, bitIndex, shft;
-//    int  attrIndx, setIndx ;
-//    int k1=0, k2=0, k3=0 ,indx, intIndx, p=0 ;
-//    attrIndx = 0;
-//    setIndx = 0;
-//    for(j =0; j < dim ; j ++) {
-//        for(i =0; i < dim; i++){
-//            indx =  COORD_TO_INDEX(i, j , dim);
-//            byteIndex = indx / 8;
-//            bitIndex = indx % 8;
-//            shft = 1 << bitIndex;
-//            intIndx = COORD_TO_INDEX(from[attrIndx]-1, to[attrIndx]-1, dim);
-//            if(intIndx ==indx) {
-//                INTEGER(nval)[k2] = attrIndx + 1;
-//                INTEGER(npos)[k2] = k3 + 1;
-//                k2++;
-//                k3++;
-//                if(attrIndx < mm-1)
-//                    attrIndx++;
-//            }
-//            
-//            if(bits[byteIndex] & (shft) ) {
-//                if(indx != intIndx){
-//                    INTEGER(fpos)[p] = setIndx + 1;
-//                    INTEGER(fval)[p] = p + 1;
-//                    k3++;
-//                    p++;
-//                }
-//              //  k1++;
-//                setIndx++;
-//            }
-//        }
-//    }
-//    SET_LENGTH(fval, p);
-//    SET_LENGTH(fpos, p);
-//    setAttrib(fval, install("origPos"), fpos);
-//    setAttrib(nval, install("newPos"), npos);
-//
-//    PROTECT(res = allocVector(VECSXP, 2));
-//    SET_VECTOR_ELT(res, 0, fval);
-//    SET_VECTOR_ELT(res, 1, nval); 
-//    PROTECT(namesres = allocVector(STRSXP, 2));
-//    SET_STRING_ELT(namesres, 0, mkChar("origVal"));
-//    SET_STRING_ELT(namesres, 1, mkChar("newVal"));
-//    setAttrib(res, R_NamesSymbol, namesres);
-//    UNPROTECT(6);
-//    return(res);
-//}
-//
+
