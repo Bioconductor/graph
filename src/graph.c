@@ -26,7 +26,9 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
 SEXP graph_bitarray_Interect_Attrs(SEXP cmnBits, SEXP fromOneBits,
         SEXP fromTwoBits);
 SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx);
-SEXP graph_bitarray_getEdgeAttrPos(SEXP origBits, SEXP newBits) ;
+SEXP graph_bitarray_getEdgeAttrOrder(SEXP , SEXP , SEXP );
+
+//SEXP graph_bitarray_getEdgeAttrPos(SEXP origBits, SEXP newBits) ;
 
 # define graph_duplicated(x) Rf_duplicated(x, FALSE)
 
@@ -38,7 +40,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"graph_sublist_assign", (DL_FUNC)&graph_sublist_assign, 4},
     {"graph_is_adjacent", (DL_FUNC)&graph_is_adjacent, 2},
     {"graph_bitarray_rowColPos", (DL_FUNC)&graph_bitarray_rowColPos, 1},
-    {"graph_bitarray_getEdgeAttrPos", (DL_FUNC)&graph_bitarray_getEdgeAttrPos, 2},
+    {"graph_bitarray_getEdgeAttrOrder", (DL_FUNC)&graph_bitarray_getEdgeAttrOrder, 3},
     {NULL, NULL, 0},
 };
 
@@ -767,7 +769,7 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
          shft = 1 << bitIndex;
          if(ans[byteIndex] & (shft)) {
             if(cmn [byteIndex] & (shft)) {
-               cmnIndx ++;
+               cmnIndx++;
                from1Indx++;
                from2Indx++;
                INTEGER(from)[setIndx] = 0;
@@ -860,7 +862,7 @@ SEXP graph_bitarray_removeEdges(SEXP bits, SEXP _indx) {
     return(ans);
 }
 
-
+/*
 SEXP graph_bitarray_getEdgeAttrPos(SEXP origBits, SEXP newBits) {
     unsigned char *origBt = (unsigned char*) RAW(origBits);
     unsigned char *newBt = (unsigned char *) RAW(newBits);
@@ -884,5 +886,129 @@ SEXP graph_bitarray_getEdgeAttrPos(SEXP origBits, SEXP newBits) {
     }
     UNPROTECT(1);
     return(indx);
-}
+}*/
 
+SEXP graph_bitarray_getEdgeAttrOrder(SEXP _bits, SEXP _from, SEXP _to) {
+    unsigned char *bits = (unsigned char*) RAW(_bits);
+    int ns = asInteger(getAttrib(_bits, install("nbitset")));
+    int len = length(_from);
+    int *from = INTEGER(_from);
+    int *to = INTEGER(_to);
+    int dim = NROW(_bits);
+    int byteIndex, bitIndex, shft, indx, intIndx, i, j;
+    int oindx=0, nindx=0, attrIndx=0, setCount=0;
+    SEXP origRightPos, origLeftPos, newRightPos, newLeftPos, res, namesres;
+    PROTECT(origRightPos = allocVector(INTSXP, ns)); //index into orig attr
+    PROTECT(origLeftPos = allocVector(INTSXP, ns));
+    PROTECT(newRightPos = allocVector(INTSXP, len));
+    PROTECT(newLeftPos = allocVector(INTSXP, len));
+
+    setCount =1;
+    for(j =0; j < dim ; j ++) {
+        for(i =0; i < dim; i++){
+            indx =  COORD_TO_INDEX(i, j , dim);
+            byteIndex = indx / 8;
+            bitIndex = indx % 8;
+            shft = 1 << bitIndex;
+            intIndx = COORD_TO_INDEX(from[attrIndx]-1, to[attrIndx]-1, dim);
+            if(bits[byteIndex] & (shft) ) {
+                INTEGER(origRightPos)[oindx]  = oindx + 1  ;
+                INTEGER(origLeftPos)[oindx] = setCount    ;
+                oindx++;
+                if(intIndx != indx){
+                   setCount++; 
+                }
+            }
+            if(intIndx == indx) {
+               INTEGER(newRightPos)[nindx] =  nindx + 1;
+               INTEGER(newLeftPos)[nindx] = setCount  ;
+               nindx++;
+               if(attrIndx < len-1){
+                   attrIndx++; 
+               }  
+               setCount++;
+            }
+        }
+    }
+    SET_LENGTH(newRightPos, nindx);
+    SET_LENGTH(newLeftPos, nindx);
+    
+    PROTECT(res = allocVector(VECSXP, 4));
+    SET_VECTOR_ELT(res, 0, newLeftPos);
+    SET_VECTOR_ELT(res, 1, newRightPos); 
+    SET_VECTOR_ELT(res, 2, origLeftPos); 
+    SET_VECTOR_ELT(res, 3, origRightPos); 
+    PROTECT(namesres = allocVector(STRSXP, 4));
+    SET_STRING_ELT(namesres, 0, mkChar("newLeftPos"));
+    SET_STRING_ELT(namesres, 1, mkChar("newRightPos"));
+    SET_STRING_ELT(namesres, 2, mkChar("origLeftPos"));
+    SET_STRING_ELT(namesres, 3, mkChar("origRightPos"));
+    setAttrib(res, R_NamesSymbol, namesres);
+    UNPROTECT(6);
+    return(res);
+
+}
+//
+//SEXP graph_bitarray_getEdgeAttrOrder(SEXP _bits, SEXP _from, SEXP _to){
+//
+//    unsigned char *bits = (unsigned char*) RAW(_bits);
+//    int nn = asInteger(getAttrib(_bits, install("nbitset")));
+//    int mm = length(_from);
+//    SEXP fval, fpos, nval, npos, res, namesres;
+//    PROTECT(fval = allocVector(INTSXP, nn));
+//    PROTECT(fpos = allocVector(INTSXP, nn));
+//    PROTECT(npos = allocVector(INTSXP, mm));
+//    PROTECT(nval = allocVector(INTSXP, mm));
+//    int *from = INTEGER(_from);
+//    int *to = INTEGER(_to);
+//    int dim = NROW(_bits);
+//    int i, j;
+//    int byteIndex, bitIndex, shft;
+//    int  attrIndx, setIndx ;
+//    int k1=0, k2=0, k3=0 ,indx, intIndx, p=0 ;
+//    attrIndx = 0;
+//    setIndx = 0;
+//    for(j =0; j < dim ; j ++) {
+//        for(i =0; i < dim; i++){
+//            indx =  COORD_TO_INDEX(i, j , dim);
+//            byteIndex = indx / 8;
+//            bitIndex = indx % 8;
+//            shft = 1 << bitIndex;
+//            intIndx = COORD_TO_INDEX(from[attrIndx]-1, to[attrIndx]-1, dim);
+//            if(intIndx ==indx) {
+//                INTEGER(nval)[k2] = attrIndx + 1;
+//                INTEGER(npos)[k2] = k3 + 1;
+//                k2++;
+//                k3++;
+//                if(attrIndx < mm-1)
+//                    attrIndx++;
+//            }
+//            
+//            if(bits[byteIndex] & (shft) ) {
+//                if(indx != intIndx){
+//                    INTEGER(fpos)[p] = setIndx + 1;
+//                    INTEGER(fval)[p] = p + 1;
+//                    k3++;
+//                    p++;
+//                }
+//              //  k1++;
+//                setIndx++;
+//            }
+//        }
+//    }
+//    SET_LENGTH(fval, p);
+//    SET_LENGTH(fpos, p);
+//    setAttrib(fval, install("origPos"), fpos);
+//    setAttrib(nval, install("newPos"), npos);
+//
+//    PROTECT(res = allocVector(VECSXP, 2));
+//    SET_VECTOR_ELT(res, 0, fval);
+//    SET_VECTOR_ELT(res, 1, nval); 
+//    PROTECT(namesres = allocVector(STRSXP, 2));
+//    SET_STRING_ELT(namesres, 0, mkChar("origVal"));
+//    SET_STRING_ELT(namesres, 1, mkChar("newVal"));
+//    setAttrib(res, R_NamesSymbol, namesres);
+//    UNPROTECT(6);
+//    return(res);
+//}
+//
