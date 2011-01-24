@@ -184,6 +184,8 @@ graph using the \Rmethod{extractFromTo} method and then make use of the
 
 <<updateColor>>=
 ftSub <- extractFromTo(resWt)
+edgeDataDefaults(male, attr = "color") <- "white"
+edgeDataDefaults(female, attr = "color") <- "white"
 edgeData(male, from = as.character(ftSub[,"from"]), 
         to = as.character(ftSub[,"to"]), attr = "color") <- "red"
 
