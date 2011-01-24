@@ -244,13 +244,14 @@ extractGraphBAM(g, edgeSets)
     ug <- ugraph(g)
     isDirected(ug)
     numEdges(ug)
-    edgeSetIntersect0(g)
+#CLEANUP
+# edgeSetIntersect0(g)
     subsetEdgeSets(g, "es1")
     extractFromTo(g)
     extractGraphAM(g)
     extractGraphAM(g, "es1")
     extractGraphBAM(g, "es1")
-    graphIntersect(g, g)
-    graphUnion(g,g)
+#   graphIntersect(g, g)
+#   graphUnion(g,g)
 }
 \keyword{classes}
