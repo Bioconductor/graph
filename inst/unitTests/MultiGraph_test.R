@@ -623,68 +623,68 @@ test_mixed_MultiGraph_Intersect <- function(use.factors=TRUE) {
     checkEquals(df$e2, df2)   
 }
 
-test_mixed_MultiGraph_Union <- function(use.factors=TRUE) {
-
-    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-                      to  =c("b", "c", "d", "a", "d"),
-                      weight=c(1, 3.1, 5.4, 1, 2.2),
-                      stringsAsFactors = use.factors)
-    
-    ft2 <- data.frame(from=c("a", "a"),
-                      to=c("b", "c"),
-                      weight=c(3.4, 2.6),
-                      stringsAsFactors = use.factors)
-
-    ft3 <- data.frame(from=c("a", "a"),
-                      to  =c("d", "b"),
-                      weight=c(1,2),
-                      stringsAsFactors = use.factors)
-
-    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
-                  e5=ft3[FALSE, ])
-
-    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
-
-    ft1 <- data.frame(from=c("a", "a", "b"),
-                      to=c("b", "x", "z"),
-                      weight=c(6, 5, 2),
-                      stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from=c("a", "a", "a"),
-                      to=c("a", "x", "y"),
-                      weight=c(1, 2, 3),
-                      stringsAsFactors = use.factors)
-
-    esets <- list(e1=ft1, e2=ft2)
-
-    g2 <- MultiGraph(esets, directed = c(TRUE, FALSE))
-    res <- graphUnion(g1, g2)
-    checkEquals(nodes(res), c("a", "b", "c", "d", "x", "y", "z"))
-    checkEquals(names(res@edge_sets), c("e1", "e2", "e3", "e4", "e5"))
-    checkEquals(isDirected(res), structure(c(TRUE, FALSE, TRUE, TRUE, FALSE), 
-                                 names = c("e1", "e2", "e3", "e4", "e5")))
-    df <- extractFromTo(res)
-    checkEquals(names(df), c("e1", "e2", "e3", "e4", "e5"))
-    df1 <- data.frame(from = c("b", "a", "a", "a", "b", "a", "b"), 
-                        to = c("a", "b", "c", "d", "d", "x", "z"),
-                        weight = c(1, NA, 3.1, 5.4, 2.2, 5.0, 2.0))
-    checkEquals(df$e1, df1)   
-    
-    df2 <- data.frame(from = c("a", "a", "a", "a", "a"), 
-                        to = c("a", "b", "c", "x", "y"),
-                        weight = c(1, 3.4, 2.6, 2, 3 ))
-    checkEquals(df$e2, df2)  
-    
-    df3 <- data.frame(from = c("a", "a"), 
-                        to = c("b", "d"),
-                        weight = c(2, 1))
-    checkEquals(df$e3, df3)
-    
-    df4 <- data.frame(from = factor(), to = factor(), weight = numeric())
-    checkEquals(df$e4, df4)
-    checkEquals(df$e5, df4)
-}
-
+#test_mixed_MultiGraph_Union <- function(use.factors=TRUE) {
+#
+#    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+#                      to  =c("b", "c", "d", "a", "d"),
+#                      weight=c(1, 3.1, 5.4, 1, 2.2),
+#                      stringsAsFactors = use.factors)
+#    
+#    ft2 <- data.frame(from=c("a", "a"),
+#                      to=c("b", "c"),
+#                      weight=c(3.4, 2.6),
+#                      stringsAsFactors = use.factors)
+#
+#    ft3 <- data.frame(from=c("a", "a"),
+#                      to  =c("d", "b"),
+#                      weight=c(1,2),
+#                      stringsAsFactors = use.factors)
+#
+#    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
+#                  e5=ft3[FALSE, ])
+#
+#    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
+#
+#    ft1 <- data.frame(from=c("a", "a", "b"),
+#                      to=c("b", "x", "z"),
+#                      weight=c(6, 5, 2),
+#                      stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from=c("a", "a", "a"),
+#                      to=c("a", "x", "y"),
+#                      weight=c(1, 2, 3),
+#                      stringsAsFactors = use.factors)
+#
+#    esets <- list(e1=ft1, e2=ft2)
+#
+#    g2 <- MultiGraph(esets, directed = c(TRUE, FALSE))
+#    res <- graphUnion(g1, g2)
+#    checkEquals(nodes(res), c("a", "b", "c", "d", "x", "y", "z"))
+#    checkEquals(names(res@edge_sets), c("e1", "e2", "e3", "e4", "e5"))
+#    checkEquals(isDirected(res), structure(c(TRUE, FALSE, TRUE, TRUE, FALSE), 
+#                                 names = c("e1", "e2", "e3", "e4", "e5")))
+#    df <- extractFromTo(res)
+#    checkEquals(names(df), c("e1", "e2", "e3", "e4", "e5"))
+#    df1 <- data.frame(from = c("b", "a", "a", "a", "b", "a", "b"), 
+#                        to = c("a", "b", "c", "d", "d", "x", "z"),
+#                        weight = c(1, NA, 3.1, 5.4, 2.2, 5.0, 2.0))
+#    checkEquals(df$e1, df1)   
+#    
+#    df2 <- data.frame(from = c("a", "a", "a", "a", "a"), 
+#                        to = c("a", "b", "c", "x", "y"),
+#                        weight = c(1, 3.4, 2.6, 2, 3 ))
+#    checkEquals(df$e2, df2)  
+#    
+#    df3 <- data.frame(from = c("a", "a"), 
+#                        to = c("b", "d"),
+#                        weight = c(2, 1))
+#    checkEquals(df$e3, df3)
+#    
+#    df4 <- data.frame(from = factor(), to = factor(), weight = numeric())
+#    checkEquals(df$e4, df4)
+#    checkEquals(df$e5, df4)
+#}
+#
 test_MultiGraph_To_graphBAM <- function(use.factors=TRUE) {
 
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
@@ -885,307 +885,307 @@ test_MultiGraph_edgeAttributes_subGraph <- function() {
     checkEquals(target, current)
 }
 
-test_MultiGraph_Intersection_Attributes <- function(use.factors=TRUE){
-
-    setClass("myType", representation = representation(typ ="character")) 
-    myType <- function(typ){ new("myType", typ = typ)}
-
-    colorFun <- function(x,y) {
-        if(x@typ =="low" || y@typ == "med")
-            return("low")
-        else
-        return("high")
-    }
-    typeFun <- function(x,y) {
-    if(is(x, "myType")  && is(y, "myType")){
-          if(x@typ =="low" || y@typ == "med")
-            return("low")
-         else
-            return("high")
-        }
-        else {return (NA)}
-        
-    }
-    edgeFun <- structure(rep(list(structure( list(colorFun), names = "myType")),2),
-                 names = c("e1", "e2"))
-   
-    ft1 <- data.frame(from=c("a", "b", "b", "f"),
-                      to=c("b", "c", "d", "g"),
-                      weight=c(1, 2, 3, 4),
-                      stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from =c("e", "f", "a", "b", "f"),
-                      to =c( "a", "a", "b", "c", "c"),
-                      weight =c(2, 3, 4, 5, 9),
-                      stringsAsFactors= use.factors)
-    esets <- list(e1=ft1, e2=ft2)
-    g1 <- MultiGraph(esets)
-    mgEdgeData(g1, "e1", from = c("b", "b", "f"), 
-                           to = c("c", "d", "g"),
-            attr = "color") <- c ("red", "green", "green")
-    mgEdgeData(g1, "e2", from = c("b", "f"), 
-                           to = c("c", "c"),
-            attr = "color") <- c("red", "green")
-    mgEdgeData(g1, "e1", from = c("b", "f"), 
-                           to = c("c", "g"),
-            attr = "myType") <- c(myType("low"), myType("high"))
-    mgEdgeData(g1, "e2", from = c("a", "f"), 
-                           to = c("b", "c"),
-            attr = "myType") <-  c(myType("high"), myType("low"))
-    
-
-    ft1 <- data.frame(from=c("b", "f"),
-                      to=c("c", "g"),
-                      weight=c(2, 3),
-                      stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from =c("a", "f"),
-                      to =c( "b", "c"),
-                      weight =c(4, 6),
-                      stringsAsFactors= use.factors)
-    esets <- list(e1=ft1, e2=ft2)
-    g2 <- MultiGraph(esets)
-    mgEdgeData(g2, "e1", from = c("b", "f"), 
-                           to = c("c", "g"),
-             attr = "color") <- c ("red", "green")
-    mgEdgeData(g2, "e2", from = c("a", "f"), 
-                           to = c("b", "c"), 
-             attr = "color") <- c("red", "green")
-    mgEdgeData(g2, "e1", from = c("b", "f"), 
-                           to = c("c", "g"),
-             attr = "myType") <- c(myType("med"), myType("high"))
-    mgEdgeData(g2, "e2", from = c("a", "f"), 
-                           to = c("b", "c"),
-             attr = "myType") <- c(myType("high"), myType("med"))
- 
-    nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
-    nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
-    nodeData(g2,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "red")
-    nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
-    
-    res <- graphIntersect(g1, g2, nodeFun = list(type =typeFun), edgeFun = edgeFun)
-    
-    current <- mgEdgeData(res,"e1", attr = "weight")
-    target <- structure(list(2, as.numeric(NA)), names = paste(c("b", "f"), c("c", "g"), sep="|"))
-    checkEquals(target, current)
-    
-    current <- mgEdgeData(res,"e1", attr = "color")
-    target <- structure(list("red", "green"), names = paste(c("b", "f"), c("c", "g"), sep="|"))
-    checkEquals(target, current)
-
-    current <- mgEdgeData(res,"e2", attr = "weight")
-    target <- structure(list(4, as.numeric(NA)), names = paste(c("a", "f"), c("b", "c"), sep="|"))
-    checkEquals(target, current)
-    
-    current <- mgEdgeData(res,"e2", attr = "color")
-    target <- structure(list(as.character(NA), "green"), 
-            names = paste(c("a", "f"), c("b", "c"), sep="|"))
-    checkEquals(target, current)
-
-    current <- mgEdgeData(res,"e1", attr = "myType")
-    target <- structure(list("low", "high"), 
-            names = paste(c("b", "f"), c("c", "g"), sep="|"))
-    checkEquals(target, current)
-
-    current <- mgEdgeData(res,"e2", attr = "myType")
-    target <- structure(list("high", "low"), 
-            names = paste(c("a", "f"), c("b", "c"), sep="|"))
-    checkEquals(target, current)
-
-
-    nodeColor <- nodeData(res, attr = "color")
-    target <-  as.list(structure(c("red", "green", NA, NA, NA), 
-                 names = c("a", "b", "c", "f", "g")))
-    checkEquals(target, nodeColor)
-
-    nodeType <- nodeData(res, attr = "type")
-    cn <- as.character(NA)
-    target <-  as.list(structure(c(cn, "low", "high", cn, cn), 
-                 names = c("a", "b", "c", "f", "g")))
-    checkEquals(target, nodeType)
-
-}
-
-test_MultiGraph_Union_Attributes <- function(use.factors=TRUE){
-
-    setClass("myType", representation = representation(typ ="character")) 
-    myType <- function(typ){ new("myType", typ = typ)}
-
-    colorFun <- function(x,y) {
-        if(x@typ =="low" || y@typ == "med")
-            return("low")
-        else
-        return("high")
-    }
-    funList <- structure(rep(list(structure( list(colorFun), names = "myType")),2),
-                 names = c("e1", "e2"))
-
-    ft1 <- data.frame(from=c("a", "b", "b", "f"),
-                      to=c("b", "c", "d", "g"),
-                      weight=c(1, 2, 3, 4),
-                      stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from =c("e", "f", "a", "b", "f"),
-                      to =c( "a", "a", "b", "c", "c"),
-                      weight =c(2, 3, 4, 5, 9),
-                      stringsAsFactors= use.factors)
-    esets <- list(e1=ft1, e2=ft2)
-    g1 <- MultiGraph(esets)
-    mgEdgeData(g1, "e1", from = c("b", "b", "f"), 
-                           to = c("c", "d", "g"),
-            attr = "color") <- c ("red", "green", "green")
-    mgEdgeData(g1, "e2", from = c("b", "f"), 
-                           to = c("c", "c"),
-            attr = "color") <- c("red", "green")
-    mgEdgeData(g1, "e1", from = c("b", "f"), 
-                           to = c("c", "g"),
-            attr = "myType") <- c(myType("low"), myType("high"))
-    mgEdgeData(g1, "e2", from = c("a", "f"), 
-                           to = c("b", "c"),
-            attr = "myType") <-  c(myType("high"), myType("low"))
-    
-
-    ft1 <- data.frame(from=c("b", "f"),
-                      to=c("c", "g"),
-                      weight=c(2, 3),
-                      stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from =c("a", "f"),
-                      to =c( "b", "c"),
-                      weight =c(4, 6),
-                      stringsAsFactors= use.factors)
-    esets <- list(e1=ft1, e2=ft2)
-    g2 <- MultiGraph(esets)
-    mgEdgeData(g2, "e1", from = c("b", "f"), 
-                           to = c("c", "g"),
-             attr = "color") <- c ("red", "green")
-    mgEdgeData(g2, "e2", from = c("a", "f"), 
-                           to = c("b", "c"), 
-             attr = "color") <- c("red", "green")
-    mgEdgeData(g2, "e1", from = c("b", "f"), 
-                           to = c("c", "g"),
-             attr = "myType") <- c(myType("med"), myType("high"))
-    mgEdgeData(g2, "e2", from = c("a", "f"), 
-                           to = c("b", "c"),
-             attr = "myType") <- c(myType("high"), myType("med"))
-    
-    res <- graphUnion(g1, g2, edgeFun = funList)
-    
-    current <- mgEdgeData(res,"e1", attr = "weight")
-    target <- structure(list(1, 2, 3, as.numeric(NA)), 
-            names = paste(c("a", "b", "b", "f"), c( "b", "c", "d", "g"), sep="|"))
-    checkEquals(target, current)
-    
-    current <- mgEdgeData(res,"e1", attr = "color")
-    target <- structure(list(as.character(NA), "red", "green", "green"), 
-             names = paste(c("a", "b", "b", "f"), c("b", "c", "d", "g"), sep="|"))
-    checkEquals(target, current)
-
-    current <- mgEdgeData(res,"e2", attr = "weight")
-    target <- structure(list(2, 3, 4, 5, as.numeric(NA)),
-            names = paste(c("e", "f", "a", "b", "f"), c("a", "a", "b", "c", "c"), sep="|"))
-    checkEquals(target, current)
-    
-    current <- mgEdgeData(res,"e2", attr = "color")
-    cn <- as.character(NA)
-    target <- structure(list(cn, cn, cn, "red", "green"), 
-            names = paste(c("e", "f", "a", "b", "f"), c("a", "a", "b", "c", "c"), sep="|"))
-    checkEquals(target, current)
-
-    current <- mgEdgeData(res,"e1", attr = "myType")
-    target <- structure(list(as.logical(NA), "low", as.logical(NA), "high"), 
-            names = paste(c("a", "b", "b", "f"), c("b", "c", "d", "g"), sep="|"))
-    checkEquals(target, current)
-
-    current <- mgEdgeData(res,"e2", attr = "myType")
-    target <- structure(list(as.logical(NA), as.logical(NA), "high", as.logical(NA),"low"), 
-            names = paste(c("e", "f", "a", "b", "f"), c("a", "a", "b", "c", "c"), sep="|"))
-    checkEquals(target, current)
-}
-
-
-test_MultiGraph_nodeUnion_Attributes <- function(use.factors=TRUE){
-
-    setClass("myType", representation = representation(typ ="character")) 
-    myType <- function(typ){ new("myType", typ = typ)}
-    testFun <- function(x,y) {
-        if(x@typ =="aa" || y@typ == "ac")
-            return("ax")
-        else
-            return("ab")
-    }
-    funList <- structure(list(testFun), names ="gene")
-
-
-    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-            to  =c("b", "c", "d", "a", "d"),
-            weight=c(1, 3.1, 5.4, 1, 2.2),
-            stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from=c("a", "a"),
-            to=c("b", "c"),
-            weight=c(3.4, 2.6),
-            stringsAsFactors = use.factors)
-
-    ft3 <- data.frame(from=c("a", "a"),
-            to  =c("d", "b"),
-            weight=c(1,2),
-            stringsAsFactors = use.factors)
-
-    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
-            e5=ft3[FALSE, ])
-
-    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
-    nodeData(g1, n = c("a", "b", "c") , attr = "color") <- c("red", "green", "blue")
-    nodeData(g1, n = c("a", "b"), attr = "type") <- c("low", "high")
-    nodeData(g1, n = c("a", "b"), attr = "kp") <- c("kplow", "kphigh")
-    nodeData(g1, n = c("a", "b"), attr = "gene") <- c(myType("aa"), myType("bt"))
-
-    ft1 <- data.frame(from=c("a", "a", "b"),
-            to=c("b", "x", "z"),
-            weight=c(6, 5, 2),
-            stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from=c("a", "a", "a"),
-            to=c("a", "x", "y"),
-            weight=c(1, 2, 3),
-            stringsAsFactors = use.factors)
-
-    esets <- list(e1=ft1, e2=ft2)
-    g2 <- MultiGraph(esets, directed = c(TRUE, FALSE))
-    nodeData(g2, n = c("a", "b", "x", "y", "z") , attr = "color") <- c("red", "red", "green", "pink", "yellow")
-    nodeData(g2, n = c("a", "b"), attr = "type") <- c("low", "high")
-    nodeData(g2, n = c("a", "b"), attr = "gene") <- c(myType("at"), myType("kt"))
-
-    res <- graphUnion(g1, g2, nodeFun = funList )
-
-    current <- nodeData(res, attr = "color")
-    cn <- as.character(NA)
-    target <- as.list( structure(c("red", cn, "blue", cn, "green", "pink", "yellow"), 
-                    names = c("a", "b", "c", "d", "x", "y", "z")))
-    checkEquals(target, current)
-
-    current <- nodeData(res, attr = "type")
-    cn <- as.character(NA)
-    target <- as.list( structure(c("low", "high", cn, cn, cn, cn, cn), 
-                    names = c("a", "b", "c", "d", "x", "y", "z")))
-    checkEquals(target, current)
-
-    current <- nodeData(res, attr = "kp")
-    cn <- as.character(NA)
-    target <- as.list( structure(c("kplow", "kphigh", cn, cn, cn, cn, cn), 
-                    names = c("a", "b", "c", "d", "x", "y", "z")))
-    checkEquals(target, current)
-    current <- nodeData(res, n =c("a", "b"), attr ="gene")
-    target <- as.list( structure(c("ax", "ab"), 
-                    names = c("a", "b")))
-    checkEquals(target, current)
-
-    cn <- as.logical(NA)
-    current <- nodeData(res, n = c("c", "d", "x", "y", "z"), attr ="gene")
-    target <- as.list( structure(c( cn, cn, cn, cn, cn), 
-                    names = c("c", "d", "x", "y", "z")))
-    checkEquals(target, current)
-
-}
-
+#test_MultiGraph_Intersection_Attributes <- function(use.factors=TRUE){
+#
+#    setClass("myType", representation = representation(typ ="character")) 
+#    myType <- function(typ){ new("myType", typ = typ)}
+#
+#    colorFun <- function(x,y) {
+#        if(x@typ =="low" || y@typ == "med")
+#            return("low")
+#        else
+#        return("high")
+#    }
+#    typeFun <- function(x,y) {
+#    if(is(x, "myType")  && is(y, "myType")){
+#          if(x@typ =="low" || y@typ == "med")
+#            return("low")
+#         else
+#            return("high")
+#        }
+#        else {return (NA)}
+#        
+#    }
+#    edgeFun <- structure(rep(list(structure( list(colorFun), names = "myType")),2),
+#                 names = c("e1", "e2"))
+#   
+#    ft1 <- data.frame(from=c("a", "b", "b", "f"),
+#                      to=c("b", "c", "d", "g"),
+#                      weight=c(1, 2, 3, 4),
+#                      stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from =c("e", "f", "a", "b", "f"),
+#                      to =c( "a", "a", "b", "c", "c"),
+#                      weight =c(2, 3, 4, 5, 9),
+#                      stringsAsFactors= use.factors)
+#    esets <- list(e1=ft1, e2=ft2)
+#    g1 <- MultiGraph(esets)
+#    mgEdgeData(g1, "e1", from = c("b", "b", "f"), 
+#                           to = c("c", "d", "g"),
+#            attr = "color") <- c ("red", "green", "green")
+#    mgEdgeData(g1, "e2", from = c("b", "f"), 
+#                           to = c("c", "c"),
+#            attr = "color") <- c("red", "green")
+#    mgEdgeData(g1, "e1", from = c("b", "f"), 
+#                           to = c("c", "g"),
+#            attr = "myType") <- c(myType("low"), myType("high"))
+#    mgEdgeData(g1, "e2", from = c("a", "f"), 
+#                           to = c("b", "c"),
+#            attr = "myType") <-  c(myType("high"), myType("low"))
+#    
+#
+#    ft1 <- data.frame(from=c("b", "f"),
+#                      to=c("c", "g"),
+#                      weight=c(2, 3),
+#                      stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from =c("a", "f"),
+#                      to =c( "b", "c"),
+#                      weight =c(4, 6),
+#                      stringsAsFactors= use.factors)
+#    esets <- list(e1=ft1, e2=ft2)
+#    g2 <- MultiGraph(esets)
+#    mgEdgeData(g2, "e1", from = c("b", "f"), 
+#                           to = c("c", "g"),
+#             attr = "color") <- c ("red", "green")
+#    mgEdgeData(g2, "e2", from = c("a", "f"), 
+#                           to = c("b", "c"), 
+#             attr = "color") <- c("red", "green")
+#    mgEdgeData(g2, "e1", from = c("b", "f"), 
+#                           to = c("c", "g"),
+#             attr = "myType") <- c(myType("med"), myType("high"))
+#    mgEdgeData(g2, "e2", from = c("a", "f"), 
+#                           to = c("b", "c"),
+#             attr = "myType") <- c(myType("high"), myType("med"))
+# 
+#    nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
+#    nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
+#    nodeData(g2,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "red")
+#    nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
+#    
+#    res <- graphIntersect(g1, g2, nodeFun = list(type =typeFun), edgeFun = edgeFun)
+#    
+#    current <- mgEdgeData(res,"e1", attr = "weight")
+#    target <- structure(list(2, as.numeric(NA)), names = paste(c("b", "f"), c("c", "g"), sep="|"))
+#    checkEquals(target, current)
+#    
+#    current <- mgEdgeData(res,"e1", attr = "color")
+#    target <- structure(list("red", "green"), names = paste(c("b", "f"), c("c", "g"), sep="|"))
+#    checkEquals(target, current)
+#
+#    current <- mgEdgeData(res,"e2", attr = "weight")
+#    target <- structure(list(4, as.numeric(NA)), names = paste(c("a", "f"), c("b", "c"), sep="|"))
+#    checkEquals(target, current)
+#    
+#    current <- mgEdgeData(res,"e2", attr = "color")
+#    target <- structure(list(as.character(NA), "green"), 
+#            names = paste(c("a", "f"), c("b", "c"), sep="|"))
+#    checkEquals(target, current)
+#
+#    current <- mgEdgeData(res,"e1", attr = "myType")
+#    target <- structure(list("low", "high"), 
+#            names = paste(c("b", "f"), c("c", "g"), sep="|"))
+#    checkEquals(target, current)
+#
+#    current <- mgEdgeData(res,"e2", attr = "myType")
+#    target <- structure(list("high", "low"), 
+#            names = paste(c("a", "f"), c("b", "c"), sep="|"))
+#    checkEquals(target, current)
+#
+#
+#    nodeColor <- nodeData(res, attr = "color")
+#    target <-  as.list(structure(c("red", "green", NA, NA, NA), 
+#                 names = c("a", "b", "c", "f", "g")))
+#    checkEquals(target, nodeColor)
+#
+#    nodeType <- nodeData(res, attr = "type")
+#    cn <- as.character(NA)
+#    target <-  as.list(structure(c(cn, "low", "high", cn, cn), 
+#                 names = c("a", "b", "c", "f", "g")))
+#    checkEquals(target, nodeType)
+#
+#}
+#
+#test_MultiGraph_Union_Attributes <- function(use.factors=TRUE){
+#
+#    setClass("myType", representation = representation(typ ="character")) 
+#    myType <- function(typ){ new("myType", typ = typ)}
+#
+#    colorFun <- function(x,y) {
+#        if(x@typ =="low" || y@typ == "med")
+#            return("low")
+#        else
+#        return("high")
+#    }
+#    funList <- structure(rep(list(structure( list(colorFun), names = "myType")),2),
+#                 names = c("e1", "e2"))
+#
+#    ft1 <- data.frame(from=c("a", "b", "b", "f"),
+#                      to=c("b", "c", "d", "g"),
+#                      weight=c(1, 2, 3, 4),
+#                      stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from =c("e", "f", "a", "b", "f"),
+#                      to =c( "a", "a", "b", "c", "c"),
+#                      weight =c(2, 3, 4, 5, 9),
+#                      stringsAsFactors= use.factors)
+#    esets <- list(e1=ft1, e2=ft2)
+#    g1 <- MultiGraph(esets)
+#    mgEdgeData(g1, "e1", from = c("b", "b", "f"), 
+#                           to = c("c", "d", "g"),
+#            attr = "color") <- c ("red", "green", "green")
+#    mgEdgeData(g1, "e2", from = c("b", "f"), 
+#                           to = c("c", "c"),
+#            attr = "color") <- c("red", "green")
+#    mgEdgeData(g1, "e1", from = c("b", "f"), 
+#                           to = c("c", "g"),
+#            attr = "myType") <- c(myType("low"), myType("high"))
+#    mgEdgeData(g1, "e2", from = c("a", "f"), 
+#                           to = c("b", "c"),
+#            attr = "myType") <-  c(myType("high"), myType("low"))
+#    
+#
+#    ft1 <- data.frame(from=c("b", "f"),
+#                      to=c("c", "g"),
+#                      weight=c(2, 3),
+#                      stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from =c("a", "f"),
+#                      to =c( "b", "c"),
+#                      weight =c(4, 6),
+#                      stringsAsFactors= use.factors)
+#    esets <- list(e1=ft1, e2=ft2)
+#    g2 <- MultiGraph(esets)
+#    mgEdgeData(g2, "e1", from = c("b", "f"), 
+#                           to = c("c", "g"),
+#             attr = "color") <- c ("red", "green")
+#    mgEdgeData(g2, "e2", from = c("a", "f"), 
+#                           to = c("b", "c"), 
+#             attr = "color") <- c("red", "green")
+#    mgEdgeData(g2, "e1", from = c("b", "f"), 
+#                           to = c("c", "g"),
+#             attr = "myType") <- c(myType("med"), myType("high"))
+#    mgEdgeData(g2, "e2", from = c("a", "f"), 
+#                           to = c("b", "c"),
+#             attr = "myType") <- c(myType("high"), myType("med"))
+#    
+#    res <- graphUnion(g1, g2, edgeFun = funList)
+#    
+#    current <- mgEdgeData(res,"e1", attr = "weight")
+#    target <- structure(list(1, 2, 3, as.numeric(NA)), 
+#            names = paste(c("a", "b", "b", "f"), c( "b", "c", "d", "g"), sep="|"))
+#    checkEquals(target, current)
+#    
+#    current <- mgEdgeData(res,"e1", attr = "color")
+#    target <- structure(list(as.character(NA), "red", "green", "green"), 
+#             names = paste(c("a", "b", "b", "f"), c("b", "c", "d", "g"), sep="|"))
+#    checkEquals(target, current)
+#
+#    current <- mgEdgeData(res,"e2", attr = "weight")
+#    target <- structure(list(2, 3, 4, 5, as.numeric(NA)),
+#            names = paste(c("e", "f", "a", "b", "f"), c("a", "a", "b", "c", "c"), sep="|"))
+#    checkEquals(target, current)
+#    
+#    current <- mgEdgeData(res,"e2", attr = "color")
+#    cn <- as.character(NA)
+#    target <- structure(list(cn, cn, cn, "red", "green"), 
+#            names = paste(c("e", "f", "a", "b", "f"), c("a", "a", "b", "c", "c"), sep="|"))
+#    checkEquals(target, current)
+#
+#    current <- mgEdgeData(res,"e1", attr = "myType")
+#    target <- structure(list(as.logical(NA), "low", as.logical(NA), "high"), 
+#            names = paste(c("a", "b", "b", "f"), c("b", "c", "d", "g"), sep="|"))
+#    checkEquals(target, current)
+#
+#    current <- mgEdgeData(res,"e2", attr = "myType")
+#    target <- structure(list(as.logical(NA), as.logical(NA), "high", as.logical(NA),"low"), 
+#            names = paste(c("e", "f", "a", "b", "f"), c("a", "a", "b", "c", "c"), sep="|"))
+#    checkEquals(target, current)
+#}
+#
+#
+#test_MultiGraph_nodeUnion_Attributes <- function(use.factors=TRUE){
+#
+#    setClass("myType", representation = representation(typ ="character")) 
+#    myType <- function(typ){ new("myType", typ = typ)}
+#    testFun <- function(x,y) {
+#        if(x@typ =="aa" || y@typ == "ac")
+#            return("ax")
+#        else
+#            return("ab")
+#    }
+#    funList <- structure(list(testFun), names ="gene")
+#
+#
+#    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+#            to  =c("b", "c", "d", "a", "d"),
+#            weight=c(1, 3.1, 5.4, 1, 2.2),
+#            stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from=c("a", "a"),
+#            to=c("b", "c"),
+#            weight=c(3.4, 2.6),
+#            stringsAsFactors = use.factors)
+#
+#    ft3 <- data.frame(from=c("a", "a"),
+#            to  =c("d", "b"),
+#            weight=c(1,2),
+#            stringsAsFactors = use.factors)
+#
+#    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
+#            e5=ft3[FALSE, ])
+#
+#    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
+#    nodeData(g1, n = c("a", "b", "c") , attr = "color") <- c("red", "green", "blue")
+#    nodeData(g1, n = c("a", "b"), attr = "type") <- c("low", "high")
+#    nodeData(g1, n = c("a", "b"), attr = "kp") <- c("kplow", "kphigh")
+#    nodeData(g1, n = c("a", "b"), attr = "gene") <- c(myType("aa"), myType("bt"))
+#
+#    ft1 <- data.frame(from=c("a", "a", "b"),
+#            to=c("b", "x", "z"),
+#            weight=c(6, 5, 2),
+#            stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from=c("a", "a", "a"),
+#            to=c("a", "x", "y"),
+#            weight=c(1, 2, 3),
+#            stringsAsFactors = use.factors)
+#
+#    esets <- list(e1=ft1, e2=ft2)
+#    g2 <- MultiGraph(esets, directed = c(TRUE, FALSE))
+#    nodeData(g2, n = c("a", "b", "x", "y", "z") , attr = "color") <- c("red", "red", "green", "pink", "yellow")
+#    nodeData(g2, n = c("a", "b"), attr = "type") <- c("low", "high")
+#    nodeData(g2, n = c("a", "b"), attr = "gene") <- c(myType("at"), myType("kt"))
+#
+#    res <- graphUnion(g1, g2, nodeFun = funList )
+#
+#    current <- nodeData(res, attr = "color")
+#    cn <- as.character(NA)
+#    target <- as.list( structure(c("red", cn, "blue", cn, "green", "pink", "yellow"), 
+#                    names = c("a", "b", "c", "d", "x", "y", "z")))
+#    checkEquals(target, current)
+#
+#    current <- nodeData(res, attr = "type")
+#    cn <- as.character(NA)
+#    target <- as.list( structure(c("low", "high", cn, cn, cn, cn, cn), 
+#                    names = c("a", "b", "c", "d", "x", "y", "z")))
+#    checkEquals(target, current)
+#
+#    current <- nodeData(res, attr = "kp")
+#    cn <- as.character(NA)
+#    target <- as.list( structure(c("kplow", "kphigh", cn, cn, cn, cn, cn), 
+#                    names = c("a", "b", "c", "d", "x", "y", "z")))
+#    checkEquals(target, current)
+#    current <- nodeData(res, n =c("a", "b"), attr ="gene")
+#    target <- as.list( structure(c("ax", "ab"), 
+#                    names = c("a", "b")))
+#    checkEquals(target, current)
+#
+#    cn <- as.logical(NA)
+#    current <- nodeData(res, n = c("c", "d", "x", "y", "z"), attr ="gene")
+#    target <- as.list( structure(c( cn, cn, cn, cn, cn), 
+#                    names = c("c", "d", "x", "y", "z")))
+#    checkEquals(target, current)
+#
+#}
+#
