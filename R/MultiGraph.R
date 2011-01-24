@@ -592,12 +592,12 @@ setMethod("graphIntersect", c("MultiGraph", "MultiGraph"),
         nodeFun <- NULL
 
     new_edge_sets <- lapply(eg, function(k) {
-                        .edgeIntersect(sgx@edge_sets[[k]], sgy@edge_sets[[k]],
+                        .mgedgeIntersect(sgx@edge_sets[[k]], sgy@edge_sets[[k]],
                                 edgeFun[[k]])         
                      })
     names(new_edge_sets) <- eg   
     mg <- new("MultiGraph", edge_sets = new_edge_sets, nodes = nn)
-    mg@nodeData <- .nodeIntersect(sgx@nodeData, sgy@nodeData, nodeFun)
+    mg@nodeData <- .mgnodeIntersect(sgx@nodeData, sgy@nodeData, nodeFun)
     mg 
 })
 
@@ -660,17 +660,95 @@ setMethod("graphUnion", c("MultiGraph", "MultiGraph"),
     new_edge_sets <- sapply(eg, function(k) {
                       df1 <- diEdgeSetToDataFrame(x@edge_sets[[k]],nodes(x))
                       df2 <- diEdgeSetToDataFrame(y@edge_sets[[k]],nodes(y))
-                      list(.edgeUnion(x@edge_sets[[k]], y@edge_sets[[k]], df1, df2, 
+                      list(.mgedgeUnion(x@edge_sets[[k]], y@edge_sets[[k]], df1, df2, 
                               theNodes, edgeFun[[k]]))         
                      })
     mg <- new("MultiGraph", edge_sets = c(new_edge_sets, edgeX, edgeY), 
             nodes = theNodes)
-    mg@nodeData <- .nodeUnion(x@nodeData, y@nodeData,
+    mg@nodeData <- .mgnodeUnion(x@nodeData, y@nodeData,
                           nodes(x), nodes(y), nodes(mg), nodeFun)
     mg
 })
 
-.edgeIntersect <- function(e1, e2, funList) {
+.mgnodeUnion <- function(attr1, attr2, ndX, ndY, ndAns, funList) {
+    xAttr <-  names(attr1)
+    yAttr <-  names(attr2)
+    unionAttrs <- union(xAttr, yAttr)
+    commonAttrs <- intersect(xAttr,yAttr)
+    singleAttrs <- unionAttrs[!unionAttrs %in% commonAttrs]
+      
+    cmnNds <- intersect(ndX, ndY)
+    fxNds <-  ndX[!ndX %in% cmnNds]
+    fyNds <-  ndY[!ndY %in% cmnNds]
+
+    ### deal with single attrs
+    n1 <- sapply(singleAttrs, function(k){
+               if(k %in% xAttr){
+                    indx <- match(ndX, ndAns)
+                    att <- rep(NA, length(ndAns))
+                    att[indx] <- attr1[[k]]
+               } else if(k %in% yAttr){
+                    indx <- match(ndY, ndAns)
+                    att <- rep(NA, length(ndAns))
+                    att[indx] <- attr2[[k]]
+               }
+               list(att)
+           })
+    
+    n2 <- sapply(commonAttrs, function(k) {
+               att <- rep(NA, length(ndAns))
+               ##from X
+               indx <- match(fxNds, ndAns)
+               att[indx] <- attr1[[k]][match(fxNds,ndX)]
+               ##from Y
+               indx <- match(fyNds, ndAns)
+               att[indx] <- attr2[[k]][match(fyNds,ndY)]
+               
+               if(!is.null(funList) && (k %in% names(funList))) {
+                    tmp <- sapply(cmnNds, function(p){
+                            dX <- match(p, ndX)
+                            dY <- match(p, ndY)
+                            funList[[k]](attr1[[k]][[dX]], attr2[[k]][[dY]])
+                        }, USE.NAMES = FALSE)
+                    indx <- match(cmnNds, ndAns)
+                    att[indx] <- tmp
+                } else if (is.vector(attr1[[k]]) && is.vector(attr2[[k]])){
+                    tmp <- sapply(cmnNds, function(p){
+                            dX <- match(p, ndX)
+                            dY <- match(p, ndY)
+                            identical(attr1[[k]][[dX]], attr2[[k]][[dY]])
+                        }, USE.NAMES = FALSE)
+                    indx <- match(cmnNds[tmp], ndAns)
+                    att[indx] <- attr1[[k]][match(cmnNds[tmp], ndX)]
+               }
+               list(att)
+            })
+     c(n1,n2)
+ }
+
+
+.mgnodeIntersect <- function(attr1, attr2, funList){
+    cmn <- intersect(names(attr1), names(attr2))
+    nattr <- structure(lapply(cmn, function(x) {
+                 len <- length(attr1[[x]])
+                 if(!is.null(funList) && (x %in% names(funList))) {
+                    res <- sapply(seq_len(len), function(p) {
+                             return(funList[[x]](attr1[[x]][[p]], attr2[[x]][[p]]))
+                           })
+                 } else if (is.vector(attr1[[x]]) && is.vector(attr2[[x]])) {
+                    indx <- which(sapply(seq_len(len), function(p){
+                                identical(attr1[[x]][p], attr2[[x]][p])
+                           }))
+                    res <- rep(NA, len)
+                    res[indx] <- attr1[[x]][indx]
+                }
+                res
+             }), names = cmn)
+     nattr
+ }
+
+
+.mgedgeIntersect <- function(e1, e2, funList) {
     dr1 <- isDirected(e1)
     dr2 <- isDirected(e1)
     if(dr1 != dr2)
@@ -714,7 +792,7 @@ setMethod("graphUnion", c("MultiGraph", "MultiGraph"),
 }
  
 
-.edgeUnion <- function(e1, e2, df1, df2, theNodes, funList) { 
+.mgedgeUnion <- function(e1, e2, df1, df2, theNodes, funList) { 
     dr1 <- isDirected(e1)
     dr2 <- isDirected(e2)
     if(dr1 != dr2)
@@ -765,6 +843,29 @@ setMethod("graphUnion", c("MultiGraph", "MultiGraph"),
     
     edge_set@weights <- as.numeric(.getUnionWeights(attrType, e1, e2, funList))
     edge_set
+}
+
+.getIntersectWeights <- function(attrType, x, y, funList) {
+    len <- length(attrType)
+    indx <- as.numeric(attrType)
+    from1 <- attr(attrType, "indx1")
+    from2 <- attr(attrType, "indx2")
+    attr1 <- rep(NA, len)
+    k <- indx ==0
+    val1 <- x@weights[from1[k]]
+    val2 <- y@weights[from2[k]]
+
+    if(!is.null(funList) && ("weight" %in% names(funList))) {
+        attr1[k] <-  sapply(seq_len(sum(k)), function(p) {
+                    return(funList[["weight"]](val1[[p]], val2[[p]]))
+                })
+    } else if(is.atomic(val1) && is.atomic(val2)) {
+         pt <-  which(val1 == val2)
+         tmp <- rep(NA, length(which(k)))
+         tmp[pt] <-  val1[pt]
+         attr1[k]  <- tmp
+    } 
+    attr1
 }
 
 extractGraphBAM <- function(g, edgeSets) {

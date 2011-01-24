@@ -106,6 +106,12 @@ setClass("MultiGraph",
          ## items will be MGEdgeSet objects
          edge_sets = "list"))
 
+setClass("attrPos",
+          representation = representation(
+          nodePos = "list",
+          edgePos = "list"))
+
 setClass("graphBAM", contains = "graph",
-         representation(edgeSet = "MGEdgeSet", nodes = "character"))
+         representation(edgeSet = "MGEdgeSet", nodes = "character", 
+             userAttrPos = "attrPos"))
 
