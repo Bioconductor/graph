@@ -34,6 +34,9 @@
 \alias{edgeData<-,graphBAM,missing,character,character,ANY-method}
 \alias{edgeData<-,graphBAM,character,missing,character,ANY-method}
 \alias{edgeData<-,graphBAM,missing,missing,character,ANY-method}
+\alias{edgeDataDefaults<-,graphBAM,character,ANY-method}
+\alias{edgeDataDefaults<-,graphBAM,missing,list-method}
+\alias{nodeDataDefaults<-,graphBAM,missing,list-method}
 \alias{graphBAM}
 \alias{coerce,graphBAM,graphAM-method}
 \alias{coerce,graphBAM,graphNEL-method}
@@ -287,8 +290,8 @@ Class \code{"\linkS4class{graph}"}, directly.
     weight <- c(2.3, 2.3, 4.3, 1.0, 3.0)
     df <- data.frame(from=f, to=t, weight= weight)
     g <- graphBAM(df)
-    gd <- graphBAM(df, edgemode = "directed")
     nd <- nodes(g)
+    nodeDataDefaults(g, attr ="color") <- "green"
     nodeData(g,n=c("b", "c"), attr ="color") <- "red"
     w1 <- edgeWeights(g)
     w2 <- edgeWeights(g,"a")
@@ -304,11 +307,11 @@ Class \code{"\linkS4class{graph}"}, directly.
     am <- as(g,"graphAM")
     nl <- as(g,"graphNEL")
     mt <- as(g,"matrix")
-    k  <- graphIntersect(g,g)
-    k <- graphUnion(g,g)
+## CLEANUP
+# k  <- graphIntersect(g,g)
+##  k <- graphUnion(g,g)
     e <- removeEdgesByWeight(g,lessThan= 3.0)
     f <- removeNode("a", g)
     g
-    gd
 }
 \keyword{classes}
