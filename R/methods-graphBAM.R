@@ -785,13 +785,12 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
     nms <- names(graph@edgeSet@edge_attrs)
     if(!is.null(nms)) {
         for(i in nms){
-
             graph@userAttrPos@edgePos[[i]] <-  
             graph:::setBitCell(graph@userAttrPos@edgePos[[i]], req_from, req_to,
                 rep(0L, nrow(req_ft)))
             ord <- .Call("graph_bitarray_getEdgeAttrOrder",graph@userAttrPos@edgePos[[i]],
                 as.integer(req_from), as.integer(req_to))
-            g@edgeSet@edge_attrs[[i]] <- g@edgeSet@edge_attrs[[i]][ord$origLeftPos]
+            graph@edgeSet@edge_attrs[[i]] <- graph@edgeSet@edge_attrs[[i]][ord$origLeftPos]
         }
     }
     graph@edgeSet@bit_vector <- graph:::setBitCell(graph@edgeSet@bit_vector,
