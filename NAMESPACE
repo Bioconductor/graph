@@ -3,7 +3,7 @@ useDynLib(BioC_graph, graph_bitarray_sum, graph_bitarray_set,
           graph_bitarray_transpose,graph_bitarray_rowColPos,
           graph_bitarray_edgeSetToMatrix, graph_bitarray_removeEdges,
           graph_bitarray_Intersect_Attrs, graph_bitarray_Union_Attrs,
-          graph_bitarray_getEdgeAttrPos)
+          graph_bitarray_getEdgeAttrOrder)
 
 importClassesFrom(methods, ANY, character, list, logical, matrix,
                   missing, "NULL", numeric, oldClass, vector)
