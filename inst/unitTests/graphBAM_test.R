@@ -604,80 +604,79 @@ test_BAM_isAdjacent <- function()
                  isAdjacent(gd, letters[1:5], "a"))
 }
 
-#test_BAM_Union_UnDirected <- function() {
-#    ## nodes a b c d x y
-#    from = c("a", "b", "d", "d")
-#    to   = c("b", "c", "x", "y")
-#    weight=c(1.2, 2.4, 3.5, 5.4)
-#    df <- data.frame(from, to, weight)
-#    g1 <- graphBAM(df, edgemode = "undirected")
-#
-#    ## nodes a b c d x y z 
-#    from = c("a", "b", "b", "d", "d")
-#    to   = c("b", "c", "d", "c", "x")
-#    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
-#    df <- data.frame(from, to, weight)
-#    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
-#            edgemode = "undirected")
-#
-#    g <- graphUnion(g1,g2)
-#    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
-#    checkEquals(FALSE, isDirected(g))
-#    df <- extractFromTo(g)
-#    tmp <- data.frame(from = c("a", "b", "b", "c", "d", "d"),
-#                      to = c("b", "c", "d", "d", "x", "y"),
-#                      weight = c( NA, NA, 2.1, 3.2, 3.5, 5.4))
-#    checkEquals(tmp, df)
-#}
-#
-#
-#test_BAM_Union_Directed <- function() {
-#    ## nodes a b c d x y
-#    from = c("a", "b", "d", "d")
-#    to   = c("b", "c", "x", "y")
-#    weight=c(1.2, 2.4, 3.5, 5.4)
-#    df <- data.frame(from, to, weight)
-#    g1 <- graphBAM(df, edgemode = "directed")
-#
-#    ## nodes a b c d x y z 
-#    from = c("a", "b", "b", "d", "d")
-#    to   = c("b", "c", "d", "c", "x")
-#    weight=c(1.2, 1.2, 2.1, 3.2, 3.5)
-#    df <- data.frame(from, to, weight)
-#    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
-#            edgemode = "directed")
-#
-#    g <- graphUnion(g1,g2)
-#    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
-#    checkEquals(TRUE, isDirected(g))
-#
-#    df <- extractFromTo(g)
-#    tmp <- data.frame(from = c("a", "b", "d", "b", "d", "d"),
-#                        to = c("b", "c", "c", "d", "x", "y"),
-#                    weight = c( 1.2, NA, 3.2, 2.1, 3.5, 5.4))
-#    checkEquals(tmp, df)
-#
-#}
-#
-#test_BAM_Union_Mixed <- function() {
-#    ## nodes a b d x y
-#    from = c("a", "d", "d")
-#    to   = c("b", "x", "y")
-#    weight=c(1.2, 3.2, 5.4)
-#    df <- data.frame(from, to, weight)
-#    g1 <- graphBAM(df, edgemode = "undirected")
-#
-#    ## nodes a b c d x y z 
-#    from = c("a", "b", "b", "d", "d")
-#    to   = c("b", "c", "d", "c", "x")
-#    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
-#    df <- data.frame(from, to, weight)
-#    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
-#            edgemode = "directed")
-#
-#    checkException(g <- graphUnion(g1,g2))
-#}
-#
+test_BAM_Union_UnDirected <- function() {
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "x", "y")
+    weight=c(1.2, 2.4, 3.5, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "undirected")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+        edgemode = "undirected")
+    g <- graphUnion(g1,g2)
+    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(FALSE, isDirected(g))
+    df <- extractFromTo(g)
+    tmp <- data.frame(from = c("a", "b", "b", "c", "d", "d"),
+        to = c("b", "c", "d", "d", "x", "y"),
+        weight = c( NA, NA, 2.1, 3.2, 3.5, 5.4))
+    checkEquals(tmp, df)
+}
+
+
+test_BAM_Union_Directed <- function() {
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "x", "y")
+    weight=c(1.2, 2.4, 3.5, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(1.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "directed")
+
+    g <- graphUnion(g1,g2)
+    checkEquals(union(nodes(g1), nodes(g2)), nodes(g))
+    checkEquals(TRUE, isDirected(g))
+
+    df <- extractFromTo(g)
+    tmp <- data.frame(from = c("a", "b", "d", "b", "d", "d"),
+                        to = c("b", "c", "c", "d", "x", "y"),
+                    weight = c( 1.2, NA, 3.2, 2.1, 3.5, 5.4))
+    checkEquals(tmp, df)
+
+}
+
+test_BAM_Union_Mixed <- function() {
+    ## nodes a b d x y
+    from = c("a", "d", "d")
+    to   = c("b", "x", "y")
+    weight=c(1.2, 3.2, 5.4)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "undirected")
+
+    ## nodes a b c d x y z 
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(3.2, 1.2, 2.1, 3.2, 3.5)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
+            edgemode = "directed")
+
+    checkException(g <- graphUnion(g1,g2))
+}
+
 test_BAM_inEdges <- function()
 {
       from = c("a", "d", "d", "b", "a")
@@ -740,8 +739,6 @@ test_BAM_undirected_attrs <- function() {
 
     edgeDataDefaults(bam, attr = "weight") <- 1
     edgeDataDefaults(bam, attr = "code") <- "plain"
-    #edgeData(bam, attr = "weight")  <- 1
-    #edgeData(bam, attr = "code") <- "plain"
 
     res <- unlist(edgeData(bam,from="a", attr="code"))
     nmres <- paste(c("a","a","a"), c ("b", "c", "x"), sep="|")  
@@ -763,196 +760,206 @@ test_BAM_undirected_attrs <- function() {
 
 test_graphBAM_detailed_Attribute_Intersection <- function() {
 
-## nodes a b c d x y
-from = c("a", "b", "d", "d")
-to   = c("b", "c", "y", "x")
-weight=c(1.2, 2.4, 5.4, 3.2)
-df <- data.frame(from, to, weight)
-g1 <- graphBAM(df, edgemode = "directed")
-edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(1.2, 2.4, 5.4, 3.2)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+    edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
 
 
-edgeDataDefaults(g1, attr = "color") <- "unknown"
-edgeDataDefaults(g1, attr ="type") <- "unknown"
-edgeData(g1, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
-edgeData(g1, from = from, to = to , attr = "type") <-  c("high", "low", "high", NA)
-## nodes a b c d x y z
-from = c("a", "b", "b", "d", "d")
-to   = c("b", "c", "d", "c", "x")
-weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
-df <- data.frame(from, to, weight)
-g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
+    edgeDataDefaults(g1, attr = "color") <- "unknown"
+    edgeDataDefaults(g1, attr ="type") <- "unknown"
+    edgeData(g1, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
+    edgeData(g1, from = from, to = to , attr = "type") <-  c("high", "low", "high", NA)
+    ## nodes a b c d x y z
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
         edgemode = "directed")
-edgeDataDefaults(g2, attr = "color") <- "unknown"
-edgeData(g2, from = from, to = to,  attr = "color") <- c("red", "blue", NA, "red",
-                                                         "yellow")
-g <- graphIntersect(g1, g2)
-df <- extractFromTo(g)
-tmp <- data.frame( from = c("a", "b", "d"), 
-                     to = c("b", "c", "x"), 
-                 weight = c(1.2, NA, 3.2))
+    edgeDataDefaults(g2, attr = "color") <- "unknown"
+    edgeData(g2, from = from, to = to,  attr = "color") <- c("red", "blue", NA, "red",
+        "yellow")
+    g <- graphIntersect(g1, g2)
+    df <- extractFromTo(g)
+    tmp <- data.frame( from = c("a", "b", "d"), 
+        to = c("b", "c", "x"), 
+        weight = c(1.2, NA, 3.2))
 
-checkEquals(tmp, df)
+    checkEquals(tmp, df)
 
-attColor <- edgeData(g, attr = "color")
-nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
-target <- structure( c("red", "blue", NA), names = nms)
-checkEquals(target, unlist(attColor))
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+    target <- structure( c("red", "blue", NA), names = nms)
+    checkEquals(target, unlist(attColor))
 
-checkException(edgeData(g, attr = "type"))
+    checkException(edgeData(g, attr = "type"))
 
-weightFun <- function(x, y) {
-   return(x +y )
-}
+    weightFun <- function(x, y) {
+        return(x +y )
+    }
 
-colorFun <- function(x,y) {
-    if(x=="red" && y == "red")
-        return("white")
-    else
-        return("black")
-}
-
-setClass("myType", representation = representation(typ ="character")) 
-myType <- function(typ){ new("myType", typ = typ)}
-typeFun <- function(x,y) {
-    if(is(x, "myType")  && is(y, "myType")){
-          if(x@typ =="low" || y@typ == "med")
-            return("low")
-         else
-            return("high")
+    colorFun <- function(x,y) {
+        if(x=="red" && y == "red")
+            return("white")
+        else
+            return("black")
         }
+
+    setClass("myType", representation = representation(typ ="character")) 
+    myType <- function(typ){ new("myType", typ = typ)}
+    typeFun <- function(x,y) {
+            if(is(x, "myType")  && is(y, "myType")){
+                if(x@typ =="low" || y@typ == "med")
+                    return("low")
+                else
+                    return("high")
+                }
+            else {return (NA)}
+    }
+    nodeDataDefaults(g1, attr ="color") <- "unknown"
+    nodeDataDefaults(g1, attr ="type") <- "unknown"
+    nodeDataDefaults(g2, attr ="color") <- "unknown"
+    nodeDataDefaults(g2, attr ="type") <- "unknown"
+
+    nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
+    nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
+    nodeData(g2,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "red")
+    nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
+    g <- graphIntersect(g1, g2, nodeFun = list(type = typeFun),
+        edgeFun = list(weight = weightFun, color = colorFun))
+
+    attWeight <- edgeData(g, attr = "weight")
+    nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+    target <- structure( c( 2.4, 6.6, 6.4), names = nms)
+    checkEquals(target, unlist(attWeight))
+
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+    target <- structure( c( 2.4, 6.6, 6.4), names = nms)
+    checkEquals(target, unlist(attWeight))
+
+    nodeColor <- nodeData(g, attr = "color")
+    target <-  as.list(structure(c("red", "green", NA, "unknown", "unknown",
+                "unknown"), names = c("a", "b", "c", "d", "x", "y")))
+    checkEquals(target, nodeColor)
+
+    nodeType <- nodeData(g, attr = "type")
+    target <-  as.list(structure(c("unknown", "low", "high", "unknown",
+                "unknown", "unknown"), names = c("a", "b", "c", "d", "x", "y")))
+    checkEquals(target, nodeType)
+}
+
+test_graphBAM_detailed_Attribute_Union <- function() {
+
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(1.2, 2.4, 5.4, 3.2)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+    edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
+    
+    edgeDataDefaults(g1, attr = "color")  <- "cyan"
+    edgeDataDefaults(g1, attr = "type")  <- "unknown"
+    edgeData(g1, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
+    edgeData(g1, from = from, to = to , attr = "type") <-  c("high", "low", "high", NA)
+  
+    ## nodes a b c d x y z
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
+        edgemode = "directed")
+    edgeDataDefaults(g2, attr = "color")  <- "cyan"
+
+    edgeData(g2, from = from, to = to,  attr = "color") <- c("red", "blue", NA, "red",
+        "yellow")
+    g <- graphUnion(g1, g2)
+    df <- extractFromTo(g)
+    tmp <- data.frame( from = c("a", "b", "d", "b", "d", "d"), 
+        to = c("b", "c", "c", "d", "x", "y"), 
+        weight = c(1.2, NA, 2.1, 5.6, 3.2, 5.4))
+    checkEquals(tmp, df)
+
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c("red", "blue", "red", NA, NA, NA), names = nms)
+    checkEquals(target, unlist(attColor))
+
+    attType <- edgeData(g, attr = "type")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
+    checkEquals(target, unlist(attType))
+
+
+    weightFun <- function(x, y) {
+        return(x + y )
+    }
+
+    colorFun <- function(x,y) {
+        if(x=="red" || y == "red")
+            return("white")
+        else
+            return("black")
+    }
+
+    setClass("myType", representation = representation(typ ="character")) 
+    myType <- function(typ){ new("myType", typ = typ)}
+    typeFun <- function(x,y) {
+        if(is(x, "myType")  && is(y, "myType")){
+            if(x@typ =="low" || y@typ == "med")
+                return("low")
+            else
+                return("high")
+            }
         else {return (NA)}
-        
+    }
+   
+    nodeDataDefaults(g1, attr ="color") <- "cyan"
+    nodeDataDefaults(g1, attr="type") <- "unknown"
+    nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
+    nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
+    
+    nodeDataDefaults(g2, attr ="color") <- "cyan"
+    nodeDataDefaults(g2, attr="type") <- "unknown"
+    nodeDataDefaults(g2, attr="test") <- "missing"
+
+    nodeData(g2,n = c("a", "b", "c", "z"), attr ="color") <- c("red", "green", "red","pink")
+    nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
+    nodeData(g2,n = c("a", "b", "c"), attr = "test") <- c("pass", "fail", "pass")
+
+
+    g <- graphUnion(g1, g2, edgeFun = list(weight = weightFun, color = colorFun))
+
+    attWeight <- edgeData(g, attr = "weight")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c( 2.4, 6.6, 2.1, 5.6, 6.4, 5.4), names = nms)
+    checkEquals(target, unlist(attWeight))
+
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure(c( "white", "black", "red", NA, "black", NA), names = nms)
+    checkEquals( target, unlist(attColor))
+
+    attType <- edgeData(g, attr = "type")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
+    checkEquals(target, unlist(attType))
+
+
+    attType <- edgeData(g, attr = "type")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
+    checkEquals(target, unlist(attType))
+
 }
-nodeDataDefaults(g1, attr ="color") <- "unknown"
-nodeDataDefaults(g1, attr ="type") <- "unknown"
-nodeDataDefaults(g2, attr ="color") <- "unknown"
-nodeDataDefaults(g2, attr ="type") <- "unknown"
-
-nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
-nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
-nodeData(g2,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "red")
-nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
-g <- graphIntersect(g1, g2, nodeFun = list(type = typeFun),
-            edgeFun = list(weight = weightFun, color = colorFun))
-
-attWeight <- edgeData(g, attr = "weight")
-nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
-target <- structure( c( 2.4, 6.6, 6.4), names = nms)
-checkEquals(target, unlist(attWeight))
-
-attColor <- edgeData(g, attr = "color")
-nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
-target <- structure( c( 2.4, 6.6, 6.4), names = nms)
-checkEquals(target, unlist(attWeight))
-
-nodeColor <- nodeData(g, attr = "color")
-target <-  as.list(structure(c("red", "green", NA, "unknown", "unknown",
-            "unknown"), names = c("a", "b", "c", "d", "x", "y")))
-checkEquals(target, nodeColor)
-
-nodeType <- nodeData(g, attr = "type")
-cn <- as.character(NA)
-target <-  as.list(structure(c("unknown", "low", "high", "unknown",
-            "unknown", "unknown"), names = c("a", "b", "c", "d", "x", "y")))
-checkEquals(target, nodeType)
-}
 
 
-#test_graphBAM_detailed_Attribute_Union <- function() {
-#
-### nodes a b c d x y
-#from = c("a", "b", "d", "d")
-#to   = c("b", "c", "y", "x")
-#weight=c(1.2, 2.4, 5.4, 3.2)
-#df <- data.frame(from, to, weight)
-#g1 <- graphBAM(df, edgemode = "directed")
-#edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
-#
-#edgeData(g1, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
-#edgeData(g1, from = from, to = to , attr = "type") <-  c("high", "low", "high", NA)
-### nodes a b c d x y z
-#from = c("a", "b", "b", "d", "d")
-#to   = c("b", "c", "d", "c", "x")
-#weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
-#df <- data.frame(from, to, weight)
-#g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
-#        edgemode = "directed")
-#edgeData(g2, from = from, to = to,  attr = "color") <- c("red", "blue", NA, "red",
-#                                                         "yellow")
-#g <- graphUnion(g1, g2)
-#df <- extractFromTo(g)
-#tmp <- data.frame( from = c("a", "b", "d", "b", "d", "d"), 
-#                     to = c("b", "c", "c", "d", "x", "y"), 
-#                 weight = c(1.2, NA, 2.1, 5.6, 3.2, 5.4))
-#checkEquals(tmp, df)
-#
-#attColor <- edgeData(g, attr = "color")
-#nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#target <- structure( c("red", "blue", "red", NA, NA, NA), names = nms)
-#checkEquals(target, unlist(attColor))
-#
-#attType <- edgeData(g, attr = "type")
-#nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
-#checkEquals(target, unlist(attType))
-#
-#
-#weightFun <- function(x, y) {
-#   return(x + y )
-#}
-#
-#colorFun <- function(x,y) {
-#    if(x=="red" || y == "red")
-#        return("white")
-#    else
-#        return("black")
-#}
-#
-#setClass("myType", representation = representation(typ ="character")) 
-#myType <- function(typ){ new("myType", typ = typ)}
-#typeFun <- function(x,y) {
-#    if(is(x, "myType")  && is(y, "myType")){
-#          if(x@typ =="low" || y@typ == "med")
-#            return("low")
-#         else
-#            return("high")
-#        }
-#        else {return (NA)}
-#        
-#}
-#nodeData(g1,n = c("a", "b", "c"), attr ="color") <- c("red", "green", "blue")
-#nodeData(g1,n = c("b", "c"), attr ="type") <- c(myType("low"), myType("high"))
-#nodeData(g2,n = c("a", "b", "c", "z"), attr ="color") <- c("red", "green", "red","pink")
-#nodeData(g2,n = c("b", "c"), attr ="type") <- c(myType("med"), myType("low"))
-#nodeData(g2,n = c("a", "b", "c"), attr = "test") <- c("pass", "fail", "pass")
-#
-#
-#g <- graphUnion(g1, g2, edgeFun = list(weight = weightFun, color = colorFun))
-#
-#attWeight <- edgeData(g, attr = "weight")
-#nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#target <- structure( c( 2.4, 6.6, 2.1, 5.6, 6.4, 5.4), names = nms)
-#checkEquals(target, unlist(attWeight))
-#
-#attColor <- edgeData(g, attr = "color")
-#nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#target <- structure(c( "white", "black", "red", NA, "black", NA), names = nms)
-#checkEquals( target, unlist(attColor))
-#
-#attType <- edgeData(g, attr = "type")
-#nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
-#checkEquals(target, unlist(attType))
-#
-#
-#attType <- edgeData(g, attr = "type")
-#nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#target <- structure( c("high", "low", NA, NA, NA, "high"), names = nms)
-#checkEquals(target, unlist(attType))
-#
-#}
-#
 test_graphBAM_removeEdgesByWeight <- function() {
     from = c("a", "b", "d", "d")
     to   = c("b", "c", "y", "x")
@@ -962,13 +969,13 @@ test_graphBAM_removeEdgesByWeight <- function() {
 
     edgeDataDefaults(g, attr="color") <- "pink"
     edgeData(g, from = from, to = to ,attr = "color") <-  c("red", "blue", NA, "green")
-  
+
     res <- removeEdgesByWeight(g, lessThan = 2.0)
     checkEquals(attr(res@edgeSet@bit_vector, "nbitset"), 2)
     checkEquals(res@edgeSet@weights, c(2.2, 2.0))
     current <- unlist( edgeData(res, attr = "color"))
     target <- structure(c("red", "blue"), 
-               names = paste(c("a", "b"), c("b", "c"), sep = "|"))
+        names = paste(c("a", "b"), c("b", "c"), sep = "|"))
     checkEquals(target, current)
 
     res <- removeEdgesByWeight(g, greaterThan = 1.9)
@@ -976,14 +983,14 @@ test_graphBAM_removeEdgesByWeight <- function() {
     checkEquals(res@edgeSet@weights, c(0.2, 0.4))
     current <- unlist( edgeData(res, attr = "color"))
     target <- structure(c("green", NA), 
-               names = paste(c("d", "d"), c("x", "y"), sep = "|"))
+        names = paste(c("d", "d"), c("x", "y"), sep = "|"))
     checkEquals(target, current)
 
     res <- removeEdgesByWeight(g, lessThan =1.0, greaterThan = 2)
     checkEquals(res@edgeSet@weights, c(2.0))
     current <- unlist( edgeData(res, attr = "color"))
     target <- structure(c("blue"), 
-               names = paste(  "b", "c", sep = "|"))
+        names = paste(  "b", "c", sep = "|"))
     checkEquals(target, current)
 
     res <- removeEdgesByWeight(g, greaterThan = 0.1)
@@ -1087,155 +1094,161 @@ test_BAM_undirected_attrs_s4 <- function() {
     checkEquals(res, target)
 }
 
-#
-#test_graphBAM_S4_Attribute_Intersection <- function() {
-#
-#    setClass("myColor", representation = representation(col ="character")) 
-#    setClass("myType", representation = representation(typ ="character")) 
-#    myColor <- function(col){ new("myColor", col = col)}
-#    myType <- function(typ){ new("myType", typ = typ)}
-#
-#    ## nodes a b c d x y
-#    from = c("a", "b", "d", "d")
-#    to   = c("b", "c", "y", "x")
-#    weight=c(1.2, 2.4, 5.4, 3.2)
-#    df <- data.frame(from, to, weight)
-#    g1 <- graphBAM(df, edgemode = "directed")
-#    edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
-#
-#    edgeData(g1, from = from, to = to ,attr = "color") <-  
-#    c(myColor("red"), myColor("blue"), NA, myColor("green"))
-#
-#    edgeData(g1, from = from, to = to , attr = "type") <-  
-#    c(myType("high"), myType("low"), myType("high"), NA)
-#    ## nodes a b c d x y z
-#    from = c("a", "b", "b", "d", "d")
-#    to   = c("b", "c", "d", "c", "x")
-#    weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
-#    df <- data.frame(from, to, weight)
-#    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
-#            edgemode = "directed")
-#    edgeData(g2, from = from, to = to,  attr = "color") <- 
-#    c(myColor("red"),myColor("blue"), NA, myColor("red"), myColor("yellow"))
-#
-#    g <- graphIntersect(g1, g2)
-#    df <- extractFromTo(g)
-#    tmp <- data.frame( from = c("a", "b", "d"), to = c("b", "c", "x"), 
-#            weight = c(1.2, NA, 3.2))
-#    checkEquals(tmp, df)
-#
-#    attColor <- edgeData(g, attr = "color")
-#    nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
-#    target <- structure( c(myColor("red"), myColor("blue"), NA), names = nms)
-#    checkEquals(target, unlist(attColor))
-#
-#    checkException(edgeData(g, attr = "type"))
-#
-#    weightFun <- function(x, y) {
-#        return(x + y )
-#    }
-#    colorFun <- function(x,y) {
-#        if(x@col=="red" && y@col == "red")
-#            return("white")
-#        else
-#            return("black")
-#    }
-#    g <- graphIntersect(g1, g2, edgeFun =list(weight = weightFun, color = colorFun))
-#
-#    df <- extractFromTo(g)
-#    tmp <- data.frame( from = c("a", "b", "d"), 
-#            to = c("b", "c", "x"), 
-#            weight = c(2.4, 6.6 , 6.4))
-#    checkEquals(tmp, df)
-#    attColor <- edgeData(g, attr = "color")
-#    nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
-#    target <- structure( c("white", "black", "black"), names = nms)
-#    checkEquals(target, unlist(attColor))
-#
-#    checkException(edgeData(g, attr = "type"))
-#
-#}
-#
-#test_graphBAM_S4_Attribute_Union <- function() {
-#    setClass("myColor", representation = representation(col ="character")) 
-#    setClass("myType", representation = representation(typ ="character")) 
-#    myColor <- function(col){ new("myColor", col = col)}
-#    myType <- function(typ){ new("myType", typ = typ)}
-#
-#    ## nodes a b c d x y
-#    from = c("a", "b", "d", "d")
-#    to   = c("b", "c", "y", "x")
-#    weight=c(1.2, 2.4, 5.4, 3.2)
-#    df <- data.frame(from, to, weight)
-#    g1 <- graphBAM(df, edgemode = "directed")
-#    edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
-#
-#    edgeData(g1, from = from, to = to ,attr = "color") <-  
-#    c(myColor("red"), myColor("blue"), NA, myColor("green"))
-#    edgeData(g1, from = from, to = to , attr = "type") <- 
-#    c(myType("high"), myType("low"), myType("high"), NA)
-#    ## nodes a b c d x y z
-#    from = c("a", "b", "b", "d", "d")
-#    to   = c("b", "c", "d", "c", "x")
-#    weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
-#    df <- data.frame(from, to, weight)
-#    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
-#            edgemode = "directed")
-#    edgeData(g2, from = from, to = to,  attr = "color") <- 
-#    c(myColor("red"), myColor("blue"), NA, myColor("red"), myColor("yellow"))
-#
-#    g <- graphUnion(g1, g2)
-#    df <- extractFromTo(g)
-#    tmp <- data.frame( from = c("a", "b", "d", "b", "d", "d"), 
-#            to = c("b", "c", "c", "d", "x", "y"), 
-#            weight = c(1.2, NA, 2.1, 5.6, 3.2, 5.4))
-#    checkEquals(tmp, df)
-#
-#    attColor <- edgeData(g, attr = "color")
-#    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#    target <- structure( c(myColor("red"), myColor("blue"), myColor("red"), NA, NA, NA), names = nms)
-#    checkEquals(target, unlist(attColor))
-#
-#    attType <- edgeData(g, attr = "type")
-#    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#    target <- structure( c(myType("high"), myType("low"), NA, NA, NA, myType("high")), names = nms)
-#    checkEquals(target, unlist(attType))
-#
-#    weightFun <- function(x, y) {
-#        return(x + y )
-#    }
-#
-#    colorFun <- function(x,y) {
-#        if(x@col =="red" || y@col == "red")
-#            return("white")
-#        else
-#            return("black")
-#    }
-#
-#    g <- graphUnion(g1, g2, edgeFun = list(weight = weightFun, color = colorFun))
-#
-#    attWeight <- edgeData(g, attr = "weight")
-#    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#    target <- structure( c( 2.4, 6.6, 2.1, 5.6, 6.4, 5.4), names = nms)
-#    checkEquals(target, unlist(attWeight))
-#
-#    attColor <- edgeData(g, attr = "color")
-#    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#    target <- structure(c( "white", "black", myColor("red"), NA, "black", NA), names = nms)
-#    checkEquals( target, unlist(attColor))
-#
-#    attType <- edgeData(g, attr = "type")
-#    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#    target <- structure( c(myType("high"), myType("low"), NA, NA, NA, myType("high")), names = nms)
-#    checkEquals(target, unlist(attType))
-#
-#    attType <- edgeData(g, attr = "type")
-#    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
-#    target <- structure(c( myType("high"), myType("low"), NA, NA, NA, myType("high")), names = nms)
-#    checkEquals(target, unlist(attType))
-#
-#}
-#
+
+test_graphBAM_S4_Attribute_Intersection <- function() {
+
+    setClass("myColor", representation = representation(col ="character")) 
+    setClass("myType", representation = representation(typ ="character")) 
+    myColor <- function(col){ new("myColor", col = col)}
+    myType <- function(typ){ new("myType", typ = typ)}
+
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(1.2, 2.4, 5.4, 3.2)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+    edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
+
+    edgeDataDefaults(g1, attr="color") <- "cyan"
+    edgeDataDefaults(g1, attr="type") <- "unknown"
+    edgeData(g1, from = from, to = to ,attr = "color") <-  c(myColor("red"),
+        myColor("blue"), NA, myColor("green"))
+
+    edgeData(g1, from = from, to = to , attr = "type") <- c(myType("high"),
+        myType("low"), myType("high"), NA)
+    ## nodes a b c d x y z
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
+        edgemode = "directed")
+    edgeDataDefaults(g2, attr ="color") <- "cyan"
+    edgeData(g2, from = from, to = to,  attr = "color") <- c(myColor("red"),
+        myColor("blue"), NA, myColor("red"), myColor("yellow"))
+
+    g <- graphIntersect(g1, g2)
+    df <- extractFromTo(g)
+    tmp <- data.frame( from = c("a", "b", "d"), to = c("b", "c", "x"), 
+        weight = c(1.2, NA, 3.2))
+    checkEquals(tmp, df)
+
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+    target <- structure( c(myColor("red"), myColor("blue"), NA), names = nms)
+    checkEquals(target, unlist(attColor))
+
+    checkException(edgeData(g, attr = "type"))
+
+    weightFun <- function(x, y) {
+        return(x + y )
+    }
+    colorFun <- function(x,y) {
+        if(x@col=="red" && y@col == "red")
+            return("white")
+        else
+            return("black")
+    }
+    g <- graphIntersect(g1, g2, edgeFun =list(weight = weightFun, color = colorFun))
+
+    df <- extractFromTo(g)
+    tmp <- data.frame( from = c("a", "b", "d"), 
+            to = c("b", "c", "x"), 
+            weight = c(2.4, 6.6 , 6.4))
+    checkEquals(tmp, df)
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
+    target <- structure( c("white", "black", "black"), names = nms)
+    checkEquals(target, unlist(attColor))
+    checkException(edgeData(g, attr = "type"))
+
+}
+
+test_graphBAM_S4_Attribute_Union <- function() {
+
+    setClass("myColor", representation = representation(col ="character")) 
+    setClass("myType", representation = representation(typ ="character")) 
+    myColor <- function(col){ new("myColor", col = col)}
+    myType <- function(typ){ new("myType", typ = typ)}
+
+    ## nodes a b c d x y
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(1.2, 2.4, 5.4, 3.2)
+    df <- data.frame(from, to, weight)
+    g1 <- graphBAM(df, edgemode = "directed")
+    edgeData(g1, from = from, to = to ,attr = "weight")  <- c(1.2, 2.4, 5.4, 3.2)
+
+    edgeDataDefaults(g1, attr = "color") <- "cyan"
+    edgeDataDefaults(g1, attr = "type") <- "missing"
+    edgeData(g1, from = from, to = to ,attr = "color") <- c(myColor("red"), 
+        myColor("blue"), NA, myColor("green"))
+    edgeData(g1, from = from, to = to , attr = "type") <- c(myType("high"), 
+        myType("low"), myType("high"), NA)
+    ## nodes a b c d x y z
+    from = c("a", "b", "b", "d", "d")
+    to   = c("b", "c", "d", "c", "x")
+    weight=c(1.2, 4.2, 5.6, 2.1, 3.2)
+    df <- data.frame(from, to, weight)
+    g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"),
+            edgemode = "directed")
+    edgeDataDefaults(g2, attr = "color") <- "cyan"
+    edgeData(g2, from = from, to = to,  attr = "color") <- c(myColor("red"), 
+        myColor("blue"), NA, myColor("red"), myColor("yellow"))
+
+    g <- graphUnion(g1, g2)
+    df <- extractFromTo(g)
+    tmp <- data.frame( from = c("a", "b", "d", "b", "d", "d"), 
+            to = c("b", "c", "c", "d", "x", "y"), 
+            weight = c(1.2, NA, 2.1, 5.6, 3.2, 5.4))
+    checkEquals(tmp, df)
+
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c(myColor("red"), myColor("blue"), myColor("red"), NA, NA, NA), names = nms)
+    checkEquals(target, unlist(attColor))
+
+    attType <- edgeData(g, attr = "type")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c(myType("high"), myType("low"), NA, NA, NA, myType("high")), names = nms)
+    checkEquals(target, unlist(attType))
+
+    weightFun <- function(x, y) {
+        return(x + y )
+    }
+
+    colorFun <- function(x,y) {
+        if(x@col =="red" || y@col == "red")
+            return("white")
+        else
+            return("black")
+    }
+
+    g <- graphUnion(g1, g2, edgeFun = list(weight = weightFun, color = colorFun))
+
+    attWeight <- edgeData(g, attr = "weight")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c( 2.4, 6.6, 2.1, 5.6, 6.4, 5.4), names = nms)
+    checkEquals(target, unlist(attWeight))
+
+    attColor <- edgeData(g, attr = "color")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure(c( "white", "black", myColor("red"), NA, "black", NA), names = nms)
+    checkEquals( target, unlist(attColor))
+
+    attType <- edgeData(g, attr = "type")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure( c(myType("high"), myType("low"), NA, NA, NA, myType("high")), names = nms)
+    checkEquals(target, unlist(attType))
+
+    attType <- edgeData(g, attr = "type")
+    nms <- paste(c("a", "b", "d", "b", "d", "d"),  c("b", "c", "c", "d", "x", "y"), sep = "|")
+    target <- structure(c( myType("high"), myType("low"), NA, NA, NA, myType("high")), names = nms)
+    checkEquals(target, unlist(attType))
+
+}
+
 test_graphBAM_addNode1 <- function(){
 
     from = c("a", "b", "d", "d")
@@ -1296,72 +1309,78 @@ test_graphBAM_addNode2 <- function(){
 }
 
 
-#
-#test_graphBAM_nodeUnion_Attributes <- function(use.factors=TRUE){
-#    setClass("myType", representation = representation(typ ="character")) 
-#    myType <- function(typ){ new("myType", typ = typ)}
-#    testFun <- function(x,y) {
-#        if(is(x, "myType")  && is(y, "myType")){
-#    
-#            if(x@typ =="aa" || y@typ == "ac")
-#                return("ax")
-#            else
-#                return("ab")
-#        } else return(as.character(NA))
-#
-#    }
-#    funList <- structure(list(testFun), names ="gene")
-#    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-#            to  =c("b", "c", "d", "a", "d"),
-#            weight=c(1, 3.1, 5.4, 1, 2.2),
-#            stringsAsFactors = use.factors)
-#
-#    g1 <- graphBAM(ft1, edgemode="directed")
-#    nodeData(g1, n = c("a", "b", "c") , attr = "color") <- c("red", "green", "blue")
-#    nodeData(g1, n = c("a", "b"), attr = "type") <- c("low", "high")
-#    nodeData(g1, n = c("a", "b"), attr = "kp") <- c("kplow", "kphigh")
-#    nodeData(g1, n = c("a", "b"), attr = "gene") <- c(myType("aa"), myType("bt"))
-#
-#    ft1 <- data.frame(from=c("a", "a", "b"),
-#            to=c("b", "x", "z"),
-#            weight=c(6, 5, 2),
-#            stringsAsFactors = use.factors)
-#    g2 <- graphBAM(ft1,nodes = c("a","b", "c", "d", "x", "y", "z"), edgemode = "directed")
-#    nodeData(g2, n = c("a", "b", "x", "y", "z") , attr = "color") <- c("red", "red", "green", "pink", "yellow")
-#    nodeData(g2, n = c("a", "b"), attr = "type") <- c("low", "high")
-#    nodeData(g2, n = c("a", "b"), attr = "gene") <- c(myType("at"), myType("kt"))
-#
-#
-#    res <- graphUnion(g1, g2, nodeFun = funList)
-#
-#    current <- nodeData(res, attr = "color")
-#    cn <- as.character(NA)
-#    target <- as.list( structure(c("red", cn, cn, cn, "green", "pink", "yellow"), 
-#                    names = c("a", "b", "c", "d", "x", "y", "z")))
-#    checkEquals(target, current)
-#
-#    current <- nodeData(res, attr = "type")
-#    cn <- as.character(NA)
-#    target <- as.list( structure(c("low", "high", cn, cn, cn, cn, cn), 
-#                    names = c("a", "b", "c", "d", "x", "y", "z")))
-#    checkEquals(target, current)
-#
-#    current <- nodeData(res, attr = "kp")
-#    cn <- as.character(NA)
-#    target <- as.list( structure(c("kplow", "kphigh", cn, cn, cn, cn, cn), 
-#                    names = c("a", "b", "c", "d", "x", "y", "z")))
-#    checkEquals(target, current)
-#  
-#    current <- nodeData(res, n = c("a", "b", "c", "d"), attr ="gene")
-#    target <- as.list( structure(c("ax", "ab", cn ,cn), names = c("a", "b", "c", "d")))
-#    checkEquals(target, current)
-#
-#    current <- nodeData(res, n= c( "x", "y", "z"), attr ="gene")
-#    target <- as.list( structure(c(as.logical(NA), as.logical(NA), as.logical(NA)), 
-#                    names = c("x", "y", "z")))
-#    checkEquals(target, current)
-#}
-#
+
+test_graphBAM_nodeUnion_Attributes <- function(use.factors=TRUE){
+   
+    setClass("myType", representation = representation(typ ="character")) 
+    myType <- function(typ){ new("myType", typ = typ)}
+    testFun <- function(x,y) {
+        if(is(x, "myType")  && is(y, "myType")){
+    
+            if(x@typ =="aa" || y@typ == "ac")
+                return("ax")
+            else
+                return("ab")
+        } else return(as.character(NA))
+    }
+    funList <- structure(list(testFun), names ="gene")
+    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+            to  =c("b", "c", "d", "a", "d"),
+            weight=c(1, 3.1, 5.4, 1, 2.2),
+            stringsAsFactors = use.factors)
+
+    g1 <- graphBAM(ft1, edgemode="directed")
+    nodeDataDefaults(g1, attr="color") <- "cyan"
+    nodeDataDefaults(g1, attr="type") <- "missing"
+    nodeDataDefaults(g1, attr="kp") <- "missing"
+    nodeDataDefaults(g1, attr="gene") <- "unknown"
+    nodeData(g1, n = c("a", "b", "c") , attr = "color") <- c("red", "green", "blue")
+    nodeData(g1, n = c("a", "b"), attr = "type") <- c("low", "high")
+    nodeData(g1, n = c("a", "b"), attr = "kp") <- c("kplow", "kphigh")
+    nodeData(g1, n = c("a", "b"), attr = "gene") <- c(myType("aa"), myType("bt"))
+
+    ft1 <- data.frame(from=c("a", "a", "b"),
+            to=c("b", "x", "z"),
+            weight=c(6, 5, 2),
+            stringsAsFactors = use.factors)
+    g2 <- graphBAM(ft1,nodes = c("a","b", "c", "d", "x", "y", "z"), edgemode = "directed")
+    
+    nodeDataDefaults(g2, attr ="color") <- "cyan"
+    nodeDataDefaults(g2, attr="type") <- "missing"
+    nodeDataDefaults(g2, attr="gene") <- "unknown"
+    nodeData(g2, n = c("a", "b", "x", "y", "z") , attr = "color") <- c("red", "red", "green", "pink", "yellow")
+    nodeData(g2, n = c("a", "b"), attr = "type") <- c("low", "high")
+    nodeData(g2, n = c("a", "b"), attr = "gene") <- c(myType("at"), myType("kt"))
+
+    res <- graphUnion(g1, g2, nodeFun = funList)
+
+    current <- nodeData(res, attr = "color")
+    cn <- as.character(NA)
+    target <- as.list( structure(c("red", cn, cn, "cyan", "green", "pink", "yellow"), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, attr = "type")
+    target <- as.list( structure(c("low", "high", "missing", "missing", "missing", "missing", "missing"), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, attr = "kp")
+    target <- as.list( structure(c("kplow", "kphigh", "missing", "missing", "missing",
+                "missing", "missing"), 
+                    names = c("a", "b", "c", "d", "x", "y", "z")))
+    checkEquals(target, current)
+  
+    current <- nodeData(res, n = c("a", "b", "c", "d"), attr ="gene")
+    target <- as.list( structure(c("ax", "ab", cn ,cn), names = c("a", "b", "c", "d")))
+    checkEquals(target, current)
+
+    current <- nodeData(res, n= c( "x", "y", "z"), attr ="gene")
+    target <- as.list( structure(c("unknown","unknown", "unknown"), 
+                    names = c("x", "y", "z")))
+    checkEquals(target, current)
+}
+
 
 test_graphBAM_removeNode <- function(){
 

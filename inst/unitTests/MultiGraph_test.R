@@ -311,93 +311,93 @@ mg_equals <- function(g1, g2)
     checkEquals(eweights(g1, "==>"), eweights(g2, "==>"))
 }
 
-test_edgeSetIntersect0_trivial <- function()
-{
-    ## Verify 0 and 1 edge set cases for directed/undirected
-    df <- data.frame(from="a", to="b", weight=1L)
-    mgs <- list(
-                ## empty edge sets
-                MultiGraph(list(), nodes = letters),
-                MultiGraph(list(), nodes = letters, directed = FALSE),
-                ## single edge set
-                MultiGraph(list(e1=df)),
-                MultiGraph(list(e1=df), directed = FALSE))
-    for (g in mgs) {
-        mg_equals(g, edgeSetIntersect0(g))
-    }
-    ## Verify empty intersection for disjoint graphs
-    df1 <- data.frame(from="a", to="b", weight=1L)
-    df2 <- data.frame(from="x", to="y", weight=1L)
-    g <- MultiGraph(list(e1=df1, e2=df2))
-    gu <- MultiGraph(list(e1=df1, e2=df2), directed = FALSE)
-    want <- MultiGraph(list(), nodes = c("a", "b", "x", "y"))
-    mg_equals(want, edgeSetIntersect0(g))
-    mg_equals(want, edgeSetIntersect0(gu))
-}
-
-test_edgeSetIntersect0_directed_1 <- function()
-{
-    ## non-trivial directed intersect
-    g <- make_directed_MultiGraph()$g
-    gi <- edgeSetIntersect0(g)
-    ## TODO: do we want the minimal node set or not?
-    ## checkEquals(c("a", "b", "c"), nodes(gi))
-    checkEquals(nodes(g), nodes(gi))    # original nodes
-    checkEquals(c(e1_e2=2L), numEdges(gi)[1L])
-    checkEquals("e1_e2", names(numEdges(gi)))
-    w <- c(as.numeric(NA), as.numeric(NA))
-    names(w) <- c("a=>b", "a=>c")
-    checkEquals(list(e1_e2=w), eweights(gi, "=>"))
-}
-
-test_edgeSetIntersect0_random <- function()
-{
-    make_data <- function(nsets, nn, ne, ns,
-                          type=c("directed", "undirected")) {
-        ## nsets: number of edge sets
-        ## nn: number of nodes
-        ## ne: number of edges
-        ## ns: number of shared edges
-        directed <- switch(match.arg(type),
-                           directed=TRUE,
-                           undirected=FALSE,
-                           mixed=sample(c(TRUE, FALSE), nsets, replace=TRUE))
-        grouped <- randFromTo2(nn, (ne * nsets) + ns, directed = all(directed))$ft
-        ## for the undirected case, we will end up with fewer edges so
-        ## need to adjust.
-        ne <- (nrow(grouped) - ns) %/% nsets
-        shared <- grouped[1:ns, ]
-        starts <- seq(ns, nrow(grouped) - ne, by = ne) + 1L
-        esets <- vector("list", nsets)
-        names(esets) <- paste("e", 1:nsets, sep = "")
-        for (i in seq_along(esets)) {
-            z <- grouped[seq(starts[[i]], starts[[i]] + ne - 1L), ]
-            z <- rbind(shared, z)
-            esets[[i]] <- z
-        }
-        list(shared=shared,
-             g=MultiGraph(esets, directed = directed),
-             esets = esets)
-    }
-    do_test <- function(d)
-    {
-        gi <- edgeSetIntersect0(d$g)
-        checkEquals(nrow(d$shared), numEdges(gi)[[1]])
-        all_directed <- all(isDirected(d$g))
-        checkEquals(all_directed, isDirected(gi)[[1]])
-        checkEquals(nodes(d$g), nodes(gi))
-    }
-
-    for (t in c("directed", "undirected")) {
-        for (i in 1:10) {
-            do_test(make_data(2, 10, 10, 3, type = t))
-            do_test(make_data(3, 10, 10, 3, type = t))
-            do_test(make_data(3, 10, 10, 1, type = t))
-            do_test(make_data(3, 11, 20, 6, type = t))
-        }
-    }
-}
-
+#test_edgeSetIntersect0_trivial <- function()
+#{
+#    ## Verify 0 and 1 edge set cases for directed/undirected
+#    df <- data.frame(from="a", to="b", weight=1L)
+#    mgs <- list(
+#                ## empty edge sets
+#                MultiGraph(list(), nodes = letters),
+#                MultiGraph(list(), nodes = letters, directed = FALSE),
+#                ## single edge set
+#                MultiGraph(list(e1=df)),
+#                MultiGraph(list(e1=df), directed = FALSE))
+#    for (g in mgs) {
+#        mg_equals(g, edgeSetIntersect0(g))
+#    }
+#    ## Verify empty intersection for disjoint graphs
+#    df1 <- data.frame(from="a", to="b", weight=1L)
+#    df2 <- data.frame(from="x", to="y", weight=1L)
+#    g <- MultiGraph(list(e1=df1, e2=df2))
+#    gu <- MultiGraph(list(e1=df1, e2=df2), directed = FALSE)
+#    want <- MultiGraph(list(), nodes = c("a", "b", "x", "y"))
+#    mg_equals(want, edgeSetIntersect0(g))
+#    mg_equals(want, edgeSetIntersect0(gu))
+#}
+#
+#test_edgeSetIntersect0_directed_1 <- function()
+#{
+#    ## non-trivial directed intersect
+#    g <- make_directed_MultiGraph()$g
+#    gi <- edgeSetIntersect0(g)
+#    ## TODO: do we want the minimal node set or not?
+#    ## checkEquals(c("a", "b", "c"), nodes(gi))
+#    checkEquals(nodes(g), nodes(gi))    # original nodes
+#    checkEquals(c(e1_e2=2L), numEdges(gi)[1L])
+#    checkEquals("e1_e2", names(numEdges(gi)))
+#    w <- c(as.numeric(NA), as.numeric(NA))
+#    names(w) <- c("a=>b", "a=>c")
+#    checkEquals(list(e1_e2=w), eweights(gi, "=>"))
+#}
+#
+#test_edgeSetIntersect0_random <- function()
+#{
+#    make_data <- function(nsets, nn, ne, ns,
+#                          type=c("directed", "undirected")) {
+#        ## nsets: number of edge sets
+#        ## nn: number of nodes
+#        ## ne: number of edges
+#        ## ns: number of shared edges
+#        directed <- switch(match.arg(type),
+#                           directed=TRUE,
+#                           undirected=FALSE,
+#                           mixed=sample(c(TRUE, FALSE), nsets, replace=TRUE))
+#        grouped <- randFromTo2(nn, (ne * nsets) + ns, directed = all(directed))$ft
+#        ## for the undirected case, we will end up with fewer edges so
+#        ## need to adjust.
+#        ne <- (nrow(grouped) - ns) %/% nsets
+#        shared <- grouped[1:ns, ]
+#        starts <- seq(ns, nrow(grouped) - ne, by = ne) + 1L
+#        esets <- vector("list", nsets)
+#        names(esets) <- paste("e", 1:nsets, sep = "")
+#        for (i in seq_along(esets)) {
+#            z <- grouped[seq(starts[[i]], starts[[i]] + ne - 1L), ]
+#            z <- rbind(shared, z)
+#            esets[[i]] <- z
+#        }
+#        list(shared=shared,
+#             g=MultiGraph(esets, directed = directed),
+#             esets = esets)
+#    }
+#    do_test <- function(d)
+#    {
+#        gi <- edgeSetIntersect0(d$g)
+#        checkEquals(nrow(d$shared), numEdges(gi)[[1]])
+#        all_directed <- all(isDirected(d$g))
+#        checkEquals(all_directed, isDirected(gi)[[1]])
+#        checkEquals(nodes(d$g), nodes(gi))
+#    }
+#
+#    for (t in c("directed", "undirected")) {
+#        for (i in 1:10) {
+#            do_test(make_data(2, 10, 10, 3, type = t))
+#            do_test(make_data(3, 10, 10, 3, type = t))
+#            do_test(make_data(3, 10, 10, 1, type = t))
+#            do_test(make_data(3, 11, 20, 6, type = t))
+#        }
+#    }
+#}
+##
 test_subSetEdgeSets_single <- function(){
     g <- make_directed_MultiGraph()$g
     gi <- subsetEdgeSets(g, "e1")
@@ -575,53 +575,53 @@ checkGraphAMObj <- function(am, mg){
     })
 
 }
-
-test_mixed_MultiGraph_Intersect <- function(use.factors=TRUE) {
-
-    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
-                      to=c("b", "c", "d", "a", "d"),
-                      weight=c(1, 3.1, 5.4, 1, 2.2),
-                      stringsAsFactors = use.factors)
-    
-    ft2 <- data.frame(from=c("a", "a", "a", "x", "x"),
-                      to=c("b", "c", "x", "y", "c"),
-                      weight=c(3.4, 2.6, 1, 1, 1),
-                      stringsAsFactors = use.factors)
-
-    ft3 <- data.frame(from=c("a", "a", "x", "x", "x"),
-                      to  =c("b", "c", "a", "y", "c"),
-                      weight=c(1:5),
-                      stringsAsFactors = use.factors)
-
-    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
-                  e5=ft3[FALSE, ])
-
-    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
-
-    ft1 <- data.frame(from=c("a", "b"),
-                      to=c("d", "d"),
-                      weight=c(5.4, 2.2),
-                      stringsAsFactors = use.factors)
-
-    ft2 <- data.frame(from=c("a", "a", "a"),
-                      to=c("b", "c", "x"),
-                      weight=c(3.4, 2.6, 1),
-                      stringsAsFactors = use.factors)
-
-    esets <- list(e1=ft1, e2=ft2)
-
-    g2 <- MultiGraph(esets, directed = c(TRUE, FALSE))
-    res <- graphIntersect(g1, g2)
-    checkEquals(nodes(res), c("a", "b", "c", "d", "x"))
-    checkEquals(isDirected(res),
-            structure(c(TRUE, FALSE), names = c("e1", "e2")))
-    df <- extractFromTo(res)
-    checkEquals(names(df), c("e1", "e2"))
-    df1 <- data.frame(from = c("a", "b"), to = c("d", "d"), weight = c(5.4, 2.2))
-    checkEquals(df$e1, df1)   
-    df2 <- data.frame(from = c("a", "a", "a"), to = c("b", "c", "x"), weight = c(3.4, 2.6, 1))
-    checkEquals(df$e2, df2)   
-}
+#
+#test_mixed_MultiGraph_Intersect <- function(use.factors=TRUE) {
+#
+#    ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
+#                      to=c("b", "c", "d", "a", "d"),
+#                      weight=c(1, 3.1, 5.4, 1, 2.2),
+#                      stringsAsFactors = use.factors)
+#    
+#    ft2 <- data.frame(from=c("a", "a", "a", "x", "x"),
+#                      to=c("b", "c", "x", "y", "c"),
+#                      weight=c(3.4, 2.6, 1, 1, 1),
+#                      stringsAsFactors = use.factors)
+#
+#    ft3 <- data.frame(from=c("a", "a", "x", "x", "x"),
+#                      to  =c("b", "c", "a", "y", "c"),
+#                      weight=c(1:5),
+#                      stringsAsFactors = use.factors)
+#
+#    esets <- list(e1=ft1, e2=ft2, e3=ft3, e4=ft2[FALSE, ],
+#                  e5=ft3[FALSE, ])
+#
+#    g1 <- MultiGraph(esets, directed = c(TRUE, FALSE, TRUE, TRUE, FALSE))
+#
+#    ft1 <- data.frame(from=c("a", "b"),
+#                      to=c("d", "d"),
+#                      weight=c(5.4, 2.2),
+#                      stringsAsFactors = use.factors)
+#
+#    ft2 <- data.frame(from=c("a", "a", "a"),
+#                      to=c("b", "c", "x"),
+#                      weight=c(3.4, 2.6, 1),
+#                      stringsAsFactors = use.factors)
+#
+#    esets <- list(e1=ft1, e2=ft2)
+#
+#    g2 <- MultiGraph(esets, directed = c(TRUE, FALSE))
+#    res <- graphIntersect(g1, g2)
+#    checkEquals(nodes(res), c("a", "b", "c", "d", "x"))
+#    checkEquals(isDirected(res),
+#            structure(c(TRUE, FALSE), names = c("e1", "e2")))
+#    df <- extractFromTo(res)
+#    checkEquals(names(df), c("e1", "e2"))
+#    df1 <- data.frame(from = c("a", "b"), to = c("d", "d"), weight = c(5.4, 2.2))
+#    checkEquals(df$e1, df1)   
+#    df2 <- data.frame(from = c("a", "a", "a"), to = c("b", "c", "x"), weight = c(3.4, 2.6, 1))
+#    checkEquals(df$e2, df2)   
+#}
 
 #test_mixed_MultiGraph_Union <- function(use.factors=TRUE) {
 #
