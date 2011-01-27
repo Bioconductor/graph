@@ -755,7 +755,7 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
     int len = length(inputBits) * 8;
     int i, byteIndex, bitIndex , shft, setIndx = 0;
     int nn = asInteger(getAttrib(inputBits, install("nbitset")));
-    SEXP from, indx1, indx2 ;
+    SEXP from, indx1, indx2, res, namesres ;
     PROTECT(from = allocVector(INTSXP, nn));
     PROTECT(indx1 = allocVector(INTSXP , nn));
     PROTECT(indx2 = allocVector(INTSXP , nn));
@@ -773,26 +773,30 @@ SEXP graph_bitarray_Union_Attrs(SEXP inputBits, SEXP cmnBits, SEXP fromOneBits,
                from1Indx++;
                from2Indx++;
                INTEGER(from)[setIndx] = 0;
-               INTEGER(indx1)[setIndx] = from1Indx ;
-               INTEGER(indx2)[setIndx] = from2Indx;
             } else if(fromOne[byteIndex] & (shft)) {
                from1Indx++; 
                INTEGER(from)[setIndx] = 1;
-               INTEGER(indx1)[setIndx] = from1Indx;
-                      
             } else if(fromTwo[byteIndex] & (shft)) {
-                from2Indx++;
-                INTEGER(from)[setIndx] = 2;
-                INTEGER(indx2)[setIndx] = from2Indx;
+               from2Indx++;
+               INTEGER(from)[setIndx] = 2;
             }
+            INTEGER(indx1)[setIndx] = from1Indx ;
+            INTEGER(indx2)[setIndx] = from2Indx;
             setIndx++;
          }
     }
-     
-    setAttrib(from, install("indx1"), indx1);
-    setAttrib(from, install("indx2"), indx2);
-    UNPROTECT(3);
-    return(from);
+
+    PROTECT(res = allocVector(VECSXP, 3));
+    SET_VECTOR_ELT(res, 0, from);
+    SET_VECTOR_ELT(res, 1, indx1); 
+    SET_VECTOR_ELT(res, 2, indx2); 
+    PROTECT(namesres = allocVector(STRSXP, 3));
+    SET_STRING_ELT(namesres, 0, mkChar("from"));
+    SET_STRING_ELT(namesres, 1, mkChar("indx1"));
+    SET_STRING_ELT(namesres, 2, mkChar("indx2"));
+    setAttrib(res, R_NamesSymbol, namesres);
+    UNPROTECT(5);
+    return(res);
 }
 
 
@@ -804,7 +808,7 @@ SEXP graph_bitarray_Intersect_Attrs(SEXP cmnBits, SEXP fromOneBits,
     int len = length(cmnBits) * 8;
     int i, byteIndex, bitIndex , shft, setIndx = 0;
     int nn = asInteger(getAttrib(cmnBits, install("nbitset")));
-    SEXP from, indx1, indx2;
+    SEXP from, indx1, indx2, res, namesres;
     PROTECT(from = allocVector(INTSXP, nn));
     PROTECT(indx1 = allocVector(INTSXP , nn));
     PROTECT(indx2 = allocVector(INTSXP , nn));
@@ -827,10 +831,18 @@ SEXP graph_bitarray_Intersect_Attrs(SEXP cmnBits, SEXP fromOneBits,
                  setIndx++;
          } 
     }
-    setAttrib(from, install("indx1"), indx1);
-    setAttrib(from, install("indx2"), indx2);
-    UNPROTECT(3);
-    return(from);
+   
+    PROTECT(res = allocVector(VECSXP, 3));
+    SET_VECTOR_ELT(res, 0, from);
+    SET_VECTOR_ELT(res, 1, indx1); 
+    SET_VECTOR_ELT(res, 2, indx2); 
+    PROTECT(namesres = allocVector(STRSXP, 3));
+    SET_STRING_ELT(namesres, 0, mkChar("from"));
+    SET_STRING_ELT(namesres, 1, mkChar("indx1"));
+    SET_STRING_ELT(namesres, 2, mkChar("indx2"));
+    setAttrib(res, R_NamesSymbol, namesres);
+    UNPROTECT(5);
+    return(res);
 }
 
 
