@@ -334,15 +334,15 @@ function for appropriate handling of edge attributes ).
 
 <<intersecmg>>=
 edgeFun <- list( weight = min)
-gInt <- edgeSetIntersect0(g, edgeFun = edgeFun)
-gInt
+#gInt <- edgeSetIntersect0(g, edgeFun = edgeFun)
+#gInt
 @
 
 The edge set by the \Rmethod{edgeSetIntersect0} operation is named by 
 concatenating the names of the edgeSets passed as input to the function.
   
 <<intersectWeights>>=
-mgEdgeData(gInt, "Alaska_United_Delta", attr= "weight")
+#mgEdgeData(gInt, "Alaska_United_Delta", attr= "weight")
 @
 
 \subsection{MultiGraph representation of mice gene interaction data. (SAGE)}
@@ -438,8 +438,8 @@ in the genes that are common to both \Robject{MultiGraph}s. This can be calculat
 using the \Rfunction{graphIntersect} method.
 
 <<nodeSub>>=
-resInt <- graphIntersect(male, female)
-resInt
+#resInt <- graphIntersect(male, female)
+#resInt
 @
 
 The operations we have dealt with so far only deal with manipulation of \Rclass{MultiGraph}
