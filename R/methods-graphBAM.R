@@ -272,7 +272,6 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
         dflt <- g@edgeData@defaults[[attr]]
         attrBit <- g@userAttrPos@edgePos[[attr]]
         ft <- ft[with(ft, order(to, from)),]
-        ## maybe ft needs reordering
         ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
             as.integer(ft[,"from"]), as.integer(ft[,"to"]))
         attrBit <- graph:::setBitCell(attrBit, ft[,"from"], ft[,"to"], 
@@ -346,25 +345,13 @@ setMethod("edgeData", signature(self="graphBAM", from="character", to="character
         req_ft <- cbind("from"= tmp[["from"]],"to" = tmp[["to"]])
         value <- value[tmp[["weight"]]]
     }
-    # ft <- data.frame(ft)
-    # ft <- ft[with(ft, order(to,from)),]
 
      req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
      colnames(req_i) <- c("from", "to")
-    # value <- value[order(req_i[,2], req_i[,1])]
-    # tmp <- rbind(req_i, ft)
-    # pst <- paste(tmp[,"from"],tmp[,"to"], sep = "_")
-    # idx <- duplicated(pst)[seq(nrow(req_i) +1 , nrow(tmp))]
-     # req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
      req_i <- data.frame(req_i)
      idx <- order(req_i[,2], req_i[,1])
      req_i <- req_i[idx, ]
      value <- value[idx]
-     # tmpIndx <- with(req_i, order(to, from))
-     #req_i <- req_i[tmpIndx,]
-     #colnames(req_i) <- c("from", "to")
-     #  value <- value[indx]
-     #value <- value[order(req_i[,2], req_i[,1])]
     if(attr == "weight") {
         attrBit <- g@edgeSet@bit_vector
         ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
@@ -398,6 +385,7 @@ setReplaceMethod("edgeData",
                            from="character", to="character",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
+                     graph:::.verifyAttrName(attr, names(self@edgeData@defaults))
                      lenFrom <- length(from)
                      lenTo <- length(to)
                      if(lenFrom != lenTo) {
@@ -407,7 +395,6 @@ setReplaceMethod("edgeData",
                             to <- rep(to , lenFrom)
                          else
                             stop("Arguments from,to differ in length")
-                        
                      }
                      .verifyEdges(self, from, to)
                      .set_attrs(self, from, to, attr, value)
@@ -419,6 +406,7 @@ setReplaceMethod("edgeData",
                            from="character", to="missing",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
+                      graph:::.verifyAttrName(attr, names(self@edgeData@defaults))
                       eg <- edges(self,from)
                       to <- unlist(eg, use.names = FALSE)
                       len <- as.numeric(sapply(eg, length))
@@ -432,6 +420,7 @@ setReplaceMethod("edgeData",
                            from="missing", to="character",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
+                     graph:::.verifyAttrName(attr, names(self@edgeData@defaults))
                      eg <- inEdges(to, self)
                      eg <- eg[order(names(eg))]
                      from  <- unlist(eg, use.names = FALSE) 
@@ -648,10 +637,6 @@ setMethod("ugraph", "graphBAM",
               graph
           })
 
- 
-
-
-
 setMethod("addEdge",
           signature=c("character", "character", "graphBAM", "numeric"),
           function(from, to, graph, weights) {
@@ -680,28 +665,6 @@ setMethod("addEdge",
           
           })
 
-
-      #     
-      #setMethod("addEdge",
-      #          signature=c("character", "character", "graphBAM", "numeric"),
-      #          function(from, to, graph, weights) {
-      #              nn <- nodes(graph)
-      #              req_ft <- .align_from_to(from, to, nn)
-      #              df <- extractFromTo(graph)
-      #              df2 <- data.frame(from=req_ft[ , 1], to=req_ft[ , 2],
-      #                                weight=weights, stringsAsFactors = FALSE)
-      #              g <- graphBAM(rbind(df, df2),nodes=nn, edgemode=edgemode(graph))
-      #              g@edgeData@defaults <- graph@edgeData@defaults
-      #              g@edgeSet@edge_attrs <- graph@edgeSet@edge_attrs
-      #              g@userAttrPos@edgePos <- graph@userAttrPos@edgePos 
-      #             
-      #              g@nodeData@defaults <- graph@nodeData@defaults
-      #              g@nodeData@data <- graph@nodeData@data
-      #              g@userAttrPos@nodePos <- graph@userAttrPos@nodePos
-      #              g@renderInfo <- graph@renderInfo
-      #              g
-      #          })
-      #
 setMethod("addEdge",
           signature=c("character", "character", "graphBAM", "missing"),
           function(from, to, graph, weights) {
@@ -855,94 +818,42 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
                  function(object, value) {
                      stop("operation not supported")
                  })
-             # 
-             #.getIntersectWeights <- function(attrType, x, y, funList) {
-             #    len <- length(attrType)
-             #    indx <- as.numeric(attrType)
-             #    from1 <- attr(attrType, "indx1")
-             #    from2 <- attr(attrType, "indx2")
-             #    attr1 <- rep(NA, len)
-             #    k <- indx ==0
-             #    val1 <- x@weights[from1[k]]
-             #    val2 <- y@weights[from2[k]]
-             #
-             #    if(!is.null(funList) && ("weight" %in% names(funList))) {
-             #        attr1[k] <-  sapply(seq_len(sum(k)), function(p) {
-             #                    return(funList[["weight"]](val1[[p]], val2[[p]]))
-             #                })
-             #    } else if(is.atomic(val1) && is.atomic(val2)) {
-             #         pt <-  which(val1 == val2)
-             #         tmp <- rep(NA, length(which(k)))
-             #         tmp[pt] <-  val1[pt]
-             #         attr1[k]  <- tmp
-             #    } 
-             #    attr1
-             #}
-             #
-.getIntersectAttrs <- function(att, attrType, x , y, funList  ) {
-    len <- length(attrType)
-    from1 <- attr(attrType, "indx1")
-    from2 <- attr(attrType, "indx2")
-    indx <- as.numeric(attrType)
-    attr1 <- rep(NA, len)
+
+.getUnionWeights <- function(attrType, g1, g2, funList) {
+    len <- length(attrType$from)
+    attr1 <- vector(len, mode = "numeric")
+    attr1[1:len] <- NA
+    ## from x
+    k <- (as.numeric(attrType$from) ==1)
+    attr1[k]  <- g1@edgeSet@weights[attrType$indx1[k]] 
+    ## from y 
+    k <- (as.numeric(attrType$from) == 2)
+    attr1[k]  <- g2@edgeSet@weights[attrType$indx2[k]]
     ## resolve union
-    k <- indx ==0
-    val1 <- x@edge_attrs[[att]][from1[k]]
-    val2 <- y@edge_attrs[[att]][from2[k]]
-  
-    if(!is.null(funList) && (att %in% names(funList))) {
-        attr1[k] <- sapply(seq_len(sum(k)), function(p) {
-                    return(funList[[att]](val1[[p]], val2[[p]]))
+    k <- (as.numeric(attrType$from) ==0)
+    if(any(k)) {
+        val1 <- g1@edgeSet@weights[attrType$indx1[k]]
+        val2 <- g2@edgeSet@weights[attrType$indx2[k]]
+
+        if(!is.null(funList) && ("weight" %in% names(funList))) {
+            attr1[k] <-  sapply(seq_len(sum(k)), function(p) {
+                    return(funList[["weight"]](val1[[p]], val2[[p]]))
                 })
-    } else if (is.vector(val1) && is.vector(val2)) {
-        eqInd <- sapply(seq_len(length(val1)), function(x){
+        } else if(is.vector(val1) && is.vector(val2)) {
+            eqInd <- sapply(seq_len(length(val1)), function(x){
                      identical(val1[x], val2[x])
                  })
-
-         pt <-  which(eqInd)
-         tmp <- rep(NA, sum(k))
-         tmp[pt] <-  val1[pt]
-         attr1[k]  <- tmp
+            pt <-  which(eqInd)
+            lp <- length(which(k))
+            tmp <- vector(lp, mode ="numeric")
+            tmp[1:lp] <- NA
+            tmp[pt] <-  val1[pt]
+            attr1[k]  <- tmp
+        } 
     } 
     attr1
 }
 
-#
-#.getUnionWeights <- function(attrType, x, y, funList) {
-#    len <- length(attrType)
-#    indx <- as.numeric(attrType)
-#    from1 <- attr(attrType, "indx1")
-#    from2 <- attr(attrType, "indx2")
-#    attr1 <- rep(NA, len)
-#    ## from x
-#    k <- indx ==1
-#    attr1[k]  <- x@weights[from1[k]] 
-#    ## from y 
-#    k <- indx == 2
-#    attr1[k]  <- y@weights[from2[k]]
-#    ## resolve union
-#    k <- indx ==0 
-#    if(any(k)) {
-#        val1 <- x@weights[from1[k]]
-#        val2 <- y@weights[from2[k]]
-#
-#        if(!is.null(funList) && ("weight" %in% names(funList))) {
-#            attr1[k] <-  sapply(seq_len(sum(k)), function(p) {
-#                    return(funList[["weight"]](val1[[p]], val2[[p]]))
-#                })
-#        } else if(is.vector(val1) && is.vector(val2)) {
-#            eqInd <- sapply(seq_len(length(val1)), function(x){
-#                     identical(val1[x], val2[x])
-#                 })
-#            pt <-  which(eqInd)
-#            tmp <- rep(NA, length(which(k)))
-#            tmp[pt] <-  val1[pt]
-#            attr1[k]  <- tmp
-#        } 
-#    } 
-#    attr1
-#}
-#
 
 .getAttrVec <- function(g, att){
     nms <- names(g@edgeData@defaults)
@@ -966,78 +877,43 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
   unlist(nodeData(g, attr = att), use.names = FALSE)
 }
 
+    
 .getUnionAttrs <- function(att, attrType, x , y, funList  ) {
-    b <- x@edgeSet@bit_vector | x@edgeSet@bit_vector
-     
-    nms <- names(g@edgeData@defaults)
-    bv <- v & (!g@userAttrPos@edgePos[[att]])
-    attributes(bv) <- attributes(g@edgeSet@bit_vector)
-    attr(bv, "nbitset") <- .Call(graph_bitarray_sum, bv)
-    ft <- .Call("graph_bitarray_rowColPos", bv)
+    len <- length(attrType$from)
+    indx <- as.numeric(attrType$from)
+    if(att %in% names(x@edgeSet@edge_attrs))
+        mds <- mode(x@edgeSet@edge_attrs)
+    else if(att %in% names(y@edgeSet@edge_attrs))
+        mds <- mode(y@edgeSet@edge_attrs)
 
-    attrBit <- g@userAttrPos@edgePos[[att]]
-    ord <- .Call("graph_bitarray_getEdgeAttrOrder",  bv, 
-                    as.integer(ft[,"from"]), as.integer(ft[,"to"]))
-
-    nt <- attr(g@userAttrPos@edgePos[[attr]], "nbitset")
-    newAttr <- vector(nt, mode = mode(g@edgeData@defaults))
-    newAttr[attr(ord$newVal, "newPos")] <- value[ord$newVal]
-    newAttr[attr(ord$origVal,"origPos")] <- g@edgeSet@edge_attrs[[attr]][ord$origVal]
-    newAttr
-    attrBit <- g@userAttrPos@edgePos[[att]]
-        g@userAttrPos@edgePos[[attr]] <- setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
-                                rep(1L, nrow(req_i)))
-        ord <- .Call("graph_bitarray_getEdgeAttrOrder",  g@userAttrPos@edgePos[[attr]], 
-                    as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
-        nt <- attr(g@userAttrPos@edgePos[[attr]], "nbitset")
-        newAttr <- vector(nt, mode = mode(value))
-        newAttr[attr(ord$newVal, "newPos")] <- value[ord$newVal]
-        newAttr[attr(ord$origVal,"origPos")] <- g@edgeSet@edge_attrs[[attr]][ord$origVal]
-        g@edgeSet@edge_attrs[[attr]] <- newAttr
-
-    #        bam@userAttrPos@edgePos[[i]] <- setBitCell(g@userAttrPos@edgePos[[i]], 
-    #                                  ft[,"from"], ft[ ,"to"], rep(1L, nrow(ft))) 
-    #    }
-    #
-
-    
-    
-    len <- length(attrType)
-    from1 <- attr(attrType, "indx1")
-    from2 <- attr(attrType, "indx2")
-
-    indx <- as.numeric(attrType)
-    attr1 <- rep(NA, len)
-    if(att != "weight"){
-        xattr <- x@edgeSet@edge_attrs[[att]]
-        yattr <- y@edgeSet@edge_attrs[[att]]
-    } else {
-        xattr <- x@edgeSet@weights
-        yattr <- y@edgeSet@weights
-    
+    attr1 <- vector(len , mode = mds)
+    attr1[1:len] <- NA
+    ## from x
+    k <- (as.numeric(attrType$from) ==1)
+    if(att  %in% names(x@edgeSet@edge_attrs)) {
+        xAttr <- graph:::.getAttrVec(x, att)
+        attr1[k]  <- xAttr[ attrType$indx1[k]] 
     }
-    ## from the x
-    k <- indx ==1
-    if(att  %in% c("weight",names(x@edgeSet@edge_attrs)))
-        attr1[k]  <- xattr[from1[k]] 
     ## from y 
-    k <- indx == 2
-    if(att  %in% c("weight", names(y@edgeSet@edge_attrs)))
-        attr1[k]  <- yattr[from2[k]]
+    k <- (as.numeric(attrType$from) == 2)
+    if(att  %in% names(y@edgeSet@edge_attrs)) {
+        yAttr <- graph:::.getAttrVec(y, att)
+        attr1[k]  <- yAttr[ attrType$indx2[k]]
+    }
     ## resolve union
-    k <- indx ==0
+    k <- (as.numeric(attrType$from) ==0)
     if(any(k)) {
-        if(att %in% c("weight", names(x@edgeSet@edge_attrs)))
-            val1 <- xattr[from1[k]]
+        if(att %in% names(x@edgeSet@edge_attrs))
+            val1 <- xAttr[ attrType$indx1[k]]
         else 
-            val1  <- yattr[from2[k]]
+            val1  <- yAttr[ attrType$indx2[k]]
 
-        if(att %in% c("weight", names(y@edgeSet@edge_attrs)))
-            val2 <- yattr[from2[k]]
+        if(att %in% names(y@edgeSet@edge_attrs))
+            val2 <- yAttr[ attrType$indx2[k]]
         else 
-            val2  <- xattr[from1[k]]
+            val2  <- xAttr[ attrType$indx1[k]]
  
-        if(!is.null(funList) && (att %in% c("weight", names(funList)))) {
+        if(!is.null(funList) && (att %in% names(funList))) {
             attr1[k] <- sapply(seq_len(sum(k)), function(p) {
                     return(funList[[att]](val1[[p]], val2[[p]]))
                 })
@@ -1046,7 +922,9 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
                         identical(val1[x], val2[x])
                         })
             pt <-  which(eqInd)
-            tmp <- rep(NA, sum(k))
+            lp <- sum(k)
+            tmp <- vector(lp, mode = mds)
+            tmp[1:lp] <- NA
             tmp[pt] <-  val1[pt]
             attr1[k]  <- tmp
         } 
@@ -1087,21 +965,40 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     attrType <- .Call("graph_bitarray_Intersect_Attrs", edge_set@bit_vector,
         e1@bit_vector, e2@bit_vector)
     
-    if(length(attrType) >0) {
+    if(length(attrType$from) >0) {
         edge_set@weights <- .getIntersectAttrs("weight", attrType, e1@weights,
             e2@weights, funList)
     }
     for(i in commonAttr) {
-        bv <- g1@userAttrPos@edgePos[[i]] &  g2@userAttrPos@edgePos[[i]]
-        attributes(bv) <- attributes(e1@bit_vector)
-        attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
-        ans@userAttrPos@edgePos[[i]] <- bv
+        ans@userAttrPos@edgePos[[i]] <- edge_set@bit_vector
         xAttr <- graph:::.getAttrVec(g1, i)
         yAttr <- graph:::.getAttrVec(g2, i)
-        edge_set@edge_attrs[[i]] <- .getIntersectAttrs(i, attrType, xAttr, yAttr, funList)
-    }
+        if(length(attrType$from) >0) {
+           edge_set@edge_attrs[[i]] <- .getIntersectAttrs(i, attrType, xAttr, yAttr, funList)
+        }
+   }
    ans@edgeSet <- edge_set
    ans
+}
+
+.getUnionNodeUserAttrPos <- function(g, sg1, sg2) {
+    cmnAttrs <- intersect(names(sg1@nodeData@defaults), names(sg2@nodeData@defaults))
+    unqAttrs <- unique(c(names(sg1@nodeData@defaults), names(sg2@nodeData@defaults)))
+    singleAttrs <- unqAttrs[!( unqAttrs %in% cmnAttrs)]
+
+    n1 <- structure(lapply(cmnAttrs, function(i){
+                len <- length(g@nodeData@data[[i]])
+                bt <- graph:::makebits(len)
+                bt <- graph:::setbitv(bt, 1:len, rep(1L, len))
+            }),names = cmnAttrs) 
+
+    n2 <- structure(lapply(singleAttrs, function(i){
+                if(i %in% names(sg1@userAttrPos@nodePos))
+                    return(sg1@userAttrPos@nodePos[[i]])
+                else if(i %in% names(sg2@userAttrPos@nodePos))
+                    return(sg2@userAttrPos@nodePos[[i]])
+            }), names=  singleAttrs)
+    c(n1, n2)
 }
 
 .getIntNodeUserAttrPos <- function(sg1 , sg2) {
@@ -1113,34 +1010,23 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
         bv
     }), names = nattr)
 }
+
 .getIntersectAttrs <- function(att, attrType, xAtt , yAtt, funList  )  {
-    len <- length(attrType)
-    from1 <- attr(attrType, "indx1")
-    from2 <- attr(attrType, "indx2")
-    indx <- as.numeric(attrType)
-    k <- indx ==0
+    len <- length(attrType$from)
+    from1 <-  attrType$indx1
+    from2 <-  attrType$indx2
+    k <- (as.numeric(attrType$from) ==0)
     attr1 <- vector(sum(k), mode =mode(xAtt))
     attr1[1:sum(k)] <- NA
-    val1 <- xAtt[from1[k]]
-    val2 <- yAtt[from2[k]]
+    val1 <- xAtt[attrType$indx1[k]]
+    val2 <- yAtt[attrType$indx2[k]]
 
-    #   if(att != "weight"){
-    #        attr1 <- vector(sum(k), mode =mode(x@edge_attrs[[att]]))
-    #        attr1[1:sum(k)] <- NA
-    #        val1 <- x@edge_attrs[[att]][from1[k]]
-    #        val2 <- y@edge_attrs[[att]][from2[k]]
-    #    }else {
-    #        attr1 <- vector(sum(k), mode = "numeric")
-    #        attr1[1:sum(k)] <- NA
-    #        val1 <- x@weights[from1[k]]
-    #        val2 <- y@weights[from2[k]]
-    #    }
     if(!is.null(funList) && (att %in% names(funList))) {
         attr1[k] <- sapply(seq_len(sum(k)), function(p) {
                     return(funList[[att]](val1[[p]], val2[[p]]))
                 })
     } else if (is.vector(val1) && is.vector(val2)) {
-        eqInd <- sapply(seq_len(length(val1)), function(x){
+         eqInd <- sapply(seq_len(length(val1)), function(x){
                      identical(val1[x], val2[x])
                  })
          pt <-  which(eqInd)
@@ -1179,18 +1065,57 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
     ans
 })
 
-.retNodeIntersectDefaults <- function(sg1, sg2) {
-    ndsAttrs <- intersect(names(sg1@nodeData@defaults), names(sg1@nodeData@defaults))
-    structure(lapply(ndsAttrs, function(x) {
+.retNodeUnionDefaults <- function(sg1, sg2) {
+    cmnAttrs <- intersect(names(sg1@nodeData@defaults), names(sg2@nodeData@defaults))
+    unqAttrs <- unique(c(names(sg1@nodeData@defaults), names(sg2@nodeData@defaults)))
+    singleAttrs <- unqAttrs[!( unqAttrs %in% cmnAttrs)]
+    cmn <- structure(lapply(cmnAttrs, function(x) {
                 if(identical(sg1@nodeData@defaults[[x]], sg2@nodeData@defaults[[x]])) sg1@nodeData@defaults[[x]] else NA
-            }), names = ndsAttrs)
+            }), names = cmnAttrs)
+    sng <- structure(lapply(singleAttrs, function(x) {
+               if(x %in% names(sg1@nodeData@defaults))
+                    sg1@nodeData@defaults[[x]] 
+               else 
+                    sg2@nodeData@defaults[[x]] 
+            }), names = singleAttrs)
+    c(cmn, sng)
+
 }
 
+.retNodeIntersectDefaults <- function(sg1, sg2) {
+    cmnAttrs <- intersect(names(sg1@nodeData@defaults), names(sg2@nodeData@defaults))
+    structure(lapply(cmnAttrs, function(x) {
+                if(identical(sg1@nodeData@defaults[[x]], sg2@nodeData@defaults[[x]])) sg1@nodeData@defaults[[x]] else NA
+            }), names = cmnAttrs)
+
+}
+
+
 .retEdgeIntersectDefaults <- function(sg1, sg2) {
-    edgeAttrs <- intersect(names(sg1@edgeData@defaults), names(sg2@edgeData@defaults))
-    structure(lapply(edgeAttrs, function(x) {
+    cmnAttrs <- intersect(names(sg1@edgeData@defaults), names(sg2@edgeData@defaults))
+    structure(lapply(cmnAttrs, function(x) {
                 if(identical(sg1@edgeData@defaults[[x]], sg2@edgeData@defaults[[x]])) sg1@edgeData@defaults[[x]] else NA
-            }), names = edgeAttrs)
+            }), names = cmnAttrs)
+    
+}
+
+
+
+.retEdgeUnionDefaults <- function(sg1, sg2) {
+    cmnAttrs <- intersect(names(sg1@edgeData@defaults), names(sg2@edgeData@defaults))
+    unqAttrs <- unique(c(names(sg1@edgeData@defaults), names(sg2@edgeData@defaults)))
+    singleAttrs <- unqAttrs[!( unqAttrs %in% cmnAttrs)]
+    cmn <- structure(lapply(cmnAttrs, function(x) {
+                if(identical(sg1@edgeData@defaults[[x]], sg2@edgeData@defaults[[x]])) sg1@edgeData@defaults[[x]] else NA
+            }), names = cmnAttrs)
+    
+    sng <- structure(lapply(singleAttrs, function(x) {
+               if(x %in% names(sg1@edgeData@defaults))
+                    sg1@edgeData@defaults[[x]] 
+               else 
+                    sg2@edgeData@defaults[[x]] 
+            }), names = singleAttrs)
+    c(cmn, sng)
 }
 
 .nodeIntersect <- function(sg1, sg2, ans, funList){
@@ -1217,30 +1142,20 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
 }
 
 .scaleGraphBAM <- function(g, theNodes, edgemode) {
+    if(all(nodes(g) %in% theNodes) && length(nodes(g)) == length(theNodes))
+        return(g)
+    else {
     ndsLen <- length(theNodes)
     df <- extractFromTo(g)
     bam <- graphBAM(df, nodes = theNodes, edgemode= edgemode, 
                      ignore_dup_edges = FALSE)
     bam@edgeSet@weights <- g@edgeSet@weights
-    
-    #wbt <- bam@edgeSet@bit_vector
-    #    nms <- names(g@edgeData@defaults)
-    #    for(i in nms) {
-    #        bv <- wbt & (!g@userAttrPos@edgePos[[i]])
-    #        attributes(bv) <- attributes(bam1@edgeSet@bit_vector)
-    #        attr(bv, "nbitset") <- .Call(graph_bitarray_sum, bv)
-    #        bam@userAttrPos@edgePos[[i]] <- setBitCell(g@userAttrPos@edgePos[[i]], 
-    #                                  ft[,"from"], ft[ ,"to"], rep(1L, nrow(ft))) 
-    #    }
-    #
-
     bam@edgeSet@edge_attrs <- g@edgeSet@edge_attrs
     bam@edgeData@defaults <- g@edgeData@defaults
-    
     nms <- names(g@nodeData@defaults)
     for(i in nms){
-        origNds  <- theNodes[(graph:::bitToLogical(g@userAttrPos@nodePos[[i]]))]
-        indx <- match(theNodes, origNds)
+        origNds  <- nodes(g)[(graph:::bitToLogical(g@userAttrPos@nodePos[[i]]))]
+        indx <- match(origNds, theNodes)
         bt <- graph:::makebits(ndsLen)
         bt <- graph:::setbitv(bt, indx, rep(1L, length(indx)))
         bam@userAttrPos@nodePos[[i]] <- bt
@@ -1253,10 +1168,11 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
         posBit <- graph:::.createZeroBitPos(ndsLen)
         bam@userAttrPos@edgePos[[i]] <- setBitCell(posBit, ft[,"from"], ft[,"to"], rep(1L, nrow(ft)))
     }
-    bam
+    return(bam)
+   }
 }
 
-.bamUnion <- function(g1, g2, theNodes, funList) { 
+.bamUnion <- function(g1, g2, theNodes, nodeFun, edgeFun) { 
     dr1 <- isDirected(g1)
     dr2 <- isDirected(g2)
     if(dr1 != dr2)
@@ -1265,11 +1181,11 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
     e1Attr <- names(g1@edgeSet@edge_attrs)
     e2Attr <- names(g2@edgeSet@edge_attrs) 
     unionAttr <- unique(union(e1Attr, e2Attr))
-    if(!is.null(funList)) {
-        fIndx <-  names(funList) %in% c(unionAttr, "weight")
+    if(!is.null(edgeFun)) {
+        fIndx <-  names(edgeFun) %in% c(unionAttr, "weight")
         if(!all(fIndx))
-            stop( paste("Attributes", names(funList)[fIndx], "defined by 
-                        \"funList\", were not found in the edge 
+            stop( paste("Attributes", names(edgeFun)[fIndx], "defined by 
+                        \"edgeFun\", were not found in the edge 
                         attributes", sep = " "))
     }
     bam1 <- .scaleGraphBAM(g1, theNodes, theMode)
@@ -1284,9 +1200,7 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
                    is_directed = (theMode == "directed"),
                   nodes = theNodes, ignore_dup_edges = FALSE)
     edge_set@bit_vector <- bv
-    
     ans <- new("graphBAM", edgeSet= edge_set, nodes =theNodes)
-   
 
     cmnBit <- bam1@edgeSet@bit_vector & bam2@edgeSet@bit_vector
     attributes(cmnBit) <- attributes(bam1@edgeSet@bit_vector)
@@ -1301,45 +1215,20 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
     attr(fromTwoBit, "nbitset") <- .Call(graph_bitarray_sum, fromTwoBit)
     attrType <- .Call("graph_bitarray_Union_Attrs", bv, cmnBit, fromOneBit,
                        fromTwoBit)
-    nms <- c( "weight",unionAttr)
-
-
-    
-    for(i in nms) {
-    
-        if( i == "weight"){
-            bt1 <- bam1@edgeSet@bit_vector
-            bt2 <- bam2@edgeSet@bit_vector
-        } else {
-            bt1 <- bam1@userAttrPos@edgePos[[i]]
-            bt2 <- bam2@userAttrPos@edgePos[[i]]
-        }
-        sumBit <- bt1 | bt2
-        attributes(sumBit) <- attributes(bt1)
-        attr(sumBit, "nbitset") <- .Call(graph_bitarray_sum, sumBit)
-        
-        cmnBit <- bt1 & bt2
-        attributes(cmnBit) <- attributes(bt1)
-        attr(cmnBit, "nbitset") <- .Call(graph_bitarray_sum, cmnBit)
-
-        fromOneBit <- bt1 & (!cmnBit)
-        attributes(fromOneBit) <- attributes(bt1)
-        attr(fromOneBit, "nbitset") <- .Call(graph_bitarray_sum, fromOneBit)
-
-        fromTwoBit <- bt2 & (!cmnBit)
-        attributes(fromTwoBit) <- attributes(bt2)
-        attr(fromTwoBit, "nbitset") <- .Call(graph_bitarray_sum, fromTwoBit)
-        attrType <- .Call("graph_bitarray_Union_Attrs", sumBit, cmnBit, fromOneBit,
-                           fromTwoBit)
-        if(i == "weight")
-            ans@edgeSet@weights <- .getUnionAttrs(i, attrType, bam1, bam2, funList)
-        else {
-            ans@edgeSet@edge_attrs[[i]] <- .getUnionAttrs(i, attrType, bam1, bam2, funList)
-            ans@userAttrPos@edgePos[[i]] <- sumBit
+    if(length(attrType$from) >0) {
+          edge_set@weights <- as.numeric(.getUnionWeights(attrType, bam1, bam2, edgeFun))
+    }
+    if(!is.null(unionAttr)) {              
+        for(i in unionAttr) {
+            ans@userAttrPos@edgePos[[i]] <- edge_set@bit_vector
+            edge_set@edge_attrs[[i]] <-  .getUnionAttrs(i, attrType, bam1, bam2, edgeFun)
         }
     }
+    ans@edgeSet <- edge_set
+    ans@nodeData@data <- .nodeUnion(g1, g2, nodeFun)
+    ans@userAttrPos@nodePos <- .getUnionNodeUserAttrPos(ans,bam1, bam2)
     ans
-}
+  }
 
 
 setMethod("graphUnion", c("graphBAM", "graphBAM"), 
@@ -1362,18 +1251,26 @@ setMethod("graphUnion", c("graphBAM", "graphBAM"),
        nodeFun <- NULL
    if(missing(edgeFun))
        edgeFun <- NULL
-   if( !identical(x@edgeData@defaults, y@edgeData@defaults))
-        stop("Default attribute values must be the same for the union of graphs")
-   ans <- .bamUnion(x, y, theNodes, edgeFun)
-   ans@edgeData@defaults <- x@edgeData@defaults
-   ans@nodeData@data <- .nodeUnion(x@nodeData@data, y@nodeData@data,
-                           nodes(x), nodes(y), nodes(ans), nodeFun)  
+   ans <- .bamUnion(x, y, theNodes, nodeFun, edgeFun)
+   ans@nodeData@defaults <- .retNodeUnionDefaults(x, y)
+   ans@edgeData@defaults <- .retEdgeUnionDefaults(x, y)
    ans 
 })
+
 #
-#.nodeUnion <- function(attr1, attr2, ndX, ndY, ndAns, funList) {
-#    xAttr <-  names(attr1)
-#    yAttr <-  names(attr2)
+#.nodeUnion <- function(bam1, bam2, funList) {
+#    xAttr <-  names(bam1@nodeData@defaults)
+#    yAttr <-  names(bam2@nodeData@defaults)
+#    if(!is.null(funList)) {
+#        fIndx <-  names(funList) %in% c(xAttr, yAttr)
+#        if(!all(fIndx))
+#            stop( paste("Attributes", names(funList)[fIndx], "defined by 
+#                        \"nodeFun\", were not found in the node
+#                        attributes", sep = " "))
+#    }
+#    ndX <- nodes(bam1)
+#    ndY <- nodes(bam2)
+#    ndAns <- unique(ndX, ndY)
 #    unionAttrs <- union(xAttr, yAttr)
 #    commonAttrs <- intersect(xAttr,yAttr)
 #    singleAttrs <- unionAttrs[!unionAttrs %in% commonAttrs]
@@ -1386,12 +1283,14 @@ setMethod("graphUnion", c("graphBAM", "graphBAM"),
 #    n1 <- sapply(singleAttrs, function(k){
 #               if(k %in% xAttr){
 #                    indx <- match(ndX, ndAns)
+#                    attr1 <- .getNodeAttrVec(bam1, k)
 #                    att <- rep(NA, length(ndAns))
-#                    att[indx] <- attr1[[k]]
+#                    att[indx] <- attr1
 #               } else if(k %in% yAttr){
 #                    indx <- match(ndY, ndAns)
 #                    att <- rep(NA, length(ndAns))
-#                    att[indx] <- attr2[[k]]
+#                    attr2 <- .getNodeAttrVec(bam2, k)
+#                    att[indx] <- attr2
 #               }
 #               list(att)
 #           })
@@ -1400,32 +1299,96 @@ setMethod("graphUnion", c("graphBAM", "graphBAM"),
 #               att <- rep(NA, length(ndAns))
 #               ##from X
 #               indx <- match(fxNds, ndAns)
-#               att[indx] <- attr1[[k]][match(fxNds,ndX)]
+#               attr1 <- .getNodeAttrVec(bam1, k)
+#               attr2 <- .getNodeAttrVec(bam2, k)
+#               att[indx] <- attr1[match(fxNds,ndX)]
 #               ##from Y
 #               indx <- match(fyNds, ndAns)
-#               att[indx] <- attr2[[k]][match(fyNds,ndY)]
+#               att[indx] <- attr2[match(fyNds,ndY)]
 #               
 #               if(!is.null(funList) && (k %in% names(funList))) {
 #                    tmp <- sapply(cmnNds, function(p){
 #                            dX <- match(p, ndX)
 #                            dY <- match(p, ndY)
-#                            funList[[k]](attr1[[k]][[dX]], attr2[[k]][[dY]])
+#                            funList[[k]](attr1[[dX]], attr2[[dY]])
 #                        }, USE.NAMES = FALSE)
 #                    indx <- match(cmnNds, ndAns)
 #                    att[indx] <- tmp
-#                } else if (is.vector(attr1[[k]]) && is.vector(attr2[[k]])){
+#                } else if (is.vector(attr1) && is.vector(attr2)){
 #                    tmp <- sapply(cmnNds, function(p){
 #                            dX <- match(p, ndX)
 #                            dY <- match(p, ndY)
-#                            identical(attr1[[k]][[dX]], attr2[[k]][[dY]])
+#                            identical(attr1[[dX]], attr2[[dY]])
 #                        }, USE.NAMES = FALSE)
 #                    indx <- match(cmnNds[tmp], ndAns)
-#                    att[indx] <- attr1[[k]][match(cmnNds[tmp], ndX)]
+#                    att[indx] <- attr1[match(cmnNds[tmp], ndX)]
 #               }
 #               list(att)
 #            })
 #     c(n1,n2)
-#}
+# }
+#
+.nodeUnion <- function(g1, g2, funList) {
+    xAttr <-  names(g1@nodeData@defaults)
+    yAttr <-  names(g2@nodeData@defaults)
+    if(!is.null(funList)) {
+        fIndx <-  names(funList) %in% c(xAttr, yAttr)
+        if(!all(fIndx))
+            stop( paste("Attributes", names(funList)[fIndx], "defined by 
+                        \"nodeFun\", were not found in the node
+                        attributes", sep = " "))
+    }
+    ndX <- nodes(g1)
+    ndY <- nodes(g2)
+    ndAns <- unique(c(ndX, ndY))
+    unionAttrs <- union(xAttr, yAttr)
+    commonAttrs <- intersect(xAttr,yAttr)
+    singleAttrs <- unionAttrs[!unionAttrs %in% commonAttrs]
+    cmnNds <- intersect(ndX, ndY)
+    fxNds <-  ndX[!ndX %in% cmnNds]
+    fyNds <-  ndY[!ndY %in% cmnNds]
+    ### deal with single attrs
+    n1 <- sapply(singleAttrs, function(k){
+               if(k %in% xAttr){
+                    att <- .getNodeAttrVec(g1, k)
+               } else if(k %in% yAttr){
+                    att <- .getNodeAttrVec(g2, k)
+               }
+               list(att)
+           })
+    
+    n2 <- sapply(commonAttrs, function(k) {
+               att <- rep(NA, length(ndAns))
+               ##from X
+               indx <- match(fxNds, ndAns)
+               attr1 <- .getNodeAttrVec(g1, k)
+               attr2 <- .getNodeAttrVec(g2, k)
+               att[indx] <- attr1[match(fxNds,ndX)]
+               ##from Y
+               indx <- match(fyNds, ndAns)
+               att[indx] <- attr2[match(fyNds,ndY)]
+               
+               if(!is.null(funList) && (k %in% names(funList))) {
+                    tmp <- sapply(cmnNds, function(p){
+                            dX <- match(p, ndX)
+                            dY <- match(p, ndY)
+                            funList[[k]](attr1[[dX]], attr2[[dY]])
+                        }, USE.NAMES = FALSE)
+                    indx <- match(cmnNds, ndAns)
+                    att[indx] <- tmp
+                } else if (is.vector(attr1) && is.vector(attr2)){
+                    tmp <- sapply(cmnNds, function(p){
+                            dX <- match(p, ndX)
+                            dY <- match(p, ndY)
+                            identical(attr1[[dX]], attr2[[dY]])
+                        }, USE.NAMES = FALSE)
+                    indx <- match(cmnNds[tmp], ndAns)
+                    att[indx] <- attr1[match(cmnNds[tmp], ndX)]
+               }
+               list(att)
+            })
+     c(n1,n2)
+ }
 
 setMethod("nodeDataDefaults", 
         signature(self="graphBAM", attr="missing"),
@@ -1473,6 +1436,7 @@ setReplaceMethod("nodeDataDefaults",
 setReplaceMethod("nodeData",
         signature(self = "graphBAM", n="character", attr="character", value="ANY"),
         function(self, n, attr, value) {
+            graph:::.verifyAttrName(attr, names(self@nodeData@defaults))
             if(length(attr) != 1L)
                 stop("attr argument must specify a single attribute name")
             if(is.vector(value)){
@@ -1551,6 +1515,7 @@ setReplaceMethod("nodeData",
 setReplaceMethod("nodeData",
         signature(self = "graphBAM", n="missing", attr="character", value="ANY"),
         function(self, n, attr, value) {
+            graph:::.verifyAttrName(attr, names(self@nodeData@defaults))
             if(length(attr) != 1L)
                 stop("attr argument must specify a single attribute name")
             lenNode <- length(nodes(self))
@@ -1568,20 +1533,13 @@ setReplaceMethod("nodeData",
             nodeData(self, n = nodes(self), attr) <- value
             self
         })
-    #
-    #.getNodeAttrValues <- function(x, nds) {
-    #    bt <- graph:::bitToLogical(x)
-    #    cs <- cumsum(bt)
-    #    idx <- nds[bt[nds]]
-    #    list(nodePos= which(nds %in% idx), attrPos = cs[idx]) 
-    #}
-    #
 
-.getNodeAttrPos <- function(x, indx) {
+ .getNodeAttrPos <- function(x, indx) {
     bt <- graph:::bitToLogical(x)
     leftPos <- which(bt[indx])
     cs <- cumsum(bt) 
-    rightPos <- cs[which(bt)]
+    k <- indx[bt[indx]]
+    rightPos <- cs[k ]
     list(leftPos= leftPos, rightPos = rightPos)
 }
 
@@ -1601,9 +1559,7 @@ setMethod("nodeData",
             n <- n[as.numeric(names(idx))]
             names(idx) <- NULL
             bt <- self@userAttrPos@nodePos[[attr]]
-            ord <- .getNodeAttrPos(bt, idx)
-            #   leftPos <- which(graph:::bitToLogical(bt)[idx])
-            #  rightPos <- which(graph:::bitToLogical(bt))[idx]
+            ord <- graph:::.getNodeAttrPos(bt, idx)
             res <- vector(length(idx), mode = mode(self@nodeData@defaults[[attr]]))
             res[1:length(idx)] <- self@nodeData@defaults[[attr]]
             if(length(ord$leftPos))

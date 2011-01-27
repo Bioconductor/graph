@@ -357,6 +357,7 @@ randFromTo <- function(numNodes, numEdges, weightFun = function(N) rep(1L, N),
 
 oneWeights <- function(x) rep(1L, nrow(x))
 
+###FIXME
 edgeSetIntersect0 <- function(g, edgeFun = NULL)
 {
     edge_sets <- g@edge_sets
@@ -408,7 +409,7 @@ edgeSetUnion0 <- function(g, edgeFun = NULL)
     }
     
     g1 <- subsetEdgeSets(g,nms[1])
-    names(g1@edge_sets) <- nName
+   names(g1@edge_sets) <- nName
     for ( i in seq.int(2L, n_sets)) {
         g2 <- subsetEdgeSets(g, names(g@edge_sets)[i])
         names(g2@edge_sets) <- nName
