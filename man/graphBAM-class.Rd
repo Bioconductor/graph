@@ -199,6 +199,15 @@ Class \code{"\linkS4class{graph}"}, directly.
       Access edge attributes.  See help for \code{edgeData}.
     }
     
+    \item{\code{edgeDataDefaults(self, attr)}}{
+      Access edge data default attributes .
+    }
+
+    \item{\code{nodeDataDefaults(self, attr)}}{
+      Access node data default attributes .
+    }
+
+    
     \item{\code{edgeWeights(object, index)}}{
       Return the edge weights for the graph in adjacency list format.
       The optional argument \code{index} specified a character vector of
@@ -307,9 +316,8 @@ Class \code{"\linkS4class{graph}"}, directly.
     am <- as(g,"graphAM")
     nl <- as(g,"graphNEL")
     mt <- as(g,"matrix")
-## CLEANUP
-# k  <- graphIntersect(g,g)
-##  k <- graphUnion(g,g)
+    k  <- graphIntersect(g,g)
+    k <- graphUnion(g,g)
     e <- removeEdgesByWeight(g,lessThan= 3.0)
     f <- removeNode("a", g)
     g
