@@ -13,11 +13,14 @@ setMethod("initialize", signature("graphBAM"),
         })
 
 graphBAM <- function(df, nodes = NULL, edgemode = "undirected",
-                     ignore_dup_edges = FALSE) {
-    cl <- colnames(df) %in%  c("from","to", "weight")
-    if(!all(cl)){
-        stop(c( c("from", "to", "weight")[!cl],
-                    " is not in the column names of df \n"))
+                     ignore_dup_edges = FALSE) 
+{
+    .required <- c("from", "to", "weight")
+    cl <- .required %in% names(df)
+    if (!all(cl)) {
+        msg <- sprintf("'%s' not in 'names(df)'",
+                       paste(.required[!cl], collapse="', '"))
+        stop(msg)
     }
     nodes <- sort(unique(c(as.character(df$from), as.character(df$to), nodes)))
     is_directed <- edgemode == "directed"
