@@ -99,17 +99,19 @@ setClass("DiEdgeSet", contains = "MGEdgeSet")
 
 setClass("UEdgeSet", contains = "MGEdgeSet")
 
-setClass("MultiGraph",
-         representation = representation(
-         nodes = "character",
-         nodeData = "list",
-         ## items will be MGEdgeSet objects
-         edge_sets = "list"))
-
 setClass("attrPos",
           representation = representation(
           nodePos = "list",
           edgePos = "list"))
+
+setClass("MultiGraph",
+         representation = representation(
+         nodes = "character",
+         nodeData = "attrData",
+         ## items will be MGEdgeSet objects
+         edge_sets = "list",
+         edge_defaults = "list",
+         userAttrPos = "attrPos"))
 
 setClass("graphBAM", contains = "graph",
          representation(edgeSet = "MGEdgeSet", nodes = "character", 
