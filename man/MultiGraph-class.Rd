@@ -32,6 +32,16 @@
 \alias{nodeData,MultiGraph,missing,missing-method}
 \alias{nodeData<-,MultiGraph,character,character-method}
 \alias{nodeData<-,MultiGraph,missing,character-method}
+\alias{mgEdgeDataDefaults}
+\alias{mgEdgeDataDefaults<-}
+\alias{mgEdgeDataDefaults,MultiGraph,character,character-method}
+\alias{mgEdgeDataDefaults,MultiGraph,character,missing-method}
+\alias{mgEdgeDataDefaults<-,MultiGraph,character,character,ANY-method}
+\alias{mgEdgeDataDefaults<-,MultiGraph,character,missing,list-method}
+\alias{nodeDataDefaults,MultiGraph,character-method}
+\alias{nodeDataDefaults,MultiGraph,missing-method}
+\alias{nodeDataDefaults<-,MultiGraph,character,ANY-method}
+\alias{nodeDataDefaults<-,MultiGraph,missing,list-method}
 \alias{mgEdgeData}
 \alias{mgEdgeData<-}
 \alias{mgEdgeData,MultiGraph,character,character,character,character-method}
@@ -215,7 +225,7 @@ extractGraphBAM(g, edgeSets)
 
 
     }
-
+`
     \item{show}{Prints a short summary of a MultiGraph object}
   }
 }
@@ -244,14 +254,19 @@ extractGraphBAM(g, edgeSets)
     ug <- ugraph(g)
     isDirected(ug)
     numEdges(ug)
-#CLEANUP
-# edgeSetIntersect0(g)
+    edgeSetIntersect0(g)
     subsetEdgeSets(g, "es1")
     extractFromTo(g)
     extractGraphAM(g)
     extractGraphAM(g, "es1")
     extractGraphBAM(g, "es1")
-#   graphIntersect(g, g)
-#   graphUnion(g,g)
+    graphIntersect(g, g)
+    graphUnion(g,g)
+    mgEdgeDataDefaults(g, "es1", attr = "color" ) <- "white"
+    mgEdgeData(g, "es1", from = "a", to = c("b", "c"), attr = "color") <- "red"
+    mgEdgeData(g, "es1", from = "a", to = c("b", "c"), attr = "color") 
+    nodeDataDefaults(g, attr ="shape") <- "circle"
+    nodeData(g, n = c("a", "b", "c"), attr = "shape") <- "triangle"
+    nodeData(g, n = c("a", "b", "x", "y"), attr = "shape") 
 }
 \keyword{classes}
