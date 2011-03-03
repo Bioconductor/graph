@@ -176,9 +176,12 @@ resWt <- removeEdgesByWeight(intrsct, lessThan = 1.5)
 
 Once we have narrowed down to the edges that we are interested in, we would like
 to change the color attribute for these edges in our original \Robject{graphBAM}
-objects for the male and female graphs to "red".
+objects for the male and female graphs to "red". Before an attribute can be
+added, we have to set its default value using the \Rfunction{edgedataDefaults}
+method. For our example, we set the default value for the color attribute to
+white.
 
-To do that we first obtain the from - to relationship for the \Rcode{resWt}
+We first obtain the from - to relationship for the \Rcode{resWt}
 graph using the \Rmethod{extractFromTo} method and then make use of the 
 \Rmethod{edgeData} method to update the "color" edge attribute.
 
@@ -282,29 +285,39 @@ mgEdgeData(mg, "Delta", from = "SEA", attr = "weight")
 @
 
 We proceed to add some node attributes to the \Robject{MultiGraph} using the 
-\Rfunction{nodeData} method. We would like to set the node attribute "shape" for
-Seattle to the value \Rcode{"triangle"} and that for the cities that connect with Seattle to 
-the value \Rcode{"circle"}.
+\Rfunction{nodeData} method. Before node attributes can be added, we have to set
+a default value for each node attribute using the \Rfunction{nodeDataDefuault}
+method. For our example, we would like to set a default value of square for the
+node attribute shape.
+
+We would like to set the node attribute "shape" for Seattle to the value \Rcode{"triangle"}
+and that for the cities that connect with Seattle to the value \Rcode{"circle"}.
 
 <<nodeData>>=
+nodeDataDefaults(mg, attr="shape") <- "square"
 nodeData(mg, n = c("SEA", "DEN", "IAH", "LAX", "SFO"), attr = "shape")  <- 
     c("triangle", "circle", "circle", "circle", "circle")
 @
 
 The node attribute shape for cities we have not specifically assigned a value 
-(such as BWI) gets assigned a default value of NA.
+(such as BWI) gets assigned the default value of "square".
 
 <<nodeDataVal>>=
 nodeData(mg,  attr = "shape")  
 @
 
 We then update the edge attribute \Rcode{color} for the Delta airline flights
-that connect with Seattle to "green" and for the remaining Delta flights that
-connect to other destination in the MultiGraph to "red" using the 
-\Rfunction{mgEdgeData} replacement methods.
+that connect with Seattle to "green". For the remaining Delta flights that
+connect to other destination in the MultiGraph, we would like to assign a
+default color of "red". 
+
+Before edge attributes can be added to the MultiGraph, 
+their default values must be set using the \Rfunction{mgEdgeDataDefaults} method.
+Subsequently, the \Rfunction{megEdgeData<-} method can be used to update
+specific edge attributes.
 
 <<edgeDataVal>>=
-mgEdgeData(mg, "Delta", attr = "color")   <- "red"
+mgEdgeDataDefaults(mg, "Delta", attr = "color")  <- "red"
 mgEdgeData(mg, "Delta", from = c("SEA", "SEA", "SEA", "SEA"), 
         to = c("DEN", "IAH", "LAX", "SFO"), attr = "color") <- "green"
 @
@@ -334,15 +347,15 @@ function for appropriate handling of edge attributes ).
 
 <<intersecmg>>=
 edgeFun <- list( weight = min)
-#gInt <- edgeSetIntersect0(g, edgeFun = edgeFun)
-#gInt
+gInt <- edgeSetIntersect0(g, edgeFun = edgeFun)
+gInt
 @
 
 The edge set by the \Rmethod{edgeSetIntersect0} operation is named by 
 concatenating the names of the edgeSets passed as input to the function.
   
 <<intersectWeights>>=
-#mgEdgeData(gInt, "Alaska_United_Delta", attr= "weight")
+mgEdgeData(gInt, "Alaska_United_Delta", attr= "weight")
 @
 
 \subsection{MultiGraph representation of mice gene interaction data. (SAGE)}
@@ -423,10 +436,10 @@ original \Robject{MultiGraph} objects for the male and female data. The node
  while  the rest of the nodes are assigned a color color attribute of "gray".
 
 <<nodeAttr>>=
-nodeData(male, attr = "color") <- "gray"
+nodeDataDefaults(male, attr = "color") <- "gray"
 nodeData(male , n = c("10024416717", names(maleWt)), attr = "color" ) <- c("red")
 
-nodeData(female, attr = "color") <- "gray"
+nodeDataDefaults(female, attr = "color") <- "gray"
 nodeData(female , n = c("10024416717", names(femaleWt)), attr = "color" ) <- c("red")
 @
 
@@ -438,8 +451,8 @@ in the genes that are common to both \Robject{MultiGraph}s. This can be calculat
 using the \Rfunction{graphIntersect} method.
 
 <<nodeSub>>=
-#resInt <- graphIntersect(male, female)
-#resInt
+resInt <- graphIntersect(male, female)
+resInt
 @
 
 The operations we have dealt with so far only deal with manipulation of \Rclass{MultiGraph}
