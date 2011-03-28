@@ -808,7 +808,6 @@ setMethod("removeEdgesByWeight", c("graphBAM"),
                   graph@userAttrPos@edgePos[[i]] <- 
                   graph:::setBitCell(graph@userAttrPos@edgePos[[i]], 
                       ft2[,"from"], ft2[,"to"], rep(0L, nrow(ft2)))
-
                   ord <- .Call("graph_bitarray_getEdgeAttrOrder",
                       graph@userAttrPos@edgePos[[i]], as.integer(ft2[,"from"]),
                       as.integer(ft2[, "to"]))
@@ -859,25 +858,6 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     attr1
 }
 
-
-.getAttrVec <- function(g, att){
-    nms <- names(g@edgeData@defaults)
-    bv <- g@edgeSet@bit_vector & (!g@userAttrPos@edgePos[[att]])
-    attributes(bv) <- attributes(g@edgeSet@bit_vector)
-    attr(bv, "nbitset") <- .Call("graph_bitarray_sum", bv)
-    ft <- .Call("graph_bitarray_rowColPos", bv)
-    attrBit <- g@userAttrPos@edgePos[[att]]
-    ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
-                    as.integer(ft[,"from"]), as.integer(ft[,"to"]))
-    nt <- attr(g@edgeSet@bit_vector, "nbitset")
-    dflt <- g@edgeData@defaults[[att]]
-    newAttr <- vector(nt, mode = mode(dflt))
-    newAttr[ord$origLeftPos] <-  g@edgeSet@edge_attrs[[att]][ord$origRightPos]
-    dflt <- g@edgeData@defaults[[att]]
-    newAttr[ord$newLeftPos] <- if(mode(dflt)=="list") rep(list(dflt), nt) else  dflt
-    newAttr
-}
-
 .getNodeAttrVec <- function(g, att) {
   unlist(nodeData(g, attr = att), use.names = FALSE)
 }
@@ -896,13 +876,13 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     ## from x
     k <- (as.numeric(attrType$from) ==1)
     if(att  %in% names(x@edgeSet@edge_attrs)) {
-        xAttr <- graph:::.getAttrVec(x, att)
+        xAttr <- graph:::.retAttrVec(x, att)
         attr1[k]  <- xAttr[ attrType$indx1[k]] 
     }
     ## from y 
     k <- (as.numeric(attrType$from) == 2)
     if(att  %in% names(y@edgeSet@edge_attrs)) {
-        yAttr <- graph:::.getAttrVec(y, att)
+        yAttr <- graph:::.retAttrVec(y, att)
         attr1[k]  <- yAttr[ attrType$indx2[k]]
     }
     ## resolve union
@@ -982,8 +962,8 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     }
     for(i in commonAttr) {
         ans@userAttrPos@edgePos[[i]] <- edge_set@bit_vector
-        xAttr <- graph:::.getAttrVec(g1, i)
-        yAttr <- graph:::.getAttrVec(g2, i)
+        xAttr <- graph:::.retAttrVec(g1, i)
+        yAttr <- graph:::.retAttrVec(g2, i)
         if(length(attrType$from) >0) {
             edge_set@edge_attrs[[i]] <- graph:::.getIntersectAttrs(i, attrType, xAttr, yAttr, funList)
         }
@@ -1033,8 +1013,8 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     }
     for(i in commonAttr) {
         ans@userAttrPos@edgePos[[i]] <- edge_set@bit_vector
-        xAttr <- graph:::.getAttrVec(g1, i)
-        yAttr <- graph:::.getAttrVec(g2, i)
+        xAttr <- graph:::.retAttrVec(g1, i)
+        yAttr <- graph:::.retAttrVec(g2, i)
         if(length(attrType$from) >0) {
            edge_set@edge_attrs[[i]] <- .getIntersectAttrs(i, attrType, xAttr, yAttr, funList)
         }
@@ -1120,7 +1100,6 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
     if(missing(edgeFun))
         edgeFun <- NULL
     
-  #  ans <- .bamIntersect(sg1, sg2, edgeFun)
     edge_set <- graph:::.getEdgeIntersect(sg1@edgeSet, sg2@edgeSet)
     ans <- graph:::.getBAMIntersect(sg1, sg2, edge_set, edgeFun)
     ans@edgeData@defaults <- 
