@@ -1542,8 +1542,10 @@ setMethod("edges", signature("MultiGraph", "character"),
           function(object, which, edgeSet) {
               if(missing(edgeSet))
                   edgeSet <- edgeSets(object)
-              if (!all(edgeSet %in% edgeSets(object))
+              if (!all(edgeSet %in% edgeSets(object)))
                   stop("edgeSet specified not found in MultiGraph")
+              if (!all(which %in% nodes(object)))
+                  stop("nodes specified not found in MultiGraph")
               eg <- extractGraphBAM(object, edgeSet)
               if(length(eg) == 1)
                   edges(eg[[edgeSet]], which)
@@ -1555,7 +1557,7 @@ setMethod("edges", signature("MultiGraph", "missing"),
           function(object, edgeSet) {
               if (missing(edgeSet))
                   edgeSet <- edgeSets(object)
-              if (!all(edgeSet %in% edgeSets(object))
+              if (!all(edgeSet %in% edgeSets(object)))
                   stop("edgeSet specified not found in MultiGraph")
 
               eg <- extractGraphBAM(object, edgeSet)
@@ -1569,7 +1571,7 @@ setMethod("edgeNames", signature("MultiGraph"),
           function(object, edgeSet) {
               if(missing(edgeSet))
                   edgeSet <- edgeSets(object)
-              if (!all(edgeSet %in% edgeSets(object))
+              if (!all(edgeSet %in% edgeSets(object)))
                   stop("edgeSet specified not found in MultiGraph")
               eg <- extractGraphBAM(object, edgeSet)
               if(length(eg) == 1)
