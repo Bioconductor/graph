@@ -262,5 +262,5 @@ setGeneric("graphIntersect", function(x, y, ...)
 setGeneric("graphUnion", function(x, y, ...)
            standardGeneric("graphUnion"))
 
-
+setGeneric("edgeSets", function(object, ...) standardGeneric("edgeSets"))
 

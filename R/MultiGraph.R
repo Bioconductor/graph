@@ -423,31 +423,7 @@ edgeSetUnion0 <- function(g, edgeFun = NULL)
         return(new("MultiGraph", edge_sets = new_edge_sets, nodes = nodes(g1)))
     }
 }
-# 
-# edgeUnion <- function(object, weightFun = NULL)
-# {
-#     edgeAttrs <- object@edgeAttrs
-#     uAttrs <- unlist(lapply(edgeAttrs, function(x) x[[1L]]))
-#to deal with weights properly I guess we will need
-#to compute the intersection.
-#     dups <- duplicated(uAttrs)
-#     uAttrs <- sort(uAttrs[!dups])
-#     newWeights <- if (is.null(weightFun)) {
-#         rep(1L, length(uAttrs))
-#     } else {
-#         wList <- lapply(edgeAttrs, function(ea) {
-#             idx <- match(uAttrs, ea[[1L]])
-#             ea[[2L]][idx]
-#         })
-#         wMat <- do.call(cbind, wList)
-#         weightFun(wMat)
-#     }
-#     object@edgeAttrs <- list(data.frame(mdg_edge_index = uAttrs,
-#                                         weight = newWeights,
-#                                         stringsAsFactors = FALSE))
-#     object
-# }
-# 
+
 ## TODO: should you be allowed to rename edge sets?
 ## or at least name unnamed edge sets?
 
@@ -1555,4 +1531,51 @@ setReplaceMethod("nodeDataDefaults",
         }
         self
     })
+
+
+setMethod("edgeSets", signature("MultiGraph"), function(object, ...) {
+        names(object@edge_sets)
+    })
+
+
+setMethod("edges", signature("MultiGraph", "character"),
+          function(object, which, edgeSet) {
+              if(missing(edgeSet))
+                  edgeSet <- edgeSets(object)
+              if (!all(edgeSet %in% edgeSets(object))
+                  stop("edgeSet specified not found in MultiGraph")
+              eg <- extractGraphBAM(object, edgeSet)
+              if(length(eg) == 1)
+                  edges(eg[[edgeSet]], which)
+              else 
+                  lapply(eg, edges, which)            
+          })
+
+setMethod("edges", signature("MultiGraph", "missing"),
+          function(object, edgeSet) {
+              if (missing(edgeSet))
+                  edgeSet <- edgeSets(object)
+              if (!all(edgeSet %in% edgeSets(object))
+                  stop("edgeSet specified not found in MultiGraph")
+
+              eg <- extractGraphBAM(object, edgeSet)
+              if(length(eg) == 1)
+                  edges(eg[[edgeSet]])
+              else 
+                  lapply(eg, edges)    
+          })
+
+setMethod("edgeNames", signature("MultiGraph"),
+          function(object, edgeSet) {
+              if(missing(edgeSet))
+                  edgeSet <- edgeSets(object)
+              if (!all(edgeSet %in% edgeSets(object))
+                  stop("edgeSet specified not found in MultiGraph")
+              eg <- extractGraphBAM(object, edgeSet)
+              if(length(eg) == 1)
+                  edgeNames(eg[[edgeSet]])
+              else 
+                  lapply(eg, edgeNames)    
+          })
+            
 

@@ -52,6 +52,9 @@
 \alias{mgEdgeData<-,MultiGraph,character,character,missing,character-method}
 \alias{mgEdgeData<-,MultiGraph,character,missing,character,character-method}
 \alias{mgEdgeData<-,MultiGraph,character,missing,missing,character-method}
+\alias{edges,MultiGraph,character-method}
+\alias{edgeNames,MultiGraph-method}
+\alias{edges,MultiGraph,missing-method}
 \title{EXPERIMENTAL class "MultiGraph"}
 \description{
 
@@ -157,6 +160,12 @@ extractGraphBAM(g, edgeSets)
       \code{object} with a \code{TRUE} indicating a directed edge set
       and \code{FALSE} for undirected.}
 
+    \item{edges}{Returns a list named by edge set; for the edges in the 
+        MultiGraph}
+
+    \item{edgeNames}{Returns a list named by the edge set; for the names
+        of the edges in the MultiGraph}
+
     \item{extractFromTo}{Return a list named by the edge sets; each
       element is a data frame with column names from, to and weight
 	  corresponding to the connected nodes in the edge set.}
@@ -251,6 +260,9 @@ extractGraphBAM(g, edgeSets)
     eweights(g)
     eweights(g, names.sep = "=>")
     isDirected(g)
+    edges(g, edgeSet ="es1")
+    edges(g, "a", "es1")
+    edgeNames(g, "es2")
     ug <- ugraph(g)
     isDirected(ug)
     numEdges(ug)
