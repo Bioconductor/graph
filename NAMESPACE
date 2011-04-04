@@ -31,7 +31,7 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
       "nodeData<-", attrDataItem, "attrDataItem<-",
       "removeAttrDataItem<-", ugraph, leaves, updateGraph, extractFromTo, 
-      graphIntersect, graphUnion, removeEdgesByWeight)
+      graphIntersect, graphUnion, removeEdgesByWeight, edgeSets)
 
 
 export(boundary, buildRepDepGraph, calcProb, calcSumProb,

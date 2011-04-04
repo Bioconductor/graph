@@ -55,6 +55,8 @@
 \alias{edges,MultiGraph,character-method}
 \alias{edgeNames,MultiGraph-method}
 \alias{edges,MultiGraph,missing-method}
+\alias{edgeSets}
+\alias{edgeSets,MultiGraph-method}
 \title{EXPERIMENTAL class "MultiGraph"}
 \description{
 
@@ -234,7 +236,12 @@ extractGraphBAM(g, edgeSets)
 
 
     }
-`
+    \item{ \code{edgeSets(object, ...)}}{
+    Returns the names of the  edgeSets in the  MultiGraph
+    \code{object} as a character vector.
+    } 
+    
+
     \item{show}{Prints a short summary of a MultiGraph object}
   }
 }
@@ -256,13 +263,13 @@ extractGraphBAM(g, edgeSets)
 
     nodes(g)
     numEdges(g)
-
     eweights(g)
     eweights(g, names.sep = "=>")
     isDirected(g)
     edges(g, edgeSet ="es1")
     edges(g, "a", "es1")
     edgeNames(g, "es2")
+    edgeSets(g)
     ug <- ugraph(g)
     isDirected(ug)
     numEdges(ug)
