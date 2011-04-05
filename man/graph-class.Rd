@@ -1,6 +1,7 @@
 \name{graph-class}
 \docType{class}
 \alias{graph-class}
+\alias{graphBase-class}
 
 \alias{complement}
 \alias{complement,graph-method}
@@ -88,6 +89,7 @@
 
 \alias{updateGraph}
 \alias{updateGraph,graph-method}
+
 
 
 \title{Class "graph" }
