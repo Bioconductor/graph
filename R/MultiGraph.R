@@ -1408,22 +1408,34 @@ setReplaceMethod("mgEdgeData",
     value <- value[idx]
     if(attr == "weight") {
         attrBit <- mg@edge_sets[[e]]@bit_vector
-        ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
-            as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
-        g@edge_sets[[e]]@bit_vector <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
-            rep(1L, nrow(req_i)))
-        nt <- attr(mg@edge_set[[e]]@bit_vector, "nbitset")
+        if(nrow(req_i)) {
+            ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
+                         as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
+            mg@edge_sets[[e]]@bit_vector <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
+                                                              rep(1L, nrow(req_i)))
+            nt <- attr(mg@edge_set[[e]]@bit_vector, "nbitset")
+        } else {
+            nt <- attr(attrBit, "nbitset")
+            ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                        origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+        }
         newAttr <- vector(nt, mode = mode(value))
         newAttr[ord$origLeftPos] <- mg@edgeSet@weights[ord$origRightPos]
         newAttr[ord$newLeftPos] <- value[ord$newRightPos]
         mg@edge_sets[[e]]@weights <- newAttr
     } else {
         attrBit <- mg@userAttrPos@edgePos[[e]][[attr]]
-        ord <- .Call("graph_bitarray_getEdgeAttrOrder", attrBit, 
-                    as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
-        mg@userAttrPos@edgePos[[e]][[attr]] <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
-                                rep(1L, nrow(req_i)))
-        nt <- attr(mg@userAttrPos@edgePos[[e]][[attr]], "nbitset")
+        if(nrow(req_i)) {
+            ord <- .Call("graph_bitarray_getEdgeAttrOrder", attrBit, 
+                         as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
+            mg@userAttrPos@edgePos[[e]][[attr]] <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
+                                                                      rep(1L, nrow(req_i)))
+            nt <- attr(mg@userAttrPos@edgePos[[e]][[attr]], "nbitset")
+        } else {
+            nt <- attr(attrBit, "nbitset")
+            ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                        origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+        }
         newAttr <- vector(nt, mode = mode(value))
         newAttr[ord$origLeftPos] <- 
                      mg@edge_sets[[e]]@edge_attrs[[attr]][ord$origRightPos]
@@ -1446,11 +1458,17 @@ setReplaceMethod("mgEdgeData",
         dflt <- g@edge_defaults[[e]][[attr]]
         attrBit <- g@userAttrPos@edgePos[[e]][[attr]]
         ft <- ft[with(ft, order(to, from)),]
-        ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
+        if(nrow(ft)) {
+            ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
                      as.integer(ft[,"from"]), as.integer(ft[,"to"]))
-        attrBit <- graph:::setBitCell(attrBit, ft[,"from"], ft[,"to"], 
+            attrBit <- graph:::setBitCell(attrBit, ft[,"from"], ft[,"to"], 
                                       rep(1L, nrow(ft)))
-        nt <- attr(attrBit, "nbitset")
+            nt <- attr(attrBit, "nbitset")
+        } else {
+            nt <- attr(attrBit, "nbitset")
+            ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                        origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+        }
         newAttr <- vector(nt, mode = mode(dflt))
         if(!is.null(g@edge_sets[[e]]@edge_attrs[[attr]])) {
             newAttr[ord$origLeftPos] <- g@edge_sets[[e]]@edge_attrs[[attr]][ord$origRightPos]

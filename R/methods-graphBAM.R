@@ -277,11 +277,19 @@ setMethod("edgeData",
         dflt <- g@edgeData@defaults[[attr]]
         attrBit <- g@userAttrPos@edgePos[[attr]]
         ft <- ft[with(ft, order(to, from)),]
-        ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
-                     as.integer(ft[,"from"]), as.integer(ft[,"to"]))
-        attrBit <- graph:::setBitCell(attrBit, ft[,"from"], ft[,"to"], 
-                                      rep(1L, nrow(ft)))
-        nt <- attr(attrBit, "nbitset")
+        if(nrow(ft)) {
+            ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
+                         as.integer(ft[,"from"]), as.integer(ft[,"to"]))
+            attrBit <- graph:::setBitCell(attrBit, ft[,"from"], ft[,"to"], 
+                                          rep(1L, nrow(ft)))
+            nt <- attr(attrBit, "nbitset")
+
+        } else {
+            nt <- attr(attrBit, "nbitset")
+            ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                        origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+        
+        }
         newAttr <- vector(nt, mode = mode(dflt))
         if(!is.null(g@edgeSet@edge_attrs[[attr]])) {
             newAttr[ord$origLeftPos] <- g@edgeSet@edge_attrs[[attr]][ord$origRightPos]
@@ -359,22 +367,35 @@ setMethod("edgeData",
      value <- value[idx]
     if(attr == "weight") {
         attrBit <- g@edgeSet@bit_vector
-        ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
-                    as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
-        g@edgeSet@bit_vector <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
-                                rep(1L, nrow(req_i)))
-        nt <- attr(g@edgeSet@bit_vector, "nbitset")
+        if(nrow(req_i)) { 
+            ord <- .Call("graph_bitarray_getEdgeAttrOrder",  attrBit, 
+                         as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
+            g@edgeSet@bit_vector <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
+                                                       rep(1L, nrow(req_i)))
+            nt <- attr(g@edgeSet@bit_vector, "nbitset")
+        } else {
+            nt <- attr(attrBit, "nbitset")
+            ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                        origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+        }
+
         newAttr <- vector(nt, mode = mode(value))
         newAttr[ord$origLeftPos] <- g@edgeSet@weights[ord$origRightPos]
         newAttr[ord$newLeftPos] <- value[ord$newRightPos]
         g@edgeSet@weights <- newAttr
     }else {
         attrBit <- g@userAttrPos@edgePos[[attr]]
-        ord <- .Call("graph_bitarray_getEdgeAttrOrder", attrBit, 
-                    as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
-        g@userAttrPos@edgePos[[attr]] <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
-                                rep(1L, nrow(req_i)))
-        nt <- attr(g@userAttrPos@edgePos[[attr]], "nbitset")
+        if(nrow(req_i)) { 
+            ord <- .Call("graph_bitarray_getEdgeAttrOrder", attrBit, 
+                         as.integer(req_i[,"from"]), as.integer(req_i[,"to"]))
+            g@userAttrPos@edgePos[[attr]] <- graph:::setBitCell(attrBit, req_i[,"from"], req_i[,"to"], 
+                                                                rep(1L, nrow(req_i)))
+            nt <- attr(g@userAttrPos@edgePos[[attr]], "nbitset")
+        } else {
+            nt <- attr(attrBit, "nbitset")
+            ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                        origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+        }
         newAttr <- vector(nt, mode = mode(value))
         newAttr[ord$origLeftPos] <- 
                      g@edgeSet@edge_attrs[[attr]][ord$origRightPos]
@@ -648,13 +669,19 @@ setMethod("addEdge",
               nn <- nodes(graph)
               req_ft <- graph:::.align_from_to(from, to, nn)
               req_i <- structure(match(req_ft, nn), dim = dim(req_ft))
-              ord <- .Call("graph_bitarray_getEdgeAttrOrder",
-                  graph@edgeSet@bit_vector,
-                as.integer(req_i[,1]), as.integer(req_i[,2]))
-               graph@edgeSet@bit_vector <-
-               graph:::setBitCell(graph@edgeSet@bit_vector, req_i[,1], req_i[,2], 
-                                rep(1L, nrow(req_i)))
-               nt <- attr(graph@edgeSet@bit_vector, "nbitset")
+              if(nrow(req_i)) {
+                  ord <- .Call("graph_bitarray_getEdgeAttrOrder",
+                               graph@edgeSet@bit_vector,
+                               as.integer(req_i[,1]), as.integer(req_i[,2]))
+                  graph@edgeSet@bit_vector <-
+                      graph:::setBitCell(graph@edgeSet@bit_vector, req_i[,1], req_i[,2], 
+                                         rep(1L, nrow(req_i)))
+                  nt <- attr(graph@edgeSet@bit_vector, "nbitset")
+              } else {
+                 nt <- attr(graph@edgeSet@bit_vector, "nbitset")
+                 ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                          origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+              }
               newAttr <- vector(nt, mode = "numeric")
               newAttr[ord$origLeftPos] <- graph@edgeSet@weights[ord$origRightPos]
               newAttr[ord$newLeftPos] <- weights[ord$newRightPos]
@@ -756,8 +783,15 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
             graph@userAttrPos@edgePos[[i]] <-  
             graph:::setBitCell(graph@userAttrPos@edgePos[[i]], req_from, req_to,
                 rep(0L, nrow(req_ft)))
-            ord <- .Call("graph_bitarray_getEdgeAttrOrder",graph@userAttrPos@edgePos[[i]],
-                as.integer(req_from), as.integer(req_to))
+            if(length(req_from)) {
+                ord <- .Call("graph_bitarray_getEdgeAttrOrder",graph@userAttrPos@edgePos[[i]],
+                             as.integer(req_from), as.integer(req_to))
+            } else {
+
+                nt <- attr(graph@userAttrPos@edgePos[[i]], "nbitset")
+                ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                        origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+            }
             graph@edgeSet@edge_attrs[[i]] <- graph@edgeSet@edge_attrs[[i]][ord$origLeftPos]
         }
     }
@@ -808,11 +842,17 @@ setMethod("removeEdgesByWeight", c("graphBAM"),
                   graph@userAttrPos@edgePos[[i]] <- 
                   graph:::setBitCell(graph@userAttrPos@edgePos[[i]], 
                       ft2[,"from"], ft2[,"to"], rep(0L, nrow(ft2)))
+                  if(nrow(ft2)) {
                   ord <- .Call("graph_bitarray_getEdgeAttrOrder",
                       graph@userAttrPos@edgePos[[i]], as.integer(ft2[,"from"]),
                       as.integer(ft2[, "to"]))
+                  } else {
+                      nt <- attr(graph@userAttrPos@edgePos[[i]], "nbitset")
+                      ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
+                                  origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
+                  }
                   graph@edgeSet@edge_attrs[[i]] <- 
-                  graph@edgeSet@edge_attrs[[i]][ord$origLeftPos]
+                    graph@edgeSet@edge_attrs[[i]][ord$origLeftPos]
               }
           }
           graph
