@@ -83,8 +83,7 @@ setMethod("edgemode", "graph", function(object)
           if(!isUpToDate(object)){
               ## first check in graphData then in edgemode slot
               if(!"graphData" %in% names(getObjectSlots(object))){
-                  .Deprecated(msg=EDGEMODE_DEFUNCT_MSG)
-                  em <- object@edgemode
+                  .Defunct(msg=EDGEMODE_DEFUNCT_MSG)
               }else{
                   em <- object@graphData$edgemode
                   if (is.null(em) && hasEdgemode(object))
@@ -130,7 +129,7 @@ isUpToDate <- function(object, error=FALSE)
   valid <- setequal(availSlotNames, definedSlotNames) &&
                     length(object@graphData$edgemode)
   if(error && !valid)
-    .Deprecated(msg=EDGEMODE_DEFUNCT_MSG)
+    .Defunct(msg=EDGEMODE_DEFUNCT_MSG)
   return(valid)
 }
 

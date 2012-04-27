@@ -60,7 +60,7 @@
           names(out) <- labels[i]
     }
     else {
-        out <- matrix(rval, nc=lenj, nr=leni)
+        out <- matrix(rval, ncol=lenj, nrow=leni)
         dimnames(out) <- list(labels[i], labels[j])
    }
    out

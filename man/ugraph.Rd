@@ -1,7 +1,6 @@
 \name{ugraph}
 
 \alias{ugraph}
-\alias{ugraphOld}
 \alias{ugraph,graph-method}
 
 \title{Underlying Graph}

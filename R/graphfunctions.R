@@ -43,41 +43,9 @@ duplicatedEdges <- function(graph) {
     return(FALSE)
 }
 
-##ugraph: take a directed graph and return the underlying undirected graph
-ugraphOld <- function(graph)
+ugraphOld <- function()
 {
-    .Deprecated("ugraph")
-    if( edgemode(graph) == "undirected")
-        return(graph)
-    if( !is(graph, "graphNEL") )
-        stop("only graphNEL supported for now")
-
-    if( duplicatedEdges(graph) )
-        stop("there are duplicated edges, cannot handle multigraphs")
-
-    eL <- graph@edgeL
-    nN <- nodes(graph)
-    ##just in case they are not in the same order!
-    eL <- eL[nN]
-    for( i in 1:length(eL) ) {
-        cNode <- nN[i]
-        e <- eL[[i]]
-        if( length(e$edges) > 0 ) {
-            wh <- nN[e$edges]
-            for(j in 1:length(wh) ) {
-                eX <- eL[[wh[j]]]$edges
-                ##the current node is i so check for it
-                if( i %in% eX)
-                    next
-                eL[[wh[j]]]$edges <- c(i, eX)
-                eL[[wh[j]]]$weights <- c(e$weights[j],
-                                         eL[[wh[j]]]$weights)
-            }
-        }
-    }
-    edgemode(graph) <- "undirected"
-    graph@edgeL <- eL
-    return(graph)
+    .Defunct("ugraph")
 }
 
 setMethod("ugraph", "graph",
