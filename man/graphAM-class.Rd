@@ -1,6 +1,7 @@
 \name{graphAM-class}
 \docType{class}
 \alias{graphAM-class}
+\alias{graphAM}
 \alias{addEdge,character,character,graphAM,missing-method}
 \alias{addNode,character,graphAM,missing-method}
 \alias{clearNode,character,graphAM-method}
@@ -40,7 +41,8 @@
 }
 
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("graphAM", adjMat, edgemode, values)}.
+  Objects can be created by calls of the form \code{graphAM(adjMat,
+  edgemode, values)}.
 }
 \section{Slots}{
   \describe{
@@ -54,6 +56,24 @@ Objects can be created by calls of the form \code{new("graphAM", adjMat, edgemod
 \section{Extends}{
 Class \code{"graph"}, directly.
 }
+
+\section{Constructor}{
+  \code{graphAM(adjMat=matrix(integer(), 0, 0), edgemode='undirected', values=NA)}
+  creates a graphAM instance.
+  \describe{
+    \item{adjMat}{An \code{integer} matrix specifying which nodes have
+      edges between them.}
+    \item{edgemode}{Either "directed" or "undirected".}
+    \item{values}{A named list of length 1, used (rather obscurely) to
+      specify that non-zero adjMat values initialize an edge attribute.
+     The name of the single element in that list becomes the name of that
+     attribute, with the specified default value.
+     This default value is, however, never used:  the specified edge
+  attribute always has the value contained in the adjacency matrix,
+  which is traditionally 1, but can be any positive number.}
+    }
+}
+
 \section{Methods}{
   \describe{
     \item{addEdge}{\code{signature(from = "character", to = "character", graph = "graphAM", weights = "missing")}: ... }
@@ -96,12 +116,12 @@ mat <- rbind(c(0, 0, 1, 1),
              c(1, 1, 0, 1),
              c(1, 1, 1, 0))
 rownames(mat) <- colnames(mat) <- letters[1:4]
-g1 <- new("graphAM", adjMat=mat)
+g1 <- graphAM(adjMat=mat)
 stopifnot(identical(mat, as(g1, "matrix")), validObject(g1))
 
 ## now with weights:
 mat[1,3] <- mat[3,1] <- 10
-gw <- new("graphAM", adjMat=mat, values=list(weight=1))
+gw <- graphAM(adjMat=mat, values=list(weight=1))
 
 ## consistency check:
 stopifnot(identical(mat, as(gw, "matrix")),

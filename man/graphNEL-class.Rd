@@ -1,6 +1,7 @@
 \name{graphNEL-class}
 \docType{class}
 \alias{graphNEL-class}
+\alias{graphNEL}
 \alias{coerce}
 \alias{edgeL}
 \alias{edges}
@@ -31,25 +32,13 @@
 \alias{removeNode,character,graphNEL-method}
 \alias{toGXL,graphNEL-method}
 \title{Class "graphNEL"}
+
 \description{
   This is a class of graphs that are represented in terms of nodes and
   an edge list. This is a suitable representation for a graph with a
-  large number of nodes and relatively few edges.}
-\section{Objects from the Class}{
-  Objects can be created by calls of the form
-  \code{new("graphNEL", nodes, edgeL, edgemode)}.
-
-  \describe{
-  \item{nodes}{A character vector of node labels.}
-  \item{edgeL}{A named list either in the format returned by the
-    \code{edges} method or a list of lists where each inner list has
-    an element named \code{edges} and optionally an element named
-    \code{weights}.  If \code{weights} is present, it must be the same
-    length as the \code{edges} element.}
-  \item{edgemode}{Either "directed" or "undirected".}
-
-  }
+  large number of nodes and relatively few edges.
 }
+
 \section{Slots}{
   \describe{
     \item{\code{nodes}:}{Object of class \code{"vector"}.}
@@ -65,9 +54,27 @@
     }
   }
 }
+
 \section{Extends}{
 Class \code{"graph"}, directly.
 }
+
+\section{Constructor}{
+  \code{graphNEL(nodes=character(), edgeL=list(), edgemode='undirected')}
+  creates a graphNEL instance.
+
+  \describe{
+  \item{nodes}{A character vector of node labels.}
+  \item{edgeL}{A named list either in the format returned by the
+    \code{edges} method or a list of lists where each inner list has
+    an element named \code{edges} and optionally an element named
+    \code{weights}.  If \code{weights} is present, it must be the same
+    length as the \code{edges} element.}
+  \item{edgemode}{Either "directed" or "undirected".}
+
+  }
+}
+
 \section{Methods}{
   \describe{
     \item{adj}{\code{signature(object = "graphNEL")}: A method for
@@ -150,7 +157,7 @@ Class \code{"graph"}, directly.
    names(edL) <- V
    for(i in 1:4)
       edL[[i]] <- list(edges=5-i, weights=runif(1))
-   gR <- new("graphNEL", nodes=V, edgeL=edL)
+   gR <- graphNEL(nodes=V, edgeL=edL)
    edges(gR)
    edgeWeights(gR)
 }

@@ -37,7 +37,7 @@ inEdges(node, object)
   for(i in 1:4)
     edL3[[i]] <- list(edges=(i\%\%4)+1, weights=i)
   names(edL3) <- V
-  gR3 <- new("graphNEL", nodes=V, edgeL=edL3, "directed")
+  gR3 <- graphNEL(nodes=V, edgeL=edL3, "directed")
   inEdges(c("A", "B"), gR3)
 
 }

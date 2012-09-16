@@ -68,7 +68,7 @@ setMethod("ugraph", "graph",
               names(noEdges) <- noEdgeNodes
               ## FIXME: should we skip standard initialize for speed?
               ## need to copy over at least the nodeData...
-              new("graphNEL", nodes=theNodes, edgeL=c(eL, noEdges),
+              graphNEL(nodes=theNodes, edgeL=c(eL, noEdges),
                   edgemode="undirected")
           })
 

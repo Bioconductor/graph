@@ -58,7 +58,7 @@ rownames(mat) <- letters[1:4]
 colnames(mat) <- letters[1:4]
 @ 
 <<exampleGraph2, print=TRUE>>=
-g1 <- new("graphAM", adjMat=mat)
+g1 <- graphAM(adjMat=mat)
 @ 
 
 <<foo, fig=TRUE, prefix=FALSE, echo=FALSE, results=hide, include=FALSE, width=6, height=6>>=

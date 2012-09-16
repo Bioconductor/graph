@@ -34,7 +34,7 @@ listEdges(object, dropNULL=TRUE)
         toE <- LETTERS[4:1]
         for(i in 1:4) 
            edL[[i]] <- list(edges=5-i, weights=runif(1))
-        gR <- new("graphNEL", nodes=V, edgeL=edL)
+        gR <- graphNEL(nodes=V, edgeL=edL)
         listEdges(gR)
 }
 \keyword{manip}

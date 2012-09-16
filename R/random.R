@@ -45,7 +45,7 @@ randomGraph <- function(V, M, p, weights = TRUE)
                 if (weights)
                   rval[[i]]$weights[[pos]] <- rval[[i]]$weights[[pos]]+1
           }
-    new("graphNEL", nodes = V, edgeL=rval)
+    graphNEL(nodes = V, edgeL=rval)
 }
 
 ##  gg<-randomGraph(letters[1:10], 1:4, .3)
@@ -117,7 +117,7 @@ randomEGraph <- function(V, p, edges)
 #       names(rval[[tmat[i,2]]]$weights)[ln] <- tmat[i,1]
 #   }
 #   names(rval) <- V
-#   new("graphNEL", nodes = V, edgeL = rval)
+#   graphNEL(nodes = V, edgeL = rval)
 # }
 
 
@@ -146,7 +146,7 @@ randomNodeGraph <- function(nodeDegree)
     oL <- rep(list(list(numeric(0))), length(eN))
     names(oL) <- eN
     oL[names(outL)] <- outL
-    g <- new("graphNEL", nodes=names(oL), edgeL=oL,
+    g <- graphNEL(nodes=names(oL), edgeL=oL,
              edgemode="directed")
     g
 }

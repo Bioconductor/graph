@@ -58,7 +58,7 @@ create <-
                  w <- c(w, w)
              }
              mat[coord] <- w
-             new("graphAM", adjMat = mat, edgemode = gDesc$edgemode,
+             graphAM(adjMat = mat, edgemode = gDesc$edgemode,
                  values = list(weight = 1L))
          },
          "graphNEL" = function(gDesc) {
@@ -70,7 +70,7 @@ create <-
                  tf <- c(t, f)
                  edgeL <- split(tf, ft)
              }
-             g <- new("graphNEL", nodes = gDesc$nodes,
+             g <- graphNEL(nodes = gDesc$nodes,
                       edgeL = edgeL, edgemode = gDesc$edgemode)
              edgeDataDefaults(g, attr = "weight") <- 1L
              edgeData(g, from = gDesc$edges[, 1L],

@@ -616,7 +616,7 @@ setAs(from="graphBAM", to="matrix",
 
 setAs(from="graphBAM", to="graphAM",
         function(from) {
-    am <- new("graphAM", adjMat = as(from, "matrix"),
+    am <- graphAM(adjMat = as(from, "matrix"),
           edgemode = edgemode(from), values = list(weight=1))
     am
     })

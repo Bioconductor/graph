@@ -533,7 +533,7 @@ extractGraphAM <- function(g, edgeSets) {
     names(nms) <- nms
     lapply(nms, function(x) {
         mat <- edgeSetToMatrix(nds, esets[[x]], drct[[x]])
-        bam <- new("graphAM", adjMat=mat,
+        bam <- graphAM(adjMat=mat,
             edgemode = if(drct[[x]]) "directed" else "undirected",
             values= list(weight = esets[[x]]@weights))
     })

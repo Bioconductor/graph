@@ -22,7 +22,7 @@ reverseEdgeDirections(g)
 }
 \author{S. Falcon}
 \examples{
-g <- new("graphNEL", nodes=c("a", "b", "c"),
+g <- graphNEL(nodes=c("a", "b", "c"),
          edgeL=list(a=c("b", "c"), b=character(0), c=character(0)),
          edgemode="directed")
 

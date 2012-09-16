@@ -128,29 +128,29 @@ same node set.
 
 <<graphAMCreation, echo=FALSE>>=
 ## undirected
-ans <- timeRow(new("graphAM", adjMat = bigSymMat, edgemode="undirected"), "new")
+ans <- timeRow(graphAM(adjMat = bigSymMat, edgemode="undirected"), "new")
 df <- ans$row
 
-ans <- timeRow(new("graphAM", adjMat = medSymMat, edgemode="undirected"), "new")
+ans <- timeRow(graphAM(adjMat = medSymMat, edgemode="undirected"), "new")
 df <- rbind(df, ans$row)
 
 ## directed
-ans <- timeRow(new("graphAM", adjMat = bigMat, edgemode="directed"), "new")
+ans <- timeRow(graphAM(adjMat = bigMat, edgemode="directed"), "new")
 df <- rbind(df, ans$row)
 g1 <- ans$result
 
-ans <- timeRow(new("graphAM", adjMat = medMat, edgemode="directed"), "new")
+ans <- timeRow(graphAM(adjMat = medMat, edgemode="directed"), "new")
 df <- rbind(df, ans$row)
 g2 <- ans$result
 
 ## using a from/to matrix
 ftmat1 <- t(edgeMatrix(g1))
-ans <- timeRow(new("graphAM", adjMat = ftM2adjM(ftmat1),
+ans <- timeRow(graphAM(adjMat = ftM2adjM(ftmat1),
                    edgemode = "directed"), "new f/t")
 df <- rbind(df, ans$row)
 
 ftmat2 <- t(edgeMatrix(g2))
-ans <- timeRow(new("graphAM", adjMat = ftM2adjM(ftmat2),
+ans <- timeRow(graphAM(adjMat = ftM2adjM(ftmat2),
                    edgemode = "directed"), "new f/t")
 df <- rbind(df, ans$row)
 
@@ -338,7 +338,7 @@ st({
         M <- as(gw, "matrix")
         idx = (M > 0) & (M < 0.3)
         M[idx] <- 0
-        new("graphAM", adjMat = M, values = list(weight = 1L),
+        graphAM(adjMat = M, values = list(weight = 1L),
             edgemode = "directed")
     }
     ewt1 <- c1()
@@ -373,7 +373,7 @@ object.
 permNodesAM <- function(g) {
     m <- g@adjMat
     colnames(m) <- sample(colnames(g@adjMat))
-    new("graphAM", adjMat = m, edgemode = edgemode(g))
+    graphAM(adjMat = m, edgemode = edgemode(g))
 }
 
 @

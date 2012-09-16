@@ -47,7 +47,7 @@ edL2 <- vector("list", length=4)
 names(edL2) <- V
 for(i in 1:4)
   edL2[[i]] <- list(edges=c(2,1,2,1)[i], weights=sqrt(i))
-gR2 <- new("graphNEL", nodes=V, edgeL=edL2, edgemode="directed")
+gR2 <- graphNEL(nodes=V, edgeL=edL2, edgemode="directed")
 
 ugraph(gR2)
 

@@ -434,7 +434,7 @@ setMethod("intersection2", c("graph", "graph"), function(x,y) {
        yN <- nodes(y)
        bN <- intersect(xN, yN)
        if( length(bN) == 0 )
-           return(new("graphNEL", nodes=character(0),
+           return(graphNEL(nodes=character(0),
                       edgeL=vector("list", 0), edgemode=edgemode(x)))
        ##lb <- length(bN)
        ##if(lb != length(xN) || lb != length(yN))
@@ -452,7 +452,7 @@ setMethod("intersection2", c("graph", "graph"), function(x,y) {
                                  weights=rep(1, length(ans)))
        }
        names(rval) <- bN
-       new("graphNEL", nodes=bN, edgeL=rval, edgemode=edgemode(x))
+       graphNEL(nodes=bN, edgeL=rval, edgemode=edgemode(x))
    })
 
 setMethod("join", c("graph", "graph"), function(x, y) {
@@ -523,7 +523,7 @@ setMethod("join", c("graph", "graph"), function(x, y) {
     ## Some graphs have edgeL's that are missing the original
     ## node from the edgeL.  When we collated the edgeL above,
     ## those nodes will be missing - so need to make sure that
-    ## all nodes are present, as the new("graphNEL") call below
+    ## all nodes are present, as the graphNEL() call below
     ## will check to make sure that length(nodes) == length(edgeL)
     for (missNode in newNodes[! newNodes %in% names(newEdgeL)]) {
         newEdgeL[[length(newEdgeL) + 1]] <- list(edges=numeric(),
@@ -531,7 +531,7 @@ setMethod("join", c("graph", "graph"), function(x, y) {
         names(newEdgeL)[length(newEdgeL)] <- missNode
     }
 
-    new("graphNEL", nodes=newNodes, edgeL=newEdgeL, edgemode=ex)
+    graphNEL(nodes=newNodes, edgeL=newEdgeL, edgemode=ex)
 })
 
 
@@ -561,7 +561,7 @@ setMethod("union", c("graph", "graph"), function(x, y) {
                 list(edges=numeric(0), weights=numeric(0))
     }
     names(rval) <- xN
-    new("graphNEL", nodes=xN, edgeL=rval, edgemode=outmode)
+    graphNEL(nodes=xN, edgeL=rval, edgemode=outmode)
 })
 
 
@@ -583,7 +583,7 @@ setMethod("complement", c("graph"), function(x) {
         else
             rval[[i]] <- list(edges=numeric(0), weights=numeric(0))
     }
-    new("graphNEL", nodes=xN, edgeL=rval, edgemode=edgemode(x))
+    graphNEL(nodes=xN, edgeL=rval, edgemode=edgemode(x))
 })
 
 ##connected components
@@ -683,7 +683,7 @@ sparseM2Graph <- function(sM, nodeNames, edgemode=c("directed", "undirected"))
           edL[[i]] <- list(edges=numeric(0))
     }
     names(edL) <- nodeNames
-    new("graphNEL", nodes=nodeNames, edgeL=edL, edgemode=edgemode)
+    graphNEL(nodes=nodeNames, edgeL=edL, edgemode=edgemode)
 }
 
 ##translate a graph to a SparseMatrix:

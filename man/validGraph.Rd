@@ -28,7 +28,7 @@ validGraph(object, quietly=FALSE)
 
 \examples{
   
-  testGraph<-new("graphNEL")
+  testGraph<-graphNEL()
   testGraph@nodes<-c("node1","node2","node3")
   validGraph(testGraph)
 

@@ -361,7 +361,7 @@ create_GraphNEL_Directed <- function() {
      edL[["b"]] <- list(edges=c(3), weights=.23)
      edL[["c"]] <- list(edges=numeric(0), weights=numeric(0))
      edL[["d"]] <- list(edges=c(2, 3), weights=c(.42, .43))
-     gR <- new("graphNEL", nodes = V, edgeL = edL, edgemode = "directed" )
+     gR <- graphNEL(nodes = V, edgeL = edL, edgemode = "directed" )
      gR
 }
 
@@ -374,7 +374,7 @@ create_GraphNEL_UnDirected <- function() {
      edL[["b"]] <- list(edges=c(1), weights=.13)
      edL[["c"]] <- list(edges=c(1), weights=0.14)
      edL[["d"]] <- list(edges= numeric(0), weights=numeric(0))
-     gR <- new("graphNEL", nodes = V, edgeL = edL, edgemode = "undirected" )
+     gR <- graphNEL(nodes = V, edgeL = edL, edgemode = "undirected" )
      gR
 }
 

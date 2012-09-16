@@ -72,7 +72,7 @@ NELhandler <- function ()
         require(graph)
         ns <- names(nodeL)
         if (length(edgeL) == 0) 
-            return(new("graphNEL", nodes = ns, edgemode = edgemode))
+            return(graphNEL(nodes = ns, edgemode = edgemode))
 #
 # edgeL has a span element giving source and destination of each
 # edge
@@ -104,7 +104,7 @@ NELhandler <- function ()
           edgemode <- "undirected"
         else
           edgemode <- "directed"
-        g <- new("graphNEL", nodes = ns, edgeL = edl, edgemode = edgemode)
+        g <- graphNEL(nodes = ns, edgeL = edl, edgemode = edgemode)
         if (edgemode(g) == "undirected") 
             {
             edgemode(g) <- "directed" # allow ugraph to do something

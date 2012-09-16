@@ -20,7 +20,7 @@ aM2bpG<-function(aM){
         	names(rval[[tmat[i, 1]]]$weights)[ln] <- tmat[i, 2]
 	}
     	names(rval) <- V
-    	new("graphNEL", nodes = V, edgeL = rval, edgemode="directed")
+    	graphNEL(nodes = V, edgeL = rval, edgemode="directed")
 }
 
 ## WH 23 June 2004, Ladir CH
@@ -87,7 +87,7 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
       for(k in seq(along=mt))
         edgeL[[mt[k]]] <- list(edges=toN[[k]], weights=eW[[k]])
       
-      new("graphNEL", nodes=V, edgeL=edgeL, edgemode=edgemode)
+      graphNEL(nodes=V, edgeL=edgeL, edgemode=edgemode)
     },
     stop(paste("Unknown targetclass '", targetclass, "'", sep=""))
   ) ## end switch
@@ -123,7 +123,7 @@ setAs("matrix", "graphAM", function(from) {
   emode <- if (all(from == t(from))) "undirected" else "directed"
   defaultWeight <- vector(mode = typeof(from), length = 1L)
   defaultWeight[1L] <- 1L
-  new("graphAM", from, edgemode=emode, values=list(weight=defaultWeight))
+  graphAM (from, edgemode=emode, values=list(weight=defaultWeight))
 })
 
 

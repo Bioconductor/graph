@@ -210,7 +210,7 @@ setMethod("subGraph", signature(snodes="character", graph="graphNEL"),
                                      else
                                        x
                                  })
-              ans <- new("graphNEL", nodes=snodes, edgeL=newEdges,
+              ans <- graphNEL(nodes=snodes, edgeL=newEdges,
                          edgemode=edgemode(graph))
               ## FIXME: need to clean the attributes, right now we are passing
               ##        too much.

@@ -48,7 +48,7 @@ makeGoGraph <- function(x) {
  pmG <- pmedu95aAffy
 
  edgeL <- lapply(pmG@edges, function(x) list(edges=x))
- pmG <- new("graphNEL", nodes=pmG@nodes, edgeL=edgeL)
+ pmG <- graphNEL(nodes=pmG@nodes, edgeL=edgeL)
 
  xx1<-acc(pmG, "1025_g_at")
 
@@ -102,10 +102,10 @@ makeGoGraph <- function(x) {
  sapply(y, function(x) length(x$weights))
 
  names(y) <- rw
- g1 <- new("graphNEL", nodes=rw, edgeL=y)
+ g1 <- graphNEL(nodes=rw, edgeL=y)
 
  z<-lapply(y, function(x) {x$weights<-NULL; x})
- g2 <- new("graphNEL", nodes=rw, edgeL=z)
+ g2 <- graphNEL(nodes=rw, edgeL=z)
 
  #get the adjcency list for node number 10
  vv<-adj(g1, 10)
@@ -131,7 +131,7 @@ makeGoGraph <- function(x) {
    }
  }
 
- g3 <- new("graphNEL", nodes=rw, edgeL=y2)
+ g3 <- graphNEL(nodes=rw, edgeL=y2)
 
  b1 <- isect(g1, g3)
 

@@ -15,7 +15,7 @@ graphNELhandler <- function ()
     inInt <- FALSE
     inFloat <- FALSE
     inBool <- FALSE
-    g <- new("graphNEL")
+    g <- graphNEL()
     nodeL <- list()
     edgeL <- list()
     edgemode <- NULL
@@ -278,7 +278,7 @@ graph_handler <- function ()
         ## undirected case.
         nn <- unlist(as.list(all_nodes_e))      # retain original node order
         nn <- names(nn)[order(nn)]
-        g <- new("graphNEL", nodes=nn, edgemode=edgemode)
+        g <- graphNEL(nodes=nn, edgemode=edgemode)
         if (length(node_defaults_e)) {
             nd <- new("attrData", as.list(node_defaults_e))
             nd@data <- as.list(node_data_e)

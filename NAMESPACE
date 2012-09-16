@@ -35,13 +35,13 @@ exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
       graphIntersect, graphUnion, removeEdgesByWeight, edgeSets)
 
 
-export(boundary, buildRepDepGraph, calcProb, calcSumProb,
-       duplicatedEdges, graph2SparseM, listEdges,
-       randomEGraph, randomGraph, randomNodeGraph,
-       validGraph, eWV, pathWeights, .dropEdges, 
-       aveNumEdges, sparseM2Graph, gxlTreeNEL,
-       ftM2adjM, ftM2graphNEL, .ftM2other, int2ftM, 
-       ftM2int, aM2bpG, mostEdges, numNoEdges, reverseEdgeDirections, ugraphOld) 
+export(graphNEL, graphAM, boundary, buildRepDepGraph, calcProb,
+       calcSumProb, duplicatedEdges, graph2SparseM, listEdges,
+       randomEGraph, randomGraph, randomNodeGraph, validGraph, eWV,
+       pathWeights, .dropEdges, aveNumEdges, sparseM2Graph,
+       gxlTreeNEL, ftM2adjM, ftM2graphNEL, .ftM2other, int2ftM,
+       ftM2int, aM2bpG, mostEdges, numNoEdges, reverseEdgeDirections,
+       ugraphOld)
 
 export(graph.par, graph.par.get, graphRenderInfo,
        nodeRenderInfo, edgeRenderInfo, parRenderInfo,

@@ -33,7 +33,7 @@ removeEdge(from, to, graph)
   names(edL1) <- V
   for(i in 1:4)
     edL1[[i]] <- list(edges=c(2,1,4,3)[i], weights=sqrt(i))
-  gR <- new("graphNEL", nodes=V, edgeL=edL1)
+  gR <- graphNEL(nodes=V, edgeL=edL1)
 
   gX <- removeEdge("A", "B", gR)
 

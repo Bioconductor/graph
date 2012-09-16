@@ -75,7 +75,7 @@ close(sf)
 #
 # try( validateGXL(bad) )
 #
-gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
+gR <- graphNEL(nodes=letters[1:4], edgeL=list(
  a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
  edgemode="directed")
 #

@@ -38,7 +38,7 @@ combineNodes(nodes, graph, newName, \dots)
   names(edL1) <- V
   for(i in 1:4)
     edL1[[i]] <- list(edges=c(2,1,4,3)[i], weights=sqrt(i))
-  gR <- new("graphNEL", nodes=V, edgeL=edL1, edgemode="directed")
+  gR <- graphNEL(nodes=V, edgeL=edL1, edgemode="directed")
   gR <- addNode("M", gR)
   gR <- addEdge("M", "A", gR, 1)
   gR <- addEdge("B", "D", gR, 1)

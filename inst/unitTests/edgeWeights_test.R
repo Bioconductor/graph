@@ -5,7 +5,7 @@ egGraphAM <- function() {
                     0, 1, 1, 0),
                   byrow=TRUE, ncol=4)
     rownames(mat) <- colnames(mat) <- letters[1:4]
-    gam <- new("graphAM", adjMat=mat, edgemode="directed")
+    gam <- graphAM(adjMat=mat, edgemode="directed")
 }
 
 testDefaultIsOnes <- function() {
