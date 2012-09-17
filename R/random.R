@@ -58,13 +58,13 @@ randomEGraph <- function(V, p, edges)
   nEdges <- nNodes*(nNodes-1)/2
 
   if( any(duplicated(V)) )
-     stop("Elements of 'V' must be unique")
+     stop("elements of 'V' must be unique")
   if( !xor(missing(p), missing(edges)) )
-    stop("Please specify either 'edges' or 'p'")
+    stop("specify either 'edges' or 'p'")
   if( !missing(p) && (!is.numeric(p) || length(p)!=1 || 0>p || p>1 ))
-    stop("For 'p', please specify a number between 0 and 1")
+    stop("for 'p', specify a number between 0 and 1")
   if( !missing(edges) && (length(edges) != 1 || edges < 0 || edges > nEdges))
-    stop(paste("For 'edges', please specify a number between 0 and", nEdges))
+    stop("for 'edges', specify a number between 0 and ", nEdges)
 
   ## sample the edges
   if(!missing(p)) {

@@ -81,7 +81,8 @@
 \alias{numNodes}
 \alias{numNodes,graph-method}
 
-\alias{show}
+\alias{plot,graph,ANY-method}
+
 \alias{show,graph-method}
 
 \alias{union}
@@ -197,8 +198,8 @@ A virtual Class: No objects may be created from it.
     \item{numNodes}{\code{signature(object = "graph")}: compute the
       number of nodes in a graph. }
 
-    \item{plot}{Please see the help page for the \code{plot.graph}
-      method in the \code{Rgraphviz} package}
+    \item{plot}{Please see the help page for the
+      \code{plot,graph-method} method in the \code{Rgraphviz} package}
 
     \item{union}{\code{signature(x = "graph", y = "graph")}: compute the
       union of the two supplied graphs. They must have identical

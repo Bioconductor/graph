@@ -20,7 +20,8 @@ setMethod("fromGXL", signature(con="connection"),
      setMethod("dumpGXL", "connection", function(con)
        {
        xmlEventParse <- getExportedValue("XML", "xmlEventParse")
-       xmlEventParse(paste(readLines(con),collapse=""),NELhandler(),asText=TRUE)$dump()
+       xmlEventParse(paste(readLines(con), collapse=""),
+                     NELhandler(),asText=TRUE)$dump()
        })
 ## validate against the dtd
 
@@ -28,8 +29,8 @@ setMethod("fromGXL", signature(con="connection"),
        {
        xmlTreeParse <- getExportedValue("XML", "xmlTreeParse")
 # maybe need a try here, xmlTreeParse dumps the whole stream when it hits an error
-       tmp <- xmlTreeParse(paste(readLines(con),collapse=""),asText=TRUE,
-              validate=TRUE)
+       tmp <- xmlTreeParse(paste(readLines(con), collapse=""),
+              asText=TRUE, validate=TRUE)
        })
 #
 #  exporting
@@ -45,7 +46,7 @@ setMethod("fromGXL", signature(con="connection"),
 
 
 gxlTreeNEL <- function(gnel, graph.name) {
-    require("XML") || stop("XML package needed")
+    qrequire("XML")
     GXL_NAMESPACE <- c(gxl="http://www.gupro.de/GXL/gxl-1.1.dtd")
     out <- xmlOutputDOM("gxl", nsURI=GXL_NAMESPACE, nameSpace="gxl")
     ## NOTE: We could specify dtd="http://www.gupro.de/GXL/gxl-1.0.1.dtd",

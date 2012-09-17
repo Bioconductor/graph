@@ -6,9 +6,9 @@
 
 SEXP R_scalarString(const char *);
 SEXP intersectStrings(SEXP, SEXP);
-SEXP graphIntersection(SEXP, SEXP, SEXP, SEXP, SEXP);
+SEXP graph_intersection(SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP checkEdgeList(SEXP, SEXP);
-SEXP listLen(SEXP);
+SEXP graph_listLen(SEXP);
 SEXP graph_attrData_lookup(SEXP attrObj, SEXP keys, SEXP attr);
 SEXP graph_sublist_assign(SEXP x, SEXP subs, SEXP sublist, SEXP values);
 SEXP graph_is_adjacent(SEXP fromEdges, SEXP to);
@@ -34,8 +34,8 @@ SEXP graph_bitarray_getEdgeAttrOrder(SEXP , SEXP , SEXP );
 
 static const R_CallMethodDef R_CallDef[] = {
     {"intersectStrings", (DL_FUNC)&intersectStrings, 2},
-    {"graphIntersection", (DL_FUNC)&graphIntersection, 5},
-    {"listLen", (DL_FUNC)&listLen, 1},
+    {"graph_intersection", (DL_FUNC)&graph_intersection, 5},
+    {"graph_listLen", (DL_FUNC)&graph_listLen, 1},
     {"graph_attrData_lookup", (DL_FUNC)&graph_attrData_lookup, 3},
     {"graph_sublist_assign", (DL_FUNC)&graph_sublist_assign, 4},
     {"graph_is_adjacent", (DL_FUNC)&graph_is_adjacent, 2},
@@ -101,8 +101,8 @@ SEXP intersectStrings(SEXP x, SEXP y) {
 }
 
 
-SEXP graphIntersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE,
-		       SEXP edgeMode) {
+SEXP graph_intersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE,
+                        SEXP edgeMode) {
     /* edgeMode == 0 implies "undirected" */
     SEXP bN, newXE, newYE;
     SEXP klass, outGraph;
@@ -206,7 +206,7 @@ SEXP checkEdgeList(SEXP eL, SEXP bN) {
 }
 
 /* Taken from Biobase to avoid depending on it */
-SEXP listLen(SEXP x)
+SEXP graph_listLen(SEXP x)
 {
   SEXP ans;
   int i;

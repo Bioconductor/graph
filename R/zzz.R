@@ -9,3 +9,18 @@ graph.par(.default.graph.pars())
   library.dynam.unload("BioC_graph", libpath )
 }
 
+## utilities
+
+qrequire <-
+    function(package, ..., quietly=TRUE, character.only=TRUE)
+{
+    suppressWarnings({
+        require(package, ..., quietly=quietly,
+                character.only=character.only)
+    }) || stop("package required but not installed: ", sQuote(package),
+               call.=FALSE)
+}
+    
+
+pasteq <- function(..., collapse=", ")
+    paste(sQuote(...), collapse=collapse)

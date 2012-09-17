@@ -11,7 +11,7 @@ isValidAdjMat <- function(adjMat, mode="undirected") {
       if (any(adjMat != t(adjMat))) ## XXX: this could be slow
         stop("adjacency matrix must be symmetric for undirected graphs")
     if (any(adjMat < 0))
-      stop("negative values not allowed in adjacency matrix")
+      stop("adjacency matrix must not have negative values")
     if (is.null(dimnames(adjMat))) {
         nNames <- NULL
     } else {
@@ -44,10 +44,10 @@ isValidNodeList <- function(nList, nNames) {
 initEdgeSet <- function(self, values) {
     ## Put matrix elements into @edgeData using attr name from 'values'.
     if (!is.list(values) || length(values) != 1 || is.null(names(values)))
-      stop("values must be a named list with one element")
+      stop("'values' must be a named list with one element")
     self@edgeData <- new("attrData", defaults=values)
     valName <- names(values)[1]
-    eSpec <- graph:::.getAllEdges(self)
+    eSpec <- .getAllEdges(self)
     from <- eSpec$from
     to <- eSpec$to
     if (length(from) > 0L && length(to) > 0L) {
@@ -62,7 +62,7 @@ initEdgeSet <- function(self, values) {
 
 setMethod("initialize", signature("graphAM"),
           function(.Object, adjMat, edgemode="undirected", values) {
-              nNames <- graph:::isValidAdjMat(adjMat, edgemode)
+              nNames <- isValidAdjMat(adjMat, edgemode)
               if (is.null(nNames))
                   nNames <- paste("n", 1:ncol(adjMat), sep="")
               .Object@graphData$edgemode <- edgemode
@@ -72,7 +72,7 @@ setMethod("initialize", signature("graphAM"),
               .Object@adjMat <- adjMat
 
               if (!missing(values))
-                .Object <- graph:::initEdgeSet(.Object, values)
+                .Object <- initEdgeSet(.Object, values)
               else
                 .Object@edgeData <- new("attrData")
 
@@ -134,17 +134,16 @@ setMethod("numEdges", signature(object="graphAM"),
 setMethod("isAdjacent",
           signature(object="graphAM", from="character", to="character"),
           function(object, from, to) {
-              eSpec <- graph:::.normalizeEdges(from, to)
+              eSpec <- .normalizeEdges(from, to)
               from <- eSpec$from
               to <- eSpec$to
               fromIdx <- match(from, nodes(object), nomatch=0)
               toIdx <- match(to, nodes(object), nomatch=0)
               if (any(fromIdx == 0))
-                stop("Unknown nodes in from: ",
-                     paste(from[fromIdx == 0], collapse=", "))
+                stop("'from' unknown node(s): ",
+                     pasteq(from[fromIdx == 0]))
               if (any(toIdx == 0))
-                stop("Unknown nodes in to: ",
-                     paste(to[toIdx == 0], collapse=", "))
+                stop("'to' unknown nodes: ", pasteq(to[toIdx == 0]))
               result <- logical(length(fromIdx))
               for (i in 1:length(fromIdx))
                   result[i] <- object@adjMat[fromIdx[i], toIdx[i]] != 0
@@ -168,10 +167,10 @@ getIndices <- function(nodes, from, to) {
     ## Return indices into the adjMat for nodes from and to.
     i <- match(from, nodes, nomatch=0)
     if (any(bad <- (i == 0)))
-      stop("Unknown node", sQuote(from[bad]), "specified in from")
+      stop("'from' unknown node(s): ", sQuote(from[bad]))
     j <- match(to, nodes, nomatch=0)
     if (any(bad <- (j == 0)))
-      stop("Unknown node", sQuote(to[bad]), "specified in to")
+      stop("'to' unknown node(s): ", sQuote(to[bad]))
     list(from=i, to=j)
 }
 
@@ -182,8 +181,7 @@ setMethod("addNode",
           function(node, object) {
               already <- node %in% nodes(object)
               if(any(already))
-                stop(paste(sQuote(node[already]), collapse=", "),
-                           " are already nodes in the graph")
+                stop("node(s) already exist: ", pasteq(node[already]))
               checkValidNodeName(node)
               object@adjMat <- extendAdjMat(object@adjMat, node)
               object
@@ -195,9 +193,8 @@ setMethod("addEdge",
                     weights="missing"),
           function(from, to, graph) {
               if (any(bad <- isAdjacent(graph, from, to)))
-                  stop("edges specified for addition already exist\n",
-                       paste(sQuote(from[bad]), sQuote(to[bad]), sep="|",
-                        collapse=", "))
+                  stop("edge(s) already exist: ",
+                       pasteq(paste(from[bad], to[bad], sep="|")))
               idx <- getIndices(nodes(graph), from, to)
               idx <- cbind(idx$from, idx$to)
               graph@adjMat[idx] <- 1L
@@ -241,7 +238,7 @@ setMethod("removeNode",
 getNodeIndex <- function(nodeNames, node) {
     idx <- match(node, nodeNames, nomatch=NA)
     if (any(is.na(idx)))
-      stop("Unknown node", sQuote(node))
+        stop("unknown node(s): ", pasteq(node[is.na(idx)]))
     idx
 }
 
@@ -281,7 +278,8 @@ setMethod("inEdges", signature(node="character", object="graphAM"),
               allNodes <- nodes(object)
               unknownNodes <- !(node %in% allNodes)
               if (any(unknownNodes))
-                stop("Unknown nodes:\n", paste(unknownNodes, collapse=", "))
+                stop("unknown nodes: ",
+                     pasteq(node[unknownNodes]))
               ## cols of adjMat tells us in edges
               adjMat <- object@adjMat
               ans <- list()

@@ -121,8 +121,18 @@ graphNELhandler <- function ()
              edgemode = edgemode)
     }
     asGraphNEL <- function() {
-        if (!validGraph(g)) 
-          stop("GXL did not define a valid graph package graphNEL object.\nMost likely there is a failure of reciprocity for edges in\nan undirected graph.  If there is a node for edge from A to B\nin an undirected graphNEL, there must also be an edge from B to A.")
+        if (!validGraph(g)) {
+            msg <- "GXL did not define a valid graph package graphNEL
+                    object. Most likely there is a failure of
+                    reciprocity for edges in an undirected graph.  If
+                    there is a node for edge from A to B in an
+                    undirected graphNEL, there must also be an edge
+                    from B to A."
+            stop(paste0(c("", strwrap(msg)), collapse="\n"))
+        }
+
+
+
 	return(g)
     }
     list(startElement = startElement, endElement = endElement, 
@@ -181,7 +191,7 @@ graph_handler <- function ()
     startElement <- function(x, atts, ...) {
         if (x == "graph") {
             if (!is.null(graphID))
-              stop("sorry, multiple graphs not yet supported")
+              stop("multiple graphs not supported")
             graphID <<- atts["id"]
             eMode <- atts["edgemode"]
             if (!is.na(eMode)) {

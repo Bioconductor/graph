@@ -64,7 +64,7 @@ buildEdge <- function(fromTok, toTok, opts, labField=NULL) {
       {
       cat(out, file = outDotFile)
       paste("dot file written to", 
-           outDotFile, " use 'dot -Tps [.dot] [.ps] to render.\n")
+            sQuote(outDotFile), " use 'dot -Tps [.dot] [.ps] to render.\n")
       invisible(0)
       }
     else out

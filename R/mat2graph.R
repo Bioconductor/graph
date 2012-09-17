@@ -1,7 +1,7 @@
 aM2bpG<-function(aM){
 
-	if(is.null(rownames(aM))) stop("aM must have row names.")
-	if(is.null(colnames(aM))) stop("aM must have column names.")
+	if(is.null(rownames(aM))) stop("'aM' must have row names")
+	if(is.null(colnames(aM))) stop("'aM' must have column names")
 
 	V <- c(rownames(aM),colnames(aM))
 
@@ -33,17 +33,17 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
 .ftM2other <- function(ft, W, V, edgemode, targetclass) {
    ## ft: nx2 matrix.
    if(!(is.matrix(ft) && ncol(ft)==2))
-     stop("'ft' must be an nx2 matrix.")
+     stop("'ft' must be an nx2 matrix")
    numE <- nrow(ft)
 
    ## deal with W
    if(is.null(W)) W <- rep(1,numE)
    if(!length(W)==numE)
-     stop("Length of 'W' must equal number of edges in 'ft'.")
+     stop("length of 'W' must equal number of edges in 'ft'")
 
    ## deal with edgemode
    if(!edgemode %in% c("undirected", "directed"))
-     stop("'edgemode' most be either 'directed' or 'undirected'")
+     stop("'edgemode' must be 'directed' or 'undirected'")
    if(edgemode == "undirected") {
      ## reflect each pair -- but *not* the self-edges!
      differ <- ft[,1] != ft[,2]
@@ -57,12 +57,12 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
      V <- unique(cft)
    ift <- array(match(cft, V), dim=dim(ft))
    if(any(is.na(ift)))
-     stop("Node names in 'ft' must be contained in 'V'.")
+     stop("node names in 'ft' must be in 'V'")
    numN <- length(V)
 
    ind <- ift[,1]+(ift[,2]-1)*numN
    if(any(duplicated(ind)))
-     stop("Please do not specify the same edge multiple times")
+     stop("duplicate edges not allowed")
 
    switch(targetclass,
     adjM = {
@@ -89,14 +89,14 @@ ftM2graphNEL <- function(ft, W=NULL, V=NULL, edgemode="directed")
       
       graphNEL(nodes=V, edgeL=edgeL, edgemode=edgemode)
     },
-    stop(paste("Unknown targetclass '", targetclass, "'", sep=""))
+    stop("'targetclass' unknown: ", sQuote(targetclass))
   ) ## end switch
 }
 
 
 setAs("matrix", "graphAM", function(from) {
   if(!identical(ncol(from), nrow(from)))
-    stop("'ncol(from)' and 'nrow(from)' must be the same.")
+    stop("'ncol(from)' and 'nrow(from)' must be identical")
     
   if(is.null(rownames(from))) {
     rownames(from) = if(is.null(colnames(from))) {
@@ -115,7 +115,7 @@ setAs("matrix", "graphAM", function(from) {
   }
 
   if(!identical(rownames(from),colnames(from)))
-    stop("'rownames(from)' and 'colnames(from)' must be identical.")
+    stop("'rownames(from)' and 'colnames(from)' must be identical")
   
   if(!is.numeric(from)) 
     storage.mode(from) = "integer"

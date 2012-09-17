@@ -46,9 +46,8 @@ validGraph<-function(object, quietly=FALSE) {
             badEdges <- setdiff(tofr, frto)
             if (length(badEdges) > 0) {
                 if (!quietly) {
-                    cat("The graph is undirected and the following edges",
-                        "are not reciprocated:\n",
-                        paste(badEdges, collapse=", "), "\n\n")
+                    cat("the graph is undirected and the following edges",
+                        "are not reciprocated:\n", pasteq(badEdges), "\n\n")
                 }
                 bad <- TRUE
             }
@@ -73,10 +72,10 @@ setMethod("initialize", "graphNEL",
 
 graphNEL_init_edges_nested <- function(nodes, edgeL) {
     if(length(nodes) != length(edgeL) )
-      stop("nodes and edges must align")
+      stop("'nodes' and 'edgeL' must have same length")
     nameE <- names(edgeL)
     if( !is.null(nameE) && !all( nameE %in% nodes) )
-      stop("names of nodes and edges must agree")
+      stop("'edgeL' names must agree with 'nodes'")
     if( !is.null(nameE) )
       edgeL <- edgeL[nodes]
     edgeL <- lapply(edgeL, function(x) {
@@ -103,7 +102,7 @@ graphNEL_init_edgeL_weights <- function(gnel) {
     if (!is.numeric(wts))
       stop("weights in edgeL must be numeric")
 
-    eSpec <- graph:::.getAllEdges(gnel)
+    eSpec <- .getAllEdges(gnel)
     from <- eSpec$from
     to <- eSpec$to
     edgeData(gnel, from=from, to=to, attr="weight") <- wts
@@ -117,11 +116,10 @@ graphNEL_init_edgeL_weights <- function(gnel) {
 graphNEL_init_edges <- function(nodes, edges) {
     nameE <- names(edges)
     if (is.null(nameE) || !all(nameE %in% nodes))
-      stop("invalid arg: edges must have names corresponding to nodes")
+      stop("'edges' names must agree with 'nodes'")
     edgeL <- lapply(edges, function(x) {
         if (is.list(x))
-          stop("invalid arg ", sQuote("edgeL"), "\n",
-               "expecting a list of character or list of lists")
+          stop("'edges' must be list of character()")
         list(edges=match(x, nodes))
     })
     edgeL
@@ -129,37 +127,37 @@ graphNEL_init_edges <- function(nodes, edges) {
 
 
 setMethod("initialize", "graphNEL",
-          ## FIXME: what about edge weights?
-          function(.Object, nodes=character(0), edgeL, edgemode) {
-              if (length(nodes))
-                checkValidNodeName(nodes)
-              if( missing(edgemode) )
-                edgemode <- "undirected"
-              doWeights <- FALSE
-              if (missing(edgeL) || (!is.null(edgeL) && length(edgeL) == 0)) {
-                  edgeL <- vector(mode="list", length=length(nodes))
-                  names(edgeL) <- nodes
-              } else {
-                  ## which list structure was used?
-                  edgeParser <- graphNEL_init_edges
-                  firstVal <- edgeL[[1]]
-                  if (is.null(firstVal))
-                    stop("invalid arg ", sQuote("edgeL"), "\n",
-                         "elements must be character or list, got NULL")
-                  if (length(edgeL) > 0 && is.list(edgeL[[1]])) {
-                      edgeParser <- graphNEL_init_edges_nested
-                      doWeights <- TRUE
-                  }
-                  edgeL <- edgeParser(nodes, edgeL)
-              }
-              .Object@nodes <- nodes
-              .Object@edgeL <- edgeL
-              .Object@graphData$edgemode <- edgemode
-              validObject(.Object)
-              if (doWeights)
-                .Object <- graphNEL_init_edgeL_weights(.Object)
-              return(.Object)
-          })
+    function(.Object, nodes=character(0), edgeL, edgemode)
+    ## FIXME: what about edge weights?
+{
+    if (length(nodes))
+      checkValidNodeName(nodes)
+    if( missing(edgemode) )
+      edgemode <- "undirected"
+    doWeights <- FALSE
+    if (missing(edgeL) || (!is.null(edgeL) && length(edgeL) == 0)) {
+        edgeL <- vector(mode="list", length=length(nodes))
+        names(edgeL) <- nodes
+    } else {
+        ## which list structure was used?
+        edgeParser <- graphNEL_init_edges
+        firstVal <- edgeL[[1]]
+        if (is.null(firstVal))
+            stop("'edgeL' must be list of character or list of lists, got NULL")
+        if (length(edgeL) > 0 && is.list(edgeL[[1]])) {
+            edgeParser <- graphNEL_init_edges_nested
+            doWeights <- TRUE
+        }
+        edgeL <- edgeParser(nodes, edgeL)
+    }
+    .Object@nodes <- nodes
+    .Object@edgeL <- edgeL
+    .Object@graphData$edgemode <- edgemode
+    validObject(.Object)
+    if (doWeights)
+      .Object <- graphNEL_init_edgeL_weights(.Object)
+    return(.Object)
+})
 
 
 ##the graphNEL representation stores edges as indexes into the
@@ -181,7 +179,7 @@ setMethod("adj", c("graphNEL", "ANY"), function(object, index) {
     if( is.character(index) )
       index <- match(index, nd)
     if( is.na(index) || index < 0 || index > length(nd) )
-      stop(paste("selected vertex", initI, "is not in the graph"))
+      stop("vertex is not in graph: ", sQuote(initI))
     edges(object)[index]})
 
 
@@ -198,8 +196,9 @@ setMethod("subGraph", signature(snodes="character", graph="graphNEL"),
               snodesIdx <- match(snodes, origNodes)
               if (any(is.na(snodesIdx))) {
                   bad <- snodes[which(is.na(snodesIdx))]
-                  stop("invalid arg: snodes contains nodes not in the ",
-                       "graph:\n", paste(bad, collapse=", "))
+                  stop("'snodes' contains nodes not in graph: ",
+                       pasteq(bad))
+
               }
               killedNodes <- origNodes[-snodesIdx]
               newEdges <- lapply(edges(graph)[snodes],
@@ -237,7 +236,7 @@ setMethod("addNode", signature(node="character", object="graphNEL",
               gN = nodes(object)
               already <- match(node, gN)
               if( any(!is.na(already)) )
-                stop(paste(gN[already], collapse=", "), " is already a node")
+                stop("node(s) already in graph: ", pasteq(gN[already]))
               checkValidNodeName(node)
               ## add them on the end so we don't renumber
               gN = c(gN, node)
@@ -263,7 +262,7 @@ setMethod("addNode", signature(node="character", object="graphNEL",
               object <- addNode(node, object)
               ## now add the edges:
               if (!all(names(edges) == node))
-                stop("edges must be named and in the same order as nodes")
+                stop("'edges' must be named and in the same order as nodes")
               doWeights <- FALSE
               newEdges <- lapply(edges, function(x) {
                   if (is.character(x))
@@ -275,13 +274,11 @@ setMethod("addNode", signature(node="character", object="graphNEL",
                       else
                         enms <- names(x)
                       if (is.null(enms))
-                        stop("invalid arg ", sQuote("edges"), "\n",
-                             "elements must be character or have names ",
+                        stop("'edges' must be character or have names ",
                              "corresponding to nodes")
                       enms
                   } else {
-                      stop("invalid arg ", sQuote("edges"), "\n",
-                           "expecting character or numeric list elements.")
+                      stop("'edges' must be character or numeric list elements")
                   }
               })
 
@@ -322,8 +319,7 @@ setMethod("clearNode", c("character", "graphNEL"), function(node, object) {
     gN <- nodes(object)
     whN <- match(node, gN)
     if(any(is.na(whN)) )
-      stop("the following are not nodes in the graph:\n",
-           paste(gN[is.na(whN)], collapse=", "))
+      stop("'node' not in graph: ", pasteq(gN[is.na(whN)]))
     ## clear node attributes
     object <- clearNodeData(object, node)
     object <- .dropEdges(object, whN)
@@ -337,7 +333,7 @@ edgeKiller <- function(edgeL, from, whichKill) {
         toKill <- whichKill[[i]]
         toKill <- toKill[!is.na(toKill)]
         if (length(toKill) == 0)
-          stop("no edge from ", from[i], " to remove")
+          stop("no edge 'from' ", sQuote(from[i]), " to remove")
         edgeL[[from[i]]]$edges <- edgeL[[from[i]]]$edges[-toKill]
     }
     edgeL
@@ -350,7 +346,8 @@ setMethod("removeEdge",
               gN <- nodes(graph)
               wh <- match(c(from, to), gN)
               if( any(is.na(wh)) )
-                stop(paste(wh[is.na[wh]], "is not a node"))
+                stop("'from' or 'to' not in graph: ",
+                     pasteq(unique(wh[is.na[wh]])))
               if (length(to) == 1)
                 to <- rep(to, length(from))
               if (length(from) == 1)
@@ -391,17 +388,15 @@ setMethod("addEdge", signature=signature(from="character", to="character",
                   preFr <- from[preEdges]
                   preTo <- to[preEdges]
                   preEdges <- paste(preFr, preTo, sep=EDGE_KEY_SEP)
-                  warning("The following edges already exist and ",
-                          "will be replaced:\n",
-                          paste(preEdges, collapse=", "))
+                  warning("edges replaced: ", pasteq(preEdges))
               }
               gN <- nodes(graph)
               whF <- match(from, gN)
               if( any(is.na(whF)) )
-                stop(paste(from[is.na(whF)], "is not a node"))
+                stop("not a node: ", pasteq(from[is.na(whF)]))
               whT <- match(to, gN)
               if( any(is.na(whT)) )
-                stop(paste(to[is.na(whT)], "is not a node"))
+                stop("not a node: ", pasteq(to[is.na(whT)]))
               ##roll out the shorter one
               lenT <- length(to)
               lenF <- length(from)
@@ -441,11 +436,11 @@ setMethod("addEdge", signature=signature(from="character", to="character",
 setMethod("combineNodes", c("character", "graphNEL", "character"),
           function(nodes, graph, newName, collapseFunction=sum) {
               if( length(newName) > 1 )
-                stop("must have a single name")
+                stop("'newName' must have length 1")
               gN <- nodes(graph)
               whN <- match(nodes, gN)
               if( any(is.na(whN)) )
-                stop(paste(from[is.na(whN)], "is not a node"))
+                stop("not a node: ", pasteq(from[is.na(whN)]))
               eL <- graph@edgeL
               outE <- eL[nodes]
               if( length(nodes) == 1 ) {
@@ -501,7 +496,7 @@ setMethod("inEdges", c("character", "graphNEL"),
               gN <- nodes(object)
               whN <- match(node, gN)
               if( any(is.na(whN)) )
-                stop(paste(node[is.na(whN)], "is not a node"))
+                stop("not a node: ", pasteq(node[is.na(whN)]))
               nN <- length(node)
               rval <- vector("list", length=nN)
               names(rval) <- node
@@ -555,7 +550,8 @@ setMethod("inEdges", c("character", "graphNEL"),
 ##edges
 
 inOutCounts <- function(object) {
-   if(!(edgemode(object)) == "directed") stop("only for directed graphs")
+   if(!(edgemode(object)) == "directed")
+      stop("only for directed graphs")
    numOut=sapply(object@edgeL, function(x) length(x$edges))
    inEdges = nodes(object)[unlist(sapply(object@edgeL, function(x)
                 x$edges))]
@@ -568,7 +564,8 @@ inOutCounts <- function(object) {
 ##nodes to find in edges - but that can easily be done
 ##simply by computing all and then subsetting
  inE <- function(object) {
-   if(!(edgemode(object)) == "directed") stop("only for directed graphs")
+   if(!(edgemode(object)) == "directed")
+      stop("only for directed graphs")
    inEdges = nodes(object)[unlist(sapply(object@edgeL, function(x)
                 x$edges))]
    numE = sapply(object@edgeL, function(x) length(x$edges))

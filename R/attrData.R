@@ -24,9 +24,7 @@ setMethod("initialize", signature("attrData"),
     if (any(! names(attrData)  %in% names(defaults))) {
         nms <- names(attrData)
         badNms <- nms[! nms %in% names(defaults)]
-        stop("The following attribute names ",
-             "were not found in the attrData attributes: ",
-             paste(badNms, collapse=", "))
+        stop("attribute names not in attrData: ", pasteq(badNms))
     } else {
         TRUE
     }
@@ -35,12 +33,12 @@ setMethod("initialize", signature("attrData"),
 
 .checkAttrLength <- function(attrName) {
     if (length(attrName) != 1)
-      stop("attr argument must specify a single attribute name.")
+      stop("'attr' argument must specify a single attribute name")
 }
 
 
 .verifyAttrName <- function(attrName, knownNames) {
-    graph:::.checkAttrLength(attrName)
+    .checkAttrLength(attrName)
     if (! attrName %in% knownNames)
       stop("unknown attribute name: ", sQuote(attrName))
     TRUE
@@ -55,7 +53,7 @@ setMethod("attrDefaults", signature(self="attrData", attr="missing"),
 
 setMethod("attrDefaults", signature(self="attrData", attr="character"),
           function(self, attr) {
-              graph:::.verifyAttrName(attr, names(self@defaults))
+              .verifyAttrName(attr, names(self@defaults))
               self@defaults[[attr]]
           })
 
@@ -63,7 +61,7 @@ setMethod("attrDefaults", signature(self="attrData", attr="character"),
 setReplaceMethod("attrDefaults", signature(self="attrData", attr="character",
                                            value="ANY"),
                  function(self, attr, value) {
-                     graph:::.checkAttrLength(attr)
+                     .checkAttrLength(attr)
                      self@defaults[[attr]] <- value
                      self
                  })
@@ -93,8 +91,8 @@ setMethod("attrDataItem", signature(self="attrData", x="character",
 setMethod("attrDataItem", signature(self="attrData", x="character",
                                     attr="character"),
           function(self, x, attr) {
-              graph:::.verifyAttrName(attr, names(self@defaults))
-              .Call("graph_attrData_lookup", self, x, attr, PACKAGE="BioC_graph")
+              .verifyAttrName(attr, names(self@defaults))
+              .Call(graph_attrData_lookup, self, x, attr)
           })
 
 
@@ -102,13 +100,12 @@ setReplaceMethod("attrDataItem",
                  signature(self="attrData", x="character", attr="character",
                            value="ANY"),
                  function(self, x, attr, value) {
-                     graph:::.verifyAttrName(attr, names(self@defaults))
+                     .verifyAttrName(attr, names(self@defaults))
                      if (length(value) > 1 && length(value) != length(x))
-                       stop("invalid args: value must be length one or ",
-                            "have the same length as x")
-                     self@data <- .Call("graph_sublist_assign",
-                                        self@data, x, attr, value,
-                                        PACKAGE="BioC_graph")
+                       stop("'value' must be length one or ",
+                            "have the same length as 'x'")
+                     self@data <- .Call(graph_sublist_assign,
+                                        self@data, x, attr, value)
                      self
           })
 
@@ -133,11 +130,11 @@ setMethod("names", "attrData",
 setReplaceMethod("names", signature(x="attrData", value="character"),
                  function(x, value) {
                      if (length(x@data) != length(value))
-                       stop("'value' argument length doesn't match data")
+                       stop("'value' length doesn't match data")
                      if (any(duplicated(value)))
-                       stop("'value' argument must specify unique names")
+                       stop("'value' must specify unique names")
                      if (any(is.na(value)))
-                       stop("'value' argument cannot contain NAs")
+                       stop("'value' cannot contain NAs")
                      names(x@data) <- value
                      x
                  })

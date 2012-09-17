@@ -132,7 +132,7 @@ numNoEdges<-function(objGraph)
 listEdges <- function(object, dropNULL=TRUE)
 {
     if( !is(object, "graphNEL") )
-        stop("listEdges only works for graphNEL objects")
+        stop("'listEdges' only works for graphNEL objects")
     Nd <- nodes(object)
     Nn <- length(Nd)
     EL <- object@edgeL
@@ -160,6 +160,6 @@ listEdges <- function(object, dropNULL=TRUE)
 
 
 listLen <- function(list)
-    .Call("listLen", list, PACKAGE="BioC_graph")
+    .Call(graph_listLen, list)
 
 

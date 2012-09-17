@@ -1,9 +1,12 @@
-useDynLib(BioC_graph, graph_bitarray_sum, graph_bitarray_set,
-          graph_bitarray_undirect,
-          graph_bitarray_transpose,graph_bitarray_rowColPos,
-          graph_bitarray_edgeSetToMatrix, graph_bitarray_removeEdges,
+useDynLib(BioC_graph, graph_attrData_lookup,
           graph_bitarray_Intersect_Attrs, graph_bitarray_Union_Attrs,
-          graph_bitarray_getEdgeAttrOrder)
+          graph_bitarray_edgeSetToMatrix, graph_bitarray_getBitCell,
+          graph_bitarray_getEdgeAttrOrder, graph_bitarray_removeEdges,
+          graph_bitarray_rowColPos, graph_bitarray_set,
+          graph_bitarray_subGraph, graph_bitarray_sum,
+          graph_bitarray_transpose, graph_bitarray_undirect,
+          graph_intersection, graph_is_adjacent, graph_listLen,
+          graph_sublist_assign)
 
 importClassesFrom(methods, ANY, character, list, logical, matrix,
                   missing, "NULL", numeric, oldClass, vector)
@@ -12,6 +15,7 @@ importClassesFrom(BiocGenerics, connection, file, gzfile, bzfile, url)
 importFrom(methods, "@<-", as, callGeneric, is, isVirtualClass, new,
            slot, "slot<-", slotNames, validObject)
 importFrom(stats, as.dist, dhyper, phyper, runif)
+importFrom(stats4, plot)
 importFrom(tools, package.dependencies)
 importFrom(utils, CRAN.packages, modifyList)
 
@@ -20,19 +24,20 @@ exportClasses(distGraph,
       url, graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL,
       edgeSetAM, multiGraph, renderInfo, MultiGraph, graphBAM, graphBase)
 
-exportMethods(DFS, Dist, acc, addEdge, addNode, adj,
-      clearNode, clusteringCoefficient, combineNodes, complement, connComp,
-      degree, dumpGXL, edgeL, edgeMatrix, edgeNames, edgeWeights, edgemode,
-      "edgemode<-", edges, "nodes<-", fromGXL, inEdges, initialize,
-      intersection, intersection2, isAdjacent, isConnected, isDirected, join,
-      nodes, numNodes, numEdges, removeEdge, removeNode, show, subGraph,
-      threshold, toGXL, union, validateGXL, coerce, toDotR, attrDefaults,
-      "attrDefaults<-", edgeDataDefaults, "edgeDataDefaults<-",
-      mgEdgeDataDefaults, "mgEdgeDataDefaults<-", nodeDataDefaults, 
-      "nodeDataDefaults<-", edgeData, "edgeData<-", nodeData,
-      "nodeData<-", attrDataItem, "attrDataItem<-",
-      "removeAttrDataItem<-", ugraph, leaves, updateGraph, extractFromTo, 
-      graphIntersect, graphUnion, removeEdgesByWeight, edgeSets)
+exportMethods(DFS, Dist, acc, addEdge, addNode, adj, clearNode,
+      clusteringCoefficient, combineNodes, complement, connComp,
+      degree, dumpGXL, edgeL, edgeMatrix, edgeNames, edgeWeights,
+      edgemode, "edgemode<-", edges, "nodes<-", fromGXL, inEdges,
+      initialize, intersection, intersection2, isAdjacent,
+      isConnected, isDirected, join, nodes, numNodes, numEdges, plot,
+      removeEdge, removeNode, show, subGraph, threshold, toGXL, union,
+      validateGXL, coerce, toDotR, attrDefaults, "attrDefaults<-",
+      edgeDataDefaults, "edgeDataDefaults<-", mgEdgeDataDefaults,
+      "mgEdgeDataDefaults<-", nodeDataDefaults, "nodeDataDefaults<-",
+      edgeData, "edgeData<-", nodeData, "nodeData<-", attrDataItem,
+      "attrDataItem<-", "removeAttrDataItem<-", ugraph, leaves,
+      updateGraph, extractFromTo, graphIntersect, graphUnion,
+      removeEdgesByWeight, edgeSets)
 
 
 export(graphNEL, graphAM, boundary, buildRepDepGraph, calcProb,

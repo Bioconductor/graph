@@ -77,7 +77,7 @@ bitToLogical <- function(x) {
 
 setbitv <- function(xx, ii, v)
 {
-    .Call(graph:::graph_bitarray_set, xx, ii, v)
+    .Call(graph_bitarray_set, xx, ii, v)
 }
 
 

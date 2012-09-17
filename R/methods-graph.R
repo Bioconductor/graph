@@ -15,9 +15,8 @@ checkValidNodeName <- function(node) {
       stop("invalid node names: missing value NA not allowed")
     bad <- grep(EDGE_KEY_SEP, node, fixed=TRUE)
     if (length(bad))
-      stop("The following node names are invalid, they contain the ",
-           "edge separator ", sQuote(EDGE_KEY_SEP), "\n",
-           paste(node[bad], collapse=", "))
+      stop("node name(s) contain edge separator ",
+           sQuote(EDGE_KEY_SEP), ": ", pasteq(node[bad]))
     TRUE
 }
 
@@ -40,7 +39,7 @@ updateFolder <- function(path="."){
         objects <- ls(env)
         needSave <- FALSE
         for(i in objects){
-            if(is(get(i, env), "graph") && !graph:::isUpToDate(get(i, env))){
+            if(is(get(i, env), "graph") && !isUpToDate(get(i, env))){
                 assign(i, updateGraph(get(i, env)), envir=env)
                 cat("Updated graph object", i, "\n")
                 needSave <- TRUE
@@ -89,7 +88,7 @@ setMethod("edgemode", "graph", function(object)
                   if (is.null(em) && hasEdgemode(object))
                       em <- object@edgemode
                   if(is.null(em))
-                      stop("This 'graph' object is corrupted")
+                      stop("'graph' object is corrupted")
               }
           }else
           em <- object@graphData$edgemode
@@ -100,29 +99,30 @@ setMethod("edgemode", "graph", function(object)
 ## (FH 11/7/07) Changed this to update the object in case it is outdated
 ## (edgemode now lives as a list item in graphData) 
 setReplaceMethod("edgemode", c("graph", "character"),
-                 function(object, value) {
-                     if(length(value) != 1)
-                       stop("edgemode is the wrong length")
-                     if(!(value %in% c("directed", "undirected")) )
-                       stop(paste("supplied mode is", value,
-                                  "it must be either directed or undirected"))
-                     if(hasEdgemode(object)){
-                         warning("The edgemode slot is deprecated. ",
-                                 "This graph object has been updated to ",
-                                 "a new version.\n", call.=FALSE)
-                         object <- updateGraph(object)
-                     }
-                     object@graphData$edgemode <- value
-                     edgeRenderInfo(object) <- list(arrowhead=NULL, arrowtail=NULL)
-                     object
-                 })
+    function(object, value)
+{
+    if(length(value) != 1L)
+        stop("'edgemode' must be length 1")
+    if(!(value %in% c("directed", "undirected")) )
+        stop("'edgemode' must be 'directed' or 'undirected', was ",
+             sQuote(value))
+    if(hasEdgemode(object)){
+        warning("'edgemode' slot is deprecated; ",
+                "this graph object has been updated to ",
+                "a new version", call.=FALSE)
+        object <- updateGraph(object)
+    }
+    object@graphData$edgemode <- value
+    edgeRenderInfo(object) <- list(arrowhead=NULL, arrowtail=NULL)
+    object
+})
 
 
 ## Check if graph object is up to date
 isUpToDate <- function(object, error=FALSE)
 {
   if(!is(object, "graph"))
-    stop("Object must inherit from class 'graph'")
+    stop("'object' must inherit from class 'graph'")
   availSlots <- getObjectSlots(object)
   availSlotNames <- names(availSlots)
   definedSlotNames <- slotNames(object)
@@ -136,7 +136,7 @@ isUpToDate <- function(object, error=FALSE)
 hasEdgemode <- function(object)
 {
    if(!is(object, "graph"))
-     stop("Object must inherit from class 'graph'")
+     stop("'object' must inherit from class 'graph'")
    sn <- names(getObjectSlots(object))
    return("edgemode" %in% sn)
 }
@@ -148,7 +148,7 @@ setMethod("updateGraph", "graph", function(object)
           availSlots <- getObjectSlots(object)
           availSlotNames <- names(availSlots)
           definedSlotNames <- slotNames(object)
-          if(graph:::isUpToDate(object)){
+          if(isUpToDate(object)){
               message("This graph object seems to be up to date")
               newObject <- object
           }else{
@@ -156,7 +156,7 @@ setMethod("updateGraph", "graph", function(object)
               missingSlots <- setdiff(definedSlotNames, availSlotNames)
               if("graphData" %in% missingSlots &&
                  !"edgemode" %in% availSlotNames)
-                stop("Object is corrupted, don't know how to update.")
+                stop("'object' is corrupted, don't know how to update.")
               newObject <- new(class(object))
               for(s in commonSlots)
                   slot(newObject, s) <- availSlots[[s]]
@@ -189,20 +189,19 @@ setMethod("numEdges", signature(object="graph"),
 setMethod("isAdjacent",signature(object="graph", from="character",
                                  to="character"),
           function(object, from, to) {
-              eSpec <- graph:::.normalizeEdges(from, to)
+              eSpec <- .normalizeEdges(from, to)
               from <- eSpec$from
               to <- eSpec$to
               fromIdx <- match(from, nodes(object), nomatch=0)
               toIdx <- match(to, nodes(object), nomatch=0)
               if (any(fromIdx == 0))
-                stop("Unknown nodes in from: ",
-                     paste(from[fromIdx == 0], collapse=", "))
+                stop("unknown nodes in 'from': ",
+                     pasteq(from[fromIdx == 0]))
               if (any(toIdx == 0))
-                stop("Unknown nodes in to: ",
-                     paste(to[toIdx == 0], collapse=", "))
+                stop("unknown nodes in 'to': ",
+                     pasteq(to[toIdx == 0]))
               fromEdges <- edges(object)[from]
-              .Call("graph_is_adjacent", fromEdges, to,
-                    PACKAGE="BioC_graph")
+              .Call(graph_is_adjacent, fromEdges, to)
           })
 
 
@@ -312,10 +311,9 @@ setMethod("edgeWeights", signature(object="graph", index="character"),
           {
               ## Check extra args
               if (!is.character(attr) || length(attr) != 1)
-                stop(sQuote("attr"),
-                     " must be a character vector of length one.")
+                stop("'attr' must be character(1)")
               if (!is.null(type.checker) && !is.function(type.checker))
-                stop(sQuote("type.checker"), " must be a function or NULL.")
+                stop("'type.checker' be a function or NULL")
               
               if (! attr %in% names(edgeDataDefaults(object))) {
                   ## No existing 'weight' edge attr, uses default
@@ -331,8 +329,7 @@ setMethod("edgeWeights", signature(object="graph", index="character"),
               names(ew) <- unlist(gEdges, use.names=FALSE)
               ew <- unlist(ew)
               if (!is.null(type.checker) && !isTRUE(type.checker(ew)))
-                stop("invalid type of edge weight.\n",
-                     "type.checker(ew) not TRUE\n",
+                stop("edge weight type.checker(ew) not TRUE\n",
                      "typeof(ew): ", typeof(ew))
 
 ##               for (el in ew) {
@@ -386,7 +383,7 @@ setMethod("DFS", c("graph", "character", "ANY"), function(object, node,
     names(marked) <- nNames
     m1 <- match(node, nNames)
     if( is.na(m1) )
-        stop(paste("node:", node, "is not in the graph"))
+        stop("node not in graph: ", sQuote(node))
 
     ##this could be expensive
     if (checkConn) {
@@ -422,8 +419,8 @@ setMethod("intersection2", c("graph", "graph"), function(x,y) {
         else
            edgeM <- 1
 
-        .Call("graphIntersection", nodes(x), nodes(y),
-              edges(x), edges(y), edgeM, PACKAGE="BioC_graph")
+        .Call(graph_intersection, nodes(x), nodes(y), edges(x),
+              edges(y), edgeM)
 
 })
 
@@ -460,7 +457,7 @@ setMethod("join", c("graph", "graph"), function(x, y) {
     if(ex == ey)
         outmode <- ex
     else
-        stop("cannot handle different edgemodes, yet")
+        stop("cannot handle different edgemodes")
 
     nX <- nodes(x)
     numXnodes <- length(nX)
@@ -486,7 +483,7 @@ setMethod("join", c("graph", "graph"), function(x, y) {
                     curTo <- nY[newEdges[j]]
                     newTo <- match(curTo,newNodes)
                     if (is.na(newTo))
-                        stop("Error reassigning duplicated nodes")
+                        stop("error reassigning duplicated nodes")
                     newEdges[j] <- newTo
                 }
             }
@@ -500,7 +497,7 @@ setMethod("join", c("graph", "graph"), function(x, y) {
             else if (eLYnames[i] %in% nX) {
                 entry <- which(names(newEdgeL) == eLYnames[i])
                 if (length(entry) > 1)
-                    stop("Duplicated node names in original graph")
+                    stop("duplicated node names in original graph")
                 curEntry <- newEdgeL[[entry]]
                 curEntry$edges <- c(curEntry$edges, newEntry[[1]]$edges)
                 curEntry$weights <- c(curEntry$weights,
@@ -541,7 +538,7 @@ setMethod("union", c("graph", "graph"), function(x, y) {
     if( ex == ey )
         outmode <- ex
     else
-        stop("cannot handle different edgemodes, yet")
+        stop("cannot handle different edgemodes")
 
     xN <- sort(nodes(x))
     yN <- sort(nodes(y))
@@ -568,7 +565,7 @@ setMethod("union", c("graph", "graph"), function(x, y) {
 
 setMethod("complement", c("graph"), function(x) {
     if( edgemode(x) != "undirected" )
-        stop(paste("can't handle edgemode:", edgemode(x), "yet"))
+        stop("'edgemode' not supported: ", sQuote(edgemode(x)))
 
     xN <- nodes(x)
     xE <- edges(x)
@@ -643,14 +640,14 @@ setMethod("show", signature("graph"),
     gN <- nodes(graph)
     wF <- match(from, gN)
     if( is.na(wF) )
-        stop(paste(from, "is not a node"))
+        stop("not a node: ", sQuote(from))
     wT <- match(to, gN)
     if( is.na(wT) )
-        stop(paste(to, "is not a node"))
+        stop("not a node: ", sQuote(to))
     eL <- graph@edgeL[[from]]
     mt <- match(wT, eL$edges)
     if(is.na(mt) )
-        stop(paste("no edge from", from, "to", to))
+        stop("no edge from ", sQuote(from), " to ", sQuote(to))
     eL$weights[mt]
 }
 
@@ -659,11 +656,11 @@ setMethod("show", signature("graph"),
 sparseM2Graph <- function(sM, nodeNames, edgemode=c("directed", "undirected"))
 {
     ## FIXME: this needs to become a method
-    require("SparseM") || stop("need SparseM for this operation")
+    qrequire("SparseM")
     edgemode <- match.arg(edgemode)
     nN <- dim(sM)[1]
     if( nN != dim(sM)[2] )
-        stop("only square matrices can be transformed, now")
+        stop("only square matrices can be transformed")
     if( length(nodeNames) != nN )
         stop("wrong number of node names supplied")
     if( !is.character(nodeNames) )
@@ -692,7 +689,7 @@ sparseM2Graph <- function(sM, nodeNames, edgemode=c("directed", "undirected"))
 ##ia the row offsets (
 graph2SparseM <- function(g, useweights=FALSE) {
     ## FIXME: this needs to become a method
-    require("SparseM") || stop("need SparseM for this operation")
+    qrequire("SparseM")
     if (! is(g, "graphNEL"))
        stop("coercion only works for graphNEL class")
     nr = nc = numNodes(g)
@@ -723,7 +720,7 @@ setMethod("edgeNames",
     from <- match(names(to), nodes(object))
 
     if(any(is.na(unlist(to)))||any(is.na(from)))
-      stop("Edge names do not match node names.")
+      stop("edge names do not match node names")
 
     ## from-to matrix
     ft <- matrix(c(rep(from, listLen(to)), to=unlist(to)), ncol=2)
@@ -757,13 +754,13 @@ setMethod("clusteringCoefficient",
   from <- match(names(to), nodes(object))
 
   if(any(is.na(unlist(to)))||any(is.na(from)))
-    stop("Edge names do not match node names.")
+    stop("edge names do not match node names")
 
   if(!selfLoops) {
     ufrom <- rep(from, listLen(to))
     uto   <- unlist(to)
     if(any(ufrom==uto))
-      stop("Graph must not contain self-loops.")
+      stop("graph must not contain self-loops")
     totEdges <- function(i) i*(i-1)
   } else {
     totEdges <- function(i) i*i
@@ -812,8 +809,7 @@ setReplaceMethod("nodeDataDefaults", signature(self="graph", attr="character",
 .verifyNodes <- function(n, nodes) {
     unknownNodes <- n[! n %in% nodes]
     if (length(unknownNodes) > 0)
-      stop("Unknown nodes: ",
-           paste(unknownNodes, collapse=", "))
+      stop("unknown nodes: ", pasteq(unknownNodes))
     TRUE
 }
 
@@ -821,7 +817,7 @@ setReplaceMethod("nodeDataDefaults", signature(self="graph", attr="character",
 setMethod("nodeData",
           signature(self="graph", n="character", attr="character"),
           function(self, n, attr) {
-              graph:::.verifyNodes(n, nodes(self))
+              .verifyNodes(n, nodes(self))
               attrDataItem(self@nodeData, x=n, attr=attr)
           })
 
@@ -830,7 +826,7 @@ setReplaceMethod("nodeData",
                  signature(self="graph", n="character", attr="character",
                            value="ANY"),
                  function(self, n, attr, value) {
-                     graph:::.verifyNodes(n, nodes(self))
+                     .verifyNodes(n, nodes(self))
                      attrDataItem(self@nodeData, x=n, attr=attr) <- value
                      self
           })
@@ -839,7 +835,7 @@ setReplaceMethod("nodeData",
 setMethod("nodeData",
           signature(self="graph", n="character", attr="missing"),
           function(self, n, attr) {
-              graph:::.verifyNodes(n, nodes(self))
+              .verifyNodes(n, nodes(self))
               attrDataItem(self@nodeData, x=n)
           })
 
@@ -907,11 +903,11 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
     lenTo <- length(to)
     if (lenFr > lenTo) {
         if (lenTo != 1)
-          stop("'to' must be length 1 or ", lenFr, " for this call.")
+          stop("'to' must be length 1 or ", lenFr)
         to <- rep(to, lenFr)
     } else if (lenFr < lenTo) {
         if (lenFr != 1)
-          stop("'from' must be length 1 or ", lenTo, " for this call.")
+          stop("'from' must be length 1 or ", lenTo)
         from <- rep(from, lenTo)
     }
     list(from=from, to=to)
@@ -926,7 +922,7 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
         badFr <- from[!adjList]
         badTo <- to[!adjList]
         res <- paste(badFr, badTo, sep=EDGE_KEY_SEP, collapse=", ")
-        stop("Edges not found: ", res)
+        stop("edges not found: ", sQuote(res))
     }
     TRUE
 }
@@ -939,11 +935,11 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
 
 
 .getEdgeKeys <- function(graph, from, to) {
-    eSpec <- graph:::.normalizeEdges(from, to)
+    eSpec <- .normalizeEdges(from, to)
     from <- eSpec$from
     to <- eSpec$to
-    graph:::.verifyEdges(graph, from, to)
-    edgeKeys <- graph:::.makeEdgeKeys(from, to)
+    .verifyEdges(graph, from, to)
+    edgeKeys <- .makeEdgeKeys(from, to)
     edgeKeys
 }
 
@@ -951,7 +947,7 @@ setReplaceMethod("edgeDataDefaults", signature(self="graph", attr="character",
 setMethod("edgeData", signature(self="graph", from="character", to="character",
                                 attr="character"),
           function(self, from, to, attr) {
-              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              edgeKeys <- .getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
 
@@ -959,14 +955,14 @@ setMethod("edgeData", signature(self="graph", from="character", to="character",
 setMethod("edgeData", signature(self="graph", from="character", to="missing",
                                 attr="character"),
           function(self, from, to, attr) {
-              graph:::.verifyNodes(from, nodes(self))
+              .verifyNodes(from, nodes(self))
               gEdges <- edges(self)[from]
               lens <- sapply(gEdges, length)
               fEdges <- rep(from, lens)
               if (!length(fEdges))
                 return(list())
               tEdges <- unlist(gEdges)
-              edgeKeys <- graph:::.getEdgeKeys(self, fEdges, tEdges)
+              edgeKeys <- .getEdgeKeys(self, fEdges, tEdges)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
 
@@ -979,7 +975,7 @@ setMethod("edgeData", signature(self="graph", from="missing", to="character",
               to <- rep(to, sapply(inE, length))
               from <- unlist(inE)
               ## from <- names(eDat)[sapply(eDat, function(x) to %in% x)]
-              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              edgeKeys <- .getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
 
@@ -988,10 +984,10 @@ setReplaceMethod("edgeData",
                  signature(self="graph", from="character", to="character",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
-                     edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+                     edgeKeys <- .getEdgeKeys(self, from, to)
                      attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
                      if (!isDirected(self)) {
-                         edgeKeys <- graph:::.getEdgeKeys(self, to, from)
+                         edgeKeys <- .getEdgeKeys(self, to, from)
                          attrDataItem(self@edgeData, x=edgeKeys,
                                       attr=attr) <- value
                      }
@@ -1003,18 +999,18 @@ setReplaceMethod("edgeData",
                  signature(self="graph", from="character", to="missing",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
-                     graph:::.verifyNodes(from, nodes(self))
+                     .verifyNodes(from, nodes(self))
                      gEdges <- edges(self)[from]
                      lens <- sapply(gEdges, length)
                      if (any(lens == 0))
-                       warning("No edges from nodes: ",
-                               paste(from[lens == 0], collapse=", "))
+                       warning("no edges from nodes: ",
+                               pasteq(from[lens == 0]))
                      fEdges <- rep(from, lens)
                      tEdges <- unlist(edges(self)[from])
-                     edgeKeys <- graph:::.getEdgeKeys(self, fEdges, tEdges)
+                     edgeKeys <- .getEdgeKeys(self, fEdges, tEdges)
                      attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
                      if (!isDirected(self)) {
-                         edgeKeys <- graph:::.getEdgeKeys(self, tEdges, fEdges)
+                         edgeKeys <- .getEdgeKeys(self, tEdges, fEdges)
                          attrDataItem(self@edgeData, x=edgeKeys,
                                       attr=attr) <- value
                      }
@@ -1028,10 +1024,10 @@ setReplaceMethod("edgeData",
                  function(self, from, to, attr, value) {
                      eDat <- edges(self)
                      from <- names(eDat)[sapply(eDat, function(x) to[1] %in% x)]
-                     edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+                     edgeKeys <- .getEdgeKeys(self, from, to)
                      attrDataItem(self@edgeData, x=edgeKeys, attr=attr) <- value
                      if (!isDirected(self)) {
-                         edgeKeys <- graph:::.getEdgeKeys(self, to, from)
+                         edgeKeys <- .getEdgeKeys(self, to, from)
                          attrDataItem(self@edgeData, x=edgeKeys,
                                       attr=attr) <- value
                      }
@@ -1054,10 +1050,10 @@ setReplaceMethod("edgeData",
 setMethod("edgeData", signature(self="graph", from="missing", to="missing",
                                 attr="character"),
           function(self, from, to, attr) {
-              eSpec <- graph:::.getAllEdges(self)
+              eSpec <- .getAllEdges(self)
               from <- eSpec$from
               to <- eSpec$to
-              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              edgeKeys <- .getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys, attr=attr)
           })
 
@@ -1065,7 +1061,7 @@ setMethod("edgeData", signature(self="graph", from="missing", to="missing",
 setMethod("edgeData", signature(self="graph", from="character", to="character",
                                 attr="missing"),
           function(self, from, to, attr) {
-              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              edgeKeys <- .getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys)
           })
 
@@ -1073,10 +1069,10 @@ setMethod("edgeData", signature(self="graph", from="character", to="character",
 setMethod("edgeData", signature(self="graph", from="missing", to="missing",
                                 attr="missing"),
           function(self, from, to, attr) {
-              eSpec <- graph:::.getAllEdges(self)
+              eSpec <- .getAllEdges(self)
               from <- eSpec$from
               to <- eSpec$to
-              edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+              edgeKeys <- .getEdgeKeys(self, from, to)
               attrDataItem(self@edgeData, x=edgeKeys)
           })
 
@@ -1084,29 +1080,18 @@ setMethod("edgeData", signature(self="graph", from="missing", to="missing",
 setMethod("edgeL", "graph",
 	  function(graph, index) callGeneric(as(graph, "graphNEL")))
 
-## This is a placeholder; if it's missing, i.e., currently,
-## and 'Rgraphviz' is not loaded, users get bad error messages.
-## Unfortunately, it doesn't work -- to MM, this seems like a bug in R
-if(FALSE)
-setMethod("plot", "graph",
-	  function(x, y, ...) {
-	      if(require("Rgraphviz")) {
-		  ## Remove 'myself' :
-		  removeMethod("plot", "graph",
-                               where = as.environment("package:graph"))
-		  message("now that the 'Rgraphviz' package is loaded, try again...")
-	      }
-	      else stop("'Rgraphviz' package is required for plot(<graph>)")
-	      ## else, try again *after* loading 'Rgraphviz':
-	      ## gives infinite recursion:	 callGeneric()
-	      ## gives infinite recursion:	 plot(x,y, ...)
-	      ## dispatches to S3 plot.default:	 callNextMethod()
-	  })
-
+setMethod("plot", c("graph", "ANY"),
+    function(x, y, ...)
+{
+    qrequire("Rgraphviz")
+    method <- getMethod("plot", c("graph", "ANY"),
+                        getNamespace("Rgraphviz"))
+    method(x, y, ...)
+})
 
 clearEdgeData <- function(self, from, to) {
     ##FIXME: make me a method
-    edgeKeys <- graph:::.getEdgeKeys(self, from, to)
+    edgeKeys <- .getEdgeKeys(self, from, to)
     removeAttrDataItem(self@edgeData, x=edgeKeys) <- NULL
     self
 }

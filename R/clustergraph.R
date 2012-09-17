@@ -125,7 +125,7 @@
         if( is.character(index) )
           index <- match(index, nodenames)
         if( !is.numeric(index) )
-	   stop("index not recognized")
+            stop("'index' not recognized")
 
         adjM <- object@Dist[index,]
         if( is.matrix(adjM) )
@@ -147,7 +147,7 @@
        nN <- nodes(object)
        wh<-match(which, nN)
        if( any(is.na(wh)) )
-           stop("not all nodes are in the supplied graph")
+           stop("'which' nodes not all in graph")
        eL <- lapply(which, function(x) adj(object, x)[[1]])
        names(eL) <- which
        eL})
@@ -172,7 +172,7 @@
                 gN <- nodes(graph)
                 whN <- match(snodes, gN)
                 if( any(is.na(whN) ) )
-                    stop("supplied nodes not all in graph")
+                    stop("'snodes' not all in graph")
                 nD <- as.matrix(Dist(graph))[whN, whN]
                 new("distGraph", Dist=as.dist(nD))
             })
@@ -216,7 +216,7 @@ setMethod("edgeL", "distGraph", function(graph, index) {
      nN <- nodes(object)
      wh <- match(which, nN)
      if( any(is.na(wh)) )
-         stop("not all nodes are in the supplied graph")
+         stop("'which' nodes not all in graph")
      edges<-list()
      for(clust in object@clusters) {
          cc <- intersect(as.character(clust), which)
@@ -276,7 +276,7 @@ setMethod("edgeL", "clusterGraph", function(graph, index) {
  setMethod("adj", c("clusterGraph", "ANY"), function(object, index) {
      nIndex <- length(index)
      if( any(is.na(match(index, nodes(object)))) )
-         stop("invalid node label supplied")
+         stop("invalid node label")
      rval <- vector("list", length=nIndex)
      names(rval) <- index
      for(i in 1:nIndex) {
@@ -292,7 +292,7 @@ setMethod("edgeL", "clusterGraph", function(graph, index) {
            function(object, index) {
                nIndex <- length(index)
                if( any(is.na(match(index, nodes(object)))) )
-                   stop("invalid node label supplied")
+                   stop("invalid node label")
                rval <- vector("list", length=nIndex)
                names(rval) <- index
                for(i in 1:nIndex) {

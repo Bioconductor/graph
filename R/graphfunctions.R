@@ -13,17 +13,17 @@
 boundary<-function(subgraph, graph)
 {
   if ( !is(graph, "graph") )
-    stop("The second parameter must be an object of type graph.")
+    stop("'graph' must be an object of type graph")
 
   if( is(subgraph, "graph") )
       snodes <- nodes(subgraph)
   else if( is.character(subgraph) )
       snodes <- subgraph
   else
-      stop("wrong type of first argument")
+      stop("'subgraph' type incorrect")
 
   if( any( !(snodes %in% nodes(graph)) ) )
-      stop("some nodes are not in the graph")
+      stop("some nodes not in graph")
 
   subE <- inEdges(graph)[snodes]
 
@@ -35,7 +35,7 @@ boundary<-function(subgraph, graph)
 ##good ways to deal with that
 duplicatedEdges <- function(graph) {
     if( !is(graph, "graphNEL") )
-        stop("only graphNEL supported for now")
+        stop("only graphNEL supported")
 
     for(e in graph@edgeL)
         if( any(duplicated(e$edges)) )
@@ -250,7 +250,7 @@ pathWeights <- function (g, p, eM = NULL)
 # that the path p exists in g
 #
     if (length(p) < 2)
-        stop("a path must have length > 1")
+        stop("'p' has length < 2")
     if (is.null(eM))
         eM <- edgeMatrix(g)
     wv <- eWV(g, eM, useNNames = TRUE)

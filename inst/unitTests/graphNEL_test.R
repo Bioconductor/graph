@@ -88,7 +88,7 @@ testInEdges <- function() {
     ## verify unknown node behavior
     ans <- tryCatch(inEdges("not-a-node", g),
                     error = function(e) e)
-    checkEquals("not-a-node is not a node", conditionMessage(ans))
+    checkEquals("not a node: 'not-a-node'", conditionMessage(ans))
 }
 
 testEmptyGraph <- function() {
