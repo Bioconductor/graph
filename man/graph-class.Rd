@@ -85,7 +85,6 @@
 
 \alias{show,graph-method}
 
-\alias{union}
 \alias{union,graph,graph-method}
 
 \alias{updateGraph}

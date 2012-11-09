@@ -533,7 +533,7 @@ setMethod("join", c("graph", "graph"), function(x, y) {
 
 
 
-setMethod("union", c("graph", "graph"), function(x, y) {
+setMethod("union", c("graph", "graph"), function(x, y, ...) {
     ex <- edgemode(x); ey <- edgemode(y);
     if( ex == ey )
         outmode <- ex
