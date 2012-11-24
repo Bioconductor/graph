@@ -82,7 +82,7 @@ setMethod("ugraph", "graph",
                nN <- length(ed)
                eds<-lapply(ed, function(x) x$edges)
                elem <- listLen(eds)
-               from <- rep(1:nN, elem)
+               from <- rep(seq_len(nN), elem)
                to <- unlist(eds, use.names=FALSE)
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
@@ -130,7 +130,7 @@ setMethod("ugraph", "graph",
                ed <- ed[NODES]
                nN <- length(ed)
                elem <- listLen(ed)
-               from <- rep(1:nN, elem)
+               from <- rep(seq_len(nN), elem)
                to <- match(unlist(ed), NODES)
                ans <- rbind(from, to)
                ##we duplicate edges in undirected graphNEL
@@ -148,7 +148,7 @@ setMethod("ugraph", "graph",
 setMethod("edgeMatrix", "graphAM",
           function(object, duplicates=FALSE) {
               to <- apply(object@adjMat, 1, function(x) which(x != 0))
-              from <- rep(1:numNodes(object), listLen(to))
+              from <- rep(seq_len(numNodes(object)), listLen(to))
               to <- unlist(to, use.names=FALSE)
               ans <- rbind(from=from, to=to)
               ## we duplicate edges in undirected graphs
@@ -227,7 +227,7 @@ eWV <- function (g, eM, sep = ifelse(edgemode(g) == "directed", "->",
     to <- n[eM["to", ]]
     eW <- tryCatch(edgeData(g, from=from, to=to, attr="weight"),
                    error=function(e) {
-                       edgeDataDefaults(g, "weight") <- 1:1
+                       edgeDataDefaults(g, "weight") <- 1L
                        edgeData(g, from=from, to=to, attr="weight")
                    })
     eW <- unlist(eW)

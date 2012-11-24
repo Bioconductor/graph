@@ -106,7 +106,7 @@ setMethod("nodes", "clusterGraph", function(object)
 setMethod("renameNodes", "clusterGraph", function(g, value) {
     clens = sapply(g@clusters, length)
     nc = length(clens)
-    ni = rep(1:nc, clens)
+    ni = rep(seq_len(nc), clens)
     newc = split(value, ni)
     names(newc) = names(g@clusters)
     g@clusters = newc

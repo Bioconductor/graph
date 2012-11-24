@@ -64,7 +64,7 @@ setMethod("initialize", signature("graphAM"),
           function(.Object, adjMat, edgemode="undirected", values) {
               nNames <- isValidAdjMat(adjMat, edgemode)
               if (is.null(nNames))
-                  nNames <- paste("n", 1:ncol(adjMat), sep="")
+                  nNames <- paste0("n", seq_len(ncol(adjMat)))
               .Object@graphData$edgemode <- edgemode
               .Object@nodeData <- new("attrData")
               colnames(adjMat) <- nNames
@@ -145,7 +145,7 @@ setMethod("isAdjacent",
               if (any(toIdx == 0))
                 stop("'to' unknown nodes: ", pasteq(to[toIdx == 0]))
               result <- logical(length(fromIdx))
-              for (i in 1:length(fromIdx))
+              for (i in seq_along(fromIdx))
                   result[i] <- object@adjMat[fromIdx[i], toIdx[i]] != 0
               result
           })
@@ -329,7 +329,7 @@ NEL2mat <- function(g) {
     for (n in theNodes) {
 	e <- theEdges[[n]]
 	if (length(e))
-	    mat[n, e] <- if(use.wts) wts[[n]] else 1:1
+	    mat[n, e] <- if(use.wts) wts[[n]] else 1L
     }
     mat
 }

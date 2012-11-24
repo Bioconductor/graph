@@ -11,7 +11,7 @@ aM2bpG<-function(aM){
 	numE<-dim(tmat)[1]
 
 	rval <- vector("list", length = numN)
-    	for (i in 1:numE) {
+    	for (i in seq_len(numE)) {
         	rval[[tmat[i, 1]]]$edges <- c(rval[[tmat[i, 1]]]$edges,
             	tmat[i, 2])
         	ln <- length(rval[[tmat[i, 1]]]$edges)

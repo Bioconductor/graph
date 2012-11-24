@@ -774,7 +774,7 @@ setMethod("graphIntersect",
 .getMGUnionWeights <- function(attrType, g1, g2, es, funList) {
     len <- length(attrType$from)
     attr1 <- vector(len, mode = "numeric")
-    attr1[1:len] <- NA
+    attr1[seq_len(len)] <- NA
     ## from x
     k <- (as.numeric(attrType$from) ==1)
     attr1[k]  <- g1@edge_sets[[es]]@weights[attrType$indx1[k]] 
@@ -798,7 +798,7 @@ setMethod("graphIntersect",
             pt <-  which(eqInd)
             lp <- length(which(k))
             tmp <- vector(lp, mode ="numeric")
-            tmp[1:lp] <- NA
+            tmp[seq_len(lp)] <- NA
             tmp[pt] <-  val1[pt]
             attr1[k]  <- tmp
         } 
@@ -817,7 +817,7 @@ setMethod("graphIntersect",
         mds <- mode(y@edge_sets[[es]]@edge_attrs[[att]])
 
     attr1 <- vector(len , mode = mds)
-    attr1[1:len] <- NA
+    attr1[seq_len(len)] <- NA
     ## from x
     k <- (as.numeric(attrType$from) ==1)
     if(att  %in% names(x@edge_sets[[es]]@edge_attrs)) {
@@ -854,7 +854,7 @@ setMethod("graphIntersect",
             pt <-  which(eqInd)
             lp <- sum(k)
             tmp <- vector(lp, mode = mds)
-            tmp[1:lp] <- NA
+            tmp[seq_len(lp)] <- NA
             tmp[pt] <-  val1[pt]
             attr1[k]  <- tmp
         } 
@@ -965,14 +965,14 @@ setMethod("degree", signature(object = "MultiGraph", Nodes = "missing"),
     nds <- nodes(self)
     .verifyNodes(n, nds)
     idx <- match(n, nds)
-    names(idx) <- 1:length(idx)
+    names(idx) <- seq_along(idx)
     idx <- sort(idx) 
     n <- n[as.numeric(names(idx))]
     names(idx) <- NULL
     bt <- self@userAttrPos@nodePos[[attr]]
     ord <- .getNodeAttrPos(bt, idx)
     res <- vector(length(idx), mode = mode(self@nodeData@defaults[[attr]]))
-    res[1:length(idx)] <- self@nodeData@defaults[[attr]]
+    res[seq_along(idx)] <- self@nodeData@defaults[[attr]]
     if (length(ord$leftPos))
         res[ord$leftPos] <- self@nodeData@data[[attr]][ord$rightPos]
     as.list(structure(res, names = n))
@@ -1037,7 +1037,7 @@ setMethod("nodeData",
     if(len==1L && len !=length(n))
         value <- rep(value, length(n))
     idx <- match(n, nds)
-    names(idx) <- 1:length(idx)
+    names(idx) <- seq_along(idx)
     idx <- sort(idx) 
     value <- value[as.numeric(names(idx))]
     names(idx) <- NULL       
@@ -1126,25 +1126,27 @@ setMethod("mgEdgeDataDefaults",
           })
 
 setReplaceMethod("mgEdgeDataDefaults", 
-                 signature(self="MultiGraph", edgeSet = "character", attr="missing",
-                           value="list"),
-                 function(self, edgeSet, attr, value) {
-                     self@edge_defaults[[edgeSet]] <- value  
-                     wt <- self@edge_defaults[[edgeSet]][["weights"]]
-                     if(!is.numeric(wt) && !is.null(wt))
-                         stop("weights attribute has to be of type numeric")
-                     ndsLen <- length(nodes(self))
-                     nms <- names(value)
-                     posBit <- .createZeroBitPos(ndsLen)
-                     for(i in 1: length(value)){
-                         if(!(nms[i] %in% names(self@userAttrPos@edgePos[[edgeSet]]))) {
-                             if(nms[i] != "weight"){
-                                 self@userAttrPos@edgePos[[edgeSet]][[nms[i]]] <- posBit
-                             }
-                         }
-                     }
-                     self
-                 })
+    signature(self="MultiGraph", edgeSet = "character", attr="missing",
+              value="list"),
+    function(self, edgeSet, attr, value) 
+{
+    self@edge_defaults[[edgeSet]] <- value  
+    wt <- self@edge_defaults[[edgeSet]][["weights"]]
+    if(!is.numeric(wt) && !is.null(wt))
+        stop("weights attribute has to be of type numeric")
+    ndsLen <- length(nodes(self))
+    nms <- names(value)
+    posBit <- .createZeroBitPos(ndsLen)
+    for(i in seq_along(value)) {
+        nms <- names(self@userAttrPos@edgePos[[edgeSet]])
+        if(!(nms[i] %in% nms)) {
+            if(nms[i] != "weight"){
+                self@userAttrPos@edgePos[[edgeSet]][[nms[i]]] <- posBit
+            }
+        }
+    }
+    self
+})
 
 
 setReplaceMethod("mgEdgeDataDefaults", 
@@ -1210,31 +1212,32 @@ setMethod("mgEdgeData",
 
 
 setMethod("mgEdgeData",
-          signature(self = "MultiGraph", edgeSet = "character", from = "missing", 
-                    to = "character", attr = "character"),
-          function(self, edgeSet, from , to, attr) {
-              .verifyMgEdgeSetNames(self,edgeSet)
-              nodeNames <- self@nodes
-              numNodes <- length(nodeNames)
-              bv <- self@edge_sets[[edgeSet]]@bit_vector
-              val <- .retMGAttrVec(self, edgeSet, attr)
-              ft <- .Call(graph_bitarray_rowColPos, self@edge_sets[[edgeSet]]@bit_vector)
-              if(!isDirected(self@edge_sets[[edgeSet]])) {
-                  df <- cbind(from=ft[,"to"], to = ft[,"from"])
-                  ft <- rbind(ft,df)
-                  val <- c(val,val)
-              }
-              tmp <- seq_len(length(val))
-              ft <- data.frame(ft, tmp, stringsAsFactors = FALSE)
-              ft <- ft[ft[,"to"] %in% which(nodeNames %in% to),]  
-              if(nrow(ft) == 0)
-                  stop("edges in \"to\" not found in \"self\"")
-              .verifyMgEdges(self, edgeSet, nodeNames[ft[,"from"]], nodeNames[ft[,"to"]])
-              nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]], sep ="|")
-              val <- val[ft[,"tmp"]][1:length(nodeLbl)]
-              names(val) <- nodeLbl
-              as.list(val)
-             })
+    signature(self = "MultiGraph", edgeSet = "character", from = "missing", 
+              to = "character", attr = "character"),
+    function(self, edgeSet, from , to, attr) 
+{
+    .verifyMgEdgeSetNames(self,edgeSet)
+    nodeNames <- self@nodes
+    numNodes <- length(nodeNames)
+    bv <- self@edge_sets[[edgeSet]]@bit_vector
+    val <- .retMGAttrVec(self, edgeSet, attr)
+    ft <- .Call(graph_bitarray_rowColPos, self@edge_sets[[edgeSet]]@bit_vector)
+    if(!isDirected(self@edge_sets[[edgeSet]])) {
+        df <- cbind(from=ft[,"to"], to = ft[,"from"])
+        ft <- rbind(ft,df)
+        val <- c(val,val)
+    }
+    tmp <- seq_len(length(val))
+    ft <- data.frame(ft, tmp, stringsAsFactors = FALSE)
+    ft <- ft[ft[,"to"] %in% which(nodeNames %in% to),]  
+    if(nrow(ft) == 0)
+        stop("edges in \"to\" not found in \"self\"")
+    .verifyMgEdges(self, edgeSet, nodeNames[ft[,"from"]], nodeNames[ft[,"to"]])
+    nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]], sep ="|")
+    val <- val[ft[,"tmp"]][seq_along(nodeLbl)]
+    names(val) <- nodeLbl
+    as.list(val)
+})
 
 setMethod("mgEdgeData",
           signature(self = "MultiGraph", edgeSet = "character", from = "missing", 
@@ -1462,10 +1465,15 @@ setReplaceMethod("mgEdgeData",
         }
         newAttr <- vector(nt, mode = mode(dflt))
         if(!is.null(g@edge_sets[[e]]@edge_attrs[[attr]])) {
-            newAttr[ord$origLeftPos] <- g@edge_sets[[e]]@edge_attrs[[attr]][ord$origRightPos]
-            newAttr[ord$newLeftPos] <- if(mode(dflt)=="list") rep(list(dflt), length(ord$newLeftPos)) else  dflt
+            newAttr[ord$origLeftPos] <-
+                g@edge_sets[[e]]@edge_attrs[[attr]][ord$origRightPos]
+            newAttr[ord$newLeftPos] <- if(mode(dflt)=="list") {
+                rep(list(dflt), length(ord$newLeftPos))
+            } else  dflt
         }else{
-            newAttr[1:nt] <- if(mode(dflt)=="list") rep(list(dflt), nt) else  dflt
+            newAttr[seq_len(nt)] <- if(mode(dflt)=="list") {
+                rep(list(dflt), nt)
+            } else  dflt
         }
     }else{
         newAttr <- g@edge_sets[[e]]@weights
@@ -1494,7 +1502,7 @@ setReplaceMethod("mgEdgeData",
              sQuote(edge))
     nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
             sep ="|")
-    val <- val[ft[,"tmp"]][1:length(nodeLbl)]
+    val <- val[ft[,"tmp"]][seq_along(nodeLbl)]
     names(val) <- nodeLbl
     as.list(val)
  }

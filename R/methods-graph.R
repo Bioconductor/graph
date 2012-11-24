@@ -276,7 +276,7 @@ setMethod("leaves", "graph",
 
        rval <- vector("list", length=nIndex)
        names(rval) <- nNames[whN]
-       for( i in 1:nIndex) {
+       for( i in seq_len(nIndex)) {
            marked<-rep(0, nN)
            distv <- rep(0, nN)
            names(distv) <- nNames
@@ -443,7 +443,7 @@ setMethod("intersection2", c("graph", "graph"), function(x,y) {
        yE = lapply(yE, function(x) {
            x[x %in% bN]})
        rval <- vector("list", length=length(xE))
-       for(i in 1:length(xE) ) {
+       for(i in seq_along(xE) ) {
            ans <- intersect(xE[[i]], yE[[i]])
            rval[[i]] <- list(edges=match(ans, bN),
                                  weights=rep(1, length(ans)))
@@ -474,12 +474,12 @@ setMethod("join", c("graph", "graph"), function(x, y) {
     ## as the node #s have all changed.
     if (length(eLY) > 0) {
         eLYnames <- names(eLY)
-        for (i in 1:length(eLY)) {
+        for (i in seq_along(eLY)) {
             newEntry <- eLY[i]
             ## !! first need to adjust the targets on the edges
             newEdges <- newEntry[[1]]$edges
             if (length(newEdges) > 0) {
-                for (j in 1:length(newEdges)) {
+                for (j in seq_along(newEdges)) {
                     curTo <- nY[newEdges[j]]
                     newTo <- match(curTo,newNodes)
                     if (is.na(newTo))
@@ -614,7 +614,7 @@ setMethod("connComp", "graph", function(object) {
     nmR <- NL[nused]
     nc <- length(rval)
     rL <- vector("list", length=nc)
-    for(i in 1:nc) rL[[i]]<-c(nmR[[i]], names(rval[[i]]))
+    for(i in seq_len(nc)) rL[[i]]<-c(nmR[[i]], names(rval[[i]]))
     return(rL)
 })
 
@@ -666,13 +666,13 @@ sparseM2Graph <- function(sM, nodeNames, edgemode=c("directed", "undirected"))
     if( !is.character(nodeNames) )
         stop("wrong type of node names supplied")
     dd <- diff(sM@ia)
-    e1 <- rep(1:nN, dd)
+    e1 <- rep(seq_len(nN), dd)
     eL <- split(sM@ja, e1)
     eW <- split(sM@ra, e1)
 
     edL <- vector("list", length=nN)
-    names(edL) <- 1:nN
-    for(i in as.character(1:nN) ){
+    names(edL) <- seq_len(nN)
+    for(i in as.character(seq_len(nN)) ){
         ##need this because otherwise partial matching is done
         if( i %in% names(eL) )
             edL[[i]] <- list(edges=eL[[i]], weights=eW[[i]])

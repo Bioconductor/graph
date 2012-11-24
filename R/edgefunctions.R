@@ -137,7 +137,7 @@ listEdges <- function(object, dropNULL=TRUE)
     Nn <- length(Nd)
     EL <- object@edgeL
     eList <- NULL
-    for(i in 1:Nn) {
+    for(i in seq_len(Nn)) {
         Node <- Nd[i]
         ELi <- EL[[i]]
         for( j in seq(along=ELi$edges) ) {

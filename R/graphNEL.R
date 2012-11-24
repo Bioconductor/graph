@@ -374,7 +374,7 @@ setMethod("addEdge", signature=signature(from="character", to="character",
           function(from, to, graph, weights) {
               graph <- addEdge(from, to, graph)
               if (!("weight" %in% names(edgeDataDefaults(graph))))
-                edgeDataDefaults(graph, attr="weight") <- 1:1
+                edgeDataDefaults(graph, attr="weight") <- 1L
               edgeData(graph, from=from, to=to, attr="weight") <- weights
               graph
           })
@@ -411,7 +411,7 @@ setMethod("addEdge", signature=signature(from="character", to="character",
               ##now the same
               lenN <- max(lenT, lenF)
               eL <- graph@edgeL
-              for(i in 1:lenN) {
+              for(i in seq_len(lenN)) {
                   old <- eL[[from[i]]]
                   ## remove duplicate edges
                   old$edges <- unique(c(old$edges, whT[i]))
@@ -419,7 +419,7 @@ setMethod("addEdge", signature=signature(from="character", to="character",
               }
               ##if undirected, then we need to go in both directions
               if( edgemode(graph) == "undirected")
-                for(i in 1:lenN) {
+                for(i in seq_len(lenN)) {
                     old <- eL[[to[i]]]
                     ## remove duplicate edges
                     old$edges <- unique(c(old$edges, whF[i]))
@@ -491,26 +491,25 @@ setMethod("inEdges", c("graphNEL", "missing"),
           inEdges(nodes(node), node))
 
 
-setMethod("inEdges", c("character", "graphNEL"),
-          function(node, object) {
-              gN <- nodes(object)
-              whN <- match(node, gN)
-              if( any(is.na(whN)) )
-                stop("not a node: ", pasteq(node[is.na(whN)]))
-              nN <- length(node)
-              rval <- vector("list", length=nN)
-              names(rval) <- node
-              eL <- object@edgeL
-              for(i in 1:nN) {
-                  whOnes <- sapply(eL,
-                                   function(x) {
-                                       if( whN[i] %in% x$edges)
-                                         return(TRUE)
-                                       FALSE})
-
-                  rval[[i]] <- gN[whOnes]
-              }
-              rval})
+setMethod("inEdges", c("character", "graphNEL"), function(node, object) {
+    gN <- nodes(object)
+    whN <- match(node, gN)
+    if( any(is.na(whN)) )
+        stop("not a node: ", pasteq(node[is.na(whN)]))
+    nN <- length(node)
+    rval <- vector("list", length=nN)
+    names(rval) <- node
+    eL <- object@edgeL
+    for (i in seq_len(nN)) {
+        whOnes <- sapply(eL, function(x) {
+            if (whN[i] %in% x$edges)
+                return(TRUE)
+            FALSE
+        })
+        rval[[i]] <- gN[whOnes]
+    }
+    rval
+})
 
 
 .dropEdges <- function(self, x) {

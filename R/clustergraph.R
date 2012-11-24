@@ -29,10 +29,10 @@
       if( missing(j) )
          return(x)
       else { ## return columns
-         i <- 1:lend
+         i <- seq_len(lend)
       }
     if( missing(j) ) {
-       j <- 1:lend
+       j <- seq_len(lend)
     }
     ## we have both -- return a matrix
     leni <- length(i)
@@ -70,7 +70,7 @@
 
  setMethod("initialize", "distGraph", function(.Object, Dist) {
        if( is.null( attr(Dist, "Labels") ) )
-	   attr(Dist, "Labels") = as.character(1:attr(Dist, "Size"))
+	   attr(Dist, "Labels") = as.character(seq_len(attr(Dist, "Size")))
        else
          checkValidNodeName(attr(Dist, "Labels"))
        .Object@Dist = Dist
@@ -111,7 +111,7 @@
             ordE <- lapply(edges, function(x) x[newN])
             subM <- sapply(ordE, function(x) x) ##should be a matrix!
             oldD <- as.matrix(Dist(object))
-            f1 <- cbind(oldD, subM[1:nNode,])
+            f1 <- cbind(oldD, subM[seq_len(nNode),])
             f2 <- rbind(f1, t(subM))
             rv <- new("distGraph", Dist = as.dist(f2))
         })
@@ -133,7 +133,7 @@
         else
            adjL <- list(adjM)
 
-        for(i in 1:length(adjL) )
+        for(i in seq_along(adjL))
           adjL[[i]] <- names(adjL[[i]])[adjL[[i]] > 0 ]
         return(adjL) })
 
@@ -279,7 +279,7 @@ setMethod("edgeL", "clusterGraph", function(graph, index) {
          stop("invalid node label")
      rval <- vector("list", length=nIndex)
      names(rval) <- index
-     for(i in 1:nIndex) {
+     for(i in seq_len(nIndex)) {
          for(cl in object@clusters)
              if( index[i] %in% cl )
                  rval[[i]] <- cl
@@ -295,7 +295,7 @@ setMethod("edgeL", "clusterGraph", function(graph, index) {
                    stop("invalid node label")
                rval <- vector("list", length=nIndex)
                names(rval) <- index
-               for(i in 1:nIndex) {
+               for(i in seq_len(nIndex)) {
                    for(cl in object@clusters)
                        if( index[i] %in% cl )
                            rval[[i]] <- cl

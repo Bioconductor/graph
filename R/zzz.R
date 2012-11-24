@@ -12,11 +12,10 @@ graph.par(.default.graph.pars())
 ## utilities
 
 qrequire <-
-    function(package, ..., quietly=TRUE, character.only=TRUE)
+    function(package, quietly=TRUE, character.only=TRUE)
 {
     suppressWarnings({
-        require(package, ..., quietly=quietly,
-                character.only=character.only)
+        require(package, quietly=quietly, character.only=character.only)
     }) || stop("package required but not installed: ", sQuote(package),
                call.=FALSE)
 }

@@ -91,7 +91,7 @@ NELhandler <- function ()
         desti <- match(dest, ns)
         edl <- split(desti, src)
         wtl <- split(wts, src)
-        for (i in 1:length(ns)) {
+        for (i in seq_along(ns)) {
           if (length(edl[[ns[i]]]) == 0)
             edl[[ns[i]]] <- list(edges = integer(0))
           else if (!NOWTS)

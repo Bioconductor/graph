@@ -163,7 +163,7 @@ setMethod("edgeWeights", signature(object="graphBAM", index="missing"),
 
     nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
             sep ="|")
-    val <- val[ft[,"tmp"]][1:length(nodeLbl)]
+    val <- val[ft[,"tmp"]][seq_along(nodeLbl)]
     names(val) <- nodeLbl
     val
 }
@@ -230,7 +230,7 @@ setMethod("edgeData",
               .verifyEdges(self, nodeNames[ft[,"from"]], nodeNames[ft[,"to"]])
               nodeLbl <- paste( nodeNames[ft[,"from"]], nodeNames[ft[, "to"]],
                                sep ="|")
-              val <- val[ft[,"tmp"]][1:length(nodeLbl)]
+              val <- val[ft[,"tmp"]][seq_along(nodeLbl)]
               names(val) <- nodeLbl
               as.list(val)
           })
@@ -293,7 +293,8 @@ setMethod("edgeData",
             newAttr[ord$origLeftPos] <- g@edgeSet@edge_attrs[[attr]][ord$origRightPos]
             newAttr[ord$newLeftPos] <- if(mode(dflt)=="list") rep(list(dflt), length(ord$newLeftPos)) else  dflt
         }else{
-            newAttr[1:nt] <- if(mode(dflt)=="list") rep(list(dflt), nt) else  dflt
+            newAttr[seq_len(nt)] <-
+                if(mode(dflt)=="list") rep(list(dflt), nt) else  dflt
         }
     }else{
         newAttr <- g@edgeSet@weights
@@ -463,7 +464,7 @@ setReplaceMethod("edgeDataDefaults", signature(self="graphBAM", attr="missing",
                          stop("'weights' attribute must be numeric()")
                      ndsLen <- length(nodes(self))
                      nms <- names(value)
-                     for(i in 1: length(value)){
+                     for(i in seq_along(value)) {
                          if(!(nms[i] %in% names(self@userAttrPos@edgePos))) {
                              if(nms[i] != "weight"){
                                  posBit <- .createZeroBitPos(ndsLen)
@@ -863,7 +864,7 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
 .getUnionWeights <- function(attrType, g1, g2, funList) {
     len <- length(attrType$from)
     attr1 <- vector(len, mode = "numeric")
-    attr1[1:len] <- NA
+    attr1[seq_len(len)] <- NA
     ## from x
     k <- (as.numeric(attrType$from) ==1)
     attr1[k]  <- g1@edgeSet@weights[attrType$indx1[k]] 
@@ -887,7 +888,7 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
             pt <-  which(eqInd)
             lp <- length(which(k))
             tmp <- vector(lp, mode ="numeric")
-            tmp[1:lp] <- NA
+            tmp[seq_len(lp)] <- NA
             tmp[pt] <-  val1[pt]
             attr1[k]  <- tmp
         } 
@@ -909,7 +910,7 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
         mds <- mode(y@edgeSet@edge_attrs)
 
     attr1 <- vector(len , mode = mds)
-    attr1[1:len] <- NA
+    attr1[seq_len(len)] <- NA
     ## from x
     k <- (as.numeric(attrType$from) ==1)
     if(att  %in% names(x@edgeSet@edge_attrs)) {
@@ -946,7 +947,7 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
             pt <-  which(eqInd)
             lp <- sum(k)
             tmp <- vector(lp, mode = mds)
-            tmp[1:lp] <- NA
+            tmp[seq_len(lp)] <- NA
             tmp[pt] <-  val1[pt]
             attr1[k]  <- tmp
         } 
@@ -1066,7 +1067,7 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     n1 <- structure(lapply(cmnAttrs, function(i){
                 len <- length(g@nodeData@data[[i]])
                 bt <- makebits(len)
-                bt <- setbitv(bt, 1:len, rep(1L, len))
+                bt <- setbitv(bt, seq_len(len), rep(1L, len))
             }),names = cmnAttrs) 
 
     n2 <- structure(lapply(singleAttrs, function(i){
@@ -1094,7 +1095,7 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     from2 <-  attrType$indx2
     k <- (as.numeric(attrType$from) ==0)
     attr1 <- vector(sum(k), mode =mode(xAtt))
-    attr1[1:sum(k)] <- NA
+    attr1[seq_len(sum(k))] <- NA
     val1 <- xAtt[attrType$indx1[k]]
     val2 <- yAtt[attrType$indx2[k]]
 
