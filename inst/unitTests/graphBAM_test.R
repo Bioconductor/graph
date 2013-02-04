@@ -1005,14 +1005,16 @@ test_graphBAM_nodeAttributes <- function(){
     weight=c(2.2, 2.0, 0.4, 0.2)
     df <- data.frame(from, to, weight)
     g <- graphBAM(df, edgemode = "directed")
-
     nodeDataDefaults(g, attr ="color") <- "blue"
+    sg <- subGraph(c("a", "c"), g)
+    checkIdentical(unname(unlist(nodeData(sg))), c("blue", "blue"))
+
     nodeData(g, n = c("d","a"), attr = "color") <- c("red", "green")
     current <- nodeData(g, attr = "color")
     target <- as.list(structure(  c("green", "blue", "blue", "red", "blue", "blue"), 
                         names = c("a", "b", "c", "d", "x", "y")))
     checkEquals(target, current)
-    
+ 
     nodeDataDefaults(g, attr="mat") <- NA 
     nodeData(g, n= c("x", "y"), attr = "mat") <- df
     current <-  nodeData(g, n= c("x", "y"), attr = "mat")
