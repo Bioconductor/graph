@@ -21,7 +21,13 @@ graphBAM <- function(df, nodes = NULL, edgemode = "undirected",
         stop("required 'names(df)' not present: ",
              pasteq(.required[!cl]))
     }
-    nodes <- sort(unique(c(as.character(df$from), as.character(df$to), nodes)))
+    if (any(duplicated(nodes)))
+        stop(sQuote(nodes), " must be unique") 
+    edge_nodes <- unique(c(as.character(df$from), as.character(df$to)))
+    if (!all(edge_nodes %in% nodes))
+        nodes <- sort(c(edge_nodes, nodes))
+    else if (is.null(nodes))
+        nodes <- edge_nodes
     is_directed <- edgemode == "directed"
     edge_sets <- .makeMDEdgeSet(es_name = 1, es = df,
                                 is_directed = is_directed, nodes,
@@ -706,7 +712,7 @@ setMethod("addNode",
         signature(node="character", object="graphBAM", edges="missing"),
         function(node, object) {
 
-            nds <- unique(c(nodes(object), node))
+            nds <- sort(unique(c(nodes(object), node)))
             ndsLen <- length(nds)
             df <- extractFromTo(object)
             g <- graphBAM(df, nodes = nds, edgemode = edgemode(object))

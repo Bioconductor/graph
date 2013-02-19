@@ -74,6 +74,17 @@ test_BAMNodes <- function() {
     nds <- nodes(g1)
     checkIdentical(all(nds %in% unique(c(from,to))),TRUE)
     checkIdentical(isDirected(g1),TRUE)
+
+    ## node names 
+    from = paste0("X", 8:11)
+    to   = paste0("X", 8:11) 
+    df <- data.frame(from, to, weight=rep(1, 4))
+    g2 <- graphBAM(df) ## no 'nodes'
+    checkIdentical(nodes(g2), c("X10", "X11", "X8", "X9"))
+    g2 <- graphBAM(df, nodes="X7") ## degree-zero node
+    checkIdentical(nodes(g2), c("X10", "X11", "X7", "X8", "X9"))
+    g2 <- graphBAM(df, nodes=paste0("X", 8:11)) ## forced ordering
+    checkIdentical(nodes(g2), c("X8", "X9", "X10", "X11"))
 }
 
 
