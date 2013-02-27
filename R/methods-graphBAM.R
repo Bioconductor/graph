@@ -176,42 +176,27 @@ setMethod("edgeWeights", signature(object="graphBAM", index="missing"),
 
 ## graphBAM edgeData methods 
 
-setMethod("edgeData", signature(self="graphBAM", from="character", to="character",
-                attr="character"),
-        function(self, from, to, attr) {
-            nodeNames <- self@nodes
-            req_ft <- .align_from_to(from, to, nodeNames)
-           .verifyEdges(self, req_ft[,"from"],req_ft[,"to"])
-            numNodes <- length(nodeNames)
-            bv <- self@edgeSet@bit_vector
-            .verifyBAMAttrs(self, attr)
-            val <- .retAttrVec(self, attr)
-            ft <- .Call(graph_bitarray_rowColPos, self@edgeSet@bit_vector)
-            if(!isDirected(self)){
-                df <- cbind(from=ft[,"to"], to = ft[,"from"])
-                ft <- rbind(ft,df)
-                val <- c(val, val)
-            }
-            ft <- data.frame(ft)
-            ft <- ft[with(ft, order(to,from)),]
-            req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
-            colnames(req_i) <- c("from", "to")
-            tmp <- rbind(req_i, ft)
-            pst <- paste(tmp[,"from"],tmp[,"to"], sep = "_")
-            idx <- duplicated(pst)[seq(nrow(req_i) +1 , nrow(tmp))]
-            ord <- order(req_i[,2], req_i[,1])
-            req_i <- req_i[ord,,drop =FALSE]
-            val <- structure(val[idx], names = paste(
-                            nodeNames[req_i[,1]],nodeNames[req_i[,2]],
-                            sep = "|"))
-            as.list(val)
-        })
-
 
 setMethod("edgeData", 
           signature(self="graphBAM", from="character", to= "missing", attr="character"),
           function(self, from, to, attr){
               as.list(.eAttrsFun(self, from, attr))       
+          })
+
+setMethod("edgeData",
+          signature(self="graphBAM", from="character", to="character", attr="character"),
+          function(self, from, to, attr) {
+              edgeData.from <- edgeData(self, attr=attr, from=from)
+              unrecognized.nodes <- setdiff(to, nodes(self))
+              if(length(unrecognized.nodes) > 0) {
+                  msg <- sprintf("nodes not in graph: %s",
+                                 paste(sQuote(unrecognized.nodes), collapse=", "))
+                  stop(msg)
+                  }
+              edgeNames <- names(edgeData.from)
+              toStarts <- regexpr("|", edgeNames, fixed=TRUE) + 1L
+              actual.to.nodes <- substring(edgeNames, toStarts, nchar(edgeNames))
+              edgeData.from[actual.to.nodes %in% to]
           })
 
 setMethod("edgeData", 
