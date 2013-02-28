@@ -1424,3 +1424,34 @@ test_graphBAM_removeNode <- function(){
                             c("c","y"), sep = "|")))
     checkEquals(target, current)
  }
+
+test_edgeDataUndirectedGraph <- function() {
+
+     df <- data.frame(from=c("a", "a", "c"),
+                     to=c("b", "c", "d"),
+                     weight=rep(1, 3), stringsAsFactors=FALSE)
+     g <- graphBAM(df, edgemode="undirected")
+     edgeDataDefaults(g, attr="EDA") <- 0
+     edgeData(g, from="a", to="b", attr="EDA") <- 1
+     edgeData(g, from="a", to="c", attr="EDA") <- 2
+     edgeData(g, attr="EDA", from="a")
+
+         # for edges where "a" is the source node, and to unspecified
+     checkEquals(edgeData(g, attr="EDA", from="a")[["a|b"]], 1)
+     checkEquals(edgeData(g, attr="EDA", from="a")[["a|c"]], 2)
+
+         # specify single values for from and to
+     checkEquals(edgeData(g, attr="EDA", from="a", to="b")[[1]], 1)
+     checkEquals(edgeData(g, attr="EDA", from="a", to="c")[[1]], 2)
+
+         # multiple target nodes
+    x <- edgeData(g, from="a", to=c("b","c"), attr="EDA")
+    checkEquals(length(x), 2)
+    checkEquals(sort(names(x)), c("a|b", "a|c"))
+    checkEquals(as.numeric(edgeData(g, from="a", to=c("b","c"), attr="EDA")),
+                c(1,2))
+
+    checkException(edgeData(g, from="a", to="bogus", attr="EDA"))
+    checkException(edgeData(g, from=c("a", "c"), to=c("bogus", "bagus"), attr="EDA"))
+}
+    
