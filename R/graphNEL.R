@@ -113,17 +113,31 @@ graphNEL_init_edgeL_weights <- function(gnel) {
 }
 
 
+
 graphNEL_init_edges <- function(nodes, edges) {
-    nameE <- names(edges)
-    if (is.null(nameE) || !all(nameE %in% nodes))
-      stop("'edges' names must agree with 'nodes'")
-    edgeL <- lapply(edges, function(x) {
-        if (is.list(x))
-          stop("'edges' must be list of character()")
-        list(edges=match(x, nodes))
-    })
-    edgeL
+      nameE <- names(edges)
+      if (is.null(nameE) || !all(nameE %in% nodes))
+        stop("'edges' names must agree with 'nodes'")
+      if(any(unlist(lapply(edges, is.list))))
+         stop("'edges' must be list of character()")
+      n <- max(sapply(edges, length))
+      if(n==0){
+         edgeL <- list(list(edges=integer(0)))
+         edgeL <- rep(edgeL, length(nameE))
+      }else{
+         edgeL <- do.call(rbind, lapply(edges, `[`, seq_len(n)))
+         if(nrow(edgeL)>ncol(edgeL)){
+         edgeL <- apply(edgeL, 2, function(x) match(x, nodes))
+         edgeL <- apply(as.matrix(edgeL), 1, function(x) list(edges=unname(x[!is.na(x)])))
+         }else{
+            edgeL <- apply(edgeL, 1, function(x) match(x, nodes))
+            edgeL <- apply(as.matrix(edgeL), 2, function(x) list(edges=unname(x[!is.na(x)])))
+            }
+       }
+      names(edgeL) <- nameE
+      edgeL
 }
+
 
 
 setMethod("initialize", "graphNEL",
