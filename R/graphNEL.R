@@ -115,29 +115,35 @@ graphNEL_init_edgeL_weights <- function(gnel) {
 
 
 graphNEL_init_edges <- function(nodes, edges) {
-      nameE <- names(edges)
-      if (is.null(nameE) || !all(nameE %in% nodes))
+    nameE <- names(edges)
+    if (is.null(nameE) || !all(nameE %in% nodes))
         stop("'edges' names must agree with 'nodes'")
-      if(any(unlist(lapply(edges, is.list))))
-         stop("'edges' must be list of character()")
-      n <- max(sapply(edges, length))
-      if(n==0){
-         edgeL <- list(list(edges=integer(0)))
-         edgeL <- rep(edgeL, length(nameE))
-      }else{
-         edgeL <- do.call(rbind, lapply(edges, `[`, seq_len(n)))
-         if(nrow(edgeL)>ncol(edgeL)){
-         edgeL <- apply(edgeL, 2, function(x) match(x, nodes))
-         edgeL <- apply(as.matrix(edgeL), 1, function(x) list(edges=unname(x[!is.na(x)])))
-         }else{
-            edgeL <- apply(edgeL, 1, function(x) match(x, nodes))
-            edgeL <- apply(as.matrix(edgeL), 2, function(x) list(edges=unname(x[!is.na(x)])))
-            }
-       }
-      names(edgeL) <- nameE
-      edgeL
+    if (any(unlist(lapply(edges, is.list))))
+        stop("'edges' must be list of character()")
+    ##merge all edges with same names
+    if(any(duplicated(nameE))){
+        edges <- split(edges, nameE)
+        edges <- lapply(edges, unlist)
+        nameE <- names(edges)
+    }
+    ##melt list
+    m <- sapply(edges, length)
+    n <- m > 0
+    els <- edges[n]
+    edgeF <- rep(names(els), m[n])
+    edgeT <- unlist(els)
+    edgeL <- unname(cbind(edgeF, edgeT))
+    if(sum(n)>0){
+        eL <- match(edgeL[, 2], nodes)
+        edgeL <- split(eL, edgeL[, 1])
+        edgeL <- c(edgeL, lapply(edges[!n], function(x) integer(0)))
+    }else{
+        edgeL <- lapply(edges, function(x) integer(0))
+    }
+    edgeL <- edgeL[nameE]
+    edgeL <- lapply(edgeL, function(x) list(edges=x))
+    edgeL
 }
-
 
 
 setMethod("initialize", "graphNEL",
