@@ -546,6 +546,9 @@ setMethod("edgeMatrix", "graphBAM",
             bitvec <- object@edgeSet@bit_vector
             nds <- nodes(object)
             df <- .Call(graph_bitarray_rowColPos, bitvec)
+            if (duplicates)
+                df <- rbind(df, cbind(as.vector(df[, "to"]),
+                            as.vector(df[, "from"])))
             t(df)
         })
 

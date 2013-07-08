@@ -1455,3 +1455,18 @@ test_edgeDataUndirectedGraph <- function() {
     checkException(edgeData(g, from=c("a", "c"), to=c("bogus", "bagus"), attr="EDA"))
 }
     
+test_edgeMatrix <- function() {
+
+    g <- graphBAM(data.frame(from="1", to="2", weight=1))
+    mtx <- edgeMatrix(g, duplicates=FALSE)
+    checkEquals(dim(mtx), c(2,1))
+    checkEquals(rownames(mtx), c("from", "to"))
+    checkEquals(as.numeric(mtx), c(1, 2))
+
+    mtx.dup <- edgeMatrix(g, duplicates=TRUE)
+    checkEquals(dim(mtx.dup), c(2,2))
+    checkEquals(rownames(mtx.dup), c("from", "to"))
+    checkEquals(as.numeric(mtx.dup), c(1, 2, 2, 1))
+}
+
+  
