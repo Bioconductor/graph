@@ -161,7 +161,7 @@ setMethod("edgeWeights", signature(object="graphBAM", index="missing"),
         ft <- rbind(ft,df)
         val <- c(val,val)
     }
-    tmp <- seq_len(length(val))
+    tmp <- seq_len(length(val))   # indices into val
     ft <- data.frame(ft, tmp, stringsAsFactors = FALSE )
     ft <- ft[ ft[,"from"] %in% indx,]
     if(nrow(ft) == 0)
@@ -721,8 +721,12 @@ setMethod("addNode",
             for(i in nms){
                 ft <- .Call(graph_bitarray_rowColPos,object@userAttrPos@edgePos[[i]])
                 posBit <- .createZeroBitPos(ndsLen)
-                g@userAttrPos@edgePos[[i]] <- setBitCell(posBit, ft[,"from"], ft[ ,"to"],
-                            rep(1L, nrow(ft)))             
+                from.nodes.new <- match(nodes(object)[ft[, 'from']], nodes(g))
+                to.nodes.new   <- match(nodes(object)[ft[, 'to']],   nodes(g))
+                g@userAttrPos@edgePos[[i]] <- setBitCell(posBit,
+                                                         from.nodes.new,
+                                                         to.nodes.new,
+                                                         rep(1L, nrow(ft)))
             } 
             g
         })

@@ -193,11 +193,11 @@ test_BAM_edgeMatrix <- function() {
 test_BAM_removeEdge_unknown_nodes <- function()
 {
     g1 <- make_smallBAM()
-    checkException(removeEdge("a", "q", g1))
-    checkException(removeEdge("q", "a", g1))
-    checkException(removeEdge("a", c("q", "aa", "tt"), g1))
+    checkException(removeEdge("a", "q", g1), silent=TRUE)
+    checkException(removeEdge("q", "a", g1), silent=TRUE)
+    checkException(removeEdge("a", c("q", "aa", "tt"), g1), silent=TRUE)
     checkException(removeEdge(c("a", "q", "tt", "aa"),
-                              c("a", "q", "aa", "tt"), g1))
+                              c("a", "q", "aa", "tt"), g1), silent=TRUE)
 }
 
 test_BAM_removeEdge <- function()
@@ -207,7 +207,7 @@ test_BAM_removeEdge <- function()
     c0 <- character(0)
     checkEquals(edges(g1), edges(removeEdge(c0, c0, g1)))
     ## there is no y => a edge, throw error
-    checkException(removeEdge("y", "a", g1))
+    checkException(removeEdge("y", "a", g1), silent=TRUE)
 
     g2 <- removeEdge("c", "a", g1)
     checkEquals(list(c=character(0)), edges(g2, "c"))
@@ -244,7 +244,7 @@ test_BAMSmall_edgeData <- function(){
       checkEquals(names(vals), tmp)
       checkEquals( as.numeric(vals), c(3.4, 2.6, 1.7))
 
-      checkException(eg <- edgeData(g1, "a", attr="weightsss"))
+      checkException(eg <- edgeData(g1, "a", attr="weightsss"), silent=TRUE)
 
       eg <- edgeData(g1, "a", "b", attr="weight")
       tmp <- paste("a", "b", sep = "|")
@@ -685,7 +685,7 @@ test_BAM_Union_Mixed <- function() {
     g2 <- graphBAM(df, nodes = c("a","b","c", "d", "x", "y", "z"), 
             edgemode = "directed")
 
-    checkException(g <- graphUnion(g1,g2))
+    checkException(g <- graphUnion(g1,g2), silent=TRUE)
 }
 
 test_BAM_inEdges <- function()
@@ -718,7 +718,7 @@ test_BAM_directed_attrs <- function() {
     df <- data.frame(from, to, weight)
     bam <- graphBAM(df, edgemode = "directed")
     
-    checkException(edgeData(bam,from="a", attr="code"))
+    checkException(edgeData(bam,from="a", attr="code"), silent=TRUE)
     edgeDataDefaults(bam, attr ="weight") <- 1
     edgeDataDefaults(bam, attr = "code") <- "plain"
 
@@ -746,7 +746,7 @@ test_BAM_undirected_attrs <- function() {
     weight = c(2, 1, 3, 4, 5)
     df <- data.frame(from, to, weight)
     bam <- graphBAM(df, edgemode = "undirected")
-    checkException(edgeData(bam,from="a", attr="code"))
+    checkException(edgeData(bam,from="a", attr="code"), silent=TRUE)
 
     edgeDataDefaults(bam, attr = "weight") <- 1
     edgeDataDefaults(bam, attr = "code") <- "plain"
@@ -807,7 +807,7 @@ test_graphBAM_detailed_Attribute_Intersection <- function() {
     target <- structure( c("red", "blue", NA), names = nms)
     checkEquals(target, unlist(attColor))
 
-    checkException(edgeData(g, attr = "type"))
+    checkException(edgeData(g, attr = "type"), silent=TRUE)
 
     weightFun <- function(x, y) {
         return(x +y )
@@ -1152,7 +1152,7 @@ test_graphBAM_S4_Attribute_Intersection <- function() {
     target <- structure( c(myColor("red"), myColor("blue"), NA), names = nms)
     checkEquals(target, unlist(attColor))
 
-    checkException(edgeData(g, attr = "type"))
+    checkException(edgeData(g, attr = "type"), silent=TRUE)
 
     weightFun <- function(x, y) {
         return(x + y )
@@ -1174,7 +1174,7 @@ test_graphBAM_S4_Attribute_Intersection <- function() {
     nms <- paste(c("a", "b", "d"),  c("b", "c", "x"), sep = "|")
     target <- structure( c("white", "black", "black"), names = nms)
     checkEquals(target, unlist(attColor))
-    checkException(edgeData(g, attr = "type"))
+    checkException(edgeData(g, attr = "type"), silent=TRUE)
 
 }
 
@@ -1276,15 +1276,42 @@ test_graphBAM_addNode1 <- function(){
 
     gr <- addNode(c("q", "ss"), g)
     current <- nodeData(gr, attr = "color")
-    target <- as.list(structure( c("green", "pink", "pink", "red", "pink", "pink", "pink", "pink"), 
-                            names = c("a", "b", "c", "d", "q", "ss", "x", "y")))
-    checkEquals(target, current)
-    
+
+    target <- c("green", "pink", "pink", "red", "pink", "pink", "pink", "pink")
+    names(target) <- c("a", "b", "c", "d", "q", "ss", "x", "y")
+    checkTrue(all(current[sort(names(current))] == target[sort(names(target))]))
+
     current <- nodeData(gr, attr = "type")
-    target <- as.list(structure( c("high", "med", "unknown", "low", "unknown",
-                "unknown", "unknown", "high"), 
-                            names = c("a", "b", "c", "d", "q", "ss", "x", "y")))
-    checkEquals(target, current)
+    target <- c("high", "med", "unknown", "low", "unknown", "unknown", "unknown", "high")
+    names(target) <- c("a", "b", "c", "d", "q", "ss", "x", "y")
+    checkTrue(all(current[sort(names(current))] == target[sort(names(target))]))
+
+}
+
+test_graphBAM_addNode1 <- function(){
+
+    from = c("a", "b", "d", "d")
+    to   = c("b", "c", "y", "x")
+    weight=c(2.2, 2.0, 0.4, 0.2)
+    df <- data.frame(from, to, weight)
+    g <- graphBAM(df, edgemode = "directed")
+    nodeDataDefaults(g, attr="color") <- "pink"
+    nodeData(g, n = c("d","a"), attr = "color") <- c("red", "green")
+    nodeDataDefaults(g, attr="type") <- "unknown"
+    nodeData(g, n = c("a", "b", "y", "d"), attr = "type") <- c("high", "med", "high", "low") 
+
+    gr <- addNode(c("q", "ss"), g)
+    current <- nodeData(gr, attr = "color")
+
+    target <- c("green", "pink", "pink", "red", "pink", "pink", "pink", "pink")
+    names(target) <- c("a", "b", "c", "d", "q", "ss", "x", "y")
+    checkTrue(all(current[sort(names(current))] == target[sort(names(target))]))
+
+    current <- nodeData(gr, attr = "type")
+    target <- c("high", "med", "unknown", "low", "unknown", "unknown", "unknown", "high")
+    names(target) <- c("a", "b", "c", "d", "q", "ss", "x", "y")
+    checkTrue(all(current[sort(names(current))] == target[sort(names(target))]))
+
 }
 
 test_graphBAM_addNode2 <- function(){
@@ -1319,6 +1346,45 @@ test_graphBAM_addNode2 <- function(){
     target <- as.list( structure(c("low", "high", "unknown", "unknown", "unknown", "unknown"),
              names = lbl))
     checkEquals(target, current)
+}
+
+# in version prior to 1.41.1, the propagation of existing "user" edge attributes,
+# that is, anything other than weight, failed if a new node is added which is
+# lexically less than the any nodes already in an edge.
+# the fix was simple:  see arguments to setBitCell in methods-graphBAM.R,
+# the addNode method.  test that fix here
+
+test_graphBAM_addNode_outOfAlphabeticalOrder_copyUserEdgeAttributes <- function(){
+
+    from = c("a", "b", "m", "m")
+    to   = c("b", "c", "y", "x")
+    weight=c(2.2, 2.0, 0.4, 0.2)
+    df <- data.frame(from, to, weight)
+    g <- graphBAM(df, edgemode = "directed")
+    
+    edgeDataDefaults(g, attr="color") <- "blue"
+    edgeDataDefaults(g, attr="type") <- "unknown"
+    edgeData(g, from = c("m","a"), to = c("y", "b"), attr = "color") <- c("red", "green")
+    edgeData(g, from = c("a", "b"), to = c("b", "c") , attr = "type") <- c("low", "high")
+
+    expected.edge.names <-  c("a|b", "b|c", "m|x", "m|y")
+    checkEquals(sort(names(edgeData(g, attr="color"))),
+                expected.edge.names)
+
+    checkEquals(unlist(edgeData(g, attr="color")[expected.edge.names],
+                       use.names=FALSE),
+                c("green", "blue", "blue", "red"))
+                      
+    g2 <- addNode("f", g)
+   
+       # make sure that the addition of node f does not disrupt
+       # edgeData retrieval
+    checkEquals(sort(names(edgeData(g2, attr="color"))),
+                expected.edge.names)
+    checkEquals(unlist(edgeData(g, attr="color")[expected.edge.names],
+                       use.names=FALSE),
+                c("green", "blue", "blue", "red"))
+
 }
 
 
@@ -1451,8 +1517,9 @@ test_edgeDataUndirectedGraph <- function() {
     checkEquals(as.numeric(edgeData(g, from="a", to=c("b","c"), attr="EDA")),
                 c(1,2))
 
-    checkException(edgeData(g, from="a", to="bogus", attr="EDA"))
-    checkException(edgeData(g, from=c("a", "c"), to=c("bogus", "bagus"), attr="EDA"))
+    checkException(edgeData(g, from="a", to="bogus", attr="EDA"), silent=TRUE)
+    checkException(edgeData(g, from=c("a", "c"),
+                            to=c("bogus", "bagus"), attr="EDA"), silent=TRUE)
 }
     
 test_edgeMatrix <- function() {
