@@ -792,13 +792,28 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
             graph@edgeSet@edge_attrs[[i]] <- graph@edgeSet@edge_attrs[[i]][ord$origLeftPos]
         }
     }
+    obv0 <- graph@edgeSet@bit_vector
     graph@edgeSet@bit_vector <- setBitCell(graph@edgeSet@bit_vector,
                                            match(from, nn),
                                            match(to, nn),
                                            rep(0L, nrow(req_ft)))
+    nbv0 <- graph@edgeSet@bit_vector
     ord <- .Call(graph_bitarray_getEdgeAttrOrder,  graph@edgeSet@bit_vector , 
             as.integer(req_from), as.integer(req_to))
     graph@edgeSet@weights <- graph@edgeSet@weights[ord$origLeftPos]
+
+    if(edgemode(graph) == "undirected"){ # reverse from/to
+       obv1 <- graph@edgeSet@bit_vector
+       graph@edgeSet@bit_vector <- setBitCell(graph@edgeSet@bit_vector,
+                                              match(to, nn),
+                                              match(from, nn),
+                                              rep(0L, nrow(req_ft)))
+       nbv1 <- graph@edgeSet@bit_vector
+       ord <- .Call(graph_bitarray_getEdgeAttrOrder,  graph@edgeSet@bit_vector , 
+                    as.integer(req_from), as.integer(req_to))
+       graph@edgeSet@weights <- graph@edgeSet@weights[ord$origLeftPos]
+       } # if undirected
+
     graph
 }
 

@@ -1,5 +1,7 @@
 ## library("graph")
 set.seed(0x12a9b)
+   library(graph)
+   library(RUnit)
 
 randBAMGraph <- function(numNodes = 10 , numEdges = 10)
 {
@@ -1537,3 +1539,13 @@ test_edgeMatrix <- function() {
 }
 
   
+test_removeEdge_from_undirectedGraph <- function() {
+
+  g <- graphBAM(data.frame(from="A", to="B", weight=1))
+  g <- removeEdge(from="A", to="B", g=g)
+  checkEquals(numEdges(g), 0)
+  
+  g <- graphBAM(data.frame(from="A", to="B", weight=1))
+  g <- removeEdge(from="B", to="A", g=g)
+  checkEquals(numEdges(g), 0)
+}
