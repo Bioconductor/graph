@@ -192,6 +192,21 @@ test_BAM_edgeMatrix <- function() {
       checkEquals(em[2,], c(1, 2, 3, 3, 4, 5))
 }
 
+test_BAM_adjacencyMatrix <- function() {
+      g1 <- make_smallBAM()
+      checkEquals(edgemode(g1), "directed")
+      checkEquals(nodes(g1),  c("a","b","c","x","y"))
+      am <- adjacencyMatrix(g1)
+      checkEquals(rownames(am), nodes(g1))
+      checkEquals(colnames(am), nodes(g1))
+      checkEquals(as.integer(am["a",]), c(0, 1, 1, 1, 0))
+      checkEquals(as.integer(am["b",]), c(0, 0, 0, 0, 0))
+      checkEquals(as.integer(am["c",]), c(1, 0, 0, 0, 0))
+      checkEquals(as.integer(am["x",]), c(0, 0, 1, 0, 1))
+      checkEquals(as.integer(am["y",]), c(0, 0, 0, 0, 0))
+
+}
+
 test_BAM_removeEdge_unknown_nodes <- function()
 {
     g1 <- make_smallBAM()
@@ -599,7 +614,7 @@ test_BAM_Intersect_EmptyNodes <- function() {
 test_BAM_isAdjacent <- function()
 {
      from = c("a", "d", "d", "b", "a")
-     to = c("b", "a", "d", "c", "c")
+     to   = c("b", "a", "d", "c", "c")
      weight= c(1.5, 2.1, 3.4, 4.1, 5.6)
      df <- data.frame(from, to, weight)
      gd <- graphBAM(df, nodes="e", edgemode = "directed")
@@ -1549,3 +1564,130 @@ test_removeEdge_from_undirectedGraph <- function() {
   g <- removeEdge(from="B", to="A", g=g)
   checkEquals(numEdges(g), 0)
 }
+
+
+test_AM2BAM <- function(){
+
+     # test the fix for a nov 2014 bug, in which MultiGraph::.makeMDEdgeSet
+     # fails to make edge_sets in the graphBAM constructor when only 1 edge
+     # exists.   fix is at line 66 in MultiGraph.R: "drop=FALSE" added to the subset operation
+   mtx <- matrix(c(0,1,0,0), ncol=2, byrow=TRUE, dimnames=list(c("A", "B"), c("A", "B")))
+
+      # first create and check a simple (non-binary) adjacency matrix graph
+   g.am <- graphAM(mtx, edgemode="directed")
+   checkEquals(nodes(g.am),  c("A", "B"))
+   checkEquals(edgemode(g.am), "directed")
+   checkEquals(edgeNames(g.am), "A~B")
+
+     # now convert to BAM
+   g.bam <- as(g.am, "graphBAM")
+   checkEquals(nodes(g.bam),  c("A", "B"))
+   checkEquals(edgemode(g.bam), "directed")
+   checkEquals(edgeNames(g.bam), "A~B")
+
+}
+
+test_isAdjacent <- function()
+{
+  am <- adjacencyMatrix   # for shorthand
+
+  g <- graphBAM(data.frame(from="B", to="C", weight=1), edgemode="undirected")
+  checkEquals(rownames(am(g)), c("B", "C"))
+  checkEquals(colnames(am(g)), c("B", "C"))
+  checkEquals(am(g)["B","C"], 1)
+  checkEquals(am(g)["C","B"], 1)
+  checkTrue(isAdjacent(g, "B", "C"))
+  checkTrue(isAdjacent(g, "C", "B"))
+
+  checkEquals(as.numeric(edgeMatrix(g)), c(1,2))   # reciprocal edges not stored
+
+    # add a node, then an edge to the undirected graph g
+  g <- addNode("A", g)
+  checkEquals(nodes(g), c("A", "B", "C"))
+    # just one edge
+  checkEquals(sum(am(g)), 2)
+  checkEquals(am(g)["B", "C"], 1)
+  checkEquals(am(g)["C", "B"], 1)
+
+  checkTrue(isAdjacent(g, "B", "C"))
+  checkTrue(isAdjacent(g, "C", "B"))
+
+  g <- addEdge(from="C", to="A", graph=g)
+  checkEquals(sum(am(g)), 4)
+  checkEquals(am(g)["B", "C"], 1)
+  checkEquals(am(g)["C", "B"], 1)
+  checkEquals(am(g)["A", "C"], 1)
+  checkEquals(am(g)["C", "A"], 1)
+
+    # robert's bug:  both of these fail though direct inspection
+    # of either edgeMatrix or adjacencyMatrix show correct edges
+  checkTrue(isAdjacent(g, "A", "C"))
+  checkTrue(isAdjacent(g, "C", "A"))
+
+     # now verify non-reciprocity of B-C edge in a directed graph
+  gd <- graphBAM(data.frame(from="B", to="C", weight=1), edgemode="directed")
+  checkEquals(rownames(am(gd)), c("B", "C"))
+  checkEquals(colnames(am(gd)), c("B", "C"))
+  checkEquals(am(gd)["B","C"], 1)
+  checkTrue(isAdjacent(gd, "B", "C"))
+  checkTrue(!isAdjacent(gd, "C", "B"))
+
+    # add a node, then an edge to the directed graph gd
+  gd <- addNode("A", gd)
+  checkEquals(nodes(gd), c("A", "B", "C"))
+    # just one edge
+  checkEquals(sum(am(gd)), 1)
+  checkEquals(am(gd)["B", "C"], 1)
+  checkTrue(isAdjacent(gd, "B", "C"))
+
+  gd <- addEdge(from="C", to="A", graph=gd)
+  checkTrue(isAdjacent(gd, "C", "A"))
+
+} # test_isAdjacent
+
+# incomplete draft test supplied by Robert Castello (November 2014)
+test_robertCastelos_addEdge_edgeData_bug <- function() {
+
+  am <- adjacencyMatrix   # for shorthand
+  #Sys.setlocale("LC_ALL", "C")
+  #checkEquals(Sys.getlocale(), "C")
+
+  g <- graphBAM(data.frame(from="B", to="C", weight=1))
+  checkEquals(rownames(am(g)), c("B", "C"))
+  checkEquals(colnames(am(g)), c("B", "C"))
+  checkEquals(am(g)["B","C"], 1)
+
+  edgeDataDefaults(g, "x") <- NA_real_
+  g <- addNode("A", g)
+
+  checkEquals(rownames(am(g)), c("A", "B", "C"))
+  checkEquals(colnames(am(g)), c("A", "B", "C"))
+
+  g <- addEdge(from="C", to="A", graph=g)
+  checkEquals(am(g)["C", "A"], 1)
+
+  ## this one works fine
+  edgeData(g, from="A", to="C", "x") <- 10
+
+  ## however, this one breaks the code:  no longer!
+  edgeData(g, from="C", to="A", "x") <- 10
+    # ensures that no error was found in the above operations
+  checkTrue(TRUE)
+}
+
+
+
+#  Sys.setlocale("LC_ALL", "C")
+#  checkEquals(Sys.getlocale(), "C")
+#  g <- graphBAM(data.frame(from="B", to="C", weight=1))
+#  edgeDataDefaults(g, "x") <- NA_real_
+#  g <- addNode("A", g)
+#  g <- addEdge(from="C", to="A", graph=g)
+#
+#    ## this one works fine
+#  edgeData(g, from="A", to="C", "x") <- 10
+#
+#    ## however, this one breaks the code
+#  edgeData(g, from="C", to="A", "x") <- 10
+
+
