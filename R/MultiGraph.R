@@ -63,7 +63,7 @@ makeMDEdgeSets <- function(edgeSets, directed, nodes, ignore_dup_edges = FALSE)
         if (ignore_dup_edges) {
             ## NB: we only consider nodes for duplication, ignoring
             ## weight value.
-            ft <- cbind(from_i, to_i)[edge_order, ]
+            ft <- cbind(from_i, to_i)[edge_order, , drop=FALSE]
             tmp <- paste(ft[,"from_i"],ft[,"to_i"], sep="_")
             want <- !duplicated(tmp)
             from_i <- ft[want, 1]
