@@ -225,6 +225,7 @@ setGeneric("contents", function(object, all.names) standardGeneric("contents"))
 setGeneric("edgeMatrix", function(object, duplicates=FALSE)
            standardGeneric("edgeMatrix"))
 
+setGeneric("adjacencyMatrix", function(object) standardGeneric("adjacencyMatrix"))
 
 setGeneric("edgeL", function(graph, index) standardGeneric("edgeL"))
 
