@@ -25,7 +25,7 @@ exportClasses(distGraph,
       url, graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL,
       edgeSetAM, multiGraph, renderInfo, MultiGraph, graphBAM, graphBase)
 
-exportMethods(DFS, Dist, acc, addEdge, addNode, adj, clearNode,
+exportMethods(DFS, Dist, acc, addEdge, addNode, adj, adjacencyMatrix, clearNode,
       clusteringCoefficient, combineNodes, complement, connComp,
       degree, dumpGXL, edgeL, edgeMatrix, edgeNames, edgeWeights,
       edgemode, "edgemode<-", edges, "nodes<-", fromGXL, inEdges,
