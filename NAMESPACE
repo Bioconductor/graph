@@ -11,7 +11,7 @@ useDynLib(BioC_graph, graph_attrData_lookup,
 importClassesFrom(methods, ANY, character, list, logical, matrix,
                   missing, "NULL", numeric, oldClass, vector)
 importMethodsFrom(methods, coerce, initialize, show)
-importClassesFrom(BiocGenerics, connection, file, gzfile, bzfile, url)
+importClassesFrom(BiocGenerics, connection)
 importFrom(BiocGenerics, union)
 importFrom(methods, as, callGeneric, is, isVirtualClass, new,
            slot, "slot<-", slotNames, validObject)
@@ -21,8 +21,8 @@ importFrom(tools, package.dependencies)
 importFrom(utils, CRAN.packages, modifyList)
 
 exportClasses(distGraph,
-      clusterGraph, graph, graphNEL, file, connection, gzfile, bzfile,
-      url, graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL,
+      clusterGraph, graph, graphNEL,
+      graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL,
       edgeSetAM, multiGraph, renderInfo, MultiGraph, graphBAM, graphBase)
 
 exportMethods(DFS, Dist, acc, addEdge, addNode, adj, adjacencyMatrix, clearNode,
