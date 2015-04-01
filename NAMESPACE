@@ -11,7 +11,7 @@ useDynLib(BioC_graph, graph_attrData_lookup,
 importClassesFrom(methods, ANY, character, list, logical, matrix,
                   missing, "NULL", numeric, oldClass, vector)
 importMethodsFrom(methods, coerce, initialize, show)
-importClassesFrom(BiocGenerics, connection)
+importClassesFrom(BiocGenerics, connection, dist)
 importFrom(BiocGenerics, union)
 importFrom(methods, as, callGeneric, is, isVirtualClass, new,
            slot, "slot<-", slotNames, validObject)
