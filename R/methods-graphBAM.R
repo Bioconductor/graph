@@ -186,7 +186,6 @@ setMethod("edgeData",
 setMethod("edgeData",
           signature(self="graphBAM", from="character", to="character", attr="character"),
           function(self, from, to, attr) {
-              #browser()
               edgeData.from <- edgeData(self, attr=attr, from=from)
               unrecognized.nodes <- setdiff(to, nodes(self))
               if(length(unrecognized.nodes) > 0) {
@@ -402,7 +401,6 @@ setReplaceMethod("edgeData",
                            from="character", to="character",
                            attr="character", value="ANY"),
                  function(self, from, to, attr, value) {
-                     #browser();
                      .verifyAttrName(attr, names(self@edgeData@defaults))
                      lenFrom <- length(from)
                      lenTo <- length(to)
@@ -497,7 +495,6 @@ setMethod("numNodes", signature("graphBAM"),
 
 setMethod("isAdjacent",
         signature(object="graphBAM", from="character", to="character"),
-
         function(object, from, to) {
 
             if(length(from) > 1 & length(to) == 1)
@@ -718,7 +715,6 @@ setMethod("addEdge",
                  ord <- list(newLeftPos = integer(0), newRightPos = integer(0), 
                           origLeftPos = seq_len(nt), origRightPos = seq_len(nt))
               }
-              #browser();
               newAttr <- vector(nt, mode = "numeric")
               newAttr[ord$origLeftPos] <- graph@edgeSet@weights[ord$origRightPos]
               newAttr[ord$newLeftPos] <- weights[ord$newRightPos]

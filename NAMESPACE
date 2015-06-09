@@ -20,7 +20,7 @@ importFrom(stats4, plot)
 importFrom(tools, package.dependencies)
 importFrom(utils, CRAN.packages, modifyList)
 
-exportClasses(distGraph,
+exportClasses(dist, distGraph,
       clusterGraph, graph, graphNEL,
       graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL,
       edgeSetAM, multiGraph, renderInfo, MultiGraph, graphBAM, graphBase)
@@ -52,7 +52,7 @@ export(graphNEL, graphAM, boundary, buildRepDepGraph, calcProb,
 export(graph.par, graph.par.get, graphRenderInfo,
        nodeRenderInfo, edgeRenderInfo, parRenderInfo,
        "nodeRenderInfo<-", "edgeRenderInfo<-", "parRenderInfo<-",
-       "graphRenderInfo<-")
+       "graphRenderInfo<-", toDotWithRI)
 
 
 export(graphBAM)
