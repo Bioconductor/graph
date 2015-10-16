@@ -17,10 +17,9 @@ importFrom(methods, as, callGeneric, is, isVirtualClass, new,
            slot, "slot<-", slotNames, validObject)
 importFrom(stats, as.dist, dhyper, phyper, runif)
 importFrom(stats4, plot)
-importFrom(tools, package.dependencies)
 importFrom(utils, CRAN.packages, modifyList)
 
-exportClasses(dist, distGraph,
+exportClasses(distGraph,
       clusterGraph, graph, graphNEL,
       graphAM, attrData, simpleEdge, edgeSet, edgeSetNEL,
       edgeSetAM, multiGraph, renderInfo, MultiGraph, graphBAM, graphBase)

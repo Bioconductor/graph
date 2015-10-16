@@ -459,8 +459,8 @@ setMethod("combineNodes", c("character", "graphNEL", "character"),
                 stop("'newName' must have length 1")
               gN <- nodes(graph)
               whN <- match(nodes, gN)
-              if( any(is.na(whN)) )
-                stop("not a node: ", pasteq(from[is.na(whN)]))
+              if( anyNA(whN) )
+                stop("not a node: ", pasteq(nodes[is.na(whN)]))
               eL <- graph@edgeL
               outE <- eL[nodes]
               if( length(nodes) == 1 ) {

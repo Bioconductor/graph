@@ -48,7 +48,7 @@ setMethod("fromGXL", signature(con="connection"),
 gxlTreeNEL <- function(gnel, graph.name) {
     qrequire("XML")
     GXL_NAMESPACE <- c(gxl="http://www.gupro.de/GXL/gxl-1.1.dtd")
-    out <- xmlOutputDOM("gxl", nsURI=GXL_NAMESPACE, nameSpace="gxl")
+    out <- XML::xmlOutputDOM("gxl", nsURI=GXL_NAMESPACE, nameSpace="gxl")
     ## NOTE: We could specify dtd="http://www.gupro.de/GXL/gxl-1.0.1.dtd",
     ##       but this might mean that net access is required to write
     ##       GXL which seems quite unacceptable.
