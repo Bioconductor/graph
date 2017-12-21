@@ -705,10 +705,10 @@ SEXP graph_bitarray_edgeSetToMatrix(SEXP nodes, SEXP bits,
             linIndx++;
         }
     }
-    SET_NAMED(_dim, 2);
+    MARK_NOT_MUTABLE(_dim);
     setAttrib(ans, R_DimSymbol, _dim);
     PROTECT(dnms = allocVector(VECSXP, 2));
-    /* Arguments to .Call have NAMED(x) == 2, so we can
+    /* Arguments to .Call are marked as not mutable, so we can
        reuse here.
      */
     SET_VECTOR_ELT(dnms, 0, nodes);
