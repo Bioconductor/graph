@@ -69,7 +69,6 @@ NELhandler <- function ()
 # when callsed, nodeL is the named list of node data, edgeL is
 # named list of edge data (unrelated to edgeL of graphNEL!!!)
 #
-        require(graph)
         ns <- names(nodeL)
         if (length(edgeL) == 0) 
             return(graphNEL(nodes = ns, edgemode = edgemode))

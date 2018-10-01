@@ -32,7 +32,6 @@ setMethod("isDirected", "graph",
 ## graphs or graphs within slots of objects will not be updated.
 updateFolder <- function(path="."){
     files <- dir(path, pattern="\\.rda$")
-    library(graph)
     for(f in files){
         env <- new.env()
         load(f, envir=env)

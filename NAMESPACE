@@ -14,10 +14,10 @@ importMethodsFrom(methods, coerce, initialize, show)
 importClassesFrom(BiocGenerics, connection, dist)
 importFrom(BiocGenerics, union)
 importFrom(methods, as, callGeneric, is, isVirtualClass, new,
-           slot, "slot<-", slotNames, validObject)
+           slot, "slot<-", slotNames, validObject, getMethod)
 importFrom(stats, as.dist, dhyper, phyper, runif)
 importFrom(stats4, plot)
-importFrom(utils, CRAN.packages, modifyList)
+importFrom(utils, CRAN.packages, modifyList, head)
 
 exportClasses(distGraph,
       clusterGraph, graph, graphNEL,
