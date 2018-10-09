@@ -889,8 +889,8 @@ SEXP graph_bitarray_getEdgeAttrOrder(SEXP _bits, SEXP _from, SEXP _to) {
     PROTECT(newLeftPos = allocVector(INTSXP, len));
 
     setCount =1;
-    for(j =0; j < dim && attrIndx < len; j ++) {
-        for(i =0; i < dim && attrIndx < len; i++){
+    for(j =0; j < dim; j ++) {
+        for(i =0; i < dim; i++){
             indx =  COORD_TO_INDEX(i, j , dim);
             byteIndex = indx / 8;
             bitIndex = indx % 8;
@@ -905,8 +905,10 @@ SEXP graph_bitarray_getEdgeAttrOrder(SEXP _bits, SEXP _from, SEXP _to) {
                 }
             }
             if(intIndx == indx) {
-               INTEGER(newRightPos)[nindx] =  nindx + 1;
-               INTEGER(newLeftPos)[nindx] = setCount  ;
+               if (nindx < len) { /* guard nindex == 0, len == 0 */
+                 INTEGER(newRightPos)[nindx] =  nindx + 1;
+                 INTEGER(newLeftPos)[nindx] = setCount  ;
+               }
                nindx++;
                if(attrIndx < len-1){
                    attrIndx++; 
