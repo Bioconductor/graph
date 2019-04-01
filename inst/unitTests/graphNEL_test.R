@@ -279,11 +279,9 @@ testRemoveEdgeLarge <- function() {
     g <- randomEGraph(nodes, edges=numEdges)
     edgemode(g) <- "directed"
     checkEquals(numEdges*2, numEdges(g))
-     from <- c("n1","n2","n2","n3","n5","n7","n7","n8","n8","n8","n9","n9",
-               "n9")
-    to <- c("n255","n383","n261","n381","n234","n225","n315","n38","n296",
-            "n78","n310","n19","n422")
-
+    edges <- sample(edges(g))
+    from <- rep(names(edges), each = 2)
+    to <- unlist(lapply(edges, sample, 2), use.names = FALSE)
     g1 <- removeEdge(from, to, g)
     checkEquals(numEdges*2 - length(from), numEdges(g1))
 }

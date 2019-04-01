@@ -311,7 +311,7 @@ is the default behavior of \Rfunction{connComp}.
  g1cc <- connComp(g1)
  g1cc
 
- g1.sub <- subGraph(g1cc[[2]], g1)
+ g1.sub <- subGraph(g1cc[[1]], g1)
  g1.sub
 
 @

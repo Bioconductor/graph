@@ -39,6 +39,6 @@ removeEdge(from, to, graph)
 
   set.seed(123)
   g <- randomEGraph(V=letters[1:5],edges=5)
-  g2 <- removeEdge(from=c("a","b"), to=c("d","c"), g)
+  g2 <- removeEdge(from=c("a","b"), to=c("c","e"), g)
 }
 \keyword{manip}
