@@ -198,8 +198,12 @@ setMethod("adj", c("graphNEL", "ANY"), function(object, index) {
     nd <- nodes(object)
     if( is.character(index) )
       index <- match(index, nd)
-    if( is.na(index) || index < 0 || index > length(nd) )
-      stop("vertex is not in graph: ", sQuote(initI))
+    bad_idx <- which(is.na(index) | index < 0L | index > length(nd))
+    if( length(bad_idx) != 0L ) {
+      what <- if( length(bad_idx) == 1L ) "vertex is" else "vertices are"
+      in1string <- paste(sQuote(initI[bad_idx]), collapse=", ")
+      stop(what, " not in graph: ", in1string)
+    }
     edges(object)[index]})
 
 
