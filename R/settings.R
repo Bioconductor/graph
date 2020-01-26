@@ -212,7 +212,7 @@ swapNames <- function(names){
 "parRenderInfo<-" <- function(g, value)
 {
     ## value may be a list with components nodes, edges (like graph.pars())
-    if (!is.list(value) || !names(value) %in% c("nodes", "edges", "graph"))
+    if (!is.list(value) || !all(names(value) %in% c("nodes", "edges", "graph")))
         stop("'value' must be a list, with possible components named ",
              "'nodes', 'edges' and 'graph'")
     if (any(unlist(lapply(value, function(x) sapply(x, length))) > 1))
