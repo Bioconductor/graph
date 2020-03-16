@@ -297,7 +297,7 @@ Class \code{"\linkS4class{graph}"}, directly.
     f <- c("a", "a", "b", "c", "d")
     t <- c("b", "c", "c", "d", "a")
     weight <- c(2.3, 2.3, 4.3, 1.0, 3.0)
-    df <- data.frame(from=f, to=t, weight= weight)
+    df <- data.frame(from=f, to=t, weight= weight, stringsAsFactors = TRUE)
     g <- graphBAM(df)
     nd <- nodes(g)
     nodeDataDefaults(g, attr ="color") <- "green"

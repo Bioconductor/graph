@@ -188,7 +188,8 @@ MultiDiGraph <- function(edgeSets, nodes = NULL)
         edgeAttrs[[i]] <-
             structure(data.frame(mdg_edge_index = sparseAM[edgeIdxOrder],
                                  esi[edgeIdxOrder, c(-1L, -2L)],
-                                 row.names = NULL),
+                                 row.names = NULL,
+                                 stringsAsFactors = TRUE),
                       names = c("mdg_edge_index", names(esi)[-(1:2)]))
     }
 
@@ -447,7 +448,8 @@ diEdgeSetToDataFrame <- function(edgeSets,nodes) {
     bitvec <- edgeSets@bit_vector
     df <- .Call(graph_bitarray_rowColPos, bitvec)
     data.frame(from = nodes[df[, "from"]], to = nodes[df[, "to"]],
-               weight = edgeSets@weights)
+               weight = edgeSets@weights,
+               stringsAsFactors = TRUE)
 }
 
 .extractFromTo_mg <- function(g) {
@@ -558,7 +560,9 @@ setMethod("graphIntersect",
                   stop("edgeSets 'x' and 'y' must have same edgemode")
               theMode <- dr1 & dr2
               if (nnLen == 0){
-                  ft <- data.frame(from = character(0), to = character(0), weight = numeric(0))
+                  ft <- data.frame(from = character(0), to = character(0),
+                                   weight = numeric(0),
+                                   stringsAsFactors = TRUE)
                   es <- structure(rep(list(ft), length(eg)), names = eg)
                   mg <- MultiGraph(es, directed = theMode)
                   return(mg)
@@ -736,7 +740,8 @@ setMethod("graphIntersect",
         theMode <- if (dr1 && dr2) "directed" else "undirected"
 
         c0 <- character(0)
-        df <- data.frame(from = c0, to = c0, weight = numeric(0))
+        df <- data.frame(from = c0, to = c0, weight = numeric(0),
+                         stringsAsFactors = TRUE)
         edge_set <- .makeMDEdgeSet(es_name = 1, es =df,
                                is_directed = (theMode == "directed"),
                                nodes = theNodes, ignore_dup_edges = FALSE)
@@ -932,7 +937,8 @@ extractGraphBAM <- function(g, edgeSets) {
     nn <- nodes(g)
     esets <-  g@edge_sets[edgeSets]
     df_empty <- data.frame(from = character(0), to = character(0),
-            weight = numeric(0))
+                           weight = numeric(0),
+                           stringsAsFactors = TRUE)
     structure(lapply(names(esets), function(x) {
                 edgeMode <- if(isDirected(esets[[x]])) "directed" else "undirected"
                 bam <- graphBAM(df_empty, nodes = nn, edgemode = edgeMode,
@@ -1188,7 +1194,7 @@ setMethod("mgEdgeData",
                   ft <- rbind(ft,df)
                   val <- c(val, val)
               }
-              ft <- data.frame(ft)
+              ft <- data.frame(ft, stringsAsFactors = TRUE)
               ft <- ft[with(ft, order(to,from)),]
               req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
               colnames(req_i) <- c("from", "to")
@@ -1396,7 +1402,7 @@ setReplaceMethod("mgEdgeData",
     ## convert node names to index
     req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
     colnames(req_i) <- c("from", "to")
-    req_i <- data.frame(req_i)
+    req_i <- data.frame(req_i, stringsAsFactors = TRUE)
     idx <- order(req_i[,2], req_i[,1])
     req_i <- req_i[idx, ]
     value <- value[idx]
@@ -1448,7 +1454,8 @@ setReplaceMethod("mgEdgeData",
         attributes(res) <- tmp
         ns <- .Call(graph_bitarray_sum, res)
         attr(res, "nbitset") <- ns
-        ft <- data.frame(.Call(graph_bitarray_rowColPos,res))
+        ft <- data.frame(.Call(graph_bitarray_rowColPos,res),
+                         stringsAsFactors = TRUE)
         dflt <- g@edge_defaults[[e]][[attr]]
         attrBit <- g@userAttrPos@edgePos[[e]][[attr]]
         ft <- ft[with(ft, order(to, from)),]

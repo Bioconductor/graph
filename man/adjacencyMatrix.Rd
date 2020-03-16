@@ -34,7 +34,7 @@ adjacencyMatrix(object)
   from   <- c("a", "a", "a", "x", "x", "c")
   to     <- c("b", "c", "x", "y", "c", "a")
   weight <- c(3.4, 2.6, 1.7, 5.3, 1.6, 7.9)
-  df <- data.frame(from, to, weight)
+  df <- data.frame(from, to, weight, stringsAsFactors = TRUE)
   g1 <- graphBAM(df, edgemode = "directed")
   adjacencyMatrix(g1)
 }

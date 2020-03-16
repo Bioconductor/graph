@@ -65,7 +65,8 @@ cities.
 <<creategraphBAM>>=
 df <- data.frame(from = c("SEA", "SFO", "SEA", "LAX", "SEA"),
                    to = c("SFO", "LAX", "LAX", "SEA", "DEN"),
-               weight = c( 90, 96, 124, 115, 259))
+                 weight = c( 90, 96, 124, 115, 259),
+                 stringsAsFactors = TRUE)
 g <- graphBAM(df, edgemode = "directed")
 g 
 @
@@ -241,22 +242,26 @@ originating city, the destination city and the fare.
 ft1 <- data.frame(
         from = c("SEA", "SFO", "SEA", "LAX", "SEA"),
           to = c("SFO", "LAX", "LAX", "SEA", "DEN"),
-      weight = c( 90, 96, 124, 115, 259))
+      weight = c( 90, 96, 124, 115, 259),
+      stringsAsFactors = TRUE)
 
 ft2 <- data.frame(
         from = c("SEA", "SFO", "SEA", "LAX", "SEA", "DEN", "SEA", "IAH", "DEN"),
           to = c("SFO", "LAX", "LAX", "SEA", "DEN", "IAH", "IAH", "DEN", "BWI"),
-       weight= c(169, 65, 110, 110, 269, 256, 304, 256, 271))
+       weight= c(169, 65, 110, 110, 269, 256, 304, 256, 271),
+       stringsAsFactors = TRUE)
 
 ft3 <- data.frame( 
    from = c("SEA", "SFO", "SEA", "LAX", "SEA", "DEN", "SEA", "IAH", "DEN", "BWI"),
     to  = c("SFO", "LAX", "LAX", "SEA", "DEN", "IAH", "IAH", "DEN", "BWI", "SFO"),
- weight = c(237, 65, 156, 139, 281, 161, 282, 265, 298, 244))
+ weight = c(237, 65, 156, 139, 281, 161, 282, 265, 298, 244),
+ stringsAsFactors = TRUE)
 
 ft4 <- data.frame( 
     from = c("SEA", "SFO", "SEA", "SEA", "DEN", "SEA", "BWI"),
      to  = c("SFO", "LAX", "LAX", "DEN", "IAH", "IAH", "SFO"),
-  weight = c(237, 60, 125, 259, 265, 349, 191))
+  weight = c(237, 60, 125, 259, 265, 349, 191),
+  stringsAsFactors = TRUE)
 @
 
 These data frames are then passed to \Rclass{MultiGraph} class constructor as a 

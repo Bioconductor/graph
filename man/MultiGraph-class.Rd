@@ -251,11 +251,13 @@ extractGraphBAM(g, edgeSets)
 \examples{
     ft1 <- data.frame(from=c("a", "a", "a", "b", "b"),
                         to=c("b", "c", "d", "a", "d"),
-                      weight=c(1, 3.1, 5.4, 1, 2.2))
+                      weight=c(1, 3.1, 5.4, 1, 2.2),
+                      stringsAsFactors = TRUE)
 
     ft2 <- data.frame(from=c("a", "a", "a", "x", "x", "c"),
                         to=c("b", "c", "x", "y", "c", "a"),
-                      weight=c(3.4, 2.6, 1, 1, 1, 7.9))
+                      weight=c(3.4, 2.6, 1, 1, 1, 7.9),
+                      stringsAsFactors = TRUE)
 
     esets <- list(es1=ft1, es2=ft2)
 

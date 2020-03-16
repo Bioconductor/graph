@@ -36,7 +36,6 @@ pathWeights(g, p, eM=NULL)
   \item{useNNames}{a logical; if TRUE, node names are used in
     the edge label; if FALSE, node indices are used}
   \item{p}{a vector of node names constituting a path in graph \code{g}}
-  \item{\dots}{arguments passed to \code{edgeMatrix}.}
 }
 \details{
   Implementations for \code{graphNEL}, \code{clusterGraph} and

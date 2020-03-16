@@ -262,7 +262,8 @@ setMethod("edgeData",
         attributes(res) <- tmp
         ns <- .Call(graph_bitarray_sum, res)
         attr(res, "nbitset") <- ns
-        ft <- data.frame(.Call(graph_bitarray_rowColPos, res))
+        ft <- data.frame(.Call(graph_bitarray_rowColPos, res),
+                         stringsAsFactors = TRUE)
         dflt <- g@edgeData@defaults[[attr]]
         attrBit <- g@userAttrPos@edgePos[[attr]]
         ft <- ft[with(ft, order(to, from)),]
@@ -351,7 +352,7 @@ setMethod("edgeData",
 
      req_i <- structure(match(req_ft, nodeNames), dim = dim(req_ft))
      colnames(req_i) <- c("from", "to")
-     req_i <- data.frame(req_i)
+     req_i <- data.frame(req_i, stringsAsFactors = TRUE)
      idx <- order(req_i[,2], req_i[,1])
      req_i <- req_i[idx, ]
      value <- value[idx]
@@ -664,12 +665,14 @@ setAs(from="graphBAM", to="graphNEL",
 graphToBAM <- function(object) {
     ew <- edgeWeights(object)
     df_empty <- data.frame(from = character(0), to = character(0),
-                           weight = numeric(0))
+                           weight = numeric(0),
+                           stringsAsFactors = TRUE)
     df_list <- lapply(names(ew), function(x){
                 tmp <- ew[[x]]
                 if ((nw <- length(tmp)) > 0) {
                     data.frame(from = rep(x, nw), to = names(tmp),
-                               weight = as.numeric(tmp))
+                               weight = as.numeric(tmp),
+                               stringsAsFactors = TRUE)
                 } else df_empty
             })
      df <- do.call(rbind, df_list)
@@ -1022,7 +1025,8 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     attributes(bv) <- attributes(e1@bit_vector)
     attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
     c0 <- character(0)
-    df <- data.frame(from = c0, to = c0, weight = numeric(0), stringsAsFactors = FALSE)
+    df <- data.frame(from = c0, to = c0, weight = numeric(0),
+                     stringsAsFactors = FALSE)
     edge_set <- .makeMDEdgeSet(es_name = 1, es = df,
                                is_directed = (theMode == "directed"), nodes = c0,
                                ignore_dup_edges = FALSE)
@@ -1085,7 +1089,8 @@ setReplaceMethod("nodes", c("graphBAM", "character"),
     attributes(bv) <- attributes(e1@bit_vector)
     attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
     c0 <- character(0)
-    df <- data.frame(from = c0, to = c0, weight = numeric(0), stringsAsFactors = FALSE)
+    df <- data.frame(from = c0, to = c0, weight = numeric(0),
+                     stringsAsFactors = FALSE)
     edge_set <- .makeMDEdgeSet(es_name = 1, es = df,
                                 is_directed = (theMode == "directed"), nodes = c0,
                                 ignore_dup_edges = FALSE)
@@ -1179,7 +1184,7 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
         theMode <- if (dr1) "directed" else "undirected"
         c0 <- character(0)
         df <- data.frame(from = c0, to = c0, weight = numeric(0), 
-                stringsAsFactors = FALSE)
+                         stringsAsFactors = FALSE)
         ans <- graphBAM(df, edgemode = theMode)
         return(ans)
     }
@@ -1339,7 +1344,8 @@ setMethod("graphIntersect", c("graphBAM", "graphBAM"),
     attr(bv, "nbitset") <- ns <- .Call(graph_bitarray_sum, bv)
     
     c0 <- character(0)
-    df <- data.frame(from = c0, to = c0, weight = numeric(0))
+    df <- data.frame(from = c0, to = c0, weight = numeric(0),
+                     stringsAsFactors = TRUE)
     edge_set <- .makeMDEdgeSet(es_name = 1, es =df,
                    is_directed = (theMode == "directed"),
                   nodes = theNodes, ignore_dup_edges = FALSE)
@@ -1387,7 +1393,7 @@ setMethod("graphUnion", c("graphBAM", "graphBAM"),
        theMode <- if (dr1) "directed" else "undirected"
        c0 <- character(0)
        df <- data.frame(from = c0, to = c0, weight = numeric(0), 
-                stringsAsFactors = FALSE)
+                        stringsAsFactors = FALSE)
        ans <- graphBAM(df, edgemode = theMode)
        return(ans)
    }

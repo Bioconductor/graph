@@ -143,7 +143,8 @@ test_no_edge_sets <- function()
 test_create_empty_edgeSets <- function()
 {
     df1 <- data.frame(from=c("a", "b"),
-                       to=c("b", "c"), weight=c(1, 1))
+                      to=c("b", "c"), weight=c(1, 1),
+                      stringsAsFactors = TRUE)
     esets <- list(e1 = df1, empty1 = df1[FALSE, ])
     g <- MultiGraph(esets)
     checkEquals(c(e1=2L, empty1=0L), numEdges(g))
@@ -157,14 +158,18 @@ test_edgeSets_arg_checking <- function()
     ## data.frame's in edgeSets list must have names:
     ## from, to, weights
     df0 <- data.frame(fr=c("a", "b"),
-                      to=c("b", "c"), weights=c(1, 1))
+                      to=c("b", "c"), weights=c(1, 1),
+                      stringsAsFactors = TRUE)
     checkException(MultiGraph(list(e1=df0)))
 
     ## edgeSets must be named list or empty list
     checkException(MultiGraph(NULL))
-    checkException(MultiGraph(list(data.frame(from=c("a", "b"),
-                                              to=c("b", "c"),
-                                              weights=c(1, 1)))))
+    checkException(MultiGraph(list(
+        data.frame(from=c("a", "b"),
+                   to=c("b", "c"),
+                   weights=c(1, 1),
+                   stringsAsFactors = TRUE)
+    )))
 }
 
 test_no_nodes <- function()
@@ -202,13 +207,15 @@ test_dup_edges_is_an_error <- function()
     ## directed case
     ft1 <- data.frame(from=c("a", "a", "a"),
                         to=c("b", "c", "b"),
-                      weight=c(1, 3.1, 5.4))
+                      weight=c(1, 3.1, 5.4),
+                      stringsAsFactors = TRUE)
     checkException(MultiGraph(list(e1=ft1)))
 
     ## undirected case
     ft2 <- data.frame(from=c("a", "a", "b"),
                         to=c("b", "c", "a"),
-                      weight=c(1, 3.1, 5.4))
+                      weight=c(1, 3.1, 5.4),
+                      stringsAsFactors = TRUE)
     ## ok if directed
     junk <- MultiGraph(list(e1=ft2))
     checkException(MultiGraph(list(e1=ft2), directed = FALSE))
@@ -248,7 +255,7 @@ test_edgeWeights_edge_names <- function()
 test_supports_self_loops <- function()
 {
     esets <- list(e1 = data.frame(from = c("a", "a"), to = c("a", "b"),
-                  weight = c(1, 2)))
+                  weight = c(1, 2), stringsAsFactors = TRUE))
     g <- MultiGraph(esets)
     checkEquals(c(e1 = 2), numEdges(g))
 }
@@ -277,7 +284,7 @@ test_ugraph_for_undirected_edge_sets <- function()
 {
     df1 <- data.frame(from=c("x", "a", "b"),
                         to=c("a", "b", "x"),
-                      weight=c(1, 2, 3))
+                      weight=c(1, 2, 3), stringsAsFactors = TRUE)
     g <- MultiGraph(list(e1=df1), directed=FALSE)
     ug <- ugraph(g)
     checkEquals(nodes(g), nodes(ug))
@@ -291,7 +298,8 @@ test_ugraph_for_directed_edge_sets <- function()
 {
     df1 <- data.frame(from=c("x", "a", "b", "x", "b", "c"),
                         to=c("a", "x", "x", "b", "a", "x"),
-                      weight=1:6)
+                      weight=1:6,
+                      stringsAsFactors = TRUE)
     g <- MultiGraph(list(e1=df1), directed=TRUE)
     checkEquals(6, numEdges(g)[[1]])
     ug <- ugraph(g)
@@ -314,7 +322,7 @@ mg_equals <- function(g1, g2)
 test_edgeSetIntersect0_trivial <- function()
 {
     ## Verify 0 and 1 edge set cases for directed/undirected
-    df <- data.frame(from="a", to="b", weight=1L)
+    df <- data.frame(from="a", to="b", weight=1L, stringsAsFactors = TRUE)
     mgs <- list(
                 ## empty edge sets
                 MultiGraph(list(), nodes = letters),
@@ -326,8 +334,8 @@ test_edgeSetIntersect0_trivial <- function()
         mg_equals(g, edgeSetIntersect0(g))
     }
     ## Verify empty intersection for disjoint graphs
-    df1 <- data.frame(from="a", to="b", weight=1L)
-    df2 <- data.frame(from="x", to="y", weight=1L)
+    df1 <- data.frame(from="a", to="b", weight=1L, stringsAsFactors = TRUE)
+    df2 <- data.frame(from="x", to="y", weight=1L, stringsAsFactors = TRUE)
     g <- MultiGraph(list(e1=df1, e2=df2))
     gu <- MultiGraph(list(e1=df1, e2=df2), directed = FALSE)
     want <- MultiGraph(list(), nodes = c("a", "b", "x", "y"))
@@ -617,9 +625,10 @@ test_mixed_MultiGraph_Intersect <- function(use.factors=TRUE) {
                 structure(c(TRUE, FALSE), names = c("e1", "e2")))
     df <- extractFromTo(res)
     checkEquals(names(df), c("e1", "e2"))
-    df1 <- data.frame(from = c("a", "b"), to = c("d", "d"), weight = c(5.4, 2.2))
+    df1 <- data.frame(from = c("a", "b"), to = c("d", "d"), weight = c(5.4, 2.2),
+                      stringsAsFactors = TRUE)
     checkEquals(df$e1, df1)   
-    df2 <- data.frame(from = c("a", "a", "a"), to = c("b", "c", "x"), weight = c(3.4, 2.6, 1))
+    df2 <- data.frame(from = c("a", "a", "a"), to = c("b", "c", "x"), weight = c(3.4, 2.6, 1), stringsAsFactors = TRUE)
     checkEquals(df$e2, df2)   
 }
 
@@ -662,20 +671,24 @@ test_mixed_MultiGraph_Union <- function(use.factors=TRUE) {
     checkEquals(names(df), c("e1", "e2", "e3", "e4", "e5"))
     df1 <- data.frame(from = c("b", "a", "a", "a", "b", "a", "b"), 
                       to = c("a", "b", "c", "d", "d", "x", "z"),
-                      weight = c(1, NA, 3.1, 5.4, 2.2, 5.0, 2.0))
+                      weight = c(1, NA, 3.1, 5.4, 2.2, 5.0, 2.0),
+                      stringsAsFactors = TRUE)
     checkEquals(df$e1, df1)   
 
     df2 <- data.frame(from = c("a", "a", "a", "a", "a"), 
                       to = c("a", "b", "c", "x", "y"),
-                      weight = c(1, 3.4, 2.6, 2, 3 ))
+                      weight = c(1, 3.4, 2.6, 2, 3 ),
+                      stringsAsFactors = TRUE)
     checkEquals(df$e2, df2)  
 
     df3 <- data.frame(from = c("a", "a"), 
                       to = c("b", "d"),
-                      weight = c(2, 1))
+                      weight = c(2, 1),
+                      stringsAsFactors = TRUE)
     checkEquals(df$e3, df3)
 
-    df4 <- data.frame(from = factor(), to = factor(), weight = numeric())
+    df4 <- data.frame(from = factor(), to = factor(), weight = numeric(),
+                      stringsAsFactors = TRUE)
     checkEquals(df$e4, df4)
     checkEquals(df$e5, df4)
 }

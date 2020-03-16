@@ -82,6 +82,7 @@
 \alias{numNodes,graph-method}
 
 \alias{plot,graph,ANY-method}
+\alias{plot,graph-method}
 
 \alias{show,graph-method}
 
