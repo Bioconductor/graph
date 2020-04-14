@@ -17,7 +17,7 @@ importFrom(methods, as, callGeneric, is, isVirtualClass, new,
            slot, "slot<-", slotNames, validObject, getMethod)
 importFrom(stats, as.dist, dhyper, phyper, runif)
 importFrom(stats4, plot)
-importFrom(utils, CRAN.packages, modifyList, head)
+importFrom(utils, modifyList, head)
 
 exportClasses(distGraph,
       clusterGraph, graph, graphNEL,
