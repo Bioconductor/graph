@@ -20,18 +20,13 @@ setMethod("numNodes", signature(object="multiGraph"),
           function(object) length(nodes(object)))
 
 
-setMethod("edges", signature("multiGraph", "missing"),
-          function(object) {
-              nV = nodes(object)
-              lapply(object@edgeL, function(x) edges(x, nV, nV))
-          })
-
-setMethod("edges", signature("multiGraph", "character"),
+setMethod("edges", signature(object="multiGraph"),
           function(object, which) {
               nV = nodes(object)
+              if (missing(which))
+                  which <- nV
               lapply(object@edgeL, function(x) edges(x, which, nV))
           })
-
 
 setMethod("numEdges", signature(object="MGEdgeSet"), 
           function(object) {
@@ -96,13 +91,9 @@ setMethod("show", signature("edgeSet"),
 setMethod("nodes", signature(object="edgeSetAM"),
           function(object)  rownames(object@adjMat))
 
-#setMethod("edges", signature("edgeSetAM", "missing"),
-#          function(object) {
-#              getEdgeList(object@adjMat, nodes(object))
-#          })
-
-setMethod("edges", signature("edgeSetAM", "character"),
+setMethod("edges", signature(object="edgeSetAM"),
           function(object, which, nodes) {
+              stopifnot( is.character(which) )
               stopifnot( is.character(nodes) )
               idx <- base::which(colnames(object@adjMat) %in% which)
               getEdgeList(object@adjMat[idx, ], nodes[idx])
@@ -123,12 +114,9 @@ setMethod("numEdges", signature(object="edgeSetAM"),
 ##and here we are a bit scuppered by the way we represent the edge
 ##lists - we need to have the node set around
 
-#setMethod("edges", c("edgeSetNEL", "missing"), function(object, which) {
-#    gNodes <- object@nodes
-#    lapply(object@edgeL, function(x) gNodes[x$edges])})
-
-setMethod("edges", signature("edgeSetNEL", "character"),
+setMethod("edges", signature(object="edgeSetNEL"),
           function(object, which, nodes) {
+              stopifnot( is.character(which) )
               stopifnot( is.character(nodes) )
               lapply(object@edgeL[which], function(x) nodes[x$edges])})
 

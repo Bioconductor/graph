@@ -7,8 +7,7 @@
 \alias{distGraph-class}
 \alias{adj,distGraph,ANY-method}
 \alias{Dist,distGraph-method}
-\alias{edges,distGraph,missing-method}
-\alias{edges,distGraph,character-method}
+\alias{edges,distGraph-method}
 \alias{edgeL,distGraph-method}
 \alias{nodes,distGraph-method}
 \alias{numNodes,distGraph-method}

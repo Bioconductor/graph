@@ -5,7 +5,6 @@
 \alias{coerce}
 \alias{edgeL}
 \alias{edges}
-\alias{edges}
 \alias{initialize}
 \alias{nodes<-}
 \alias{nodes}
@@ -18,8 +17,7 @@
 \alias{coerce,graphNEL,graphAM-method}
 \alias{coerce,graphNEL,graphBAM-method}
 \alias{edgeL,graphNEL-method}
-\alias{edges,graphNEL,missing-method}
-\alias{edges,graphNEL,character-method}
+\alias{edges,graphNEL-method}
 \alias{edgeWeights,graphNEL-method}
 \alias{inEdges,graphNEL,missing-method}
 \alias{inEdges,missing,graphNEL-method}

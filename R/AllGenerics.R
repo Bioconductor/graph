@@ -23,7 +23,9 @@ setGeneric("nodes<-", function(object, value) standardGeneric("nodes<-"))
 setGeneric("renameNodes", function(g, value) standardGeneric("renameNodes"))
 
 
-setGeneric("edges", function(object, which, ...) standardGeneric("edges"))
+setGeneric("edges", signature="object",
+    function(object, which, ...) standardGeneric("edges")
+)
 
 
 ## The funny arg=1, is to allow default values in the methods.
@@ -41,7 +43,9 @@ setGeneric("edgeWeights", function(object, index, ...,
 ## ---------------------------------------------------------------------
 ## Node and edge operations
 ## ---------------------------------------------------------------------
-setGeneric("degree", function(object, Nodes) standardGeneric("degree"))
+setGeneric("degree", signature="object",
+    function(object, Nodes) standardGeneric("degree")
+)
 
 
 setGeneric("adj", function(object, index) standardGeneric("adj"))

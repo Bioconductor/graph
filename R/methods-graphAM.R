@@ -101,18 +101,19 @@ getEdgeList <- function(adjMat, nodeNames) {
 }
 
 
-setMethod("edges", signature("graphAM", "missing"),
-          function(object) {
-              if (length(object@adjMat) == 0L) return(list())
-              getEdgeList(object@adjMat, nodes(object))
-          })
-
-
-setMethod("edges", signature("graphAM", "character"),
+setMethod("edges", signature("graphAM"),
           function(object, which) {
-              if (length(object@adjMat) == 0L) return(list())
-              idx <- base::which(colnames(object@adjMat) %in% which)
-              getEdgeList(object@adjMat[idx, ], nodes(object)[idx])
+              adjMat <- object@adjMat
+              if (length(adjMat) == 0L) return(list())
+              nodes <- nodes(object)
+              if (!missing(which)) {
+                  if (!is.character(which))
+                      stop("'which' must be missing or a character vector")
+                  idx <- base::which(colnames(adjMat) %in% which)
+                  adjMat <- adjMat[idx, ]
+                  nodes <- nodes[idx]
+              }
+              getEdgeList(adjMat, nodes)
           })
 
 

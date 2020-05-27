@@ -956,7 +956,7 @@ extractGraphBAM <- function(g, edgeSets) {
 
 
 ## Degree of a multigraph
-setMethod("degree", signature(object = "MultiGraph", Nodes = "missing"),
+setMethod("degree", signature(object = "MultiGraph"),
       function(object){
           .mgDegree(object)
 })
@@ -1563,33 +1563,30 @@ setMethod("edgeSets", signature("MultiGraph"), function(object, ...) {
     })
 
 
-setMethod("edges", signature("MultiGraph", "character"),
+setMethod("edges", signature("MultiGraph"),
           function(object, which, edgeSet) {
-              if(missing(edgeSet))
-                  edgeSet <- edgeSets(object)
-              if (!all(edgeSet %in% edgeSets(object)))
-                  stop("edgeSet specified not found in MultiGraph")
-              if (!all(which %in% nodes(object)))
-                  stop("nodes specified not found in MultiGraph")
-              eg <- extractGraphBAM(object, edgeSet)
-              if(length(eg) == 1)
-                  edges(eg[[edgeSet]], which)
-              else 
-                  lapply(eg, edges, which)            
-          })
-
-setMethod("edges", signature("MultiGraph", "missing"),
-          function(object, edgeSet) {
               if (missing(edgeSet))
                   edgeSet <- edgeSets(object)
               if (!all(edgeSet %in% edgeSets(object)))
                   stop("edgeSet specified not found in MultiGraph")
-
+              if (!missing(which)) {
+                  if (!is.character(which))
+                      stop("'which' must be missing or a character vector")
+                  if (!all(which %in% nodes(object)))
+                      stop("'which' nodes not all in MultiGraph")
+              }
               eg <- extractGraphBAM(object, edgeSet)
-              if(length(eg) == 1)
-                  edges(eg[[edgeSet]])
-              else 
-                  lapply(eg, edges)    
+              if (missing(which)) {
+                  if(length(eg) == 1)
+                      edges(eg[[edgeSet]])
+                  else
+                      lapply(eg, edges)
+              } else {
+                  if (length(eg) == 1)
+                      edges(eg[[edgeSet]], which)
+                  else
+                      lapply(eg, edges, which)
+              }
           })
 
 setMethod("edgeNames", signature("MultiGraph"),

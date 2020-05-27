@@ -52,9 +52,8 @@
 \alias{mgEdgeData<-,MultiGraph,character,character,missing,character-method}
 \alias{mgEdgeData<-,MultiGraph,character,missing,character,character-method}
 \alias{mgEdgeData<-,MultiGraph,character,missing,missing,character-method}
-\alias{edges,MultiGraph,character-method}
+\alias{edges,MultiGraph-method}
 \alias{edgeNames,MultiGraph-method}
-\alias{edges,MultiGraph,missing-method}
 \alias{edgeSets}
 \alias{edgeSets,MultiGraph-method}
 \title{EXPERIMENTAL class "MultiGraph"}

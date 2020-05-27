@@ -9,8 +9,7 @@
 \alias{coerce,graphAM,matrix-method}
 \alias{coerce,matrix,graphAM-method}
 \alias{coerce,graphAM,graphBAM-method}
-\alias{edges,graphAM,missing-method}
-\alias{edges,graphAM,character-method}
+\alias{edges,graphAM-method}
 \alias{initialize,graphAM-method}
 \alias{inEdges,missing,graphAM-method}
 \alias{inEdges,character,graphAM-method}
@@ -90,8 +89,7 @@ Class \code{"graph"}, directly.
       This coerce method exists for symmetry.  In most cases, creating a
       new \code{graphAM} instance using \code{new} gives one more
       control over the resulting graph.}
-    \item{edges}{\code{signature(object = "graphAM", which = "missing")}: ... }
-    \item{edges}{\code{signature(object = "graphAM", which = "character")}: ... }
+    \item{edges}{\code{signature(object = "graphAM")}: ... }
     \item{initialize}{\code{signature(.Object = "graphAM")}: ... }
     \item{inEdges}{\code{signature(node = "character", object =
         "graphNEL")}: Return the incoming edges for the specified

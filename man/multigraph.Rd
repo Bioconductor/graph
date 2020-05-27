@@ -18,10 +18,9 @@
 \alias{nodes,edgeSetAM-method}
 \alias{numNodes,multiGraph-method}
 
-\alias{edges,multiGraph,missing-method}
-\alias{edges,multiGraph,character-method}
-\alias{edges,edgeSetAM,character-method}
-\alias{edges,edgeSetNEL,character-method}
+\alias{edges,multiGraph-method}
+\alias{edges,edgeSetAM-method}
+\alias{edges,edgeSetNEL-method}
 
 \alias{numEdges,edgeSetAM-method}
 \alias{numEdges,multiGraph-method}

@@ -136,13 +136,19 @@ setMethod("getNodes",
       })
 
 setMethod("edges",
-          signature(object="graphH", which="missing"),
+          signature(object="graphH"),
           function (object, which)
       {
           nm <- nodes(object)
           names(nm) <- object@label2nodeID
           edgeEnv <- object@edges
-          ans <- lapply(object@nodes,
+          nodes <- object@nodes
+          if (!missing(which)) {
+              if (!is.character(which))
+                  stop("'which' must be missing or a character vector")
+              nodes <- nodes[object@label2nodeID[which]]
+          }
+          ans <- lapply(nodes,
                         function(node)
                     {
                         tmp <- nm[unlist(lapply(fromEdges(node),
@@ -157,63 +163,29 @@ setMethod("edges",
                         names(tmp) <- NULL
                         tmp
                     })
-          names(ans) <- nm
-          ans
-      })
-
-setMethod("edges",
-          signature(object="graphH", which="character"),
-          function (object, which)
-      {
-          nm <- nodes(object)
-          names(nm) <- object@label2nodeID
-          edgeEnv <- object@edges
-          ans <- lapply(object@nodes[object@label2nodeID[which]],
-                        function(node)
-                    {
-                        tmp <- nm[unlist(lapply(fromEdges(node),
-                                                function(eid)
-                                                as.character(edgeEnv[[as.character(eid)]]@eNode)))]
-                        names(tmp) <- NULL
-                        tmp
-                    })
-          names(ans) <- which
+          names(ans) <- if (missing(which)) nm else which
           ans
       })
 
 setMethod("degree",
-          signature(object="graphH", Nodes="missing"),
+          signature(object="graphH"),
           function (object, Nodes)
       {
-          deg <- unlist(lapply(object@nodes,
-                               function(x) length(x@fromEdges)))
+          nodes <- object@nodes
+          if (!missing(Nodes)) {
+              if (!is.character(Nodes))
+                  stop("'Nodes' must be missing or a character vector")
+              nodes <- nodes[object@label2nodeID[Nodes]]
+          }
+          deg <- unlist(lapply(nodes, function(x) length(x@fromEdges)))
           names(deg) <- nodes(object)
           if( object@edgemode == "undirected" )
               return(deg)
           else if( object@edgemode == "directed" ) {
-              inDegree <- unlist(lapply(object@nodes,
-                                        function(x) length(x@fromEdges)))
+              inDegree <- unlist(lapply(nodes, function(x) length(x@fromEdges)))
               names(inDegree) <- names(deg)
               return(list(inDegree=inDegree, outDegree=deg))
           }
           stop(paste("edgemode", object@edgemode, "is not valid"))
       })
 
-setMethod("degree",
-          signature(object="graphH", Nodes="character"),
-          function (object, Nodes)
-      {
-          deg <- unlist(lapply(object@nodes[object@label2nodeID[Nodes]],
-                               function(x) length(x@fromEdges)))
-          names(deg) <- nodes(object)
-          if( object@edgemode == "undirected" )
-              return(deg)
-          else if( object@edgemode == "directed" ) {
-              inDegree <-
-                  unlist(lapply(object@nodes[object@label2nodeID[Nodes]],
-                                function(x) length(x@fromEdges)))
-              names(inDegree) <- names(deg)
-              return(list(inDegree=inDegree, outDegree=deg))
-          }
-          stop(paste("edgemode", object@edgemode, "is not valid"))
-      })

@@ -182,16 +182,16 @@ setMethod("initialize", "graphNEL",
 
 ##the graphNEL representation stores edges as indexes into the
 ##node label vector
-setMethod("edges", c("graphNEL", "missing"), function(object, which) {
-    gNodes <- object@nodes
-    lapply(object@edgeL, function(x) gNodes[x$edges])})
-
-
-setMethod("edges", c("graphNEL", "character"),
-          function(object, which) {
-              gNodes <- nodes(object)
-              lapply(object@edgeL[which], function(x) gNodes[x$edges])})
-
+setMethod("edges", "graphNEL", function(object, which) {
+    edgeL <- object@edgeL
+    if (!missing(which)) {
+        if (!is.character(which))
+            stop("'Nodes' must be missing or a character vector")
+        edgeL <- edgeL[which]
+    }
+    gNodes <- nodes(object)
+    lapply(edgeL, function(x) gNodes[x$edges])
+})
 
 setMethod("adj", c("graphNEL", "ANY"), function(object, index) {
     initI <- as.character(index)

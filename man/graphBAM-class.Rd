@@ -6,8 +6,7 @@
 \alias{addEdge,character,character,graphBAM,numeric-method}
 \alias{edgemode<-,graphBAM,character-method}
 \alias{clearNode,character,graphBAM-method}
-\alias{edges,graphBAM,missing-method}
-\alias{edges,graphBAM,character-method}
+\alias{edges,graphBAM-method}
 \alias{inEdges,character,graphBAM-method}
 \alias{initialize,graphBAM-method}
 \alias{isAdjacent,graphBAM,character,character-method}

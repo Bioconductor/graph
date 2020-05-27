@@ -204,14 +204,10 @@ setMethod("isAdjacent",signature(object="graph", from="character",
           })
 
 
-  ##handle directed graphs by a list inDegree and outDegree
-  setMethod("degree", signature(object="graph", Nodes="missing"),
-      function(object)  {
-          degree(object, Nodes=nodes(object))
-     })
-
   setMethod("degree", "graph",  function(object, Nodes) {
        nl <- edges(object)
+       if (missing(Nodes))
+           Nodes <- nodes(object)
        nls <- nl[Nodes]
 
        deg <- listLen(nls)

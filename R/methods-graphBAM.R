@@ -87,10 +87,12 @@ setMethod("inEdges", signature("character", "graphBAM"),
               .edges_gbam(object, direction = "in")[node]
           })
 
-setMethod("edges", signature("graphBAM", "missing"), .edges_gbam)
-
-setMethod("edges", signature("graphBAM", "character"),
-        function(object, which) {
+setMethod("edges", signature("graphBAM"),
+        function(object, which, direction="out") {
+            if (missing(which))
+                return(.edges_gbam(object, which, direction))
+            if (!missing(direction))
+                warning("'direction' is ignored when 'which' is specified")
             ## TODO: refactor to optimize
             .edges_gbam(object)[which]
         })

@@ -137,19 +137,18 @@
           adjL[[i]] <- names(adjL[[i]])[adjL[[i]] > 0 ]
         return(adjL) })
 
-   setMethod("edges", c("distGraph", "missing"), function(object, which) {
+   setMethod("edges", "distGraph", function(object, which) {
        nN <- nodes(object)
+       if (!missing(which)) {
+           if (!is.character(which))
+               stop("'which' must be missing or a character vector")
+           wh <- match(which, nN)
+           if( any(is.na(wh)) )
+               stop("'which' nodes not all in graph")
+           nN <- nN[wh]
+       }
        eL <- lapply(nN, function(x) adj(object, x)[[1]])
        names(eL) <- nN
-       return(eL) })
-
-   setMethod("edges", c("distGraph", "character"), function(object, which) {
-       nN <- nodes(object)
-       wh<-match(which, nN)
-       if( any(is.na(wh)) )
-           stop("'which' nodes not all in graph")
-       eL <- lapply(which, function(x) adj(object, x)[[1]])
-       names(eL) <- which
        eL})
 
  ## FIXME: update for new attribute storage
@@ -203,27 +202,27 @@ setMethod("edgeL", "distGraph", function(graph, index) {
 # })
 
 
- setMethod("edges", c("clusterGraph", "missing"), function(object, which) {
+ setMethod("edges", "clusterGraph", function(object, which) {
+     if (!missing(which)) {
+         if (!is.character(which))
+             stop("'which' must be missing or a character vector")
+         nN <- nodes(object)
+         wh <- match(which, nN)
+         if( any(is.na(wh)) )
+             stop("'which' nodes not all in graph")
+     }
      edges<-list()
      for(clust in object@clusters) {
          cc <- as.character(clust)
+         if (!missing(which))
+             cc <- intersect(cc, which)
          for(i in seq(along=cc) )
              edges[[cc[i]]] <- cc[-i]
      }
-     edges})
-
- setMethod("edges", c("clusterGraph", "character"), function(object, which) {
-     nN <- nodes(object)
-     wh <- match(which, nN)
-     if( any(is.na(wh)) )
-         stop("'which' nodes not all in graph")
-     edges<-list()
-     for(clust in object@clusters) {
-         cc <- intersect(as.character(clust), which)
-         for(i in seq(along=cc) )
-           edges[[cc[i]]] <- cc[-i]
-     }
-     edges[which]})
+     if (!missing(which))
+         edges <- edges[which]
+     edges
+ })
 
 setMethod("edgeL", "clusterGraph", function(graph, index) {
     clusters <- connComp(graph)
