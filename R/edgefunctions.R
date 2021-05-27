@@ -159,7 +159,9 @@ listEdges <- function(object, dropNULL=TRUE)
 }
 
 
-listLen <- function(list)
+listLen <- function(list) {
+    stopifnot(is(list, "list"))
     .Call(graph_listLen, list)
+}
 
 

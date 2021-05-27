@@ -564,3 +564,15 @@ test_rename_nodes_nodeData <- function() {
     checkEquals(nd, nodeData(g, attr="type"))
 }
 
+
+test_simple_AM = function() {
+    adjm <- matrix(c(0,1,1,0), nrow=2) # this matrix has exactly one entry in each row
+    obj <- graphAM(adjMat=adjm, edgemode="directed")
+    validObject(obj)
+}
+
+test_simple_AM2 = function() {
+    adjm <- matrix(c(0,1,1, 1,0,1, 0,1,1), nrow=3, byrow=TRUE) # this matrix has exactly two entries in each row
+    obj <- graphAM(adjMat=adjm, edgemode="directed")
+    validObject(obj)
+}
