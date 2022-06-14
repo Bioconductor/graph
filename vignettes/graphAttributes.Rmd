@@ -1,21 +1,22 @@
 ---
 title: "Attributes for Graph Objects"
 author: "Seth Falcon"
+date: "April 26, 2022"
 output:
   html_document:
+    number_sections: yes
     toc: yes
 ---
 
 
 # Introduction
 
-The *graph* package provides representations of graphs (nodes and edges) as S4 classes.  This vignette demonstrates how to add
-arbitrary node and edge attributes to graph objects.
+The *graph* package provides representations of graphs (nodes and edges) as S4 classes.  This vignette demonstrates how to add arbitrary node and edge attributes to graph objects.
 
 First, we create a graph to use as an example.  We will work with a *graphAM-class* instance, however, any subclass of
 *graph-class* would work. See [Figure 1](#Fig1).
 
-```{r}
+```{r, warning=FALSE, echo=TRUE, message=FALSE}
 library("graph")
 
 mat <- matrix(c(0, 0, 1, 1, 
@@ -27,24 +28,23 @@ rownames(mat) <- letters[1:4]
 colnames(mat) <- letters[1:4]
 
 g1 <- graphAM(adjMat=mat)
+g1
 
 ``` 
 
 
-
-```{r out.width="100%", out.height="150%"}
+```{r,echo=FALSE, warning=FALSE, message=FALSE,out.width="50%", fig.align='center', fig.cap=paste("<a name='Fig1'></a>Figure 1: The graph `g1` ")}
 
 if (require("Rgraphviz")) {
     gn = as(g1, "graphNEL")
-    plot(gn, nodeAttrs=makeNodeAttrs(gn, shape="circle", fillcolor="orange"))
+   plot(gn, nodeAttrs=makeNodeAttrs(gn, shape="circle", fillcolor="orange"))
 } else {
-  plot(1, 1, main="Rgraphviz required for this plot")
+ plot(1, 1, main="Rgraphviz required for this plot")
 }
 
 ```
-<a name="Fig1"></a>
 
-Figure 1: The graph `g1`
+
 
 
 # Edge Attributes
@@ -62,10 +62,7 @@ edgeDataDefaults(g1)
 
 ```
 
-
-
-When a new edge attribute is defined, a default value must be specified.  Here we will define two edge attributes: `weight`
-and `code` and specify a default value for each one.
+When a new edge attribute is defined, a default value must be specified.  Here we will define two edge attributes: `weight` and `code` and specify a default value for each one.
 
 ```{r}
 
@@ -98,14 +95,12 @@ edgeData(g1, to="a", attr="weight")
 allAttrsAllEdges <- edgeData(g1)
 weightAttrAllEdges <- edgeData(g1, attr="weight")
 
-
 ```
 
 
 ### Setting edge attributes
 
-Attributes are set using the replacement form of `edgeData`. This method allows the user to update the attribute for single edge,
-set the attributes for a collection of edges to a single value, and to set the attributes for a collection of edges to different values specified by a vector of values.
+Attributes are set using the replacement form of `edgeData`. This method allows the user to update the attribute for single edge, set the attributes for a collection of edges to a single value, and to set the attributes for a collection of edges to different values specified by a vector of values.
 
 ```{r}
 
@@ -186,11 +181,4 @@ nodeData(g1, n=c("a", "b"), attr="weight")
 
 ```
 
-```{r}
-
-## We need to reconcile this
-#g2 <- as(g1, "graphNEL")
-#edgeWeights(g2)
-
-```
 
