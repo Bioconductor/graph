@@ -13,7 +13,7 @@ The *graph* package provides representations of graphs (nodes and edges) as S4 c
 arbitrary node and edge attributes to graph objects.
 
 First, we create a graph to use as an example.  We will work with a *graphAM-class* instance, however, any subclass of
-*graph-class* would work. See Figure [1](#fig1).
+*graph-class* would work. See [Figure 1](#Fig1).
 
 ```{r}
 library("graph")
@@ -31,7 +31,8 @@ g1 <- graphAM(adjMat=mat)
 ``` 
 
 
-```{r fig.height=6, fig.width=6}
+
+```{r out.width="100%", out.height="150%"}
 
 if (require("Rgraphviz")) {
     gn = as(g1, "graphNEL")
@@ -41,6 +42,7 @@ if (require("Rgraphviz")) {
 }
 
 ```
+<a name="Fig1"></a>
 
 Figure 1: The graph `g1`
 
