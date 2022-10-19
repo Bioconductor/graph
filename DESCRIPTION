@@ -9,7 +9,7 @@ Maintainer: Bioconductor Package Maintainer
 License: Artistic-2.0
 Depends: R (>= 2.10), methods, BiocGenerics (>= 0.13.11)
 Imports: stats, stats4, utils
-Suggests: SparseM (>= 0.36), XML, RBGL, RUnit, cluster
+Suggests: SparseM (>= 0.36), XML, RBGL, RUnit, cluster, BiocStyle, knitr
 Enhances: Rgraphviz
 Collate: AllClasses.R AllGenerics.R bitarray.R buildDepGraph.R
         methods-graph.R graphNEL.R clustergraph.R NELhandler.R
@@ -23,3 +23,4 @@ LazyLoad: yes
 Packaged: 2012-04-28 03:51:46 UTC; biocbuild
 biocViews: GraphAndNetwork
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr
