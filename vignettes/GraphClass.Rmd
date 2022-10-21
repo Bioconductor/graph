@@ -30,68 +30,58 @@ Arbitrary attributes can be associated with a graph, a node, or an edge. For bot
 
 The *graph* class itself is VIRTUAL and has the following definition:
 
-\> library("graph")
+```{r}
+library("graph")
+getClass("graph")
+```
 
-\> getClass("graph")
+The `edgemode` slot indicates whether the graph is *directed* or *undirected*. Since some graph algorithms only make sense in a directed graph, the edgemode is a property of the entire graph rather than a property of an edge.
 
-Virtual Class "graph" [package "graph"]
+The `graphData` slot was recently added to hold arbitrary attributes for the graph. Although edgemode is such an attribute, it isn't clear whether it should move inside the generic container, since edgemode is of such high semantic importance. It probably doesn't matter as long as methods such as `isDirected` do the right thing.
 
-Slots:
-
-Name: edgeData nodeData renderInfo graphData
-
-Class: attrData attrData renderInfo list
-
-Extends: "graphBase"
-
-Known Subclasses: "graphNEL", "graphAM", "distGraph", "clusterGraph", "graphBAM"
-
-The *edgemode* slot indicates whether the graph is *directed* or *undirected*. Since some graph algorithms only make sense in a directed graph, the edgemode is a property of the entire graph rather than a property of an edge.
-
-The *graphData* slot was recently added to hold arbitrary attributes for the graph. Although edgemode is such an attribute, it isn't clear whether it should move inside the generic container, since edgemode is of such high semantic importance. It probably doesn't matter as long as methods such as *isDirected* do the right thing.
-
-The *edgeData* and *nodeData* slots store the attributes for the edges and nodes of the graph, respectively.
+The `edgeData` and `nodeData` slots store the attributes for the edges and nodes of the graph, respectively.
 
 There are currently implementations for the *graphNEL* class, where nodes are a vector and edges are a list, each element of the list corresponds to one node and the values are nodes corresponding to the out-edges from that node. If the graph is directed then all edges essentially appear twice.
 
-The *graphAM* class stores the edge information in an adjacent matrix. The matrix must be square and the row names must match the column names. If the graph is *undirected*, then the matrix must also be symmetric.
+The *graphAM* class stores the edge information in an adjacent matrix. The matrix must be square and the row names must match the column names. If the graph is undirected, then the matrix must also be symmetric.
 
 There are two specialized classes. The first is *distGraph*, which takes a distance matrix directly and has special thresholding capabilities. It is not clear whether this should be a specialization of the *graphAM* class or not.
 
-The second specialized class is a *clusterGraph*, which can be used to represent the output of a clustering algorithm as a graph. Samples represent nodes and all samples in the same cluster have edges, while samples in distinct clusters do not. Instances of this class must have their edgemode as *undirected*. If the edgemode is reset, then coercion to some other mode of graph is needed.
+The second specialized class is a *clusterGraph*, which can be used to represent the output of a clustering algorithm as a graph. Samples represent nodes and all samples in the same cluster have edges, while samples in distinct clusters do not. Instances of this class must have their edgemode as `undirected`. If the edgemode is reset, then coercion to some other mode of graph is needed.
 
 ### Methods of graphs
 
 Here are some of the methods that all graph-like objects should support:
 
-**nodes(object)** Returns a character vector of the node labels. The order is not defined.
+`nodes(object)` Returns a character vector of the node labels. The order is not defined.
 
-**nodes**\<-**(object)** Returns a new graph object with the node labels set as specified by a character vector. This is slightly fragile since the order matters. But the order can only really be determined by first calling the R function, *nodes*, and then providing a character vector of the appropriate length.
+`nodes<-(object)` Returns a new graph object with the node labels set as specified by a character vector. This is slightly fragile since the order matters. But the order can only really be determined by first calling the R function, `nodes`, and then providing a character vector of the appropriate length.
 
-**addNode(node, object, edges)** Returns a new graph object with additional nodes and (optionally) edges. The methods that have been implemented expect *node* to be the node labels of the new nodes specified as a character vector. Optional edges can be specified.
+`addNode(node, object, edges)` Returns a new graph object with additional nodes and (optionally) edges. The methods that have been implemented expect `node` to be the node labels of the new nodes specified as a character vector. Optional edges can be specified.
 
-**removeNode(node, object)** Returns a new graph object with nodes (and their incident edges) removed. Current methods are implemented for node being a character vector of node labels to remove.
+`removeNode(node, object)` Returns a new graph object with nodes (and their incident edges) removed. Current methods are implemented for `node` being a character vector of node labels to remove.
 
-**edges(object, which)** Returns a list with an element for each node in the graph. The names of the list are the node labels. Each element is a character vector giving the node labels of the nodes which the given element shares an edge with. For undirected graphs, reciprocal edges should be included. This representation is very similar to the NEL edgeL structure.
+`edges(object, which)` Returns a list with an element for each node in the graph. The names of the list are the node labels. Each element is a character vector giving the node labels of the nodes which the given element shares an edge with. For undirected graphs, reciprocal edges should be included. This representation is very similar to the NEL edgeL structure.
 
-**edgeWeights(object, index)**
+`edgeWeights(object, index)`
 
-**addEdge(from, to, graph, weights)** Returns a new graph object with additional edges. 
+`addEdge(from, to, graph, weights)` Returns a new graph object with additional edges. 
 
-**removeEdge(from, to, graph)** Returns a new graph object with the specified edges removed. 
+`removeEdge(from, to, graph)` Returns a new graph object with the specified edges removed. 
 
-**numNodes(object)** Returns a count of the nodes in the graph. 
+`numNodes(object)` Returns a count of the nodes in the graph. 
 
-**numEdges(object)** Returns a count of the edges in the graph. 
+`numEdges(object)` Returns a count of the edges in the graph. 
 
-**isDirected(object)** Returns TRUE if the graph is directed, and FALSE otherwise. 
-**acc(object, index)** See man page. 
+`isDirected(object)` Returns TRUE if the graph is directed, and FALSE otherwise. 
 
-**adj(object, index)** See man page.
+`acc(object, index)` See man page. 
 
-**nodeData** Access to node attributes. See man page. 
+`adj(object, index)` See man page.
 
-**edgeData** Access to edge attributes. See man page.
+`nodeData` Access to node attributes. See man page. 
+
+`edgeData` Access to edge attributes. See man page.
 
 ### Some Details
 
@@ -113,14 +103,13 @@ It is not clear whether there should be distinct types of multi-graphs as there 
 
 Current definition does not extend the *graph* class. The definition is:
 
-\> getClass("multiGraph")
+```{r}
+getClass("multiGraph")
+```
 
-Class "multiGraph" [package "graph"] 
-Slots: Name: nodes edgeL nodeData graphData 
-Class: vector list attrData list
+`nodes` A vector of node identifiers. 
 
-**nodes** A vector of node identifiers. 
-**edgeL** A possibly named list of instances of the *edgeSet* class.
+`edgeL` A possibly named list of instances of the *edgeSet* class.
 
 The *edgeSet* class is a virtual class with several different extensions. These include a *edgeSetNEL* and an *edgeSetAM*. Others will be added once the interface stabilizes.
 
@@ -129,7 +118,7 @@ Another approach would be to maintain a list conforming to the edgeSet list cont
 
 ### Methods
 
-In some ways, it would be most natural to have *edges* methods for the *edgeSet* class. The issues raised in Section 2.2.1 seem to preclude this and it only seems to make sense to have *node* and *edges* methods for the *multiGraph* class.
+In some ways, it would be most natural to have `edges` methods for the *edgeSet* class. The issues raised in Section 2.2.1 seem to preclude this and it only seems to make sense to have `node` and `edges` methods for the *multiGraph* class.
 
 It will probably make sense to be able to name the edgeSets within a multiGraph and to be able to extract graph objects from the multiGraph representing any of the edgeSets.
 
