@@ -1,11 +1,14 @@
 ---
-title: graphBAM and MultiGraph classes.
-author: "N. Gopalakrishnan"
+title: "graphBAM and MultiGraph classes"
+author:
+- name: "N. Gopalakrishnan"
+- name: "Halimat C. Atanda"
+  affiliation: "Vignette translation from Sweave to Rmarkdown / HTML"
 date: "`r format(Sys.Date(), '%B %d %Y')`"
 package: graph
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{graphBAM and MultiGraph Classes}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,7 +20,7 @@ vignette: >
 The *graphBAM* class has been created as a more efficient replacement for the *graphAM* class in the *graph* package. The adjacency matrix in the *graphBAM* class is represented as a bit array using a `raw` vector. This significantly reduces the memory occupied by graphs having a large number of nodes. The bit vector representation also provides advantages in terms of performing operations such as intersection or union of graphs.
 
 We first load the *graph* package which provides the class definition and methods for the *graphBAM* class.
-```{r}
+```{r message=FALSE}
  library(graph)
 ```
 
@@ -131,9 +134,9 @@ The *MultiGraph* class can be used to represent graphs that share a single node 
 
 Self loops are permitted in the *MultiGraph* class representation (i.e. the from-node is the same as the to-node). The *MultiGraph* class supports the handling of arbitrary node and edge attributes. These attributes are stored separately from the edge weights to facilitate efficient edge weight computation.
 
-We shall load the *graph* and *RBGL* packages that we will be using. We will then create a *MultiGraph* object and then spend some time examining some of the different functions that can be applied to *MultiGraph* objects.
+We shall load the `r Biocpkg("graph")` and `r Biocpkg("RBGL")` packages that we will be using. We will then create a *MultiGraph* object and then spend some time examining some of the different functions that can be applied to *MultiGraph* objects.
 
-```{r}
+```{r message=FALSE}
 library(graph) 
 library(RBGL)
 ```
@@ -264,7 +267,7 @@ female
 
 We then select a particular gene of interest in this network and proceed to identify its neighboring genes connected to this gene in terms of the maximum sum of weights along the path that connects the genes for the brain edge set.
 
-We are interested in the gene "10024416717" and the sum of the weights along the path that connects this genes to the other genes for the brain tissue. Since the algorithms in the *RBGL* package that we will use to find the edges that are connected to the gene "10024416717" do not work directly with *MultiGraph* objects, we proceed to create `graphBAM` objects from the male and female edge sets for the brain tissue.
+We are interested in the gene "10024416717" and the sum of the weights along the path that connects this genes to the other genes for the brain tissue. Since the algorithms in the `r Biocpkg("RBGL")` package that we will use to find the edges that are connected to the gene "10024416717" do not work directly with *MultiGraph* objects, we proceed to create `graphBAM` objects from the male and female edge sets for the brain tissue.
 
 *MultiGraph* objects can be converted to a named list of `graphBAM` objects using the `graphBAM` method.
 
@@ -274,7 +277,7 @@ maleBrain
 femaleBrain <- extractGraphBAM(female, "brain")[["brain"]]
 ```
 
-We then identify the genes connected to gene "10024416717" as well as the sum of the weights along the path that connect the identified genes using the function `bellman.ford.sp` function from the *RBGL* package.
+We then identify the genes connected to gene "10024416717" as well as the sum of the weights along the path that connect the identified genes using the function `bellman.ford.sp` function from the `r Biocpkg("RBGL")` package.
 
 ```{r}
 maleWt <- bellman.ford.sp(maleBrain, start = c("10024416717"))$distance 
