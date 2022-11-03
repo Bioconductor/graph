@@ -31,10 +31,10 @@ One of the arguments `df` to the *graphBAM* constructor is a `data.frame` contai
 We proceed to represent a simple graph using the *graphBAM* class. Our example is a directed graph representing airlines flying between different cities. In this example, cities represent the nodes of the graph and each edge represents a flight from an originating city (`from`) to the destination city (`to`). The weight represents the fare for flying between the `from` and `to` cities.
 
 ```{r}
-df <- data.frame(from = c("SEA", "SFO", "SEA", "LAX", "SEA"), 
-                  to = c("SFO", "LAX", "LAX", "SEA", "DEN"), 
-                  weight = c( 90, 96, 124, 115, 259), 
-            stringsAsFactors = TRUE) 
+df <- data.frame(from = c("SEA", "SFO", "SEA", "LAX", "SEA"),
+                 to = c("SFO", "LAX", "LAX", "SEA", "DEN"),
+                 weight = c( 90, 96, 124, 115, 259),
+                 stringsAsFactors = TRUE) 
 g <- graphBAM(df, edgemode = "directed") 
 g
 ```
@@ -215,7 +215,7 @@ Before edge attributes can be added to the MultiGraph, their default values must
 
 ```{r}
 mgEdgeDataDefaults(mg, "Delta", attr = "color") <- "red" 
-mgEdgeData(mg, "Delta", from = c("SEA", "SEA", "SEA", "SEA"), 
+mgEdgeData(mg, "Delta", from = c("SEA", "SEA", "SEA", "SEA"),
            to = c("DEN", "IAH", "LAX", "SFO"), attr = "color") <- "green"
 
 mgEdgeData(mg, "Delta", attr = "color")
