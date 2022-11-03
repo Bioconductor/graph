@@ -9,6 +9,9 @@ Authors@R: c(
     person("Halimat C.", "Atanda", role = "ctb",
         comment = "Converted 'GraphClass' vignette from Sweave to RMarkdown / HTML."
     ),
+    person("Halimat C.", "Atanda", role = "ctb",
+        comment = "Converted 'MultiGraphClass' vignette from Sweave to RMarkdown / HTML."
+    ),
     person("Bioconductor Package Maintainer",
         role = "cre",
         email = "maintainer@bioconductor.org"
