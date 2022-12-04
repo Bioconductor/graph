@@ -7,10 +7,7 @@ Authors@R: c(
     person("W", "Huber", role="aut"),
     person("S", "Falcon", role="aut"),
     person("Halimat C.", "Atanda", role = "ctb",
-        comment = "Converted 'GraphClass' vignette from Sweave to RMarkdown / HTML."
-    ),
-    person("Halimat C.", "Atanda", role = "ctb",
-        comment = "Converted 'MultiGraphClass' vignette from Sweave to RMarkdown / HTML."
+        comment = "Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown / HTML."
     ),
     person("Bioconductor Package Maintainer",
         role = "cre",
