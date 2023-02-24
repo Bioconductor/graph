@@ -37,16 +37,13 @@ there are no edges between clusters.
 Thus, each cluster is a complete graph but there are no between
 cluster edges.
 
-```{r include=FALSE}
+```{r clustering, message=FALSE, warning=FALSE, error=FALSE}
 library("graph")
 library("cluster")
-```
-
-```{r clustering}
 data(ruspini)
 pm <- pam(ruspini, 4)
 cG <- new("clusterGraph",
-     clusters = split(names(pm$clustering), pm$clustering))
+          clusters = split(names(pm$clustering), pm$clustering))
 nodes(cG)
 ```
 
@@ -58,7 +55,7 @@ data and see if the two largely agree.
 library(stats)
 km = kmeans(ruspini, 4)
 cG.km = new("clusterGraph",
-      clusters=split(as.character(1:75), km$cluster))
+            clusters=split(as.character(1:75), km$cluster))
 inBoth = intersection(cG.km, cG)
 ```
 
@@ -74,13 +71,10 @@ We use this same data to consider some potential uses for the
 `distGraph` class. Others have considered a similar structure
 for exploring clustering algorithms.
 
-FIXME: track down the Butte et al and the Shamir references
 
-```{r }
-
+```{r potential-use-for-distGraph}
 d1 = dist(ruspini)
 dG = new("distGraph", Dist=d1)
-
 rl = NULL
 j=1
 for(i in c(40, 30, 10, 5) ){
@@ -92,18 +86,16 @@ for(i in c(40, 30, 10, 5) ){
 
 We can then examine the components of `rl` to see how the
 graph is being reduced.
+
 ```{r howmany}
-
 sapply(rl, length)
-
 ```
 
-```{r somecomps, include=FALSE}
-
+```{r somecomps, echo=FALSE, results="hide"}
  dr = range(d1)
  rl.lens = sapply(rl[[4]], length)
-
 ```
+
 We see that when we remove all distances that are bigger than 5 units
 (the range of distances was from `r round(dr[1], 3)`
 to `r round(dr[2],3)`) there are still only `r length(rl[[4]])`
