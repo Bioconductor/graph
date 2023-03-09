@@ -1,13 +1,13 @@
 ---
 title: "**How to use the graph package**"
 author:
-    R., Gentleman [aut],
-    Elizabeth, Whalen [aut],<br>
-    W., Huber [aut],
-    S., Falcon [aut],<br>
-    Halimat C., Atanda [ctb] (Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown/HTML.),<br> 
-    Paul, Villafuerte [ctb] (Converted 'clusterGraph' vignettes from Sweave to RMarkdown/HTML.),<br>
-    Aliyu Atiku, Mustapha [ctb] (Converted 'graph' vignette from Sweave to RMarkdown/HTML.).<br>
+    R. Gentleman [aut],
+    Elizabeth Whalen [aut],<br>
+    W. Huber [aut],
+    S. Falcon [aut],<br>
+    Halimat C. Atanda [ctb] (Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown/HTML.),<br> 
+    Paul Villafuerte [ctb] (Converted 'clusterGraph' vignettes from Sweave to RMarkdown/HTML.),<br>
+    Aliyu Atiku Mustapha [ctb] (Converted 'graph' vignette from Sweave to RMarkdown/HTML.).<br>
     Bioconductor Package Maintainer [cre] <br>
         (maintainer@bioconductor.org)
 date: "Last edited `r format(Sys.time(), '%B %d, %Y')`"
