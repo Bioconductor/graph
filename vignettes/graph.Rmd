@@ -1,0 +1,272 @@
+---
+title: "**How to use the graph package**"
+author:
+    R. Gentleman [aut],
+    Elizabeth Whalen [aut],<br>
+    W. Huber [aut],
+    S. Falcon [aut],<br>
+    Halimat C. Atanda [ctb] (Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown/HTML.),<br> 
+    Paul Villafuerte [ctb] (Converted 'clusterGraph' vignettes from Sweave to RMarkdown/HTML.),<br>
+    Aliyu Atiku Mustapha [ctb] (Converted 'graph' vignette from Sweave to RMarkdown/HTML.).<br>
+    Bioconductor Package Maintainer [cre] <br>
+        (maintainer@bioconductor.org)
+date: "Last edited `r format(Sys.time(), '%B %d, %Y')`"
+package: graph
+vignette: >
+    %\VignetteIndexEntry{How to use the graph package}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document
+
+---
+
+
+##    Introduction
+
+The graph package provides an implementation of graphs (the kind with nodes and edges) in R. Software infrastructure is provided by three different, but related packages, <br><br> **graph** Provides the basic class definitions and functionality.<br><br> 
+**RBGL** Provides an interface to graph algorithms (such as shortest path, connectivity etc).<br><br> 
+**Rgraphviz** Provides rendering functionality. Different layout algorithms are provided and node plotting, line type, color etc parameters can be controlled by the user.<br><br> 
+A short description of the R classes and methods is given at the end of this document. But here, we begin by creating some graphs and performing different operations on those graphs.<br>
+The reader will benefit greatly from also having the *Rgraphviz* package available and from using it to
+render the different graphs as they proceed through these notes.
+
+
+##    Getting Started
+
+We will first create a graph and then spend some time examining some of the different functions that can be applied to the graph. We will create a random graph as the basis for our explorations (but will delay explaining the creation of this graph until Section 3).<br>
+First we attach the graph package and create a random graph (this is based on the Erdos-Renyi model for random graphs).
+
+```{r message=FALSE, warning=FALSE}
+library(graph)
+set.seed(123)
+g1 = randomEGraph(LETTERS[1:15], edges=100)
+g1
+```
+
+We can next list the nodes in our graph, or ask for the degree (since this is an undirected graph we do not distinguish between in-degree and out-degree). For any node in g1 we can find out which nodes are adjacent to it using the adj function. Or we can find out which nodes are accessible from it using the acc function. Both functions are *vectorized*, that is, the user can supply a vector of node names, and each returns a named list. The names of the list elements correspond to the names of the nodes that were supplied. For acc the elements of the list are named vectors, the names correspond to the nodes that can be reached and the values correspond to their distance from the starting node.
+
+```{r message=FALSE, warning=FALSE}
+nodes(g1)
+```
+
+```{r message=FALSE, warning=FALSE}
+degree(g1)
+```
+
+```{r message=FALSE, warning=FALSE}
+adj(g1, "A")
+```
+
+
+```{r message=FALSE, warning=FALSE}
+acc(g1, c("E", "G"))
+```
+
+One can obtain subgraphs of a given graph by specifying the set of nodes that they are interested in. A subgraph is actually a copy of the relevant part of the original graph. A subgraph is the set of specified nodes plus any edges between them. We can also compute the boundary of a subgraph. The boundary is the set of all nodes in the original graph that have an edge to the specified subgraph. The boundary returns a named list with one component for each node in the subgraph. The elements of this list are vectors which contain all nodes in the original graph that have an edge to that element of the subgraph.<br>
+We also demonstrate two edge related functions in the code chunk below. One retrieves all edges from a graph and is called **edges** while the other retrieves the edge weights and is called **edgeWeights**.
+
+```{r message=FALSE, warning=FALSE}
+sg1 = subGraph(c("A", "E", "F","L"), g1)
+boundary(sg1, g1)
+```
+
+```{r message=FALSE, warning=FALSE}
+edges(sg1)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+edgeWeights(sg1)
+```
+
+
+###   Some Algebraic Manipulations
+
+The examples here originally came from Chris Volinsky at AT&T, but have been modified in places as the graph package has evolved. In the code chunk below we demonstrate how to create a graph from scratch. In this code chunk two graphs are created, gR and gR2, the first is undirected while the second is a directed graph.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+V <- LETTERS[1:4]
+edL1 <- vector("list", length=4)
+names(edL1) <- V
+for(i in 1:4) 
+  edL1[[i]] <- list(edges=c(2,1,4,3)[i], weights=sqrt(i))
+gR <- graphNEL(nodes=V, edgeL=edL1)
+edL2 <- vector("list", length=4)
+names(edL2) <- V
+for(i in 1:4) 
+  edL2[[i]] <- list(edges=c(2,1,2,1)[i], weights=sqrt(i))
+gR2 <- graphNEL(nodes=V, edgeL=edL2, edgemode="directed")
+
+```
+
+New graphs can be constructed from these graphs in many different ways but in all cases the existing graph itself is not altered, but rather a copy is made and the changes are carried out on that copy. Nodes and or edges can be added to the graphs using the functions **addNode**, **addEdge**, **removeNode** and **removeEdge**. All functions will take a vector of nodes or edges and add or remove all of them at
+one time. One other function in this family is **combineNodes**, this function takes a vector of nodes and a graph and combines those nodes into a single new node (the name of which must be supplied). The function clearNode removes all edges to the specified nodes.
+
+```{r message=FALSE, warning=FALSE}
+gX = addNode(c("E", "F"), gR)
+gX
+```
+
+```{r message=FALSE, warning=FALSE}
+gX2 = addEdge(c("E", "F", "F"), c("A", "D", "E"), gX, c(1,2,3))
+gX2
+```
+
+```{r message=FALSE, warning=FALSE}
+gR3 = combineNodes(c("A","B"), gR, "W")
+gR3
+```
+
+```{r message=FALSE, warning=FALSE}
+clearNode("A", gX)
+```
+
+When working with directed graphs it is sometimes of interest to find the underlying graph. This is the graph with all edge orientation removed. The function ugraph provides this functionality.
+
+```{r message=FALSE, warning=FALSE}
+##find the underlying graph
+ugraph(gR2)
+```
+
+Other operations that can be carried out on graphs, that are of some interest, are unions, intersections and complements. We have taken a rather specialized definition of these operations and it is not one that is widely used, but it is very useful for the bioinformatics and computational biology projects that we are working on.<br>
+For two or more graphs all with the **same nodes** we define:<br><br>
+**union** to be the graph with the same set of nodes as the inputs and edges between any two nodes that were connected in any one graph.<br><br>
+**intersection** to be the graph with the same set of nodes as the inputs and with edges between two nodes if there was an edge in all graphs.<br><br>
+**complement** to be the graph with the same set of nodes as its input and edges in the complement if there were none in the original graph. <br><br>
+In the code chunk below we generate a random graph and then demonstrate the concepts of union, intersection and complement.
+
+```{r message=FALSE, warning=FALSE}
+set.seed(123)
+gR3 <- randomGraph(LETTERS[1:4], M<-1:2, p=.5)
+x1 <- intersection(gR,gR3)
+x1
+```
+
+```{r message=FALSE, warning=FALSE}
+x2 <- union(gR,gR3)
+x2
+```
+
+```{r message=FALSE, warning=FALSE}
+x3 <- complement(gR)
+x3
+```
+
+Notice that while the graphs gR and gR2 have different sets of edge weights these are lost when the union, intersection and complement are taken. It is not clear how they should be treated and in the current implementation they are ignored and replaced by weight 1 in the output.
+
+##    Random Graphs
+
+Three basic strategies for finding random graphs have been implemented: <br><br>
+**randomEGraph** A random edge graph. In this graph edges are randomly generated according to a specified probability, or the number of edges can be specified and they are randomly assigned.<br><br>
+**randomGraph** For this graph the number of nodes is specified as well as some latent factor. The user provides both the node labels and a factor with some fixed number of levels. Each node is randomly assigned levels of the factor and then edges are created between nodes that share the same levels of the factor.<br><br>
+**randomNodeGraph** A random graph with a pre-specified node distribution is generated.<br><br>
+The function **randomEGraph** will generate graphs using the random edge model. In the code chunk below we generate a graph, g1 on 12 nodes (with labels from the first 12 letters of the alphabet) and specify that the probability of each edge existing is 0.1. The graph g2 is on the same set of nodes but we specify that it will contain 20 edges.
+
+```{r message=FALSE, warning=FALSE}
+set.seed(333)
+V = letters[1:12]
+g1 = randomEGraph(V, .1)
+g1
+```
+
+```{r message=FALSE, warning=FALSE}
+g2 = randomEGraph(V, edges=20)
+g2
+```
+The function **randomGraph** generates graphs according to the latent variable model. In the code chunk below.
+
+```{r message=FALSE, warning=FALSE}
+set.seed(23)
+V <- LETTERS[1:20]
+M <- 1:4
+g1 <- randomGraph(V, M, .2)
+```
+
+Our last example involves generating random graphs with a pre-specified node degree distribution. In the example below we require a node degree distribution of 1, 1, 2 and 4. We note that self-loops are allowed (and if someone wants to provide the code to eliminate them, we would be glad to have it).
+```{r eval = FALSE}
+    set.seed(123)
+    c1 <- c(1,1,2,4)
+    names(c1) <- letters[1:4]
+    g1 <- randomNodeGraph(c1)
+```
+
+
+##    Some Graph Algorithms
+
+In addition to the simple algebraic operations that we have demonstrated in the preceeding sections of this document we also have available implementations of some more sophisticated graph algorithms. If possible though, one should use the algorithms provided in the **RBGL**.<br>
+The function **connComp** returns a list of the connected components of the given graph. For a directed graph or digraph the underlying graph is the graph that results from removing all direction from the edges. This can be achieved using the function **ugraph**. A weakly connected component of a digraph is one that is a connected component of the underlying graph and this is the default behavior of **connComp**.
+
+
+```{r message=FALSE, warning=FALSE}
+g1
+```
+
+
+```{r message=FALSE, warning=FALSE}
+g1cc <- connComp(g1)
+g1cc
+```
+
+
+```{r message=FALSE, warning=FALSE}
+g1.sub <- subGraph(g1cc[[1]], g1)
+g1.sub
+```
+
+Another useful set of graph algorithms are the so-called searching algorithm. For the *graph* package we have implemented the depth first searching algorithm as described in Algorithm 4.2.1 of [?]. More efficient and comprehensive algorithms are available through the RBGL package. The returned value is a named vector. The names correspond to the nodes of the graph and the values correspond to the
+distance (often the number of steps) or sum of the edge weights along the path to that node.
+
+```{r message=FALSE, warning=FALSE}
+DFS(gX2, "E")
+```
+
+
+##    Special Types of Graphs
+
+We have found it useful to define a few special types or classes of graphs for some bioinformatic problems but they likely have broader applicability. All of the functions described above should have methods for these special types of graphs (although we may not yet have implemented all of them, please let the maintainer know if you detect any omissions).<br>
+First is the **clusterGraph**. A cluster graph is a graph where the nodes are separated into groups or
+clusters. Within a cluster all nodes are connected (a complete graph) but between clusters there are no
+edges. Such graphs are useful representations of the output of clustering algorithms.
+
+```{r message=FALSE, warning=FALSE}
+cG1 <- new("clusterGraph", clusters=list(a=c(1,2,3), b=c(4,5,6)))
+cG1
+```
+
+```{r message=FALSE, warning=FALSE}
+acc(cG1, c("1", "2"))
+```
+
+The other special type of graph that we have implemented is based on distances. This graph is completely connected but the edge weights come from inter-node distances (perhaps computed from an expression experiment).
+
+```{r message=FALSE, warning=FALSE}
+set.seed(123)
+x <- rnorm(26)
+names(x) <- letters
+library(stats)
+d1 <- dist(x)
+g1 <- new("distGraph", Dist=d1)
+g1
+```
+
+
+##    Coercion
+
+There are very many different ways to represent graphs. The one chosen for our basic implementation is a node and edge-list representation. However, many others use an adjacency matrix representation.
+We provide a number of different tools that should help users coerce graphs between the different representations.<br>
+Coercion from an adjacency matrix to a *graphNEL* object requires a numeric matrix with both row and column names. These are taken to define the nodes of the graph and the edge weights in the resultant graph are determined by the values in the array (weights zero are taken to indicate the absence of an edge).<br>
+The function **ftM2adjM** converts a *from-to* matrix into an adjacency matrix. Conversion to a *graphNEL* graph can be carried out using the as method for that class.<br>
+An **aM** is an affiliation matrix which is frequently used in social networks analysis. The rows of **aM** represent actors, and the columns represent events. A one, 1, in the ith row and jth column represents the affiliation of the ith actor with the jth event. The function **aM2bpG** coerces a **aM** into an instance of the graphNEL where the nodes are both the actors and the events (there is currently no bipartite graph
+representation, although one could be added).<br> 
+The two functions **sparseM2Graph** and **graph2SparseM** provide coercion between *graphNEL* instances and sparse matrix representations. Currently we rely on the *SparseM* of Koncker and Ng for the sparse matrix implementation.
+
+
+###    Classes
+
+<p>We briefly review some of the class structure here and refer the reader to the technical documentation for this package for more details.<br>
+  The basic class, *graph*, is a virtual class and all other classes will extend this class. There are three
+main implementations available. Which is best will depend on the particular data set and what the user wants to do with it. The only slot defined in the virtual class is **edgemode** which can be either directed or undirected indicating whether the edges are directed or not.<br>
+  The class *graphNEL* is a node and edge-list representation of a graph. That is the graph is comprised of two components a list of nodes and a list of the out edges for each node.
+  The class *graphAM* is an adjacency matrix implementation. It will be developed next and will use the *SparseM* package if it is available.<br>
+  The class *clusterGraph* is a special form of graph for clustering. In this graph each cluster is a completely connected component (a clique) and there are no between cluster edges.<p/>
