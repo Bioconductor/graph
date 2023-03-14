@@ -31,7 +31,7 @@ render the different graphs as they proceed through these notes.
 
 #    Getting Started
 
-We will first create a graph and then spend some time examining some of the different functions that can be applied to the graph. We will create a random graph as the basis for our explorations (but will delay explaining the creation of this graph until Section 3).
+We will first create a graph and then spend some time examining some of the different functions that can be applied to the graph. We will create a random graph as the basis for our explorations (but will delay explaining the creation of this graph until Section \@ref(random-graphs).
 
 First we attach the `r Biocpkg("graph")` package and create a random graph (this is based on the Erdos-Renyi model for random graphs).
 
