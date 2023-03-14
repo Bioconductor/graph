@@ -16,24 +16,24 @@ output:
 ---
 #    Introduction
 
-The [graph](https://bioconductor.org/packages/release/bioc/html/graph.html) package provides an implementation of graphs (the kind with nodes and edges) in R. Software infrastructure is provided by three different, but related packages, 
+The [` r Biocpkg("graph")`](https://bioconductor.org/packages/release/bioc/html/graph.html) package provides an implementation of graphs (the kind with nodes and edges) in R. Software infrastructure is provided by three different, but related packages, 
 
-[graph](https://bioconductor.org/packages/release/bioc/html/graph.html) Provides the basic class definitions and functionality.
+[` r Biocpkg("graph")`](https://bioconductor.org/packages/release/bioc/html/graph.html) Provides the basic class definitions and functionality.
 
-[RBGL](https://bioconductor.org/packages/release/bioc/html/RBGL.html) Provides an interface to graph algorithms (such as shortest path, connectivity etc).
+[` r Biocpkg("RBGL")`](https://bioconductor.org/packages/release/bioc/html/RBGL.html) Provides an interface to graph algorithms (such as shortest path, connectivity etc).
 
-[Rgraphviz](https://bioconductor.org/packages/release/bioc/html/Rgraphviz.html) Provides rendering functionality. Different layout algorithms are provided and node plotting, line type, color etc parameters can be controlled by the user.
+[` r Biocpkg("Rgraphviz")`](https://bioconductor.org/packages/release/bioc/html/Rgraphviz.html) Provides rendering functionality. Different layout algorithms are provided and node plotting, line type, color etc parameters can be controlled by the user.
 
 A short description of the R classes and methods is given at the end of this document. But here, we begin by creating some graphs and performing different operations on those graphs.
 
-The reader will benefit greatly from also having the [Rgraphviz](https://bioconductor.org/packages/release/bioc/html/Rgraphviz.html) package available and from using it to
+The reader will benefit greatly from also having the [` r Biocpkg("Rgraphviz")`](https://bioconductor.org/packages/release/bioc/html/Rgraphviz.html) package available and from using it to
 render the different graphs as they proceed through these notes.
 
 #    Getting Started
 
 We will first create a graph and then spend some time examining some of the different functions that can be applied to the graph. We will create a random graph as the basis for our explorations (but will delay explaining the creation of this graph until Section 3).
 
-First we attach the [graph](https://bioconductor.org/packages/release/bioc/html/graph.html) package and create a random graph (this is based on the Erdos-Renyi model for random graphs).
+First we attach the [` r Biocpkg("graph")`](https://bioconductor.org/packages/release/bioc/html/graph.html) package and create a random graph (this is based on the Erdos-Renyi model for random graphs).
 
 ```{r message=FALSE, warning=FALSE}
 library(graph)
@@ -80,7 +80,7 @@ edgeWeights(sg1)
 
 ##   Some Algebraic Manipulations
 
-The examples here originally came from Chris Volinsky at AT&T, but have been modified in places as the [graph](https://bioconductor.org/packages/release/bioc/html/graph.html) package has evolved. In the code chunk below we demonstrate how to create a graph from scratch. In this code chunk two graphs are created, gR and gR2, the first is undirected while the second is a directed graph.
+The examples here originally came from Chris Volinsky at AT&T, but have been modified in places as the [` r Biocpkg("graph")`](https://bioconductor.org/packages/release/bioc/html/graph.html) package has evolved. In the code chunk below we demonstrate how to create a graph from scratch. In this code chunk two graphs are created, gR and gR2, the first is undirected while the second is a directed graph.
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 V <- LETTERS[1:4]
@@ -199,7 +199,7 @@ Our last example involves generating random graphs with a pre-specified node deg
 
 #    Some Graph Algorithms
 
-In addition to the simple algebraic operations that we have demonstrated in the preceding sections of this document we also have available implementations of some more sophisticated graph algorithms. If possible though, one should use the algorithms provided in the [RBGL](https://bioconductor.org/packages/release/bioc/html/RBGL.html).
+In addition to the simple algebraic operations that we have demonstrated in the preceding sections of this document we also have available implementations of some more sophisticated graph algorithms. If possible though, one should use the algorithms provided in the [` r Biocpkg("RBGL")`](https://bioconductor.org/packages/release/bioc/html/RBGL.html).
 
 The function **connComp** returns a list of the connected components of the given graph. For a directed graph or digraph the underlying graph is the graph that results from removing all direction from the edges. This can be achieved using the function **ugraph**. A weakly connected component of a digraph is one that is a connected component of the underlying graph and this is the default behavior of **connComp**.
 
@@ -217,7 +217,7 @@ g1.sub <- subGraph(g1cc[[1]], g1)
 g1.sub
 ```
 
-Another useful set of graph algorithms are the so-called searching algorithm. For the [graph](https://bioconductor.org/packages/release/bioc/html/graph.html) package we have implemented the depth first searching algorithm as described in Algorithm 4.2.1 of [?]. More efficient and comprehensive algorithms are available through the [RBGL](https://bioconductor.org/packages/release/bioc/html/RBGL.html) package. The returned value is a named vector. The names correspond to the nodes of the graph and the values correspond to the distance (often the number of steps) or sum of the edge weights along the path to that node.
+Another useful set of graph algorithms are the so-called searching algorithm. For the [` r Biocpkg("graph")`](https://bioconductor.org/packages/release/bioc/html/graph.html) package we have implemented the depth first searching algorithm as described in Algorithm 4.2.1 of [?]. More efficient and comprehensive algorithms are available through the [` r Biocpkg("RBGL")`](https://bioconductor.org/packages/release/bioc/html/RBGL.html) package. The returned value is a named vector. The names correspond to the nodes of the graph and the values correspond to the distance (often the number of steps) or sum of the edge weights along the path to that node.
 
 ```{r message=FALSE, warning=FALSE}
 DFS(gX2, "E")
