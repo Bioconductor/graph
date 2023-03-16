@@ -10,7 +10,10 @@ Authors@R: c(
         comment = "Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown / HTML."
     ),   
     person("Paul", "Villafuerte", role = "ctb",
-        comment = "Converted 'clusterGraph' vignettes from Sweave to RMarkdown / HTML."
+        comment = "Converted 'clusterGraph' vignette from Sweave to RMarkdown / HTML."
+    ),
+	person("Aliyu Atiku", "Mustapha", role = "ctb",
+	comment = "Converted 'Graph' vignette from Sweave to RMarkdown / HTML."
     ),
     person("Bioconductor Package Maintainer",
         role = "cre",
