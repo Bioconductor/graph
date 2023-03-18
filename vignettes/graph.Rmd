@@ -50,7 +50,7 @@ is based on the Erdos-Renyi model for random graphs).
 ```{r g1, message=FALSE, warning=FALSE}
 library(graph)
 set.seed(123)
-g1 = randomEGraph(LETTERS[1:15], edges=100)
+g1 = randomEGraph(LETTERS[1:15], edges = 100)
 g1
 ```
 
@@ -86,7 +86,7 @@ retrieves all edges from a graph and is called `edges` while the other retrieves
 the edge weights and is called `edgeWeights`.
 
 ```{r subG, message=FALSE, warning=FALSE}
-sg1 = subGraph(c("A", "E", "F","L"), g1)
+sg1 = subGraph(c("A", "E", "F", "L"), g1)
 boundary(sg1, g1)
 
 edges(sg1)
@@ -103,16 +103,18 @@ second is a directed graph.
 
 ```{r example1, message=FALSE, warning=FALSE}
 V <- LETTERS[1:4]
-edL1 <- vector("list", length=4)
+edL1 <- vector("list", length = 4)
 names(edL1) <- V
-for(i in 1:4) 
-  edL1[[i]] <- list(edges=c(2,1,4,3)[i], weights=sqrt(i))
-gR <- graphNEL(nodes=V, edgeL=edL1)
-edL2 <- vector("list", length=4)
+for (i in 1:4)
+  edL1[[i]] <- list(edges = c(2, 1, 4, 3)[i], weights = sqrt(i))
+gR <- graphNEL(nodes = V, edgeL = edL1)
+edL2 <- vector("list", length = 4)
 names(edL2) <- V
-for(i in 1:4) 
-  edL2[[i]] <- list(edges=c(2,1,2,1)[i], weights=sqrt(i))
-gR2 <- graphNEL(nodes=V, edgeL=edL2, edgemode="directed")
+for (i in 1:4)
+  edL2[[i]] <- list(edges = c(2, 1, 2, 1)[i], weights = sqrt(i))
+gR2 <- graphNEL(nodes = V,
+                edgeL = edL2,
+                edgemode = "directed")
 ```
 
 New graphs can be constructed from these graphs in many different ways but in
@@ -129,10 +131,10 @@ function clearNode removes all edges to the specified nodes.
 gX = addNode(c("E", "F"), gR)
 gX
 
-gX2 = addEdge(c("E", "F", "F"), c("A", "D", "E"), gX, c(1,2,3))
+gX2 = addEdge(c("E", "F", "F"), c("A", "D", "E"), gX, c(1, 2, 3))
 gX2
 
-gR3 = combineNodes(c("A","B"), gR, "W")
+gR3 = combineNodes(c("A", "B"), gR, "W")
 gR3
 
 clearNode("A", gX)
@@ -169,11 +171,11 @@ concepts of `union`, `intersection` and `complement`.
 
 ```{r unions, message=FALSE, warning=FALSE}
 set.seed(123)
-gR3 <- randomGraph(LETTERS[1:4], M<-1:2, p=.5)
-x1 <- intersection(gR,gR3)
+gR3 <- randomGraph(LETTERS[1:4], M <- 1:2, p = .5)
+x1 <- intersection(gR, gR3)
 x1
 
-x2 <- union(gR,gR3)
+x2 <- union(gR, gR3)
 x2
 
 x3 <- complement(gR)
@@ -212,7 +214,7 @@ V = letters[1:12]
 g1 = randomEGraph(V, .1)
 g1
 
-g2 = randomEGraph(V, edges=20)
+g2 = randomEGraph(V, edges = 20)
 g2
 ```
 
@@ -288,7 +290,7 @@ complete graph) but between clusters there are no edges. Such graphs are useful
 representations of the output of clustering algorithms.
 
 ```{r clusterGraph, message=FALSE, warning=FALSE}
-cG1 <- new("clusterGraph", clusters=list(a=c(1,2,3), b=c(4,5,6)))
+cG1 <- new("clusterGraph", clusters = list(a = c(1, 2, 3), b = c(4, 5, 6)))
 cG1
 
 acc(cG1, c("1", "2"))
@@ -304,7 +306,7 @@ x <- rnorm(26)
 names(x) <- letters
 library(stats)
 d1 <- dist(x)
-g1 <- new("distGraph", Dist=d1)
+g1 <- new("distGraph", Dist = d1)
 g1
 ```
 
