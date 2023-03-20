@@ -13,6 +13,7 @@ vignette: >
     %\VignettePackage{graph}
 output:
   BiocStyle::html_document
+bibliography: references.bib
 ---
 #    Introduction
 
@@ -266,7 +267,7 @@ g1.sub
 
 Another useful set of graph algorithms are the so-called searching algorithm.
 For the `r Biocpkg("graph")` package we have implemented the depth first
-searching algorithm as described in Algorithm 4.2.1 of [?]. More efficient and
+searching algorithm as described in Algorithm 4.2.1 of [@Algorithm_4_2_1]. More efficient and
 comprehensive algorithms are available through the `r Biocpkg("RBGL")` package.
 The returned value is a named vector. The names correspond to the nodes of the
 graph and the values correspond to the distance (often the number of steps) or
