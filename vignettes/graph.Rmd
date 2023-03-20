@@ -267,11 +267,12 @@ g1.sub
 
 Another useful set of graph algorithms are the so-called searching algorithm.
 For the `r Biocpkg("graph")` package we have implemented the depth first
-searching algorithm as described in Algorithm 4.2.1 of [@Algorithm_4_2_1]. More efficient and
-comprehensive algorithms are available through the `r Biocpkg("RBGL")` package.
-The returned value is a named vector. The names correspond to the nodes of the
-graph and the values correspond to the distance (often the number of steps) or
-sum of the edge weights along the path to that node.
+searching algorithm as described in Algorithm 4.2.1 of [@Algorithm_4_2_1]. More
+efficient and comprehensive algorithms are available through the `r
+Biocpkg("RBGL")` package. The returned value is a named vector. The names
+correspond to the nodes of the graph and the values correspond to the distance
+(often the number of steps) or sum of the edge weights along the path to that
+node.
 
 ```{r dfs, message=FALSE, warning=FALSE}
 DFS(gX2, "E")
