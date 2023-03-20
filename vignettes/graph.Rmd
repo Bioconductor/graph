@@ -184,8 +184,9 @@ x3
 ```
 
 Notice that while the graphs *gR* and *gR2* have different sets of edge weights
-these are lost when the `union`, `intersection` and `complement` are taken. It is not clear how they should be treated and in the current implementation they are
-ignored and replaced by weight 1 in the output.
+these are lost when the `union`, `intersection` and `complement` are taken. It
+is not clear how they should be treated and in the current implementation they
+are ignored and replaced by weight 1 in the output.
 
 #    Random Graphs
 
