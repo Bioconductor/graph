@@ -14,6 +14,7 @@ vignette: >
 output:
   BiocStyle::html_document
 bibliography: references.bib
+link-citations: yes
 ---
 #    Introduction
 
@@ -57,7 +58,7 @@ g1
 
 We can next list the nodes in our graph, or ask for the degree (since this is an
 undirected graph we do not distinguish between in-degree and out-degree). For
-any node in `g1` we can find out which nodes are adjacent to it using the adj
+any node in `g1` we can find out which nodes are adjacent to it using the `adj`
 function. Or we can find out which nodes are accessible from it using the `acc`
 function. Both functions are *vectorized*, that is, the user can supply a vector
 of node names, and each returns a named list. The names of the list elements
@@ -243,8 +244,8 @@ algorithms provided in the `r Biocpkg("RBGL")`.
 The function `connComp` returns a list of the connected components of the given
 graph. For a *directed graph* or *digraph* the *underlying* graph is the graph
 that results from removing all direction from the edges. This can be achieved
-using the function `ugraph`. A weakly connected component of a *digraph* is one
-that is a connected component of the *underlying* graph and this is the default
+using the function `ugraph`. A weakly connected component of a digraph is one
+that is a connected component of the underlying graph and this is the default
 behavior of `connComp`.
 
 ```{r rGraph, message=FALSE, warning=FALSE}
@@ -257,7 +258,7 @@ g1.sub
 
 Another useful set of graph algorithms are the so-called searching algorithm.
 For the `r Biocpkg("graph")` package we have implemented the depth first
-searching algorithm as described in Algorithm 4.2.1 of [@Algorithm_4_2_1]. More
+searching algorithm as described in Algorithm 4.2.1 of @Algorithm_4_2_1. More
 efficient and comprehensive algorithms are available through the 
 `r Biocpkg("RBGL")` package. The returned value is a named vector. The names
 correspond to the nodes of the graph and the values correspond to the distance
