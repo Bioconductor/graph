@@ -242,7 +242,7 @@ some more sophisticated graph algorithms. If possible though, one should use the
 algorithms provided in the `r Biocpkg("RBGL")`.
 
 The function `connComp` returns a list of the connected components of the given
-graph. For a *directed graph* or *digraph* the *underlying* graph is the graph
+graph. For a *directed graph* or *digraph* the underlying graph is the graph
 that results from removing all direction from the edges. This can be achieved
 using the function `ugraph`. A weakly connected component of a digraph is one
 that is a connected component of the underlying graph and this is the default
