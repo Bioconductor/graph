@@ -1,6 +1,6 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.77.3
+Version: 1.78.0
 Authors@R: c(
         person("R", "Gentleman", role = "aut"),
         person("Elizabeth", "Whalen", role="aut"),
