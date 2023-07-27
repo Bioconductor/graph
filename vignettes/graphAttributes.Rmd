@@ -44,7 +44,7 @@ colnames(mat) <- letters[1:4]
 g1 <- graphAM(adjMat=mat)
 ```
 
-```{r foo, fig.cap="The graph `g1`.", out.extra='id="foo"'}
+```{r foo, fig.cap="The graph `g1`.", fig.height=6, fig.small=TRUE, fig.width=6, echo=FALSE, message=FALSE, out.extra='id="foo"'}
 if (require("Rgraphviz")) {
    gn = as(g1, "graphNEL")
    plot(gn, nodeAttrs=makeNodeAttrs(gn, shape="circle", fillcolor="orange"))
