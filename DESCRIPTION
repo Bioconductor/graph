@@ -1,21 +1,23 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.77.2
+Version: 1.79.0
 Authors@R: c(
-    person("R", "Gentleman", role = "aut"),
-    person("Elizabeth", "Whalen", role="aut"),
-    person("W", "Huber", role="aut"),
-    person("S", "Falcon", role="aut"),
-    person("Halimat C.", "Atanda", role = "ctb",
-        comment = "Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown / HTML."
-    ),   
-    person("Paul", "Villafuerte", role = "ctb",
-        comment = "Converted 'clusterGraph' and graphAttributes' vignettes from Sweave to RMarkdown / HTML."
-    ),
-    person("Bioconductor Package Maintainer",
-        role = "cre",
-        email = "maintainer@bioconductor.org"
-    ))
+        person("R", "Gentleman", role = "aut"),
+        person("Elizabeth", "Whalen", role="aut"),
+        person("W", "Huber", role="aut"),
+        person("S", "Falcon", role="aut"),
+        person("Halimat C.", "Atanda", role = "ctb",
+                comment = "Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown / HTML."
+        ),   
+        person("Paul", "Villafuerte", role = "ctb",
+                comment = "Converted vignettes from Sweave to RMarkdown / HTML."
+        ),
+        person("Aliyu Atiku", "Mustapha", role = "ctb",
+                comment = "Converted 'Graph' vignette from Sweave to RMarkdown / HTML."
+        ),
+        person("Bioconductor Package Maintainer", role = "cre",
+                email = "maintainer@bioconductor.org"
+        ))
 Description: A package that implements some simple graph handling
         capabilities.
 License: Artistic-2.0
