@@ -40,8 +40,8 @@ rownames(mat) <- letters[1:4]
 colnames(mat) <- letters[1:4]
 ```
 
-```{r exampleGraph2, print=TRUE}
-g1 <- graphAM(adjMat=mat)
+```{r exampleGraph2}
+(g1 <- graphAM(adjMat=mat))
 ```
 
 ```{r foo, fig.cap="The graph `g1`.", fig.height=6, fig.small=TRUE, fig.width=6, echo=FALSE, message=FALSE, out.extra='id="foo"'}
@@ -178,7 +178,7 @@ nodeData(g1, n=c("a", "b"), attr="weight") <- c(11, 22)
 nodeData(g1, n=c("a", "b"), attr="weight")
 ```
 
-```{r other, hide=TRUE, echo=FALSE}
+```{r other, echo=FALSE}
 ## We need to reconcile this
 #g2 <- as(g1, "graphNEL")
 #edgeWeights(g2)
