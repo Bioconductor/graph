@@ -1,6 +1,6 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.79.0
+Version: 1.79.1
 Authors@R: c(
         person("R", "Gentleman", role = "aut"),
         person("Elizabeth", "Whalen", role="aut"),
@@ -36,5 +36,5 @@ Collate: AllClasses.R AllGenerics.R bitarray.R buildDepGraph.R
 LazyLoad: yes
 Packaged: 2012-04-28 03:51:46 UTC; biocbuild
 biocViews: GraphAndNetwork
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
