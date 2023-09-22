@@ -204,20 +204,21 @@ setMethod("isAdjacent",signature(object="graph", from="character",
           })
 
 
-  setMethod("degree", "graph",  function(object, Nodes) {
+setMethod("degree", "graph",  function(object, Nodes) {
        nl <- edges(object)
        if (missing(Nodes))
            Nodes <- nodes(object)
-       nls <- nl[Nodes]
+       nls <- nl[Nodes] 
 
        deg <- listLen(nls)
        names(deg) <- Nodes
+
        if (!isDirected(object)) {
            nself = sapply(1:length(nl),
              function(i) sum(names(nl)[i] == nl[[i]]))
            names(nself) = names(nl)
-           return(deg + sum(nself))
-           }
+           return(deg + nself)
+           } 
        else {
            b1 <- unlist(nl)
            b2 <- table(b1)
@@ -227,6 +228,9 @@ setMethod("isAdjacent",signature(object="graph", from="character",
            return(list(inDegree=inDegree, outDegree=deg))
        }
   })
+
+
+
 
 
 setMethod("leaves", "graph",

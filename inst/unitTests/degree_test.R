@@ -21,3 +21,16 @@ test_degree_directed <- function() {
     checkEquals(want_in, got[["inDegree"]])
     checkEquals(want_out, got[["outDegree"]])
 }
+
+test_handshaking = function() {
+    ge1 = graphExamples[[1]]
+    checkEquals(sum(degree(ge1)), 2*ncol(edgeMatrix(ge1)))  # handshaking
+}
+
+test_degree_self = function() {
+    ge1 = graphExamples[[1]] # 16 edges
+    checkEquals(ncol(edgeMatrix(ge1)), 16)
+    ge2 = addEdge("j", "j", ge1)
+    checkEquals(ncol(edgeMatrix(ge2)), 17)
+    checkEquals(sum(degree(ge2)), 34)
+}
