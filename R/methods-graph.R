@@ -214,9 +214,7 @@ setMethod("degree", "graph",  function(object, Nodes) {
        names(deg) <- Nodes
 
        if (!isDirected(object)) {
-           nself = sapply(1:length(nl),
-             function(i) sum(names(nl)[i] == nl[[i]]))
-           names(nself) = names(nl)
+           nself <- sapply(Nodes, function(n) sum(n == nl[[n]]))
            return(deg + nself)
            } 
        else {

@@ -34,3 +34,10 @@ test_degree_self = function() {
     checkEquals(ncol(edgeMatrix(ge2)), 17)
     checkEquals(sum(degree(ge2)), 34)
 }
+
+test_degree_nodes = function() {
+    g <- graphBAM(data.frame(from=letters[1:10], to=letters[2:11], weight=rep(1, 10)))
+    dd <- degree(g, letters[1:2])
+    checkEquals(dd, c(a = 1, b = 2))
+}
+
