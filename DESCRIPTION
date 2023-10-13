@@ -1,6 +1,6 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.79.4
+Version: 1.79.5
 Authors@R: c(
         person("R", "Gentleman", role = "aut"),
         person("Elizabeth", "Whalen", role="aut"),
@@ -23,7 +23,7 @@ Description: A package that implements some simple graph handling
 License: Artistic-2.0
 Depends: R (>= 2.10), methods, BiocGenerics (>= 0.13.11)
 Imports: stats, stats4, utils
-Suggests: SparseM (>= 0.36), XML, RBGL, RUnit, cluster, BiocStyle, knitr
+Suggests: SparseM (>= 0.36), XML, RBGL, RUnit, cluster, BiocStyle, knitr, qtl, qpgraph
 Enhances: Rgraphviz
 Collate: AllClasses.R AllGenerics.R bitarray.R buildDepGraph.R
         methods-graph.R graphNEL.R clustergraph.R NELhandler.R
