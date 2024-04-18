@@ -6,6 +6,8 @@ Authors@R: c(
         person("Elizabeth", "Whalen", role="aut"),
         person("W", "Huber", role="aut"),
         person("S", "Falcon", role="aut"),
+        person("Jeff", "Gentry", role="aut"),
+        person("Paul", "Shannon", role="aut"),
         person("Halimat C.", "Atanda", role = "ctb",
                 comment = "Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown / HTML."
         ),   

@@ -1,6 +1,9 @@
 ---
 title: "How To use the clusterGraph and distGraph classes"
 author:
+- name: "Robert Gentleman"
+- name: "Jeff Gentry"
+- name: "Seth Falcon"
 - name: "Paul Villafuerte"
   affiliation: "Vignette translation from Sweave to Rmarkdown / HTML"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
