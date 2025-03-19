@@ -806,6 +806,9 @@ setReplaceMethod("edgemode", c("graphBAM", "character"),
    
     lenFrom <- length(from)
     lenTo <- length(to)
+    if (lenFrom < 1 || lenTo < 1)
+        return(graph)
+
     if(lenFrom != lenTo) {
         if(lenFrom ==1)
             from <- rep(from, lenTo)

@@ -226,7 +226,7 @@ test_BAM_removeEdge <- function()
     g1 <- make_smallBAM()
     ## removing nothing does nothing
     c0 <- character(0)
-#    checkEquals(edges(g1), edges(removeEdge(c0, c0, g1)))
+    checkEquals(edges(g1), edges(removeEdge(c0, c0, g1)))
     ## there is no y => a edge, throw error
     checkException(removeEdge("y", "a", g1), silent=TRUE)
 
