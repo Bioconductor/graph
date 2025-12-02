@@ -120,7 +120,7 @@ SEXP graph_intersection(SEXP xN, SEXP yN, SEXP xE, SEXP yE,
     if (length(bN) == 0) {
 	SET_SLOT(outGraph, Rf_install("nodes"), allocVector(STRSXP, 0));
 	SET_SLOT(outGraph, Rf_install("edgeL"), allocVector(VECSXP, 0));
-	UNPROTECT(1);
+	UNPROTECT(2);
 	return(outGraph);
     }
     PROTECT(newXE = checkEdgeList(xE, bN));
