@@ -1,6 +1,10 @@
 ---
 title: "How to use the graph package"
 author: 
+- name: "Robert Gentleman"
+- name: "Seth Falcon"
+- name: "Jeff Gentry"
+- name: "Paul Shannon"
 - name: "Aliyu Atiku Mustapha"
   affiliation: "Vignette translation from Sweave to Rmarkdown / HTML."
 date: "`r format(Sys.time(), '%B %d, %Y')`"

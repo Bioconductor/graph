@@ -1,11 +1,13 @@
 Package: graph
 Title: graph: A package to handle graph data structures
-Version: 1.79.5
+Version: 1.85.3
 Authors@R: c(
         person("R", "Gentleman", role = "aut"),
         person("Elizabeth", "Whalen", role="aut"),
         person("W", "Huber", role="aut"),
         person("S", "Falcon", role="aut"),
+        person("Jeff", "Gentry", role="aut"),
+        person("Paul", "Shannon", role="aut"),
         person("Halimat C.", "Atanda", role = "ctb",
                 comment = "Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown / HTML."
         ),   
